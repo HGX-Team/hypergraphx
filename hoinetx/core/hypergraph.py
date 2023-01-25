@@ -1,64 +1,59 @@
-import numpy as np
+from hoinetx.core.attribute_handler import AttributeHandler
 
 
 class Hypergraph:
 
-    def __init__(self, C=[]):
-        self.C = [tuple(sorted(f)) for f in C]  # edge list
+    def __init__(self, edge_list=[]):
+        self.__attr = AttributeHandler()
+        self.edge_list = {}
+        self.node_list = set()
 
-        self.nodes = list(set([v for f in self.C for v in f]))  # node list
-        self.n = len(self.nodes)  # number of nodes
+        for edge in edge_list:
+            edge = tuple(sorted(edge))
+            _ = self.__attr.get_id(edge)
 
-        # number of edges
-        self.m = len(self.C)
+            if edge not in self.edge_list:
+                self.edge_list[edge] = 1
+            else:
+                self.edge_list[edge] += 1
 
-        # node degree vector
-        D = {}
-        for i in self.nodes:
-            D[i] = 0
+            for node in edge:
+                self.node_list.add(node)
 
-        for f in self.C:
-            for v in f:
-                D[v] += 1
+    def num_nodes(self):
+        return len(self.node_list)
 
-        self.D = D
+    def num_edges(self):
+        return len(self.edge_list)
 
-        # edge dimension sequence
-        K = np.array([len(f) for f in self.C])
-        self.K = K
+    def get_weight(self, edge):
+        return self.edge_list[tuple(sorted(edge))]
 
-    def node_degrees(self, by_dimension=False):
-        '''
-        Return a np.array() of node degrees. If by_dimension, return a 2d np.array() 
-        in which each entry gives the number of edges of each dimension incident upon the given node. 
-        '''
-        if not by_dimension:
-            return (self.D)
-        else:
-            D = np.zeros((len(self.D), max(self.K)))
-            for f in self.C:
-                for v in f:
-                    D[v, len(f) - 1] += 1
-            return (D)
+    def get_weights(self):
+        return list(self.edge_list.values())
 
-    def edge_dimensions(self):
-        '''
-        Return an np.array() of edge dimensions. 
-        '''
-        return (self.K)
+    def get_sizes(self):
+        return [len(edge) for edge in self.edge_list.keys()]
 
-    def node_dimension_matrix(self):
-        '''
-        Return a matrix in which the i,j entry gives the number of dimension j edges incident on node i. 
-        '''
-        A = np.zeros((self.n, max([len(f) for f in self.C]) + 1))
-        for f in self.C:
-            for v in f:
-                A[v, len(f)] += 1
-        return (A)
+    def get_attr(self, obj):
+        return self.__attr.get_attr(obj)
 
-    def get_edges(self, node):
-        '''
-        Return a list of edges incident upon a specified node. 
-        '''
-        return ([f for f in self.C if node in f])
+    def set_attr(self, obj, attr):
+        self.__attr.set_attr(obj, attr)
+
+    def check_edge(self, edge):
+        return tuple(sorted(edge)) in self.edge_list
+
+    def __str__(self):
+        title = "Hypergraph with {} nodes and {} edges.\n".format(self.num_nodes(), self.num_edges())
+        details = "Edge list: {}".format(list(self.edge_list.keys()))
+        return title + details
+
+    def __repr__(self):
+        pass
+
+    def __len__(self):
+        return len(self.edge_list)
+
+    def __iter__(self):
+        return iter(self.edge_list)
