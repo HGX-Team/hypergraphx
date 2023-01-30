@@ -1,5 +1,5 @@
 from itertools import chain
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 import numpy as np
 from scipy import sparse
@@ -7,8 +7,37 @@ from scipy import sparse
 from hoinetx.core.hypergraph import Hypergraph
 
 
-def binary_incidence_matrix(hypergraph: Hypergraph, shape: Optional[Tuple[int]]) -> sparse.spmatrix:
+def hye_list_to_binary_incidence(
+    hye_list: List[Tuple[int]], shape: Optional[Tuple[int]]
+) -> sparse.spmatrix:
     """Convert a list of hyperedges into a scipy sparse csc array.
+
+    Parameters
+    ----------
+    hye_list: the list of hyperedges.
+        Every hyperedge is represented as a tuple of nodes.
+    shape: the shape of the adjacency matrix, passed to the array constructor.
+        If None, it is inferred.
+
+    Returns
+    -------
+    The binary adjacency matrix representing the hyperedges.
+    """
+    # See docs:
+    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csc_array.html
+    len_list = [0] + [len(hye) for hye in hye_list]
+    indptr = np.cumsum(len_list)
+
+    type_ = type(hye_list[0])
+    indices = type_(chain(*hye_list))
+
+    data = np.ones_like(indices)
+
+    return sparse.csc_array((data, indices, indptr), shape=shape).tocsr()
+
+
+def binary_incidence_matrix(hypergraph: Hypergraph, shape: Optional[Tuple[int]]) -> sparse.spmatrix:
+    """Produce the binary incidence matrix representing a hypergraph.
 
     Parameters
     ----------
@@ -24,15 +53,7 @@ def binary_incidence_matrix(hypergraph: Hypergraph, shape: Optional[Tuple[int]])
     # See docs:
     # https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csc_array.html
     hye_list = list(hypergraph.edge_list.keys())
-    len_list = [0] + [len(hye) for hye in hye_list]
-    indptr = np.cumsum(len_list)
-
-    type_ = type(hye_list[0])
-    indices = type_(chain(*hye_list))
-
-    data = np.ones_like(indices)
-
-    return sparse.csc_array((data, indices, indptr), shape=shape).tocsr()
+    return hye_list_to_binary_incidence(hye_list, shape)
 
 
 def incidence_matrix(hypergraph: Hypergraph, shape: Optional[Tuple[int]]) -> sparse.spmatrix:
