@@ -1,4 +1,4 @@
-"""MCMC sampler for the Hy-MMSBM model, described in
+"""MCMC sampler for the Hy-MMSBM probabilistic model, described in
 
 "A Principled, Flexible and Efficient Framework for Hypergraph Benchmarking"
     Ruggeri N., Contisciani M., Battiston F., De Bacco C.
@@ -7,49 +7,46 @@ Notice that the sampler is separate from the probabilistic model itself.
 In this view, the sampler only takes care of any sampling-related operation,
 and refers back to the model to retrieve any probability-related value
 (e.g. Poisson probabilities, expected degree, etc.).
-
-Related to the theory, the MCMC sampler implements the handling and creation of the
-degree and dimension sequences, and the MCMC routine for the conditional sampling of
-the binary (or unweighted) hypergraph. The extraction of the Poisson weights is not
-managed by the HyMMSBMSampler directly, but by the probabilistic model instance HyMMSBM.
 """
 import logging
-from typing import Dict, Iterator, List, Optional, Set, Tuple
+from typing import Dict, Iterable, Iterator, List, Optional, Set, Tuple, Union
 
 import numpy as np
+from scipy import stats
 
-from hoinetx.linalg.linalg import hye_list_to_binary_incidence
 from hoinetx.communities.hy_mmsbm.model import HyMMSBM
+from hoinetx.core.hypergraph import Hypergraph
+from hoinetx.linalg.linalg import hye_list_to_binary_incidence
 
 
 class HyMMSBMSampler:
     """Sampler for the Hy-MMSBM model.
-    This class takes care of the approximate sampling routing described in
+    This class takes care of the approximate sampling routine described in
 
     "A Principled, Flexible and Efficient Framework for Hypergraph Benchmarking"
     Ruggeri N., Contisciani M., Battiston F., De Bacco C.
     """
 
-    # TODO make init independent on the model, maybe only use u, w??
-    #  Then create internal model to be used? In such case need to specify a possible max_hye_size. Other attributes?
     def __init__(
         self,
-        model: HyMMSBM,
+        u: np.ndarray = None,
+        w: np.ndarray = None,
+        max_hye_size: Optional[int] = None,
         exact_dyadic_sampling: bool = True,
         burn_in_steps: int = 1000,
         intermediate_steps: int = 1000,
     ) -> None:
         """Initialize the sampler instance.
-        The sampler refers to an instance of the probabilistic model for model-related
-        properties, such as expected degrees and incidence matrix, and it only takes
-        care of the approximate sampling operations.
-        Namely it takes care of rearranging degree and dimension sequences into a first
-        proposal for MCMC, and of running MCMC.
-
 
         Parameters
         ----------
-        model: an instance of the HyMMSBM class.
+        u: community soft assignments.
+            This is a matrix of shape (N, K), with N number of nodes in the hypergraph.
+            Every row i contains the soft assignments for node i.
+        w: affinity matrix.
+            The affinity matrix is symmetric with shape (K, K).
+        max_hye_size: maximum size of the hyperedges.
+            If None, the maximum size is the number of nodes in the hypergraph.
         exact_dyadic_sampling: whether to sample the order-two interactions (i.e. edges)
             "exactly" from their Bernoulli distribution, or approximately via Central
             Limit Theorem.
@@ -61,7 +58,11 @@ class HyMMSBMSampler:
         self.burn_in_steps = burn_in_steps
         self.exact_dyadic_sampling = exact_dyadic_sampling
 
-        self.model = model
+        self._model = HyMMSBM(
+            u=u,
+            w=w,
+            max_hye_size=max_hye_size if max_hye_size else len(u),
+        )
 
         # Attributes for sampling diagnostics.
         self.iter_count: int = 0
@@ -75,21 +76,93 @@ class HyMMSBMSampler:
         deg_seq: Optional[np.ndarray] = None,
         dim_seq: Optional[Dict[int, int]] = None,
         avg_deg: Optional[float] = None,
+        initial_hyg: Optional[Hypergraph] = None,
         allow_rescaling: bool = True,
-    ) -> Iterator[List[Set[int]]]:
-        """Run the sampling procedure.
-        This is the main functionality of the sampler, and follows a different logic
-        depending on the conditioning on various quantities, see
+    ) -> Iterable[Hypergraph]:
+        """Approximate hypergraph sampling routine presented in
 
         "A Principled, Flexible and Efficient Framework for Hypergraph Benchmarking"
         Ruggeri N., Contisciani M., Battiston F., De Bacco C.
+
+        Possibly, condition the sampling on different quantities: the expected average
+        degree, a given degree sequence and/or dimension sequence, or a hypergraph.
+
+        Parameters
+        ----------
+        deg_seq: degree sequence
+            This is specified as an array of degrees, one per node in the hypergraph.
+        dim_seq: dimension sequence
+            This is specified as a dictionary with {key: value} pairs
+            {dimension: number of hyperedges with that dimension}
+        avg_deg: average degree
+        initial_hyg: an initial hypergraph to start the MCMC from.
+            If initial_hyg is provided, all the other inputs (i.e. deg_seq, dim_seq,
+            avg_deg, allow_rescaling) are ignored. The MCMC is started using
+            initial_hyg as first configuration, which is statstically equivalent to
+            conditioning on its degree and dimension sequences. During MCMC, the degree
+            and dimension sequences in initial_hyg are preserved.
+        allow_rescaling: if to allow the rescaling of the u and w parameters in place.
+            This adjusts for the sampling constraints, e.g. average degree.
+
+        Returns
+        -------
+        A generator of sampled hypergraphs.
+        Notice that all the generated hypergraphs are conditioned on the same degree and
+        dimension sequences (possibly provided as input, otherwise sampled at the
+        beginning and kept constant). To sample conditioning on different sequences, a
+        new call to the function is required.
+        """
+        if initial_hyg is None:
+            samples = self._sampling_from_sequences(
+                deg_seq, dim_seq, avg_deg, allow_rescaling
+            )
+        else:
+            initial_config = [set(hye) for hye in initial_hyg]
+            samples = self._mcmc_routine(initial_config)
+
+        while True:
+            hye_list = next(samples)
+            hye_list = [tuple(sorted(hye)) for hye in hye_list]
+            binary_incidence = hye_list_to_binary_incidence(
+                hye_list, shape=(self._model.N, len(hye_list))
+            )
+            hye_size = np.fromiter(map(len, hye_list), dtype=int)
+
+            log_poisson = np.log(
+                self._model.poisson_params(binary_incidence)
+            ) - self._model.log_kappa(hye_size)
+            poisson_mean = np.exp(log_poisson)
+            # Weights can't be zero, remedy numerical underflow by clipping.
+            poisson_mean = np.clip(poisson_mean, a_min=1.0e-10, a_max=None)
+            weights = sample_truncated_poisson(poisson_mean)
+
+            # Although theoretically impossible, sometimes the sampled weights are
+            # zero due to numerical instabilities.
+            # Remove the relative hyperedges from the samples.
+            nonzero = np.where(weights > 0)[0]
+            weights = weights[nonzero]
+            hye_list = [hye_list[idx] for idx in nonzero]
+
+            yield Hypergraph(
+                [hye for hye, weight in zip(hye_list, weights) for _ in range(weight)]
+            )
+
+    def _sampling_from_sequences(
+        self,
+        deg_seq: Optional[np.ndarray] = None,
+        dim_seq: Optional[Dict[int, int]] = None,
+        avg_deg: Optional[float] = None,
+        allow_rescaling: bool = True,
+    ) -> Iterator[List[Set[int]]]:
+        """Construct the MCMC chain that yields unweighted hypergraphs.
+        The logic is different depending on the conditioning on various quantities.
 
         Possible quantities to condition on are degree sequence, dimension sequence and
         average degree.
         If either or both the degree and dimension sequence are not provided, they are
         sampled directly from the probabilistic model.
         Successively, they are arranged into a first proposal binary hypergraph for
-        MCMC. To condition directly on a given hypergraph, see the mcmc_routine method.
+        MCMC. To condition directly on a given hypergraph, see the _mcmc_routine method.
 
         Parameters
         ----------
@@ -108,7 +181,7 @@ class HyMMSBMSampler:
         Generated samples of binary hypergraphs. The hypergraphs are represented as a
         lists of hyperedges. Hyperedges are represented as sets of nodes.
         """
-        N = self.model.N
+        N = self._model.N
 
         # Adjust the model's parameters based on the constraints provided in input.
         # This is done by rescaling the parameters of the model to attain minimum
@@ -131,12 +204,12 @@ class HyMMSBMSampler:
         sample_deg_seq = deg_seq is None
         sample_dim_seq = dim_seq is None
         if sample_deg_seq:
-            deg_seq = np.zeros(self.model.N)
+            deg_seq = np.zeros(N)
         if sample_dim_seq:
             dim_seq = dict()
 
         if (sample_deg_seq or sample_dim_seq) and self.exact_dyadic_sampling:
-            edges = self.model.sample_dyadic_interactions()
+            edges = self._model.sample_dyadic_interactions()
             if sample_dim_seq and sample_deg_seq:
                 # If none between the degree sequence and the dimension sequence are
                 # provided, simply sample the dyadic interactions and pass them
@@ -150,14 +223,14 @@ class HyMMSBMSampler:
                 dim_seq[2] = edges.sum()
 
         if sample_deg_seq:
-            deg_seq += self.model.degree_sequence(
+            deg_seq += self._model.degree_sequence(
                 include_dyadic=not self.exact_dyadic_sampling
             )
 
         if sample_dim_seq:
             dim_seq = {
                 **dim_seq,
-                **self.model.dimension_sequence(
+                **self._model.dimension_sequence(
                     include_dyadic=not self.exact_dyadic_sampling
                 ),
             }
@@ -186,9 +259,9 @@ class HyMMSBMSampler:
             fixed_hyperedges = None
 
         # Once we have the initial configuration, start the MCMC procedure.
-        return self.mcmc_routine(hye_list, fixed_hyperedges=fixed_hyperedges)
+        return self._mcmc_routine(hye_list, fixed_hyperedges=fixed_hyperedges)
 
-    def mcmc_routine(
+    def _mcmc_routine(
         self,
         hye_list: List[Set[int]],
         fixed_hyperedges: Optional[List[Set[int]]] = None,
@@ -225,7 +298,7 @@ class HyMMSBMSampler:
             self.iter_count += 1
 
     def _mcmc_step(self, hye_list: List[Set[int]]) -> None:
-        """Perform one MCMC step of shuffling and accept-reject.
+        """Perform one MCMC step consisting of shuffling and accept-reject.
         Modify the input list of hyperedges in place.
         """
         # Select two random hyperedges.
@@ -233,7 +306,7 @@ class HyMMSBMSampler:
         hye1, hye2 = hye_list[idx1], hye_list[idx2]
 
         # Reshuffle hyperedges.
-        new_hye1, new_hye2 = self.pairwise_reshuffle(hye1, hye2)
+        new_hye1, new_hye2 = self._pairwise_reshuffle(hye1, hye2)
 
         # Get Poisson parameters for the four hyperedges.
         hye1 = list(hye1)
@@ -242,10 +315,10 @@ class HyMMSBMSampler:
         new_hye2 = list(new_hye2)
 
         incidence_matrix = hye_list_to_binary_incidence(
-            (hye1, hye2, new_hye1, new_hye2), shape=(self.model.N, 4)
+            (hye1, hye2, new_hye1, new_hye2), shape=(self._model.N, 4)
         )
-        poisson_lambda = self.model.poisson_params(incidence_matrix)
-        log_kappa = self.model.log_kappa(
+        poisson_lambda = self._model.poisson_params(incidence_matrix)
+        log_kappa = self._model.log_kappa(
             np.array([len(hye1), len(hye2), len(new_hye1), len(new_hye2)])
         )
 
@@ -259,7 +332,9 @@ class HyMMSBMSampler:
             self.reject_count += 1
 
     @staticmethod
-    def pairwise_reshuffle(hye1: Set[int], hye2: Set[int]) -> Tuple[Set[int], Set[int]]:
+    def _pairwise_reshuffle(
+        hye1: Set[int], hye2: Set[int]
+    ) -> Tuple[Set[int], Set[int]]:
         """Given two hyperedges, perform the random reshuffling operation proposed in
         "Configuration Models of Random Hypergraphs", Chodrow 2020.
 
@@ -324,12 +399,12 @@ class HyMMSBMSampler:
                 expected_values = np.concatenate(
                     [
                         expected_values,
-                        self.model.degree_sequence(include_dyadic=True, expected=True),
+                        self._model.degree_sequence(include_dyadic=True, expected=True),
                     ]
                 )
 
             if dim_seq is not None:
-                expected_dim_seq = self.model.dimension_sequence(
+                expected_dim_seq = self._model.dimension_sequence(
                     include_dyadic=True, expected=True
                 )
                 all_dims = list(set(dim_seq.keys()) | set(expected_dim_seq.keys()))
@@ -347,11 +422,11 @@ class HyMMSBMSampler:
             norm = np.linalg.norm(expected_values)
             if norm != 0.0:
                 rescaling_const = np.inner(input_values, expected_values) / norm ** 2
-                self.model.u *= np.sqrt(rescaling_const)
+                self._model.u *= np.sqrt(rescaling_const)
         elif avg_deg is not None:
-            avg_deg_model = self.model.expected_degree(per_node=False, d="all")
+            avg_deg_model = self._model.expected_degree(per_node=False, d="all")
             rescaling_const = avg_deg / avg_deg_model
-            self.model.u *= np.sqrt(rescaling_const)
+            self._model.u *= np.sqrt(rescaling_const)
 
     @staticmethod
     def _transition_prob(
@@ -450,7 +525,7 @@ class HyMMSBMSampler:
                     len(node_set) for deg, node_set in nodes_with_deg.items() if deg > 0
                 )
                 while available_nodes > 1:
-                    hye_size = np.random.randint(2, self.model.max_hye_size + 1)
+                    hye_size = np.random.randint(2, self._model.max_hye_size + 1)
                     new_hye = self._extract_hye(
                         nodes_with_deg, hye_size, force_deg_seq, force_dim_seq
                     )
@@ -569,3 +644,20 @@ class HyMMSBMSampler:
 
         nodes_chosen = set.union(*(node_set for node_set in nodes_chosen.values()))
         return nodes_chosen
+
+
+def sample_truncated_poisson(
+    lambd: Union[float, int, np.ndarray]
+) -> Union[float, np.ndarray]:
+    """Sample a truncated Poisson.
+    If X is a Poisson random variable with parameter lambda, the relative
+    truncated Poisson variable Y with same parameter lambda is defined as
+    Y = X | X > 0.
+    """
+    u = (
+        np.random.rand(1)
+        if not isinstance(lambd, np.ndarray)
+        else np.random.rand(*lambd.shape)
+    )
+    p = u + (1 - u) * np.exp(-lambd)
+    return stats.poisson.ppf(p, lambd)

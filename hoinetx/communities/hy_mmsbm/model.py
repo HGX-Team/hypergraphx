@@ -1,7 +1,7 @@
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 
 import numpy as np
-from scipy import sparse, stats
+from scipy import sparse
 
 from hoinetx.communities.hy_mmsbm._linear_ops import bf, bf_and_sum, qf, qf_and_sum
 from hoinetx.core.hypergraph import Hypergraph
@@ -220,87 +220,6 @@ class HyMMSBM:
         self.trained = True
         self.training_iter = it
 
-    # TODO most probably move all the sampling-related and methods (and functions below)
-    #  to the generation module.
-    # TODO the returned Hypergraph must be from hoinetx.
-    def sample(
-        self,
-        deg_seq: Optional[np.ndarray] = None,
-        dim_seq: Optional[Dict[int, int]] = None,
-        avg_deg: Optional[float] = None,
-        allow_rescaling: bool = True,
-        initial_config: Optional[List[Set[int]]] = None,
-        **kwargs: Any,
-    ) -> Iterable[Tuple[AHyeHypergraph, HyMMSBMSampler]]:
-        # TODO update docstring
-        """Approximately sample a hypergraph from the generative model, as presented in
-
-        "A Principled, Flexible and Efficient Framework for Hypergraph Benchmarking"
-        Ruggeri N., Contisciani M., Battiston F., De Bacco C.
-
-        Possibly, condition on a given degree sequence and/or dimension sequence,
-        or the expected average degree.
-
-        Parameters
-        ----------
-        deg_seq: degree sequence
-            This is specified as an array of degrees, one per node in the hypergraph.
-        dim_seq: dimension sequence
-            This is specified as a dictionary with {key: value} pairs
-            {dimension: number of hyperedges with that dimension}
-        avg_deg: average degree
-        initial_config: an initial hypergraph to start the MCMC from.
-            If initial_config is provided, all the other inputs,
-            i.e. deg_seq, dim_seq, avg_deg, allow_rescaling) are ignored.
-            The MCMC is started using initial_config as first configuration.
-            During MCMC, the degree and dimension sequences in initial_config
-            are preserved.
-        allow_rescaling: if to allow the rescaling of the model's parameters in place
-            This adjusts for the sampling constraints, e.g. average degree.
-        kwargs: keyword arguments to be passed to the HyMMSBMSampler.  # TODO change name here?
-
-        Returns
-        -------
-        A generator of sampled hypergraphs.
-        Notice that all the generated hypergraphs are conditioned on the same degree and
-        dimension sequences (possible provided as input).
-        To sample conditioning on different sequences, a new call to the function is
-        required. Together with the hypergraphs, the MCMC sampler instance is yield.
-        """
-        mcmc_sampler = HyMMSBMSampler(model=self, **kwargs)
-        if initial_config is None:
-            samples = mcmc_sampler.sample(deg_seq, dim_seq, avg_deg, allow_rescaling)
-        else:
-            samples = mcmc_sampler.mcmc_routine(initial_config)
-
-        # TODO there is a hoinetx function to be used instead of
-        #  hye_list_to_binary_incidence
-        #  which is currently used below
-        while True:
-            hye_list = next(samples)
-            hye_list = [tuple(sorted(hye)) for hye in hye_list]
-            binary_incidence = hye_list_to_binary_incidence(
-                hye_list, shape=(self.N, len(hye_list))
-            )
-            hye_size = np.fromiter(map(len, hye_list), dtype=int)
-
-            log_poisson = np.log(
-                self.poisson_params(binary_incidence)
-            ) - self.log_kappa(hye_size)
-            poisson_mean = np.exp(log_poisson)
-            # Weights can't be zero, remedy numerical underflow by clipping.
-            poisson_mean = np.clip(poisson_mean, a_min=1.0e-10, a_max=None)
-            weights = sample_truncated_poisson(poisson_mean)
-
-            # Although theoretically impossible, sometimes the sampled weights are
-            # zero due to numerical instabilities.
-            # Remove the relative hyperedges from the samples.
-            nonzero = np.where(weights > 0)[0]
-            weights = weights[nonzero]
-            hye_list = [hye_list[idx] for idx in nonzero]
-
-            yield AHyeHypergraph(A=weights, hye=hye_list, N=self.N), mcmc_sampler
-
     def poisson_params(
         self,
         binary_incidence: Union[np.ndarray, sparse.spmatrix],
@@ -425,8 +344,8 @@ class HyMMSBM:
         self._check_u_w_init()
         u, w = self.u, self.w
 
-        binary_incidence = hypergraph.get_binary_incidence_matrix()
-        hye_weights = hypergraph.get_hye_weights()
+        binary_incidence = binary_incidence_matrix(hypergraph)
+        hye_weights = np.array(hypergraph.get_weights())
 
         # First addend: all interactions u_i * w * u_j .
         first_addend = bf_and_sum(u, w)
@@ -807,20 +726,3 @@ def sample_discretized_positive_gaussian(loc: np.array, scale: np.array) -> np.n
     samples = np.rint(samples)
     samples[samples < 0] = 0.0
     return samples.astype(int)
-
-
-def sample_truncated_poisson(
-    lambd: Union[float, int, np.ndarray]
-) -> Union[float, np.ndarray]:
-    """Sample a truncated Poisson.
-    If X is a Poisson random variable with parameter lambda, the relative
-    truncated Poisson variable Y with same parameter lambda is defined as
-    Y = X | X > 0.
-    """
-    u = (
-        np.random.rand(1)
-        if not isinstance(lambd, np.ndarray)
-        else np.random.rand(*lambd.shape)
-    )
-    p = u + (1 - u) * np.exp(-lambd)
-    return stats.poisson.ppf(p, lambd)
