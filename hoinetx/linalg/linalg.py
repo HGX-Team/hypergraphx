@@ -36,7 +36,9 @@ def hye_list_to_binary_incidence(
     return sparse.csc_array((data, indices, indptr), shape=shape).tocsr()
 
 
-def binary_incidence_matrix(hypergraph: Hypergraph, shape: Optional[Tuple[int]]) -> sparse.spmatrix:
+def binary_incidence_matrix(
+    hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None
+) -> sparse.spmatrix:
     """Produce the binary incidence matrix representing a hypergraph.
 
     Parameters
@@ -56,7 +58,9 @@ def binary_incidence_matrix(hypergraph: Hypergraph, shape: Optional[Tuple[int]])
     return hye_list_to_binary_incidence(hye_list, shape)
 
 
-def incidence_matrix(hypergraph: Hypergraph, shape: Optional[Tuple[int]]) -> sparse.spmatrix:
+def incidence_matrix(
+    hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None
+) -> sparse.spmatrix:
     binary_incidence = binary_incidence_matrix(hypergraph, shape)
     incidence = binary_incidence.multiply(hypergraph.get_weights()).tocsr()
     return incidence

@@ -77,7 +77,7 @@ class HyMMSBMSampler:
         dim_seq: Optional[Dict[int, int]] = None,
         avg_deg: Optional[float] = None,
         initial_hyg: Optional[Hypergraph] = None,
-        allow_rescaling: bool = True,
+        allow_rescaling: bool = False,
     ) -> Iterable[Hypergraph]:
         """Approximate hypergraph sampling routine presented in
 
@@ -98,10 +98,10 @@ class HyMMSBMSampler:
         initial_hyg: an initial hypergraph to start the MCMC from.
             If initial_hyg is provided, all the other inputs (i.e. deg_seq, dim_seq,
             avg_deg, allow_rescaling) are ignored. The MCMC is started using
-            initial_hyg as first configuration, which is statstically equivalent to
+            initial_hyg as first configuration, which is statistically equivalent to
             conditioning on its degree and dimension sequences. During MCMC, the degree
             and dimension sequences in initial_hyg are preserved.
-        allow_rescaling: if to allow the rescaling of the u and w parameters in place.
+        allow_rescaling: allow the rescaling of the u and w parameters in place.
             This adjusts for the sampling constraints, e.g. average degree.
 
         Returns
@@ -110,7 +110,7 @@ class HyMMSBMSampler:
         Notice that all the generated hypergraphs are conditioned on the same degree and
         dimension sequences (possibly provided as input, otherwise sampled at the
         beginning and kept constant). To sample conditioning on different sequences, a
-        new call to the function is required.
+        new call to this method is required.
         """
         if initial_hyg is None:
             samples = self._sampling_from_sequences(
@@ -134,7 +134,7 @@ class HyMMSBMSampler:
             poisson_mean = np.exp(log_poisson)
             # Weights can't be zero, remedy numerical underflow by clipping.
             poisson_mean = np.clip(poisson_mean, a_min=1.0e-10, a_max=None)
-            weights = sample_truncated_poisson(poisson_mean)
+            weights = sample_truncated_poisson(poisson_mean).astype(int)
 
             # Although theoretically impossible, sometimes the sampled weights are
             # zero due to numerical instabilities.
