@@ -374,7 +374,7 @@ class HyMMSBMSampler:
     ) -> None:
         """Rescale the model's parameters w, u, based on the input constraints.
         In general, the rescaling takes the form of a multiplication by a constant
-        of either w or u. The constant is chosen so as to reduce the difference between
+        of either w or u. The constant is chosen to reduce the difference between
         the input constraints and the values expected from the model.
 
         Parameters
