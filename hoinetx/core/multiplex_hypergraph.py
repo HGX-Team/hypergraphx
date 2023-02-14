@@ -39,6 +39,30 @@ class MultiplexHypergraph:
     def clear(self):
         self.layers.clear()
 
+    def degree(self, node, order=None, return_sum=False):
+        degree = {}
+        for layer_name in self.layers:
+            layer = self.layers[layer_name]
+            degree[layer_name] = layer.degree(node, order=order)
+        if return_sum:
+            return sum(degree.values())
+        else:
+            return degree
+
+    def aggregated_hypergraph(self):
+        h = Hypergraph()
+        for layer in self.layers.values():
+            h.add_edges(layer.edge_list.keys())
+        return h
+
+    def edge_overlap(self, edge):
+        edge = tuple(sorted(edge))
+        overlap = 0
+        for layer in self.layers.values():
+            if edge in layer.edge_list:
+                overlap += layer.get_weight(edge)
+        return overlap
+
     def __str__(self):
         title = "Multiplex hypergraph with {} layers.\n".format(self.num_layers())
         details = "Layers: {}".format(self.get_layers())

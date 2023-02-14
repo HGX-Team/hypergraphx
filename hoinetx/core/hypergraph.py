@@ -31,8 +31,59 @@ class Hypergraph:
             for node in edge:
                 self.node_list.add(node)
 
+    def add_edge(self, edge):
+        edge = tuple(sorted(edge))
+        idx = self.__attr.get_id(edge)
+        order = len(edge)
+
+        if order > self.__max_order:
+            self.__max_order = order
+
+        if order not in self.edges_by_order:
+            self.edges_by_order[order] = [idx]
+        else:
+            self.edges_by_order[order].append(idx)
+
+        if edge not in self.edge_list:
+            self.edge_list[edge] = 1
+        else:
+            self.edge_list[edge] += 1
+
+        for node in edge:
+            self.node_list.add(node)
+
+    def add_edges(self, edge_list):
+        for edge in edge_list:
+            self.add_edge(edge)
+
+    def del_edge(self, edge, force=False):
+        try:
+            edge = tuple(sorted(edge))
+            self.edge_list[edge] -= 1
+            if self.edge_list[edge] == 0 or force:
+                del self.edge_list[edge]
+                order = len(edge)
+                idx = self.__attr.get_id(edge)
+                self.edges_by_order[order].remove(idx)
+                self.node_list = set()
+                self.__max_order = 0
+                for edge in self.edge_list:
+                    order = len(edge)
+                    if order > self.__max_order:
+                        self.__max_order = order
+                    for node in edge:
+                        self.node_list.add(node)
+        except KeyError:
+            print("Edge {} not in hypergraph.".format(edge))
+
     def max_order(self):
         return self.__max_order
+
+    def get_nodes(self):
+        return list(self.node_list)
+
+    def get_edges(self):
+        return list(self.edge_list.keys())
 
     def num_nodes(self):
         return len(self.node_list)
@@ -58,11 +109,30 @@ class Hypergraph:
     def check_edge(self, edge):
         return tuple(sorted(edge)) in self.edge_list
 
-    def filter_by_order(self, order):
+    def get_edges_by_order(self, order):
         try:
             return Hypergraph([self.__attr.get_obj(idx) for idx in self.edges_by_order[order]])
         except KeyError:
             return Hypergraph()
+
+    def degree(self, node, order=None):
+        if order is None:
+            return sum([1 for edge in self.edge_list if node in edge])
+        else:
+            return sum([1 for edge in self.edge_list if node in edge and len(edge) == order])
+
+    def degree_sequence(self, order=None):
+        if order is None:
+            return {node: self.degree(node) for node in self.node_list}
+        else:
+            return {node: self.degree(node, order) for node in self.node_list}
+
+    def clear(self):
+        self.edge_list.clear()
+        self.node_list.clear()
+        self.edges_by_order.clear()
+        self.__max_order = 0
+        self.__attr.clear()
 
     def __str__(self):
         title = "Hypergraph with {} nodes and {} edges.\n".format(self.num_nodes(), self.num_edges())
@@ -77,3 +147,5 @@ class Hypergraph:
 
     def __iter__(self):
         return iter(self.edge_list)
+
+

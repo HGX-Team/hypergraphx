@@ -22,3 +22,10 @@ class AttributeHandler:
 
     def get_attr(self, obj):
         return self.attr[self.get_id(obj)]
+
+    def del_obj(self, obj):
+        if obj in self.obj2id:
+            idx = self.get_id(obj)
+            del self.id2obj[idx]
+            del self.obj2id[obj]
+            del self.attr[idx]
