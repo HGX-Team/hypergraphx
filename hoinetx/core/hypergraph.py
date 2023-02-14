@@ -20,6 +20,9 @@ class Hypergraph:
             for node in edge:
                 self.node_list.add(node)
 
+    def max_order(self):
+        return max([len(edge) for edge in self.edge_list.keys()])
+
     def num_nodes(self):
         return len(self.node_list)
 
@@ -43,6 +46,9 @@ class Hypergraph:
 
     def check_edge(self, edge):
         return tuple(sorted(edge)) in self.edge_list
+
+    def filter_by_order(self, order):
+        return Hypergraph([edge for edge in self.edge_list.keys() if len(edge) == order])
 
     def __str__(self):
         title = "Hypergraph with {} nodes and {} edges.\n".format(self.num_nodes(), self.num_edges())

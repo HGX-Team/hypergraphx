@@ -64,3 +64,18 @@ def incidence_matrix(
     binary_incidence = binary_incidence_matrix(hypergraph, shape)
     incidence = binary_incidence.multiply(hypergraph.get_weights()).tocsr()
     return incidence
+
+
+def incidence_matrix_by_order(
+    hypergraph: Hypergraph, order: int, shape: Optional[Tuple[int]] = None
+) -> sparse.spmatrix:
+    binary_incidence = binary_incidence_matrix(hypergraph.filter_by_order(order), shape)
+    incidence = binary_incidence.multiply(hypergraph.get_weights()).tocsr()
+    return incidence
+
+
+def incidence_matrices_all_orders(hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None) -> List[sparse.spmatrix]:
+    incidence_matrices = {}
+    for order in range(2, hypergraph.max_order() + 1):
+        incidence_matrices[order] = incidence_matrix_by_order(hypergraph, order, shape)
+    return incidence_matrices
