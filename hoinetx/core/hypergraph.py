@@ -7,10 +7,21 @@ class Hypergraph:
         self.__attr = AttributeHandler()
         self.edge_list = {}
         self.node_list = set()
+        self.edges_by_order = {}
+        self.__max_order = 0
 
         for edge in edge_list:
             edge = tuple(sorted(edge))
-            _ = self.__attr.get_id(edge)
+            idx = self.__attr.get_id(edge)
+            order = len(edge)
+
+            if order > self.__max_order:
+                self.__max_order = order
+
+            if order not in self.edges_by_order:
+                self.edges_by_order[order] = [idx]
+            else:
+                self.edges_by_order[order].append(idx)
 
             if edge not in self.edge_list:
                 self.edge_list[edge] = 1
@@ -21,7 +32,7 @@ class Hypergraph:
                 self.node_list.add(node)
 
     def max_order(self):
-        return max([len(edge) for edge in self.edge_list.keys()])
+        return self.__max_order
 
     def num_nodes(self):
         return len(self.node_list)
@@ -48,7 +59,10 @@ class Hypergraph:
         return tuple(sorted(edge)) in self.edge_list
 
     def filter_by_order(self, order):
-        return Hypergraph([edge for edge in self.edge_list.keys() if len(edge) == order])
+        try:
+            return Hypergraph([self.__attr.get_obj(idx) for idx in self.edges_by_order[order]])
+        except KeyError:
+            return Hypergraph()
 
     def __str__(self):
         title = "Hypergraph with {} nodes and {} edges.\n".format(self.num_nodes(), self.num_edges())
