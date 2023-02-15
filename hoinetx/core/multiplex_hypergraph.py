@@ -49,6 +49,12 @@ class MultiplexHypergraph:
         else:
             return degree
 
+    def degree_sequence(self, order=None, return_sum=False):
+        degree = {}
+        for node in self.get_nodes():
+            degree[node] = self.degree(node, order=order, return_sum=return_sum)
+        return degree
+
     def aggregated_hypergraph(self):
         h = Hypergraph()
         for layer in self.layers.values():

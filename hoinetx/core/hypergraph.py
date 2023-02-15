@@ -3,9 +3,10 @@ from hoinetx.core.attribute_handler import AttributeHandler
 
 class Hypergraph:
 
-    def __init__(self, edge_list=[]):
+    def __init__(self, edge_list=[], weighted=False):
         self.__attr = AttributeHandler()
         self.edge_list = {}
+        self.weighted = weighted
         self.node_list = set()
         self.edges_by_order = {}
         self.__max_order = 0
@@ -23,13 +24,16 @@ class Hypergraph:
             else:
                 self.edges_by_order[order].append(idx)
 
-            if edge not in self.edge_list:
+            if edge not in self.edge_list or not weighted:
                 self.edge_list[edge] = 1
             else:
                 self.edge_list[edge] += 1
 
             for node in edge:
                 self.node_list.add(node)
+
+    def is_weighted(self):
+        return self.weighted
 
     def add_edge(self, edge):
         edge = tuple(sorted(edge))
@@ -44,7 +48,7 @@ class Hypergraph:
         else:
             self.edges_by_order[order].append(idx)
 
-        if edge not in self.edge_list:
+        if edge not in self.edge_list or not self.weighted:
             self.edge_list[edge] = 1
         else:
             self.edge_list[edge] += 1
@@ -126,6 +130,15 @@ class Hypergraph:
             return {node: self.degree(node) for node in self.node_list}
         else:
             return {node: self.degree(node, order) for node in self.node_list}
+
+    def is_connected(self):
+        pass
+
+    def get_adj_node(self, node):
+        return [edge for edge in self.edge_list if node in edge]
+
+    def get_adj_nodes(self):
+        return {node: self.get_adj_node(node) for node in self.node_list}
 
     def clear(self):
         self.edge_list.clear()
