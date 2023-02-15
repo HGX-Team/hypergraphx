@@ -54,10 +54,12 @@ def line_graph(h: Hypergraph, distance='intersection', s=1, weighted=False):
     adj = h.get_adj_nodes()
 
     edge_to_id = {}
+    id_to_edge = {}
     cont = 0
     for e in edges:
         e = tuple(sorted(e))
         edge_to_id[e] = cont
+        id_to_edge[cont] = e
         cont += 1
 
     g = nx.Graph()
@@ -79,4 +81,4 @@ def line_graph(h: Hypergraph, distance='intersection', s=1, weighted=False):
                         else:
                             g.add_edge(edge_to_id[adj[n][i]], edge_to_id[adj[n][j]], weight=1)
                     vis[k] = True
-    return g
+    return g, id_to_edge
