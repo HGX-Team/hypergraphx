@@ -100,3 +100,32 @@ def laplacian_matrices_all_orders(hypergraph: Hypergraph, shape: Optional[Tuple[
     for order in range(2, hypergraph.max_order() + 1):
         laplacian_matrices[order] = laplacian_matrix_by_order(hypergraph, order, shape)
     return laplacian_matrices
+
+def compute_effect_laplacian(laplacians: List[sparse.spmatrix], sigmas) -> sparse.spmatrix:
+    if not type(sigmas) == np.ndarray: sigmas = np.array(sigmas)
+
+    weighted_laplacians = [laplacian.multiply(sigma) for laplacian,sigma in zip(laplacians,sigmas)]
+    effective_laplacian = sum(weighted_laplacians)
+
+    return effective_laplacian
+
+def are_commuting(laplacian_matrices: List[sparse.spmatrix], verbose = True):
+
+    orders = len(laplacian_matrices)
+
+    for d1 in range(orders-1):
+        laplacian_d1 = laplacian_matrices[d1]
+        for d2 in range(d1+1,orders):
+            laplacian_d2 = laplacian_matrices[d2]
+
+            d1d2_product = laplacian_d1.dot(laplacian_d2)
+            d2d1_product = laplacian_d2.dot(laplacian_d1)
+
+            commutator = d1d2_product - d2d1_product
+
+            if not commutator.any():
+                if verbose: print("The Laplacian matrices do not commute")
+                return False
+
+    if verbose: print("The Laplacian matrices commute")
+    return True
