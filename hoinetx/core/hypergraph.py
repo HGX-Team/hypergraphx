@@ -152,8 +152,8 @@ class Hypergraph:
         details = "Edge list: {}".format(list(self.edge_list.keys()))
         return title + details
 
-    def __repr__(self):
-        pass
+    #def __repr__(self):
+    #    pass
 
     def __len__(self):
         return len(self.edge_list)
