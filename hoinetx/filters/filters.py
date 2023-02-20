@@ -62,7 +62,7 @@ def _get_bipartite_representation(hypergraph):
 def get_svh(hypergraph,
             max_order=10,
             alpha=0.01,
-            approximate_pvalue = False,
+            approximate_pvalue = True,
             mp=False):
     """
     Extract the Statistically Validated Hypergraph.
