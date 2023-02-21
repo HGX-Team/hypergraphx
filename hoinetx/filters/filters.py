@@ -1,11 +1,11 @@
 import pandas as pd
 from itertools import combinations
-from collections import OrderedDict,Counter,defaultdict
+from collections import OrderedDict, Counter, defaultdict
 from scipy.special import binom
 from functools import reduce
 import scipy.stats as st
 import numpy as np
-from multiprocessing import Pool,cpu_count
+from multiprocessing import Pool, cpu_count
 
 def _approximated_pvalue(t):
     """
@@ -26,16 +26,16 @@ def _approximated_pvalue(t):
     n = t[1]
     ns = np.array(t[2:])
     order = len(ns)
-    p = st.binom.sf(n12-1,p=np.prod(ns/n),n=n)
-    if p>=0:
+    p = st.binom.sf(n12-1, p=np.prod(ns/n), n=n)
+    if p >= 0:
         return p
     else:
-        print(n12,n,ns)
+        print(n12, n, ns)
         return p
     
 
 def _pvalue_intersect(X):
-    t,neighs,N = X
+    t, neighs, N = X
     lists = [neighs[node] for node in t]
     rlists = [IntVector(l) for l in lists]  
     inters = set(lists[0])
@@ -44,7 +44,7 @@ def _pvalue_intersect(X):
     lengths = sorted(map(len,lists))
     d = OrderedDict(zip(map(str, range(len(rlists))), rlists))
     data = ListVector(d)
-    res = r['supertest'](data,n=N)
+    res = r['supertest'](data, n=N)
     return list(dict(zip(res.names, list(res)))['P.value'])[-1]
     
 def _get_bipartite_representation(hypergraph):
@@ -95,7 +95,7 @@ def get_svh(hypergraph,
     deg_set_b = df.groupby('b')['a'].count().reset_index()
 
     orders = deg_set_b.a.unique()
-    orders = orders[(orders>=2)&(orders<=max_order)]
+    orders = orders[(orders >= 2) & (orders <= max_order)]
     pvalues = {}
     
     if approximate_pvalue==False:
@@ -143,8 +143,10 @@ def get_svh(hypergraph,
         temp_df.columns = ['edge','pvalue']
         ps = np.sort(temp_df.pvalue)
         k = np.arange(1,len(ps)+1)*bonf
-        try: fdr = k[ps<k][-1] 
-        except: fdr = 0
+        try:
+            fdr = k[ps<k][-1]
+        except:
+            fdr = 0
         temp_df['fdr'] = temp_df['pvalue']<fdr
         svh[order] = temp_df
 

@@ -23,3 +23,6 @@ print(clique_projection(H).edges)
 H = hnx.Hypergraph([(1, 2, 3), (1, 4)])
 print(bipartite(H)[0].edges)
 
+H = hnx.Hypergraph([(1, 2, 3), (1, 4, 5), (1, 2), (5, 6, 7, 8)], weighted=True, weights=[1, 2, 3, 4])
+print(H)
+print("Weights: {}".format(H.get_weights()))
