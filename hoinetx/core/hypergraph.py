@@ -3,7 +3,7 @@ from hoinetx.core.attribute_handler import AttributeHandler
 
 class Hypergraph:
 
-    def __init__(self, edge_list=[], weighted=False, weights=None):
+    def __init__(self, edge_list=None, weighted=False, weights=None):
         self.__attr = AttributeHandler()
         self.edge_list = {}
         self.weighted = weighted
@@ -11,13 +11,8 @@ class Hypergraph:
         self.edges_by_order = {}
         self.__max_order = 0
 
-        if weighted and weights is not None:
-            if len(set(edge_list)) != len(edge_list):
-                raise ValueError("If weights are provided, the edge list must not contain repeated edges.")
-            if len(edge_list) != len(weights):
-                raise ValueError("The number of edges and weights must be the same.")
-
-        self.add_edges(edge_list, weights=weights)
+        if edge_list is not None:
+            self.add_edges(edge_list, weights=weights)
 
     def is_weighted(self):
         return self.weighted
@@ -47,6 +42,15 @@ class Hypergraph:
             self.node_list.add(node)
 
     def add_edges(self, edge_list, weights=None):
+        if self.weighted and weights is not None:
+            if len(set(edge_list)) != len(edge_list):
+                raise ValueError("If weights are provided, the edge list must not contain repeated edges.")
+            if len(edge_list) != len(weights):
+                raise ValueError("The number of edges and weights must be the same.")
+
+        if weights is not None and not self.weighted:
+            raise ValueError("If weights are provided, the hypergraph must be weighted.")
+
         i = 0
         for edge in edge_list:
             self.add_edge(edge, w=weights[i] if self.weighted and weights is not None else None)
