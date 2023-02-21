@@ -140,14 +140,14 @@ def get_svh(hypergraph,
         bonf = 0.01/n_possible
 
         temp_df = pd.DataFrame(pvalues[order].items())
-        temp_df.columns = ['edge','pvalue']
+        temp_df.columns = ['edge', 'pvalue']
         ps = np.sort(temp_df.pvalue)
         k = np.arange(1,len(ps)+1)*bonf
         try:
             fdr = k[ps<k][-1]
         except:
             fdr = 0
-        temp_df['fdr'] = temp_df['pvalue']<fdr
+        temp_df['fdr'] = temp_df['pvalue'] < fdr
         svh[order] = temp_df
 
     return svh
@@ -194,10 +194,8 @@ def get_svc(hypergraph,
         max_order = min(max_order,max(map(len,observables)))
     else:
         max_order = max(map(len,observables))
-        
 
     s_groups = []
-
     neigh_set_a_sub = dict(df.groupby('a')['b'].apply(list).reset_index().values)
     N = df.b.nunique()
     na = df.a.nunique()
@@ -226,7 +224,7 @@ def get_svc(hypergraph,
 
         p = Pool(processes=cpu_count())
         if not approximate_pvalue:
-            pvalues = dict(zip(groups,p.map(_pvalue_intersect,zip(groups,[neigh_set_a_sub]*len(groups),[N]*len(groups)))))
+            pvalues = dict(zip(groups,p.map(_pvalue_intersect,zip(groups,[neigh_set_a_sub]*len(groups), [N]*len(groups)))))
         else:
             pvalues = dict(zip(groups,p.map(_approximated_pvalue,[tuple([groups[i],N])+tuple([deg_a[ii] for ii in i]) for i in groups])))
             

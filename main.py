@@ -1,6 +1,6 @@
 import hoinetx as hnx
 from hoinetx.linalg.linalg import binary_incidence_matrix, incidence_matrix  # fix ugly import
-from hoinetx.transform.projections import bipartite, clique_projection
+from hoinetx.representations.projections import bipartite, clique_projection
 
 H = hnx.Hypergraph([(1, 2, 3), (1, 4, 5), (1, 2), (5, 6, 7, 8)])
 print(H)
