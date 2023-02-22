@@ -2,7 +2,7 @@ from utils import *
 
 
 def compute_motifs(hypergraph, order=3):
-    edges = hypergraph.edge_list
+    edges = hypergraph.get_edges()
 
     def motifs_order_3():
         full, visited = motifs_ho_full(edges, 3)
@@ -30,4 +30,4 @@ def compute_motifs(hypergraph, order=3):
     elif order == 4:
         motifs_order_4(edges)
     else:
-        print("Motifs of order > 4 not available.")
+        print("Exact computation of motifs of order > 4 is not available.")

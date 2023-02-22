@@ -5,7 +5,8 @@ from scipy.integrate import solve_ivp
 from hoinetx.linalg.linalg import *
 from utils import *
 
-def MSF(F, JF, params, interval, JH, X0, integration_time = 2000.0, integration_step = 0.01, C = 5, verbose=True):
+
+def MSF(F, JF, params, interval, JH, X0, integration_time=2000.0, integration_step=0.01, C=5, verbose=True):
     """
     Evaluates the Master Stability Function
 
@@ -16,7 +17,7 @@ def MSF(F, JF, params, interval, JH, X0, integration_time = 2000.0, integration_
     JF: Jacobian matrix of the function f.
         It is a callable that returns the value of the Jacobian at a given point.
     params: parameters of function f.
-        It is a tuple of paramters used by the function F.
+        It is a tuple of parameters used by the function F.
     interval: the interval of values over which the MSF is computed.
         It is a list-like object containing the values of alpha at which evaluating the MSF.
     JH: Jacobian matrix of the coupling function.
@@ -34,33 +35,36 @@ def MSF(F, JF, params, interval, JH, X0, integration_time = 2000.0, integration_
     """
 
     # Here we make sure to be on the system attractor 
-    if verbose: print("Getting to the attractor...")
-    sol = solve_ivp(fun=F, t_span=[0.0,integration_time], t_eval=np.arange(0.0,integration_time,integration_step), y0=X0, 
+    if verbose:
+        print("Getting to the attractor...")
+    sol = solve_ivp(fun=F, t_span=[0.0, integration_time], t_eval=np.arange(0.0, integration_time, integration_step), y0=X0,
                     args=params, method='LSODA')
-    X0 = sol.y[:,-1]
+    X0 = sol.y[:, -1]
 
 
     # Integrating the dynamics of the perturbation using Sprott's algorithm
     dim = len(X0)
     Eta0 = np.random.random(size=(dim,))*1e-9
     Eta0_norm = np.linalg.norm(Eta0)
-    Y0 = np.concatenate((X0,Eta0))
+    Y0 = np.concatenate((X0, Eta0))
 
-    if verbose: print("Evaluating the Master Stability Function...")
+    if verbose:
+        print("Evaluating the Master Stability Function...")
     MSF = np.zeros(shape=len(interval))
     for i, alpha in enumerate(interval):
         MSF[i] = sprott_algorithm(alpha, C, F, JF, JH, Y0, Eta0_norm, params, integration_time/C, integration_step, verbose)
 
     return MSF
-            
+
+
 def synchronization(hypergraph, dim, F, JF, params, sigmas, JHs, X0, interval, multi_interval=[], diffusive_like=True, 
-                    integration_time = 2000.0, integration_step = 0.01, C = 5, verbose=True):
+                    integration_time=2000.0, integration_step=0.01, C=5, verbose=True):
 
     N = hypergraph.num_nodes()
     laplacians = laplacian_matrices_all_orders(hypergraph)
 
     # If the coupling is natural, we evaluate a single-parameter MSF for this scenario
-    natural_coupling = is_natural_coupling(JHs,dim)
+    natural_coupling = is_natural_coupling(JHs, dim)
     if natural_coupling and diffusive_like:
         effective_laplacian = compute_effect_laplacian(laplacians, sigmas)
         spectrum = sparse.linalg.eigsh(effective_laplacian, k=N, which='LM', return_eigenvectors=False)
@@ -81,3 +85,4 @@ def synchronization(hypergraph, dim, F, JF, params, sigmas, JHs, X0, interval, m
     print("No Master Stability Function can be evaluated for this system.")
 
     return None
+
