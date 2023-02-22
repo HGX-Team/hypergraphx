@@ -3,7 +3,7 @@ from hoinetx.core.attribute_handler import AttributeHandler
 
 class Hypergraph:
 
-    def __init__(self, edge_list=[], weighted=False):
+    def __init__(self, edge_list=None, weighted=False, weights=None):
         self.__attr = AttributeHandler()
         self.edge_list = {}
         self.weighted = weighted
@@ -11,31 +11,13 @@ class Hypergraph:
         self.edges_by_order = {}
         self.__max_order = 0
 
-        for edge in edge_list:
-            edge = tuple(sorted(edge))
-            idx = self.__attr.get_id(edge)
-            order = len(edge)
-
-            if order > self.__max_order:
-                self.__max_order = order
-
-            if order not in self.edges_by_order:
-                self.edges_by_order[order] = [idx]
-            else:
-                self.edges_by_order[order].append(idx)
-
-            if edge not in self.edge_list or not weighted:
-                self.edge_list[edge] = 1
-            else:
-                self.edge_list[edge] += 1
-
-            for node in edge:
-                self.node_list.add(node)
+        if edge_list is not None:
+            self.add_edges(edge_list, weights=weights)
 
     def is_weighted(self):
         return self.weighted
 
-    def add_edge(self, edge):
+    def add_edge(self, edge, w=None):
         edge = tuple(sorted(edge))
         idx = self.__attr.get_id(edge)
         order = len(edge)
@@ -48,17 +30,31 @@ class Hypergraph:
         else:
             self.edges_by_order[order].append(idx)
 
-        if edge not in self.edge_list or not self.weighted:
-            self.edge_list[edge] = 1
+        if w is None:
+            if edge in self.edge_list and self.weighted:
+                self.edge_list[edge] += 1
+            else:
+                self.edge_list[edge] = 1
         else:
-            self.edge_list[edge] += 1
+            self.edge_list[edge] = w
 
         for node in edge:
             self.node_list.add(node)
 
-    def add_edges(self, edge_list):
+    def add_edges(self, edge_list, weights=None):
+        if self.weighted and weights is not None:
+            if len(set(edge_list)) != len(edge_list):
+                raise ValueError("If weights are provided, the edge list must not contain repeated edges.")
+            if len(edge_list) != len(weights):
+                raise ValueError("The number of edges and weights must be the same.")
+
+        if weights is not None and not self.weighted:
+            raise ValueError("If weights are provided, the hypergraph must be weighted.")
+
+        i = 0
         for edge in edge_list:
-            self.add_edge(edge)
+            self.add_edge(edge, w=weights[i] if self.weighted and weights is not None else None)
+            i += 1
 
     def del_edge(self, edge, force=False):
         try:
@@ -151,9 +147,6 @@ class Hypergraph:
         title = "Hypergraph with {} nodes and {} edges.\n".format(self.num_nodes(), self.num_edges())
         details = "Edge list: {}".format(list(self.edge_list.keys()))
         return title + details
-
-    def __repr__(self):
-        pass
 
     def __len__(self):
         return len(self.edge_list)
