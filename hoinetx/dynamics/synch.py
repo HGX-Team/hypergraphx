@@ -53,17 +53,17 @@ def MSF(F, JF, params, interval, JH, X0, integration_time = 2000.0, integration_
 
     return MSF
             
-def synchronization(hypergraph, dim, F, JF, params, sigmas, JHs, X0, interval, multi_interval=[], diffusive_like=True, 
+def higher_order_MSF(hypergraph, dim, F, JF, params, sigmas, JHs, X0, interval, diffusive_like=True, 
                     integration_time = 2000.0, integration_step = 0.01, C = 5, verbose=True):
 
     N = hypergraph.num_nodes()
-    laplacians = laplacian_matrices_all_orders(hypergraph)
+    laplacians = laplacian_matrices_all_orders(hypergraph, weighted=True)
 
     # If the coupling is natural, we evaluate a single-parameter MSF for this scenario
     natural_coupling = is_natural_coupling(JHs,dim)
     if natural_coupling and diffusive_like:
-        effective_laplacian = compute_effect_laplacian(laplacians, sigmas)
-        spectrum = sparse.linalg.eigsh(effective_laplacian, k=N, which='LM', return_eigenvectors=False)
+        multiorder_laplacian = compute_multiorder_laplacian(laplacians, sigmas, degree_weighted=False)
+        spectrum = sparse.linalg.eigsh(multiorder_laplacian, k=N, which='LM', return_eigenvectors=False)
     
         master_stability_function = MSF(F, JF, params, interval, JHs[0], X0, integration_time, integration_step, C, verbose)
 
@@ -71,13 +71,12 @@ def synchronization(hypergraph, dim, F, JF, params, sigmas, JHs, X0, interval, m
 
         return master_stability_function, hypergraph_master_stability_function, spectrum
 
-    # If the coupling is not natural but the Laplacian matrices commute, we evaluate a multi-parameter MSF
-    #commuting = are_commuting(laplacians)
-    #if commuting:
-    #    if multi_interval == None:
-    #        raise NameError("Multidimensional interval not provided. Pass a multi_interval as a nested list, one list of values per order of interaction.")
-
-    # If the coupling is not natural and the Laplacian matrices do not commute, no MSF can be calculated
+    # If the coupling is not natural but the Laplacian matrices commute, 
+    # we check if the higher-order network is all-to-all
+    #all2all = is_all_to_all(hypergraph)
+    #if all2all:
+    #    
+    # If the coupling is not natural and the hypergraph is not all-to-all, no MSF can be calculated
     print("No Master Stability Function can be evaluated for this system.")
 
     return None

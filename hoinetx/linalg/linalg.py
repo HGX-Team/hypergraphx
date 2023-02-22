@@ -3,6 +3,7 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 from scipy import sparse
+from scipy.special import factorial
 
 from hoinetx.core.hypergraph import Hypergraph
 
@@ -82,7 +83,7 @@ def incidence_matrices_all_orders(hypergraph: Hypergraph, shape: Optional[Tuple[
 
 
 def laplacian_matrix_by_order(
-    hypergraph: Hypergraph, order: int, shape: Optional[Tuple[int]] = None
+    hypergraph: Hypergraph, order: int, weighted = False, shape: Optional[Tuple[int]] = None
 ) -> sparse.spmatrix:
     binary_incidence = binary_incidence_matrix(hypergraph.filter_by_order(order), shape)
     incidence = binary_incidence.multiply(hypergraph.get_weights()).tocsr()
@@ -92,22 +93,32 @@ def laplacian_matrix_by_order(
 
     degree_matrix = sparse.diags(degree_lst)
     laplacian = degree_matrix.multiply(order) - incidence.multiply(incidence.transpose())
+
+    if weighted:
+        scale_factor = factorial(order-2)
+        laplacian = laplacian.multiply(scale_factor)
+
     return laplacian
 
 
-def laplacian_matrices_all_orders(hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None) -> List[sparse.spmatrix]:
+def laplacian_matrices_all_orders(hypergraph: Hypergraph, weighted = False, shape: Optional[Tuple[int]] = None) -> List[sparse.spmatrix]:
     laplacian_matrices = {}
     for order in range(2, hypergraph.max_order() + 1):
-        laplacian_matrices[order] = laplacian_matrix_by_order(hypergraph, order, shape)
+        laplacian_matrices[order] = laplacian_matrix_by_order(hypergraph, order, weighted, shape)
     return laplacian_matrices
 
-def compute_effect_laplacian(laplacians: List[sparse.spmatrix], sigmas) -> sparse.spmatrix:
+def compute_multiorder_laplacian(laplacians: List[sparse.spmatrix], sigmas, degree_weighted = True) -> sparse.spmatrix:
     if not type(sigmas) == np.ndarray: sigmas = np.array(sigmas)
 
     weighted_laplacians = [laplacian.multiply(sigma) for laplacian,sigma in zip(laplacians,sigmas)]
-    effective_laplacian = sum(weighted_laplacians)
 
-    return effective_laplacian
+    if degree_weighted: 
+        average_degrees = [np.average(laplacian.diagonal()) for laplacian in laplacians]
+        weighted_laplacians = [laplacian.multiply(1.0/degree) for laplacian,degree in zip(weighted_laplacians,average_degrees)]
+    
+    multiorder_laplacian = sum(weighted_laplacians)
+
+    return multiorder_laplacian
 
 def are_commuting(laplacian_matrices: List[sparse.spmatrix], verbose = True):
 
