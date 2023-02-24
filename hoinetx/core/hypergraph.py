@@ -139,8 +139,28 @@ class Hypergraph:
         except KeyError:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
 
-    def get_weights(self):
-        return list(self.edge_list.values())
+    def get_weights(self, order=None, size=None, up_to=False):
+        if order is not None and size is not None:
+            raise ValueError("Order and size cannot be both specified.")
+        if order is None and size is None:
+            return list(self.edge_list.values())
+
+        if size is not None:
+            order = size - 1
+
+        if not up_to:
+            try:
+                return [self.edge_list[self.__attr.get_obj(idx)] for idx in self.edges_by_order[order]]
+            except KeyError:
+                return []
+        else:
+            w = []
+            for i in range(1, order + 1):
+                try:
+                    w += [self.edge_list[self.__attr.get_obj(idx)] for idx in self.edges_by_order[i]]
+                except KeyError:
+                    pass
+            return w
 
     def get_sizes(self):
         return [len(edge) for edge in self.edge_list.keys()]
@@ -176,14 +196,23 @@ class Hypergraph:
                 order = size - 1
             if not up_to:
                 if not ids:
-                    edges = [edge for edge in self.edge_list.keys() if len(edge) == order + 1]
+                    edges = [self.__attr.get_obj(edge) for edge in self.edges_by_order[order]]
                 else:
-                    edges = [self.__attr.get_id(edge) for edge in self.edge_list.keys() if len(edge) == order + 1]
+                    edges = [edge for edge in self.edges_by_order[order]]
             else:
+                edges = []
                 if not ids:
-                    edges = [edge for edge in self.edge_list.keys() if len(edge) <= order + 1]
+                    for i in range(1, order + 1):
+                        try:
+                            edges += [self.__attr.get_obj(edge) for edge in self.edges_by_order[i]]
+                        except KeyError:
+                            edges += []
                 else:
-                    edges = [self.__attr.get_id(edge) for edge in self.edge_list.keys() if len(edge) <= order + 1]
+                    for i in range(1, order + 1):
+                        try:
+                            edges += [edge for edge in self.edges_by_order[i]]
+                        except KeyError:
+                            edges += []
 
         if subhypergraph:
             return Hypergraph(edges)
