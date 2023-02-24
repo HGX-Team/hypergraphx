@@ -70,7 +70,7 @@ def incidence_matrix(
 def incidence_matrix_by_order(
     hypergraph: Hypergraph, order: int, shape: Optional[Tuple[int]] = None
 ) -> sparse.spmatrix:
-    binary_incidence = binary_incidence_matrix(hypergraph.filter_by_order(order), shape)
+    binary_incidence = binary_incidence_matrix(hypergraph.get_edges(order=order), shape)
     incidence = binary_incidence.multiply(hypergraph.get_weights()).tocsr()
     return incidence
 
@@ -85,7 +85,7 @@ def incidence_matrices_all_orders(hypergraph: Hypergraph, shape: Optional[Tuple[
 def laplacian_matrix_by_order(
     hypergraph: Hypergraph, order: int, weighted = False, shape: Optional[Tuple[int]] = None
 ) -> sparse.spmatrix:
-    binary_incidence = binary_incidence_matrix(hypergraph.filter_by_order(order), shape)
+    binary_incidence = binary_incidence_matrix(hypergraph.get_edges(order=order), shape)
     incidence = binary_incidence.multiply(hypergraph.get_weights()).tocsr()
     
     degree_dct = hypergraph.degree_sequence(order)
@@ -101,11 +101,12 @@ def laplacian_matrix_by_order(
     return laplacian
 
 
-def laplacian_matrices_all_orders(hypergraph: Hypergraph, weighted = False, shape: Optional[Tuple[int]] = None) -> List[sparse.spmatrix]:
+def laplacian_matrices_all_orders(hypergraph: Hypergraph, weighted=False, shape: Optional[Tuple[int]] = None) -> List[sparse.spmatrix]:
     laplacian_matrices = {}
     for order in range(2, hypergraph.max_order() + 1):
         laplacian_matrices[order] = laplacian_matrix_by_order(hypergraph, order, weighted, shape)
     return laplacian_matrices
+
 
 def compute_multiorder_laplacian(laplacians: List[sparse.spmatrix], sigmas, degree_weighted = True) -> sparse.spmatrix:
     if not type(sigmas) == np.ndarray: sigmas = np.array(sigmas)
@@ -120,13 +121,13 @@ def compute_multiorder_laplacian(laplacians: List[sparse.spmatrix], sigmas, degr
 
     return multiorder_laplacian
 
-def are_commuting(laplacian_matrices: List[sparse.spmatrix], verbose = True):
 
+def are_commuting(laplacian_matrices: List[sparse.spmatrix], verbose=True):
     orders = len(laplacian_matrices)
 
     for d1 in range(orders-1):
         laplacian_d1 = laplacian_matrices[d1]
-        for d2 in range(d1+1,orders):
+        for d2 in range(d1+1, orders):
             laplacian_d2 = laplacian_matrices[d2]
 
             d1d2_product = laplacian_d1.dot(laplacian_d2)
@@ -138,5 +139,6 @@ def are_commuting(laplacian_matrices: List[sparse.spmatrix], verbose = True):
                 if verbose: print("The Laplacian matrices do not commute")
                 return False
 
-    if verbose: print("The Laplacian matrices commute")
+    if verbose:
+        print("The Laplacian matrices commute")
     return True
