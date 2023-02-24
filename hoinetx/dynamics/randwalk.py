@@ -1,12 +1,9 @@
-#%%
 import numpy as np
 from scipy import sparse
 from scipy.integrate import solve_ivp
 
 from hoinetx.linalg.linalg import *
 
-
-#%%
 
 # define a function called transition_matrix that given an object HG of this type hoinetx.core.hypergraph.Hypergraph returns K
 def transition_matrix(HG : Hypergraph)->sparse.spmatrix:
@@ -36,6 +33,6 @@ def transition_matrix(HG : Hypergraph)->sparse.spmatrix:
     C_hat = np.diag(sizes)
     K = IM @ C_hat @ IM.T - A
     # normalize K
-    K = K / np.sum(K, axis=1)
+    K = K / np.sum(K, axis=0)
     K = sparse.csr_matrix(K)
     return K
