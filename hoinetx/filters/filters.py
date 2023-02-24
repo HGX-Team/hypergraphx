@@ -43,7 +43,8 @@ def _pvalue_intersect(X):
     lists = [neighs[node] for node in t]
     rlists = [IntVector(l) for l in lists]
     inters = set(lists[0])
-    for n in lists[1:]: inters = inters.intersection(n)
+    for n in lists[1:]:
+        inters = inters.intersection(n)
     inters = len(inters)
     lengths = sorted(map(len, lists))
     d = OrderedDict(zip(map(str, range(len(rlists))), rlists))
