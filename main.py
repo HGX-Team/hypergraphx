@@ -35,7 +35,7 @@ print("OK")
 H = random_hypergraph(10, {2: 5, 3: 2, 4: 1})
 print(H)
 
-H = scale_free(10, {2: 10, 3: 6, 4: 3}, {2: 2, 3: 1, 4: 1}, correlated=True, corr_value=0.1)
+H = scale_free(10, {2: 10, 3: 6, 4: 3}, {2: 2, 3: 1, 4: 1}, correlated=True, corr_target=0.1)
 print(H.degree_sequence(size=2))
 print(H.degree_sequence(size=3))
 print(H.degree_sequence(size=4))
