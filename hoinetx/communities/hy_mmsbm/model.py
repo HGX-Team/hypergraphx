@@ -9,13 +9,13 @@ from hoinetx.linalg.linalg import binary_incidence_matrix
 
 
 class HyMMSBM:
-    """Implements the Hy-MMSBM probabilistic model from
+    """Implementation of the Hy-MMSBM probabilistic model from
 
     "Generalized inference of mesoscale structures in higher-order networks",
-    Ruggeri N., Battiston F., De Bacco C., and
+    Ruggeri N., Contisciani M., Battiston F., De Bacco C., and
 
     "A Principled, Flexible and Efficient Framework for Hypergraph Benchmarking"
-    Ruggeri N., Contisciani M., Battiston F., De Bacco C.
+    Ruggeri N., Battiston F., De Bacco C.
 
     The probabilistic model assumes the formation of hyperedges according to a Poisson
     distribution. The Poisson distribution for every single hyperedge is determined by a
@@ -53,7 +53,7 @@ class HyMMSBM:
         kappa_fn: form of the kappa normalization for the hyperedges' probabilities.
             For now, only the choice utilized in the reference paper has been
             implemented.
-        max_hye_size: maximum hyperedge size
+        max_hye_size: maximum hyperedge size.
             This parameter is utilized for computing quantities relative to the model,
             for example the expected degree, but is otherwise not enforced.
             For example, during EM-inference, it is up to the user to provide as input a
@@ -144,7 +144,7 @@ class HyMMSBM:
         """Perform Expectation-Maximization inference on a hypergraph, as presented  in
 
          "Generalized inference of mesoscale structures in higher-order networks",
-        Ruggeri N., Battiston F., De Bacco C.,
+        Ruggeri N., Contisciani M., Battiston F., De Bacco C.,
 
         The inference can be performed both on the affinity matrix w and the assignments
         u.
