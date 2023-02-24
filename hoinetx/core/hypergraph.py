@@ -229,11 +229,15 @@ class Hypergraph:
         elif order is not None:
             return sum([1 for edge in self.edge_list if node in edge and len(edge) == order + 1])
 
-    def degree_sequence(self, order=None):
+    def degree_sequence(self, order=None, size=None):
+        if order is not None and size is not None:
+            raise ValueError("Order and size cannot be both specified.")
+        if size is not None:
+            order = size - 1
         if order is None:
             return {node: self.degree(node) for node in self.node_list}
         else:
-            return {node: self.degree(node, order) for node in self.node_list}
+            return {node: self.degree(node, order=order) for node in self.node_list}
 
     def is_connected(self):
         pass

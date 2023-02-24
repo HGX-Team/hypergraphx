@@ -15,13 +15,22 @@ class AttributeHandler:
             return self.id - 1
 
     def get_obj(self, idx):
-        return self.id2obj[idx]
+        try:
+            return self.id2obj[idx]
+        except KeyError:
+            raise KeyError("No object with id {}.".format(idx))
 
     def set_attr(self, idx, attr):
-        self.attr[idx] = attr
+        try:
+            self.attr[idx] = attr
+        except KeyError:
+            raise KeyError("No object with id {}.".format(idx))
 
     def get_attr(self, obj):
-        return self.attr[self.get_id(obj)]
+        try:
+            return self.attr[self.get_id(obj)]
+        except KeyError:
+            raise KeyError("No object {}.".format(obj))
 
     def del_obj(self, obj):
         if obj in self.obj2id:
