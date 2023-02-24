@@ -70,14 +70,14 @@ def incidence_matrix(
 def incidence_matrix_by_order(
     hypergraph: Hypergraph, order: int, shape: Optional[Tuple[int]] = None
 ) -> sparse.spmatrix:
-    binary_incidence = binary_incidence_matrix(hypergraph.get_edges(order=order), shape)
+    binary_incidence = binary_incidence_matrix(hypergraph.get_edges(order=order, subhypergraph=True), shape)
     incidence = binary_incidence.multiply(hypergraph.get_weights()).tocsr()
     return incidence
 
 
 def incidence_matrices_all_orders(hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None) -> List[sparse.spmatrix]:
     incidence_matrices = {}
-    for order in range(2, hypergraph.max_order() + 1):
+    for order in range(1, hypergraph.max_order() + 1):
         incidence_matrices[order] = incidence_matrix_by_order(hypergraph, order, shape)
     return incidence_matrices
 
@@ -85,7 +85,7 @@ def incidence_matrices_all_orders(hypergraph: Hypergraph, shape: Optional[Tuple[
 def laplacian_matrix_by_order(
     hypergraph: Hypergraph, order: int, weighted = False, shape: Optional[Tuple[int]] = None
 ) -> sparse.spmatrix:
-    binary_incidence = binary_incidence_matrix(hypergraph.get_edges(order=order), shape)
+    binary_incidence = binary_incidence_matrix(hypergraph.get_edges(order=order, subhypergraph=True), shape)
     incidence = binary_incidence.multiply(hypergraph.get_weights()).tocsr()
     
     degree_dct = hypergraph.degree_sequence(order)

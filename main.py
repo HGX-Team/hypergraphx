@@ -1,5 +1,5 @@
 import hoinetx as hnx
-from hoinetx.linalg.linalg import binary_incidence_matrix, incidence_matrix  # fix ugly import
+from hoinetx.linalg.linalg import *  # fix ugly import
 from hoinetx.representations.projections import bipartite, clique_projection
 from hoinetx.generation.random import random_hypergraph
 
@@ -33,3 +33,5 @@ for edge in H:
 
 H = random_hypergraph(10, {2: 5, 3: 2, 4: 1})
 print(H)
+
+print(incidence_matrices_all_orders(H))
