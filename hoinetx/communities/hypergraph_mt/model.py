@@ -239,7 +239,9 @@ class HypergraphMT:
             self.hyperEdges
         )  # TODO: implement it as a core method
         # Hyperedges' size.
-        self.HyeId2D = np.array(hypergraph.get_sizes())  # TODO: check whether we want to refactor the name of this variable
+        self.HyeId2D = np.array(
+            hypergraph.get_sizes()
+        )  # TODO: check whether we want to refactor the name of this variable
 
         # Isolated nodes.
         self.isolates = np.where(self.incidence.getnnz(1) == 0)[
@@ -584,8 +586,8 @@ class HypergraphMT:
     def _update_rho(self) -> None:
         """Update the rho matrix that represents the variational distribution used in the EM routine."""
         self.rho = self.w[self.HyeId2D - 2] * np.exp(
-            np.dot(self.binary_incidence.toarray().T, np.log(self.u + DEFAULT_EPS))
-        )  # TODO: check whether we can avoid to use the dense matrix
+            self.binary_incidence.T @ (np.log(self.u + DEFAULT_EPS))
+        )
         row_sums = np.sum(self.rho, axis=1)
         self.rho[row_sums > 0] /= row_sums[row_sums > 0, np.newaxis]
 
@@ -728,8 +730,8 @@ class HypergraphMT:
         loglik = -self.gammaW * np.sum(self.w) - self.gammaU * np.sum(self.u)
 
         tmp = self.w[self.HyeId2D - 2] * np.exp(
-            np.dot(self.binary_incidence.toarray().T, np.log(self.u + DEFAULT_EPS))
-        )  # TODO: check whether I can avoid to use the dense matrix
+            self.binary_incidence.T @ (np.log(self.u + DEFAULT_EPS))
+        )
         loglik += np.sum(self.hye_weights * np.log(np.sum(tmp, axis=1) + EPS))
 
         loglik -= np.sum(

@@ -1,7 +1,7 @@
 from typing import Optional, Tuple
 
 import numpy as np
-from sklearn.cluster import KMeans  # TODO: should we add this in the requirements?
+from sklearn.cluster import KMeans
 
 from hoinetx.core.hypergraph import Hypergraph
 from hoinetx.linalg.linalg import binary_incidence_matrix, incidence_matrix

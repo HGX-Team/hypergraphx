@@ -3,3 +3,4 @@ scipy~=1.10.0
 networkx~=3.0
 rpy2~=3.5.8
 pandas~=1.5.1
+scikit-learn~=1.0.2
