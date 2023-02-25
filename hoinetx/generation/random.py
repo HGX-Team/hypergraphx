@@ -12,3 +12,6 @@ def random_hypergraph(num_nodes, num_edges_by_size={}):
     return h
 
 
+def uniform_hypergraph(num_nodes, size, num_edges):
+    return random_hypergraph(num_nodes, {size: num_edges})
+

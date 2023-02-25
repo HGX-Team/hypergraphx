@@ -30,7 +30,7 @@ class MultiplexHypergraph:
     def get_nodes(self):
         nodes = set()
         for layer in self.layers.values():
-            nodes.update(layer.node_list)
+            nodes.update(layer.get_nodes())
         return list(nodes)
 
     def num_layers(self):
