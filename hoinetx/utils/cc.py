@@ -13,6 +13,10 @@ def connected_components(hg: Hypergraph):
     return components
 
 
+def node_connected_component(hg: Hypergraph, node):
+    return bfs(hg, node)
+
+
 def num_connected_components(hg: Hypergraph):
     return len(hg.connected_components())
 
@@ -28,3 +32,4 @@ def largest_component_size(hg: Hypergraph):
 
 def isolated_nodes(hg: Hypergraph):
     return [node for node in hg.get_nodes() if len(hg.neighbors(node)) == 0]
+

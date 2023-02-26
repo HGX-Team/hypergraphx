@@ -284,6 +284,9 @@ class Hypergraph:
     def connected_components(self):
         return connected_components(self)
 
+    def node_connected_component(self, node):
+        return node_connected_component(self, node)
+
     def num_connected_components(self):
         return num_connected_components(self)
 
