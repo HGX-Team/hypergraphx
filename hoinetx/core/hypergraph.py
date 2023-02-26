@@ -1,4 +1,5 @@
 from hoinetx.core.attribute_handler import AttributeHandler
+from hoinetx.utils.cc import *
 
 
 class Hypergraph:
@@ -277,7 +278,23 @@ class Hypergraph:
             return {node: self.degree(node, order=order) for node in self.get_nodes()}
 
     def is_connected(self):
-        pass
+        visited = bfs(self, self.get_nodes()[0])
+        return len(visited) == self.num_nodes()
+
+    def connected_components(self):
+        return connected_components(self)
+
+    def num_connected_components(self):
+        return num_connected_components(self)
+
+    def largest_component(self):
+        return largest_component(self)
+
+    def largest_component_size(self):
+        return largest_component_size(self)
+
+    def isolated_nodes(self):
+        return isolated_nodes(self)
 
     def clear(self):
         self.edge_list.clear()
