@@ -1,7 +1,7 @@
 from hoinetx.core import Hypergraph
 
 
-def bfs(hg, start, max_depth=None):
+def bfs(hg: Hypergraph, start, max_depth=None):
     """Breadth-first search of the hypergraph starting from the given node.
     """
     visited = set()
@@ -15,7 +15,7 @@ def bfs(hg, start, max_depth=None):
     return visited
 
 
-def dfs(hg, start, max_depth=None):
+def dfs(hg: Hypergraph, start, max_depth=None):
     """Depth-first search of the hypergraph starting from the given node.
     """
     visited = set()
