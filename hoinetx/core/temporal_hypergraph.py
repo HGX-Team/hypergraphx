@@ -1,3 +1,4 @@
+import bisect
 from hoinetx.core import Hypergraph
 from hoinetx.core.attribute_handler import AttributeHandler
 
@@ -8,7 +9,7 @@ class TemporalHypergraph:
         self.edges = []
 
     def add_edge(self, edge, attr=None):
-        pass
+        bisect.insort(self, element)
 
     def add_edges(self, edges, attr=None):
         pass

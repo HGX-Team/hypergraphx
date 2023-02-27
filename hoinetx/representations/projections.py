@@ -1,5 +1,6 @@
 import networkx as nx
 from hoinetx.core.hypergraph import Hypergraph
+from hoinetx.measures.edge_similarity import *
 
 
 def bipartite(h: Hypergraph):
@@ -38,12 +39,6 @@ def clique_projection(h: Hypergraph):
 
 
 def line_graph(h: Hypergraph, distance='intersection', s=1, weighted=False):
-    def intersection(a, b):
-        return len(a.intersection(b))
-
-    def jaccard(a, b):
-        return len(a.intersection(b)) / len(a.union(b))
-
     def distance(a, b):
         if distance == 'intersection':
             return intersection(a, b)

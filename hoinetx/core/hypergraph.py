@@ -312,6 +312,12 @@ class Hypergraph:
     def copy(self):
         return copy.deepcopy(self)
 
+    def reindex_edges(self):
+        pass
+
+    def reindex_nodes(self):
+        pass
+
     def __str__(self):
         title = "Hypergraph with {} nodes and {} edges.\n".format(self.num_nodes(), self.num_edges())
         details = "Edge list: {}".format(list(self.edge_list.keys()))
