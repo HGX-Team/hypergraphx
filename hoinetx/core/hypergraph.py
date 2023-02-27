@@ -1,5 +1,7 @@
+import copy
 from hoinetx.core.attribute_handler import AttributeHandler
 from hoinetx.utils.cc import *
+from hoinetx.measures.degree import *
 
 
 class Hypergraph:
@@ -274,24 +276,10 @@ class Hypergraph:
             return edges
 
     def degree(self, node, order=None, size=None):
-        if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
-        if order is None and size is None:
-            return sum([1 for edge in self.edge_list if node in edge])
-        elif size is not None:
-            return sum([1 for edge in self.edge_list if node in edge and len(edge) == size])
-        elif order is not None:
-            return sum([1 for edge in self.edge_list if node in edge and len(edge) == order + 1])
+        return degree(self, node, order=order, size=size)
 
     def degree_sequence(self, order=None, size=None):
-        if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
-        if size is not None:
-            order = size - 1
-        if order is None:
-            return {node: self.degree(node) for node in self.get_nodes()}
-        else:
-            return {node: self.degree(node, order=order) for node in self.get_nodes()}
+        return degree_sequence(self, order=order, size=size)
 
     def is_connected(self, size=None, order=None):
         return is_connected(self, size=size, order=order)
@@ -320,6 +308,9 @@ class Hypergraph:
         self._edges_by_order.clear()
         self._max_order = 0
         self._attr.clear()
+
+    def copy(self):
+        return copy.deepcopy(self)
 
     def __str__(self):
         title = "Hypergraph with {} nodes and {} edges.\n".format(self.num_nodes(), self.num_edges())
