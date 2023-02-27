@@ -1,7 +1,7 @@
 from hoinetx.core import Hypergraph
 
 
-def bfs(hg: Hypergraph, start, max_depth=None):
+def _bfs(hg: Hypergraph, start, max_depth=None, order=None, size=None):
     """Breadth-first search of the hypergraph starting from the given node.
     """
     visited = set()
@@ -11,11 +11,11 @@ def bfs(hg: Hypergraph, start, max_depth=None):
         if node not in visited:
             visited.add(node)
             if max_depth is None or depth < max_depth:
-                queue.extend((n, depth + 1) for n in hg.neighbors(node))
+                queue.extend((n, depth + 1) for n in hg.get_neighbors(node, order=order, size=size))
     return visited
 
 
-def dfs(hg: Hypergraph, start, max_depth=None):
+def _dfs(hg: Hypergraph, start, max_depth=None, order=None, size=None):
     """Depth-first search of the hypergraph starting from the given node.
     """
     visited = set()
@@ -25,5 +25,5 @@ def dfs(hg: Hypergraph, start, max_depth=None):
         if node not in visited:
             visited.add(node)
             if max_depth is None or depth < max_depth:
-                stack.extend((n, depth + 1) for n in hg.neighbors(node))
+                stack.extend((n, depth + 1) for n in hg.get_neighbors(node, order=order, size=size))
     return visited

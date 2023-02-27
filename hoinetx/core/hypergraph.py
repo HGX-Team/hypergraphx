@@ -3,14 +3,6 @@ from hoinetx.utils.cc import *
 
 
 class Hypergraph:
-    def __init__(self, weighted=False):
-        self._attr = AttributeHandler()
-        self.edge_list = {}
-        self._weighted = weighted
-        self._edges_by_order = {}
-        self._neighbors = {}
-        self._adj = {}
-        self._max_order = 0
 
     def __init__(self, edge_list=None, weighted=False, weights=None):
         self._attr = AttributeHandler()
@@ -22,11 +14,35 @@ class Hypergraph:
         self._max_order = 0
         self.add_edges(edge_list, weights=weights)
 
-    def get_neighbors(self, node):
-        return list(self._neighbors[node])
+    def get_neighbors(self, node, order=None, size=None):
+        if order is not None and size is not None:
+            raise ValueError("Order and size cannot be both specified.")
+        if order is None and size is None:
+            return self._neighbors[node]
+        else:
+            if order is None:
+                order = size - 1
+            neigh = set()
+            edges = self.get_edges_adj(node, order=order)
+            for edge in edges:
+                neigh.update(edge)
+            neigh.remove(node)
+            return neigh
 
-    def get_edges_adj(self, node):
-        return [self._attr.get_obj(idx) for idx in self._adj[node]]
+    def get_edges_adj(self, node, order=None, size=None):
+        if order is not None and size is not None:
+            raise ValueError("Order and size cannot be both specified.")
+        if order is None and size is None:
+            return [self._attr.get_obj(idx) for idx in self._adj[node]]
+        else:
+            if order is None:
+                order = size - 1
+            edges = []
+            for idx in self._adj[node]:
+                edge = self._attr.get_obj(idx)
+                if len(edge) == order + 1:
+                    edges.append(edge)
+            return edges
 
     def add_node(self, node):
         if node not in self._neighbors:
@@ -277,27 +293,26 @@ class Hypergraph:
         else:
             return {node: self.degree(node, order=order) for node in self.get_nodes()}
 
-    def is_connected(self):
-        visited = bfs(self, self.get_nodes()[0])
-        return len(visited) == self.num_nodes()
+    def is_connected(self, size=None, order=None):
+        return is_connected(self, size=size, order=order)
 
-    def connected_components(self):
-        return connected_components(self)
+    def connected_components(self, size=None, order=None):
+        return connected_components(self, size=size, order=order)
 
-    def node_connected_component(self, node):
-        return node_connected_component(self, node)
+    def node_connected_component(self, node, size=None, order=None):
+        return node_connected_component(self, node, size=size, order=order)
 
-    def num_connected_components(self):
-        return num_connected_components(self)
+    def num_connected_components(self, size=None, order=None):
+        return num_connected_components(self, size=size, order=order)
 
-    def largest_component(self):
-        return largest_component(self)
+    def largest_component(self, size=None, order=None):
+        return largest_component(self, size=size, order=order)
 
-    def largest_component_size(self):
-        return largest_component_size(self)
+    def largest_component_size(self, size=None, order=None):
+        return largest_component_size(self, size=size, order=order)
 
-    def isolated_nodes(self):
-        return isolated_nodes(self)
+    def isolated_nodes(self, size=None, order=None):
+        return isolated_nodes(self, size=size, order=order)
 
     def clear(self):
         self.edge_list.clear()
