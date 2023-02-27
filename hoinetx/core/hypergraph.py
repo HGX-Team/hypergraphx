@@ -1,7 +1,6 @@
 import copy
+from typing import Optional, Tuple
 from hoinetx.core.attribute_handler import AttributeHandler
-from hoinetx.utils.cc import *
-from hoinetx.measures.degree import *
 
 
 class Hypergraph:
@@ -25,13 +24,13 @@ class Hypergraph:
             if order is None:
                 order = size - 1
             neigh = set()
-            edges = self.get_edges_adj(node, order=order)
+            edges = self.get_adj_edges(node, order=order)
             for edge in edges:
                 neigh.update(edge)
             neigh.remove(node)
             return neigh
 
-    def get_edges_adj(self, node, order=None, size=None):
+    def get_adj_edges(self, node, order=None, size=None):
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
         if order is None and size is None:
@@ -109,7 +108,7 @@ class Hypergraph:
                 self.add_edge(edge, weight=weights[i] if self._weighted and weights is not None else None)
                 i += 1
 
-    def __compute_neighbors(self, node):
+    def _compute_neighbors(self, node):
         neighbors = set()
         for edge in self._adj[node]:
             neighbors = neighbors.union(self._attr.get_obj(edge))
@@ -127,7 +126,7 @@ class Hypergraph:
                 for node in edge:
                     self._adj[node].remove(idx)
                 for node in edge:
-                    self._neighbors[node] = self.__compute_neighbors(node)
+                    self._neighbors[node] = self._compute_neighbors(node)
                 self._edges_by_order[order].remove(idx)
                 self._max_order = 0
                 for edge in self.edge_list:
@@ -141,15 +140,21 @@ class Hypergraph:
         for edge in edge_list:
             self.del_edge(edge, force=force)
 
-    def del_node(self, node):
-        for edge in self._adj[node]:
-            self.del_edge(self._attr.get_obj(edge))
+    def del_node(self, node, keep_edges=False):
+        if not keep_edges:
+            for edge in self._adj[node]:
+                self.del_edge(self._attr.get_obj(edge))
+        else:
+            for edge in self._adj[node]:
+                edge = self._attr.get_obj(edge)
+                self.del_edge(edge)
+                self.add_edge(tuple([n for n in edge if n != node]))
         del self._neighbors[node]
         del self._adj[node]
 
-    def del_nodes(self, node_list):
+    def del_nodes(self, node_list, keep_edges=False):
         for node in node_list:
-            self.del_node(node)
+            self.del_node(node, keep_edges=keep_edges)
 
     def subhypergraph(self, nodes):
         return Hypergraph([edge for edge in self.edge_list if set(edge).issubset(set(nodes))])
@@ -276,31 +281,52 @@ class Hypergraph:
             return edges
 
     def degree(self, node, order=None, size=None):
+        from hoinetx.measures.degree import degree
         return degree(self, node, order=order, size=size)
 
     def degree_sequence(self, order=None, size=None):
+        from hoinetx.measures.degree import degree_sequence
         return degree_sequence(self, order=order, size=size)
 
     def is_connected(self, size=None, order=None):
+        from hoinetx.utils.cc import is_connected
         return is_connected(self, size=size, order=order)
 
     def connected_components(self, size=None, order=None):
+        from hoinetx.utils.cc import connected_components
         return connected_components(self, size=size, order=order)
 
     def node_connected_component(self, node, size=None, order=None):
+        from hoinetx.utils.cc import node_connected_component
         return node_connected_component(self, node, size=size, order=order)
 
     def num_connected_components(self, size=None, order=None):
+        from hoinetx.utils.cc import num_connected_components
         return num_connected_components(self, size=size, order=order)
 
     def largest_component(self, size=None, order=None):
+        from hoinetx.utils.cc import largest_component
         return largest_component(self, size=size, order=order)
 
     def largest_component_size(self, size=None, order=None):
+        from hoinetx.utils.cc import largest_component_size
         return largest_component_size(self, size=size, order=order)
 
     def isolated_nodes(self, size=None, order=None):
+        from hoinetx.utils.cc import isolated_nodes
         return isolated_nodes(self, size=size, order=order)
+
+    def is_isolated(self, node, size=None, order=None):
+        from hoinetx.utils.cc import is_isolated
+        return is_isolated(self, node, size=size, order=order)
+
+    def binary_incidence_matrix(self, shape: Optional[Tuple[int]] = None):
+        from hoinetx.linalg import binary_incidence_matrix
+        return binary_incidence_matrix(self, shape)
+
+    def incidence_matrix(self, shape: Optional[Tuple[int]] = None):
+        from hoinetx.linalg import incidence_matrix
+        return incidence_matrix(self, shape)
 
     def clear(self):
         self.edge_list.clear()

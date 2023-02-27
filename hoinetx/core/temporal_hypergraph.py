@@ -8,8 +8,8 @@ class TemporalHypergraph:
         self.__attr = AttributeHandler()
         self.edges = []
 
-    def add_edge(self, edge, attr=None):
-        bisect.insort(self, element)
+    def add_edge(self, edge):
+        bisect.insort(self.edges, edge)
 
     def add_edges(self, edges, attr=None):
         pass

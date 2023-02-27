@@ -6,13 +6,13 @@ from hoinetx import Hypergraph
 def scale_free(num_nodes: int, edges_by_size: dict, scale_by_size: dict, correlated: bool = True,
                corr_target: float = None, num_shuffles: int = 0):
     if num_shuffles != 0 and not correlated:
-        raise ValueError("Cannot shuffle if not correlated")
+        raise ValueError("Cannot shuffle if correlated == False")
     if num_shuffles < 0:
         raise ValueError("Cannot shuffle negative number of times")
     if corr_target < 0 or corr_target > 1:
         raise ValueError("Correlation must be between 0 and 1")
     if corr_target is not None and not correlated:
-        raise ValueError("Cannot provide correlation value if not correlated")
+        raise ValueError("Cannot provide correlation value if correlated == False")
     if corr_target is not None and num_shuffles != 0:
         raise ValueError("Cannot provide both correlation value and number of shuffles")
     for k in edges_by_size:

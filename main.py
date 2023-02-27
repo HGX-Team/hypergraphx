@@ -1,6 +1,6 @@
 import hoinetx as hnx
 from hoinetx.generation.scale_free import scale_free
-from hoinetx.linalg.linalg import *  # fix ugly import
+from hoinetx.linalg import *
 from hoinetx.representations.projections import bipartite, clique_projection
 from hoinetx.generation.random import *
 
@@ -39,3 +39,5 @@ H = scale_free(10, {2: 10, 3: 6, 4: 3}, {2: 2, 3: 1, 4: 1}, correlated=True, cor
 print(H.degree_sequence(size=2))
 print(H.degree_sequence(size=3))
 print(H.degree_sequence(size=4))
+
+print(H.incidence_matrix())

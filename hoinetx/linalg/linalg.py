@@ -103,13 +103,14 @@ def laplacian_matrix_by_order(
 
 def laplacian_matrices_all_orders(hypergraph: Hypergraph, weighted=False, shape: Optional[Tuple[int]] = None) -> List[sparse.spmatrix]:
     laplacian_matrices = {}
-    for order in range(2, hypergraph.max_order() + 1):
+    for order in range(1, hypergraph.max_order() + 1):
         laplacian_matrices[order] = laplacian_matrix_by_order(hypergraph, order, weighted, shape)
     return laplacian_matrices
 
 
 def compute_multiorder_laplacian(laplacians: List[sparse.spmatrix], sigmas, degree_weighted = True) -> sparse.spmatrix:
-    if not type(sigmas) == np.ndarray: sigmas = np.array(sigmas)
+    if not type(sigmas) == np.ndarray:
+        sigmas = np.array(sigmas)
 
     weighted_laplacians = [laplacian.multiply(sigma) for laplacian,sigma in zip(laplacians,sigmas)]
 
@@ -136,7 +137,8 @@ def are_commuting(laplacian_matrices: List[sparse.spmatrix], verbose=True):
             commutator = d1d2_product - d2d1_product
 
             if not commutator.any():
-                if verbose: print("The Laplacian matrices do not commute")
+                if verbose:
+                    print("The Laplacian matrices do not commute")
                 return False
 
     if verbose:
