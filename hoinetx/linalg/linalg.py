@@ -3,7 +3,6 @@ from typing import List, Optional, Tuple
 import numpy as np
 from scipy import sparse
 from scipy.special import factorial
-from sklearn.preprocessing import LabelEncoder
 
 from hoinetx.core.hypergraph import Hypergraph
 
