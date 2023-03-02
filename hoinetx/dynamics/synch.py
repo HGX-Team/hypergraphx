@@ -3,7 +3,7 @@ from scipy import sparse
 from scipy.integrate import solve_ivp
 
 from hoinetx.linalg.linalg import *
-from utils import *
+from hoinetx.dynamics.utils import *
 
 
 def MSF(F, JF, params, interval, JH, X0, integration_time=2000.0, integration_step=0.01, C=5, verbose=True):
@@ -112,13 +112,10 @@ def MSF_multi_coupling(F, JF, params, interval, sigmas, N, JHs, X0, integration_
 def higher_order_MSF(hypergraph, dim, F, JF, params, sigmas, JHs, X0, interval, diffusive_like=True, 
                     integration_time = 2000.0, integration_step = 0.01, C = 5, verbose=True):
 
-    N = hypergraph.num_nodes()
-    laplacians = laplacian_matrices_all_orders(hypergraph, weighted=True)
-
     # If the coupling is natural, we evaluate a single-parameter MSF for this scenario
     natural_coupling = is_natural_coupling(JHs, dim, verbose)
     if natural_coupling and diffusive_like:
-        multiorder_laplacian = compute_multiorder_laplacian(laplacians, sigmas, degree_weighted=False)
+        multiorder_laplacian = compute_multiorder_laplacian(hypergraph, sigmas, order_weighted=True, degree_weighted=False)
         spectrum = sparse.linalg.eigsh(multiorder_laplacian, k=N, which='LM', return_eigenvectors=False)
     
         master_stability_function = MSF(F, JF, params, interval, JHs[0], X0, integration_time, integration_step, C, verbose)
@@ -131,6 +128,7 @@ def higher_order_MSF(hypergraph, dim, F, JF, params, sigmas, JHs, X0, interval, 
     # we check if the higher-order network is all-to-all
     all2all = is_all_to_all(hypergraph, verbose)
     if all2all:
+        N = hypergraph.num_nodes()
         master_stability_function = MSF_multi_coupling(F, JF, params, interval, sigmas, N, JHs, X0, integration_time, integration_step, C, verbose)
 
         hon_master_stability_function = MSF_multi_coupling(F, JF, params, [sigmas[0]*N], sigmas, N, JHs, X0, integration_time, integration_step, C, verbose)

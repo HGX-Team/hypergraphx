@@ -187,15 +187,13 @@ def laplacian_matrix_by_order(
     incidence = binary_incidence.multiply(hypergraph.get_weights(order=order)).tocsr()
 
     degree_dct = hypergraph.degree_sequence(order)
-    degree_lst = [degree_dct[key] for key in sorted(degree_dct.keys(), reverse=True)]
+    degree_lst = [degree_dct[key] for key in sorted(degree_dct.keys(), reverse=False)]
 
     degree_matrix = sparse.diags(degree_lst)
-    laplacian = degree_matrix.multiply(order) - incidence.multiply(
-        incidence.transpose()
-    )
+    laplacian = degree_matrix.multiply(order+1) - incidence.dot(incidence.transpose())
 
     if weighted:
-        scale_factor = factorial(order - 2)
+        scale_factor = factorial(order-1)
         laplacian = laplacian.multiply(scale_factor)
 
     return laplacian
@@ -205,30 +203,22 @@ def laplacian_matrices_all_orders(
     hypergraph: Hypergraph, weighted=False, shape: Optional[Tuple[int]] = None
 ) -> List[sparse.spmatrix]:
     laplacian_matrices = {}
-    for order in range(1, hypergraph.max_order() + 1):
-        laplacian_matrices[order] = laplacian_matrix_by_order(
-            hypergraph, order, weighted, shape
-        )
+    for order in range(1, hypergraph.max_order()+1):
+        laplacian_matrices[order] = laplacian_matrix_by_order(hypergraph, order, weighted, shape)
     return laplacian_matrices
 
 
-def compute_multiorder_laplacian(
-    laplacians: List[sparse.spmatrix], sigmas, degree_weighted=True
-) -> sparse.spmatrix:
-    if not type(sigmas) == np.ndarray:
-        sigmas = np.array(sigmas)
+def compute_multiorder_laplacian(hypergraph: Hypergraph, sigmas, order_weighted = False, degree_weighted = True) -> sparse.spmatrix:
+    if not type(sigmas) == np.ndarray: sigmas = np.array(sigmas)
 
-    weighted_laplacians = [
-        laplacian.multiply(sigma) for laplacian, sigma in zip(laplacians, sigmas)
-    ]
+    laplacians = laplacian_matrices_all_orders(hypergraph,order_weighted)
+    laplacians = [laplacians[key] for key in sorted(laplacians.keys(), reverse=False)]
+    weighted_laplacians = [laplacian.multiply(sigma) for laplacian,sigma in zip(laplacians,sigmas)]
 
-    if degree_weighted:
-        average_degrees = [np.average(laplacian.diagonal()) for laplacian in laplacians]
-        weighted_laplacians = [
-            laplacian.multiply(1.0 / degree)
-            for laplacian, degree in zip(weighted_laplacians, average_degrees)
-        ]
-
+    if degree_weighted: 
+        average_degrees = [np.average(list(hypergraph.degree_sequence(order).values())) for order in range(1,hypergraph.max_order()+1)]
+        weighted_laplacians = [laplacian.multiply(1.0/degree) for laplacian,degree in zip(weighted_laplacians,average_degrees)]
+    
     multiorder_laplacian = sum(weighted_laplacians)
 
     return multiorder_laplacian
