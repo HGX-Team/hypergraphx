@@ -1,9 +1,8 @@
 import numpy as np
-import pytest
 from scipy import sparse
 
 from hoinetx import Hypergraph
-from hoinetx.linalg.linalg import incidence_matrix, adjacency_matrix
+
 
 # Fixture loaded_hypergraph defined inside the package-level conftest.py
 

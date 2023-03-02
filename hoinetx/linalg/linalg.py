@@ -77,8 +77,8 @@ def binary_incidence_matrix(
 
     Returns
     -------
-    The binary adjacency matrix representing the hyperedges. If return_mapping is True,
-    return the dictionary of node mappings.
+    The binary adjacency matrix representing the hyperedges.
+    If return_mapping is True, return the dictionary of node mappings.
     """
     encoder = LabelEncoder()
     encoder.fit(hypergraph.get_nodes())
@@ -86,18 +86,17 @@ def binary_incidence_matrix(
 
     incidence = hye_list_to_binary_incidence(hye_list, shape).tocsr()
     if return_mapping:
-        mapping = dict(
-            zip(
-                encoder.transform(encoder.classes_), encoder.classes_
-            )
-        )
+        mapping = dict(zip(encoder.transform(encoder.classes_), encoder.classes_))
         return incidence, mapping
     return incidence
 
 
+# TODO still need to test the following three functions
 def incidence_matrix(
-    hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None
-) -> sparse.spmatrix:
+    hypergraph: Hypergraph,
+    shape: Optional[Tuple[int]] = None,
+    return_mapping: bool = False,
+) -> sparse.csr_array | Tuple[sparse.csr_array, Dict[int, Any]]:
     """Produce the binary incidence matrix representing a hypergraph.
     For any node i and hyperedge e, the entry (i, e) of the binary incidence matrix is
     the weight of the hyperedge if the node belongs to it, 0 otherwise.
@@ -108,17 +107,26 @@ def incidence_matrix(
         Every hyperedge is represented as either a tuple or list of nodes.
     shape: the shape of the adjacency matrix, passed to the array constructor.
         If None, it is inferred.
+    return_mapping: return the dictionary mapping the new node indices to the hypergraph
+        nodes.
+        The node indices in the incidence matrix vary from 0 to N-1, where N is the
+        total number of distinct nodes.
 
     Returns
     -------
     The binary adjacency matrix representing the hyperedges.
+    If return_mapping is True, return the dictionary of node mappings.
     """
-    binary_incidence = binary_incidence_matrix(hypergraph, shape)
+    binary_incidence, mapping = binary_incidence_matrix(
+        hypergraph, shape, return_mapping=True
+    )
     incidence = binary_incidence.multiply(hypergraph.get_weights()).tocsr()
+    if return_mapping:
+        return incidence, mapping
     return incidence
 
 
-# TODO still need to test the following two functions
+# TODO add return_mapping here and in next function?? HOW???
 def incidence_matrix_by_order(
     hypergraph: Hypergraph, order: int, shape: Optional[Tuple[int]] = None
 ) -> sparse.spmatrix:
@@ -138,7 +146,9 @@ def incidence_matrices_all_orders(
     return incidence_matrices
 
 
-def adjacency_matrix(hypergraph: Hypergraph) -> sparse.spmatrix:
+def adjacency_matrix(
+    hypergraph: Hypergraph, return_mapping: bool = False
+) -> sparse.csr_array | Tuple[sparse.csr_array, Dict[int, Any]]:
     """Compute the adjacency matrix of the hypergraph.
     For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix
     counts the number of hyperedges where both i and j are contained.
@@ -146,18 +156,27 @@ def adjacency_matrix(hypergraph: Hypergraph) -> sparse.spmatrix:
     Parameters
     ----------
     hypergraph: the hypergraph.
+    return_mapping: return the dictionary mapping the new node indices to the hypergraph
+        nodes.
+        The node indices in the adjacency matrix vary from 0 to N-1, where N is the
+        total number of distinct nodes.
 
     Returns
     -------
     The adjacency matrix of the hypergraph.
+    If return_mapping is True, return the dictionary of node mappings.
     """
-    incidence = hypergraph.binary_incidence_matrix()
+    incidence, mapping = hypergraph.binary_incidence_matrix(return_mapping=True)
     adj = incidence @ incidence.transpose()
     adj.setdiag(0)
+    if return_mapping:
+        return adj, mapping
     return adj
 
 
-def random_walk_adjacency(hypergraph: Hypergraph) -> sparse.spmatrix:
+def random_walk_adjacency(
+    hypergraph: Hypergraph, return_mapping: bool = False
+) -> sparse.csr_array | Tuple[sparse.csr_array, Dict[int, Any]]:
     """Compute the adjacency matrix matrix associated to the hypergraph random walk.
     For any two hyperedges e, f in the hypergraph, the entry (e, f) of the random walk
     adjacency has value 1 if their intersection is non-null, else 0.
@@ -165,16 +184,24 @@ def random_walk_adjacency(hypergraph: Hypergraph) -> sparse.spmatrix:
     Parameters
     ----------
     hypergraph: the hypergraph.
+    return_mapping: return the dictionary mapping the new node indices to the hypergraph
+        nodes.
+        The node indices in the adjacency matrix vary from 0 to N-1, where N is the
+        total number of distinct nodes.
 
     Returns
     -------
     The random walk adjacency matrix of the hypergraph.
+    If return_mapping is True, return the dictionary of node mappings.
     """
-    incidence = hypergraph.binary_incidence_matrix()
+    incidence, mapping = hypergraph.binary_incidence_matrix(return_mapping=True)
     adj = incidence.transpose() @ incidence
+    if return_mapping:
+        return adj, mapping
     return adj
 
 
+# TODO add return_mapping to the following Laplacian-related functions???
 def laplacian_matrix_by_order(
     hypergraph: Hypergraph,
     order: int,
@@ -190,10 +217,10 @@ def laplacian_matrix_by_order(
     degree_lst = [degree_dct[key] for key in sorted(degree_dct.keys(), reverse=False)]
 
     degree_matrix = sparse.diags(degree_lst)
-    laplacian = degree_matrix.multiply(order+1) - incidence.dot(incidence.transpose())
+    laplacian = degree_matrix.multiply(order + 1) - incidence.dot(incidence.transpose())
 
     if weighted:
-        scale_factor = factorial(order-1)
+        scale_factor = factorial(order - 1)
         laplacian = laplacian.multiply(scale_factor)
 
     return laplacian
@@ -203,22 +230,35 @@ def laplacian_matrices_all_orders(
     hypergraph: Hypergraph, weighted=False, shape: Optional[Tuple[int]] = None
 ) -> List[sparse.spmatrix]:
     laplacian_matrices = {}
-    for order in range(1, hypergraph.max_order()+1):
-        laplacian_matrices[order] = laplacian_matrix_by_order(hypergraph, order, weighted, shape)
+    for order in range(1, hypergraph.max_order() + 1):
+        laplacian_matrices[order] = laplacian_matrix_by_order(
+            hypergraph, order, weighted, shape
+        )
     return laplacian_matrices
 
 
-def compute_multiorder_laplacian(hypergraph: Hypergraph, sigmas, order_weighted = False, degree_weighted = True) -> sparse.spmatrix:
-    if not type(sigmas) == np.ndarray: sigmas = np.array(sigmas)
+def compute_multiorder_laplacian(
+    hypergraph: Hypergraph, sigmas, order_weighted=False, degree_weighted=True
+) -> sparse.spmatrix:
+    if not type(sigmas) == np.ndarray:
+        sigmas = np.array(sigmas)
 
-    laplacians = laplacian_matrices_all_orders(hypergraph,order_weighted)
+    laplacians = laplacian_matrices_all_orders(hypergraph, order_weighted)
     laplacians = [laplacians[key] for key in sorted(laplacians.keys(), reverse=False)]
-    weighted_laplacians = [laplacian.multiply(sigma) for laplacian,sigma in zip(laplacians,sigmas)]
+    weighted_laplacians = [
+        laplacian.multiply(sigma) for laplacian, sigma in zip(laplacians, sigmas)
+    ]
 
-    if degree_weighted: 
-        average_degrees = [np.average(list(hypergraph.degree_sequence(order).values())) for order in range(1,hypergraph.max_order()+1)]
-        weighted_laplacians = [laplacian.multiply(1.0/degree) for laplacian,degree in zip(weighted_laplacians,average_degrees)]
-    
+    if degree_weighted:
+        average_degrees = [
+            np.average(list(hypergraph.degree_sequence(order).values()))
+            for order in range(1, hypergraph.max_order() + 1)
+        ]
+        weighted_laplacians = [
+            laplacian.multiply(1.0 / degree)
+            for laplacian, degree in zip(weighted_laplacians, average_degrees)
+        ]
+
     multiorder_laplacian = sum(weighted_laplacians)
 
     return multiorder_laplacian

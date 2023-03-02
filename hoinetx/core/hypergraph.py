@@ -7,7 +7,6 @@ from hoinetx.core.attribute_handler import AttributeHandler
 
 
 class Hypergraph:
-
     def __init__(self, edge_list=None, weighted=False, weights=None):
         # TODO add the following remark to the docstrings for Hypergraph: nodes can be
         #  anything, and are given inside the edge list. However, they need to respect
@@ -72,9 +71,13 @@ class Hypergraph:
 
     def add_edge(self, edge, weight=None):
         if self._weighted and weight is None:
-            raise ValueError("If the hypergraph is weighted, a weight must be provided.")
+            raise ValueError(
+                "If the hypergraph is weighted, a weight must be provided."
+            )
         if not self._weighted and weight is not None:
-            raise ValueError("If the hypergraph is not weighted, no weight must be provided.")
+            raise ValueError(
+                "If the hypergraph is not weighted, no weight must be provided."
+            )
 
         edge = tuple(sorted(edge))
         idx = self._attr.get_id(edge)
@@ -108,17 +111,26 @@ class Hypergraph:
     def add_edges(self, edge_list, weights=None):
         if self._weighted and weights is not None:
             if len(set(edge_list)) != len(edge_list):
-                raise ValueError("If weights are provided, the edge list must not contain repeated edges.")
+                raise ValueError(
+                    "If weights are provided, the edge list must not contain repeated edges."
+                )
             if len(edge_list) != len(weights):
                 raise ValueError("The number of edges and weights must be the same.")
 
         if weights is not None and not self._weighted:
-            raise ValueError("If weights are provided, the hypergraph must be weighted.")
+            raise ValueError(
+                "If weights are provided, the hypergraph must be weighted."
+            )
 
         i = 0
         if edge_list is not None:
             for edge in edge_list:
-                self.add_edge(edge, weight=weights[i] if self._weighted and weights is not None else None)
+                self.add_edge(
+                    edge,
+                    weight=weights[i]
+                    if self._weighted and weights is not None
+                    else None,
+                )
                 i += 1
 
     def _compute_neighbors(self, node):
@@ -170,7 +182,9 @@ class Hypergraph:
             self.del_node(node, keep_edges=keep_edges)
 
     def subhypergraph(self, nodes):
-        return Hypergraph([edge for edge in self.edge_list if set(edge).issubset(set(nodes))])
+        return Hypergraph(
+            [edge for edge in self.edge_list if set(edge).issubset(set(nodes))]
+        )
 
     def max_order(self):
         return self._max_order
@@ -224,14 +238,20 @@ class Hypergraph:
 
         if not up_to:
             try:
-                return [self.edge_list[self._attr.get_obj(idx)] for idx in self._edges_by_order[order]]
+                return [
+                    self.edge_list[self._attr.get_obj(idx)]
+                    for idx in self._edges_by_order[order]
+                ]
             except KeyError:
                 return []
         else:
             w = []
             for i in range(1, order + 1):
                 try:
-                    w += [self.edge_list[self._attr.get_obj(idx)] for idx in self._edges_by_order[i]]
+                    w += [
+                        self.edge_list[self._attr.get_obj(idx)]
+                        for idx in self._edges_by_order[i]
+                    ]
                 except KeyError:
                     pass
             return w
@@ -254,7 +274,9 @@ class Hypergraph:
     def check_node(self, node):
         return node in self._neighbors
 
-    def get_edges(self, ids=False, order=None, size=None, up_to=False, subhypergraph=False):
+    def get_edges(
+        self, ids=False, order=None, size=None, up_to=False, subhypergraph=False
+    ):
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
         if ids and subhypergraph:
@@ -270,7 +292,9 @@ class Hypergraph:
                 order = size - 1
             if not up_to:
                 if not ids:
-                    edges = [self._attr.get_obj(edge) for edge in self._edges_by_order[order]]
+                    edges = [
+                        self._attr.get_obj(edge) for edge in self._edges_by_order[order]
+                    ]
                 else:
                     edges = [edge for edge in self._edges_by_order[order]]
             else:
@@ -278,7 +302,10 @@ class Hypergraph:
                 if not ids:
                     for i in range(1, order + 1):
                         try:
-                            edges += [self._attr.get_obj(edge) for edge in self._edges_by_order[i]]
+                            edges += [
+                                self._attr.get_obj(edge)
+                                for edge in self._edges_by_order[i]
+                            ]
                         except KeyError:
                             edges += []
                 else:
@@ -295,64 +322,77 @@ class Hypergraph:
 
     def degree(self, node, order=None, size=None):
         from hoinetx.measures.degree import degree
+
         return degree(self, node, order=order, size=size)
 
     def degree_sequence(self, order=None, size=None):
         from hoinetx.measures.degree import degree_sequence
+
         return degree_sequence(self, order=order, size=size)
 
     def is_connected(self, size=None, order=None):
         from hoinetx.utils.cc import is_connected
+
         return is_connected(self, size=size, order=order)
 
     def connected_components(self, size=None, order=None):
         from hoinetx.utils.cc import connected_components
+
         return connected_components(self, size=size, order=order)
 
     def node_connected_component(self, node, size=None, order=None):
         from hoinetx.utils.cc import node_connected_component
+
         return node_connected_component(self, node, size=size, order=order)
 
     def num_connected_components(self, size=None, order=None):
         from hoinetx.utils.cc import num_connected_components
+
         return num_connected_components(self, size=size, order=order)
 
     def largest_component(self, size=None, order=None):
         from hoinetx.utils.cc import largest_component
+
         return largest_component(self, size=size, order=order)
 
     def largest_component_size(self, size=None, order=None):
         from hoinetx.utils.cc import largest_component_size
+
         return largest_component_size(self, size=size, order=order)
 
     def isolated_nodes(self, size=None, order=None):
         from hoinetx.utils.cc import isolated_nodes
+
         return isolated_nodes(self, size=size, order=order)
 
     def is_isolated(self, node, size=None, order=None):
         from hoinetx.utils.cc import is_isolated
+
         return is_isolated(self, node, size=size, order=order)
 
-    # TODO add return_mapping to all the matrix representation methods
     def binary_incidence_matrix(
-            self,
-            shape: Optional[Tuple[int]] = None,
-            return_mapping: bool = False
+        self, shape: Optional[Tuple[int]] = None, return_mapping: bool = False
     ):
         from hoinetx.linalg import binary_incidence_matrix
+
         return binary_incidence_matrix(self, shape, return_mapping)
 
-    def incidence_matrix(self, shape: Optional[Tuple[int]] = None):
+    def incidence_matrix(
+        self, shape: Optional[Tuple[int]] = None, return_mapping: bool = False
+    ):
         from hoinetx.linalg import incidence_matrix
-        return incidence_matrix(self, shape)
 
-    def adjacency_matrix(self) -> sparse.spmatrix:
+        return incidence_matrix(self, shape, return_mapping)
+
+    def adjacency_matrix(self, return_mapping: bool = False):
         from hoinetx.linalg import adjacency_matrix
-        return adjacency_matrix(self)
 
-    def random_walk_adjacency(self) -> sparse.spmatrix:
+        return adjacency_matrix(self, return_mapping)
+
+    def random_walk_adjacency(self, return_mapping: bool = False):
         from hoinetx.linalg import random_walk_adjacency
-        return random_walk_adjacency(self)
+
+        return random_walk_adjacency(self, return_mapping)
 
     def clear(self):
         self.edge_list.clear()
@@ -371,7 +411,9 @@ class Hypergraph:
         pass
 
     def __str__(self):
-        title = "Hypergraph with {} nodes and {} edges.\n".format(self.num_nodes(), self.num_edges())
+        title = "Hypergraph with {} nodes and {} edges.\n".format(
+            self.num_nodes(), self.num_edges()
+        )
         details = "Edge list: {}".format(list(self.edge_list.keys()))
         return title + details
 
@@ -380,5 +422,3 @@ class Hypergraph:
 
     def __iter__(self):
         return iter(self.edge_list.items())
-
-
