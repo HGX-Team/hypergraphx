@@ -1,8 +1,11 @@
-from typing import List, Optional, Tuple
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 from scipy import sparse
 from scipy.special import factorial
+from sklearn.preprocessing import LabelEncoder
 
 from hoinetx.core.hypergraph import Hypergraph
 
@@ -34,10 +37,12 @@ def hye_list_to_binary_incidence(
     rows = []
     columns = []
     for j, hye in enumerate(hye_list):
-        rows.extend(list(hye))
-        columns.extend([j] * len(hye))
+        # If there are repeated nodes in the hyperedge, count them once
+        set_hye = set(hye)
+        rows.extend(list(set_hye))
+        columns.extend([j] * len(set_hye))
 
-    inferred_N = max(map(max, (hye for hye in hye_list if hye))) + 1
+    inferred_N = max(rows) + 1
     inferred_E = len(hye_list)
     if shape is not None:
         if shape[0] < inferred_N or shape[1] < inferred_E:
@@ -51,8 +56,10 @@ def hye_list_to_binary_incidence(
 
 
 def binary_incidence_matrix(
-    hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None
-) -> sparse.spmatrix:
+    hypergraph: Hypergraph,
+    shape: Optional[Tuple[int]] = None,
+    return_mapping: bool = False,
+) -> sparse.csr_array | Tuple[sparse.csr_array, Dict[int, Any]]:
     """Produce the binary incidence matrix representing a hypergraph.
     For any node i and hyperedge e, the entry (i, e) of the binary incidence matrix is 1
     if the node belongs to the hyperedge, 0 otherwise.
@@ -63,13 +70,29 @@ def binary_incidence_matrix(
         Every hyperedge is represented as either a tuple or list of nodes.
     shape: the shape of the adjacency matrix, passed to the array constructor.
         If None, it is inferred.
+    return_mapping: return the dictionary mapping the new node indices to the hypergraph
+        nodes.
+        The node indices in the incidence matrix vary from 0 to N-1, where N is the
+        total number of distinct nodes.
 
     Returns
     -------
-    The binary adjacency matrix representing the hyperedges.
+    The binary adjacency matrix representing the hyperedges. If return_mapping is True,
+    return the dictionary of node mappings.
     """
-    hye_list = list(hypergraph.edge_list.keys())
-    return hye_list_to_binary_incidence(hye_list, shape).tocsr()
+    encoder = LabelEncoder()
+    encoder.fit(hypergraph.get_nodes())
+    hye_list = [tuple(encoder.transform(hye)) for hye in hypergraph.get_edges()]
+
+    incidence = hye_list_to_binary_incidence(hye_list, shape).tocsr()
+    if return_mapping:
+        mapping = dict(
+            zip(
+                encoder.transform(encoder.classes_), encoder.classes_
+            )
+        )
+        return incidence, mapping
+    return incidence
 
 
 def incidence_matrix(
@@ -95,6 +118,7 @@ def incidence_matrix(
     return incidence
 
 
+# TODO still need to test the following two functions
 def incidence_matrix_by_order(
     hypergraph: Hypergraph, order: int, shape: Optional[Tuple[int]] = None
 ) -> sparse.spmatrix:

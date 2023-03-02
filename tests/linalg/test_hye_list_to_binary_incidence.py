@@ -58,6 +58,14 @@ hye_lists_with_repetitions_and_null = [
         (2, 1, 5),
         (2, 5, 3),
     ],
+    [
+        (0, 1, 1, 1, 1, 1, 2),
+        (1, 2, 2, 1),
+        (0, 1),
+        (2, 5, 1),
+        (2, 1, 5),
+        (2, 5, 3),
+    ],
 ]
 shapes = [
     None,
@@ -111,23 +119,24 @@ def expected_shape(hye_list, shape):
 @pytest.mark.parametrize("hye_list,shape", correct_configs, scope="class")
 class TestHyeListToBinaryIncidenceFromListCorrect:
     def test_incidence_type(self, hye_list, shape, expected_shape):
-        if expected_shape is not None:
-            sparse_incidence = hye_list_to_binary_incidence(hye_list, shape)
-            assert isinstance(sparse_incidence, sparse.coo_matrix)
+        sparse_incidence = hye_list_to_binary_incidence(hye_list, shape)
+        assert isinstance(sparse_incidence, sparse.coo_matrix)
 
     def test_incidence_shape(self, hye_list, shape, expected_shape):
-        if expected_shape is not None:
-            sparse_incidence = hye_list_to_binary_incidence(hye_list, shape)
-            assert sparse_incidence.shape == expected_shape
+        sparse_incidence = hye_list_to_binary_incidence(hye_list, shape)
+        assert sparse_incidence.shape == expected_shape
+
+    def test_incidence_only_contains_ones(self, hye_list, shape, expected_shape):
+        sparse_incidence = hye_list_to_binary_incidence(hye_list, shape)
+        assert np.all(sparse_incidence.data == 1)
 
     def test_with_dense(self, hye_list, shape, expected_shape):
-        if expected_shape is not None:
-            sparse_incidence = hye_list_to_binary_incidence(hye_list, shape)
+        sparse_incidence = hye_list_to_binary_incidence(hye_list, shape)
 
-            dense = np.zeros(expected_shape)
-            for idx, hye in enumerate(hye_list):
-                dense[hye, idx] = 1
-            assert np.all(sparse_incidence.todense() == dense)
+        dense = np.zeros(expected_shape)
+        for idx, hye in enumerate(hye_list):
+            dense[hye, idx] = 1
+        assert np.all(sparse_incidence.todense() == dense)
 
 
 @pytest.mark.parametrize("hye_list,shape", failing_configs)

@@ -1,0 +1,6 @@
+a b
+a c
+a some_name
+custom_node a some_name
+a very big hyperedge with some nodes
+z h a b c d e f g h i j
