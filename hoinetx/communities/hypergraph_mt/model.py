@@ -756,7 +756,7 @@ class HypergraphMT:
         ----------
         it_of_convergence: iteration of convergence.
         """
-        # TODO: check if we should add this function somewhere else, i.e., in the io.
+        # TODO: check if we should add this function somewhere else, i.e., in the readwrite.
         outfile = self.out_folder + "theta" + self.end_file
         np.savez_compressed(
             outfile + ".npz",
