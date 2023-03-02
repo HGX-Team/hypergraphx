@@ -99,7 +99,6 @@ def expected_shape(hye_list, shape):
 @pytest.mark.parametrize("hye_list,shape", correct_configs, scope="class")
 class TestHyeListToBinaryIncidenceFromListCorrect:
     def test_incidence_type(self, hye_list, shape, expected_shape):
-        print("HYE SHAPE EXPECTED", hye_list, shape, expected_shape)
         if expected_shape is not None:
             sparse_incidence = hye_list_to_binary_incidence(hye_list, shape)
             assert isinstance(sparse_incidence, sparse.coo_matrix)
