@@ -3,6 +3,7 @@ from typing import List, Optional, Tuple
 import numpy as np
 from scipy import sparse
 from scipy.special import factorial
+from sklearn.preprocessing import LabelEncoder
 
 from hoinetx.core.hypergraph import Hypergraph
 
@@ -10,7 +11,15 @@ from hoinetx.core.hypergraph import Hypergraph
 def hye_list_to_binary_incidence(
     hye_list: List[Tuple[int]], shape: Optional[Tuple[int]] = None
 ) -> sparse.coo_array:
-    """Convert a list of hyperedges into a scipy sparse csc array.
+    """Convert a list of hyperedges into a scipy sparse COO array.
+    The hyperedges need to be list of integers, representing nodes, starting from 0.
+    If no shape is provided, this is inferred from the hyperedge list as (N, E).
+    N is the number of nodes, given by the maximum integer observed in the hyperedge
+    list plus one (since the node index starts from 0).
+    E is the number of hyperedges in the list.
+    If not None, the shape can only specify a tuple (N', E') where N' is greater or
+    equal than the N inferred from the hyperedge list, and E' is greater or equal than
+    the number of hyperedges in the list.
 
     Parameters
     ----------
@@ -46,6 +55,8 @@ def binary_incidence_matrix(
     hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None
 ) -> sparse.spmatrix:
     """Produce the binary incidence matrix representing a hypergraph.
+    For any node i and hyperedge e, the entry (i, e) of the binary incidence matrix is 1
+    if the node belongs to the hyperedge, 0 otherwise.
 
     Parameters
     ----------
@@ -59,12 +70,27 @@ def binary_incidence_matrix(
     The binary adjacency matrix representing the hyperedges.
     """
     hye_list = list(hypergraph.edge_list.keys())
-    return hye_list_to_binary_incidence(hye_list, shape)
+    return hye_list_to_binary_incidence(hye_list, shape).tocsr()
 
 
 def incidence_matrix(
     hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None
 ) -> sparse.spmatrix:
+    """Produce the binary incidence matrix representing a hypergraph.
+    For any node i and hyperedge e, the entry (i, e) of the binary incidence matrix is
+    the weight of the hyperedge if the node belongs to it, 0 otherwise.
+
+    Parameters
+    ----------
+    hypergraph: instance of the class Hypergraph.
+        Every hyperedge is represented as either a tuple or list of nodes.
+    shape: the shape of the adjacency matrix, passed to the array constructor.
+        If None, it is inferred.
+
+    Returns
+    -------
+    The binary adjacency matrix representing the hyperedges.
+    """
     binary_incidence = binary_incidence_matrix(hypergraph, shape)
     incidence = binary_incidence.multiply(hypergraph.get_weights()).tocsr()
     return incidence
@@ -78,6 +104,15 @@ def incidence_matrix_by_order(
     )
     incidence = binary_incidence.multiply(hypergraph.get_weights(order=order)).tocsr()
     return incidence
+
+
+def incidence_matrices_all_orders(
+    hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None
+) -> List[sparse.spmatrix]:
+    incidence_matrices = {}
+    for order in range(1, hypergraph.max_order() + 1):
+        incidence_matrices[order] = incidence_matrix_by_order(hypergraph, order, shape)
+    return incidence_matrices
 
 
 def adjacency_matrix(hypergraph: Hypergraph) -> sparse.spmatrix:
@@ -115,15 +150,6 @@ def random_walk_adjacency(hypergraph: Hypergraph) -> sparse.spmatrix:
     incidence = hypergraph.binary_incidence_matrix()
     adj = incidence.transpose() @ incidence
     return adj
-
-
-def incidence_matrices_all_orders(
-    hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None
-) -> List[sparse.spmatrix]:
-    incidence_matrices = {}
-    for order in range(1, hypergraph.max_order() + 1):
-        incidence_matrices[order] = incidence_matrix_by_order(hypergraph, order, shape)
-    return incidence_matrices
 
 
 def laplacian_matrix_by_order(
@@ -185,7 +211,7 @@ def compute_multiorder_laplacian(
     return multiorder_laplacian
 
 
-def are_commuting(laplacian_matrices: List[sparse.spmatrix], verbose=True):
+def are_commuting(laplacian_matrices: List[sparse.spmatrix], verbose=True) -> bool:
     orders = len(laplacian_matrices)
 
     for d1 in range(orders - 1):
