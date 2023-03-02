@@ -1,5 +1,8 @@
 import copy
 from typing import Optional, Tuple
+
+from scipy import sparse
+
 from hoinetx.core.attribute_handler import AttributeHandler
 
 
@@ -327,6 +330,14 @@ class Hypergraph:
     def incidence_matrix(self, shape: Optional[Tuple[int]] = None):
         from hoinetx.linalg import incidence_matrix
         return incidence_matrix(self, shape)
+
+    def adjacency_matrix(self) -> sparse.spmatrix:
+        from hoinetx.linalg import adjacency_matrix
+        return adjacency_matrix(self)
+
+    def random_walk_adjacency(self) -> sparse.spmatrix:
+        from hoinetx.linalg import random_walk_adjacency
+        return random_walk_adjacency(self)
 
     def clear(self):
         self.edge_list.clear()

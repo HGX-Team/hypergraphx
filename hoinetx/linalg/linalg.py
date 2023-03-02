@@ -1,4 +1,3 @@
-from itertools import chain
 from typing import List, Optional, Tuple
 
 import numpy as np
@@ -9,14 +8,14 @@ from hoinetx.core.hypergraph import Hypergraph
 
 
 def hye_list_to_binary_incidence(
-    hye_list: List[Tuple[int]], shape: Optional[Tuple[int]]
-) -> sparse.spmatrix:
+    hye_list: List[Tuple[int]], shape: Optional[Tuple[int]] = None
+) -> sparse.coo_array:
     """Convert a list of hyperedges into a scipy sparse csc array.
 
     Parameters
     ----------
     hye_list: the list of hyperedges.
-        Every hyperedge is represented as a tuple of nodes.
+        Every hyperedge is represented as a tuple of integer nodes.
     shape: the shape of the adjacency matrix, passed to the array constructor.
         If None, it is inferred.
 
@@ -24,17 +23,23 @@ def hye_list_to_binary_incidence(
     -------
     The binary adjacency matrix representing the hyperedges.
     """
-    # See docs:
-    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csc_array.html
-    len_list = [0] + [len(hye) for hye in hye_list]
-    indptr = np.cumsum(len_list)
+    rows = []
+    columns = []
+    for j, hye in enumerate(hye_list):
+        rows.extend(list(hye))
+        columns.extend([j] * len(hye))
 
-    type_ = type(hye_list[0])
-    indices = type_(chain(*hye_list))
+    inferred_N = max(map(max, (hye for hye in hye_list if hye))) + 1
+    inferred_E = len(hye_list)
+    if shape is not None:
+        if shape[0] < inferred_N or shape[1] < inferred_E:
+            raise ValueError("Provided shape incompatible with input hyperedge list.")
+    else:
+        shape = (inferred_N, inferred_E)
 
-    data = np.ones_like(indices)
+    data = np.ones_like(rows)
 
-    return sparse.csc_array((data, indices, indptr), shape=shape).tocsr()
+    return sparse.coo_array((data, (rows, columns)), shape=shape, dtype=np.uint8)
 
 
 def binary_incidence_matrix(
@@ -53,8 +58,6 @@ def binary_incidence_matrix(
     -------
     The binary adjacency matrix representing the hyperedges.
     """
-    # See docs:
-    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csc_array.html
     hye_list = list(hypergraph.edge_list.keys())
     return hye_list_to_binary_incidence(hye_list, shape)
 
@@ -70,12 +73,53 @@ def incidence_matrix(
 def incidence_matrix_by_order(
     hypergraph: Hypergraph, order: int, shape: Optional[Tuple[int]] = None
 ) -> sparse.spmatrix:
-    binary_incidence = binary_incidence_matrix(hypergraph.get_edges(order=order, subhypergraph=True), shape)
+    binary_incidence = binary_incidence_matrix(
+        hypergraph.get_edges(order=order, subhypergraph=True), shape
+    )
     incidence = binary_incidence.multiply(hypergraph.get_weights(order=order)).tocsr()
     return incidence
 
 
-def incidence_matrices_all_orders(hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None) -> List[sparse.spmatrix]:
+def adjacency_matrix(hypergraph: Hypergraph) -> sparse.spmatrix:
+    """Compute the adjacency matrix of the hypergraph.
+    For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix
+    counts the number of hyperedges where both i and j are contained.
+
+    Parameters
+    ----------
+    hypergraph: the hypergraph.
+
+    Returns
+    -------
+    The adjacency matrix of the hypergraph.
+    """
+    incidence = hypergraph.binary_incidence_matrix()
+    adj = incidence @ incidence.transpose()
+    adj.setdiag(0)
+    return adj
+
+
+def random_walk_adjacency(hypergraph: Hypergraph) -> sparse.spmatrix:
+    """Compute the adjacency matrix matrix associated to the hypergraph random walk.
+    For any two hyperedges e, f in the hypergraph, the entry (e, f) of the random walk
+    adjacency has value 1 if their intersection is non-null, else 0.
+
+    Parameters
+    ----------
+    hypergraph: the hypergraph.
+
+    Returns
+    -------
+    The random walk adjacency matrix of the hypergraph.
+    """
+    incidence = hypergraph.binary_incidence_matrix()
+    adj = incidence.transpose() @ incidence
+    return adj
+
+
+def incidence_matrices_all_orders(
+    hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None
+) -> List[sparse.spmatrix]:
     incidence_matrices = {}
     for order in range(1, hypergraph.max_order() + 1):
         incidence_matrices[order] = incidence_matrix_by_order(hypergraph, order, shape)
@@ -83,41 +127,59 @@ def incidence_matrices_all_orders(hypergraph: Hypergraph, shape: Optional[Tuple[
 
 
 def laplacian_matrix_by_order(
-    hypergraph: Hypergraph, order: int, weighted = False, shape: Optional[Tuple[int]] = None
+    hypergraph: Hypergraph,
+    order: int,
+    weighted=False,
+    shape: Optional[Tuple[int]] = None,
 ) -> sparse.spmatrix:
-    binary_incidence = binary_incidence_matrix(hypergraph.get_edges(order=order, subhypergraph=True), shape)
+    binary_incidence = binary_incidence_matrix(
+        hypergraph.get_edges(order=order, subhypergraph=True), shape
+    )
     incidence = binary_incidence.multiply(hypergraph.get_weights(order=order)).tocsr()
-    
+
     degree_dct = hypergraph.degree_sequence(order)
     degree_lst = [degree_dct[key] for key in sorted(degree_dct.keys(), reverse=True)]
 
     degree_matrix = sparse.diags(degree_lst)
-    laplacian = degree_matrix.multiply(order) - incidence.multiply(incidence.transpose())
+    laplacian = degree_matrix.multiply(order) - incidence.multiply(
+        incidence.transpose()
+    )
 
     if weighted:
-        scale_factor = factorial(order-2)
+        scale_factor = factorial(order - 2)
         laplacian = laplacian.multiply(scale_factor)
 
     return laplacian
 
 
-def laplacian_matrices_all_orders(hypergraph: Hypergraph, weighted=False, shape: Optional[Tuple[int]] = None) -> List[sparse.spmatrix]:
+def laplacian_matrices_all_orders(
+    hypergraph: Hypergraph, weighted=False, shape: Optional[Tuple[int]] = None
+) -> List[sparse.spmatrix]:
     laplacian_matrices = {}
     for order in range(1, hypergraph.max_order() + 1):
-        laplacian_matrices[order] = laplacian_matrix_by_order(hypergraph, order, weighted, shape)
+        laplacian_matrices[order] = laplacian_matrix_by_order(
+            hypergraph, order, weighted, shape
+        )
     return laplacian_matrices
 
 
-def compute_multiorder_laplacian(laplacians: List[sparse.spmatrix], sigmas, degree_weighted = True) -> sparse.spmatrix:
+def compute_multiorder_laplacian(
+    laplacians: List[sparse.spmatrix], sigmas, degree_weighted=True
+) -> sparse.spmatrix:
     if not type(sigmas) == np.ndarray:
         sigmas = np.array(sigmas)
 
-    weighted_laplacians = [laplacian.multiply(sigma) for laplacian,sigma in zip(laplacians,sigmas)]
+    weighted_laplacians = [
+        laplacian.multiply(sigma) for laplacian, sigma in zip(laplacians, sigmas)
+    ]
 
-    if degree_weighted: 
+    if degree_weighted:
         average_degrees = [np.average(laplacian.diagonal()) for laplacian in laplacians]
-        weighted_laplacians = [laplacian.multiply(1.0/degree) for laplacian,degree in zip(weighted_laplacians,average_degrees)]
-    
+        weighted_laplacians = [
+            laplacian.multiply(1.0 / degree)
+            for laplacian, degree in zip(weighted_laplacians, average_degrees)
+        ]
+
     multiorder_laplacian = sum(weighted_laplacians)
 
     return multiorder_laplacian
@@ -126,9 +188,9 @@ def compute_multiorder_laplacian(laplacians: List[sparse.spmatrix], sigmas, degr
 def are_commuting(laplacian_matrices: List[sparse.spmatrix], verbose=True):
     orders = len(laplacian_matrices)
 
-    for d1 in range(orders-1):
+    for d1 in range(orders - 1):
         laplacian_d1 = laplacian_matrices[d1]
-        for d2 in range(d1+1, orders):
+        for d2 in range(d1 + 1, orders):
             laplacian_d2 = laplacian_matrices[d2]
 
             d1d2_product = laplacian_d1.dot(laplacian_d2)
