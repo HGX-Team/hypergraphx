@@ -33,3 +33,22 @@ def test_adjacency_from_dense_incidence(loaded_hypergraph: Hypergraph):
     sparse_adj = loaded_hypergraph.adjacency_matrix()
 
     assert np.all(dense_adj == sparse_adj.todense())
+
+
+def test_mapping_type(loaded_hypergraph: Hypergraph):
+    _, mapping = loaded_hypergraph.adjacency_matrix(return_mapping=True)
+    assert isinstance(mapping, dict)
+
+
+def test_mapping_has_values_only_nodes_in_hypergraph(loaded_hypergraph: Hypergraph):
+    _, mapping = loaded_hypergraph.adjacency_matrix(return_mapping=True)
+    assert set(mapping.values()).issubset(set(loaded_hypergraph.get_nodes()))
+
+
+def test_mapping_maps_back_all_and_only_nodes_in_hypergraph(
+    loaded_hypergraph: Hypergraph,
+):
+    _, mapping = loaded_hypergraph.adjacency_matrix(return_mapping=True)
+    back_mapped_nodes = {mapping[i] for i in range(loaded_hypergraph.num_nodes())}
+    hypergraph_nodes = set(loaded_hypergraph.get_nodes())
+    assert back_mapped_nodes == hypergraph_nodes
