@@ -389,7 +389,7 @@ class Hypergraph:
 
         return adjacency_matrix(self, return_mapping)
 
-    def random_walk_adjacency(self, return_mapping: bool = False):
+    def dual_random_walk_adjacency(self, return_mapping: bool = False):
         from hoinetx.linalg import dual_random_walk_adjacency
 
         return dual_random_walk_adjacency(self, return_mapping)

@@ -64,28 +64,28 @@ def test_adj_mapping_maps_back_all_and_only_nodes_in_hypergraph(
 ########################################################################################
 # Method Hypergraph.dual_random_walk_adjacency
 def test_rw_walk_adjacency_type(loaded_hypergraph: Hypergraph):
-    adj = loaded_hypergraph.random_walk_adjacency()
+    adj = loaded_hypergraph.dual_random_walk_adjacency()
     assert isinstance(adj, sparse.csc_array)
 
 
 def test_rw_walk_adjacency_shape(loaded_hypergraph: Hypergraph):
-    adj = loaded_hypergraph.random_walk_adjacency()
+    adj = loaded_hypergraph.dual_random_walk_adjacency()
     E = loaded_hypergraph.num_edges()
     assert adj.shape == (E, E)
 
 
 def test_rw_walk_adjacency_only_contains_ones(loaded_hypergraph: Hypergraph):
-    adj = loaded_hypergraph.random_walk_adjacency()
+    adj = loaded_hypergraph.dual_random_walk_adjacency()
     assert np.all(adj.data == 1)
 
 
 def test_rw_walk_adjacency_diagonal_is_one(loaded_hypergraph: Hypergraph):
-    adj = loaded_hypergraph.random_walk_adjacency()
+    adj = loaded_hypergraph.dual_random_walk_adjacency()
     assert np.all(adj.diagonal() == 1)
 
 
 def test_rw_walk_comparing_with_explicit_construction(loaded_hypergraph: Hypergraph):
-    adj = loaded_hypergraph.random_walk_adjacency()
+    adj = loaded_hypergraph.dual_random_walk_adjacency()
 
     E = loaded_hypergraph.num_edges()
     explicit_adj = np.zeros((E, E))
@@ -98,21 +98,21 @@ def test_rw_walk_comparing_with_explicit_construction(loaded_hypergraph: Hypergr
 
 
 def test_rw_adj_mapping_type(loaded_hypergraph: Hypergraph):
-    _, mapping = loaded_hypergraph.random_walk_adjacency(return_mapping=True)
+    _, mapping = loaded_hypergraph.dual_random_walk_adjacency(return_mapping=True)
     assert isinstance(mapping, dict)
 
 
 def test_rw_adj_mapping_has_values_only_nodes_in_hypergraph(
     loaded_hypergraph: Hypergraph,
 ):
-    _, mapping = loaded_hypergraph.random_walk_adjacency(return_mapping=True)
+    _, mapping = loaded_hypergraph.dual_random_walk_adjacency(return_mapping=True)
     assert set(mapping.values()).issubset(set(loaded_hypergraph.get_nodes()))
 
 
 def test_rw_adj_mapping_maps_back_all_and_only_nodes_in_hypergraph(
     loaded_hypergraph: Hypergraph,
 ):
-    _, mapping = loaded_hypergraph.random_walk_adjacency(return_mapping=True)
+    _, mapping = loaded_hypergraph.dual_random_walk_adjacency(return_mapping=True)
     back_mapped_nodes = {mapping[i] for i in range(loaded_hypergraph.num_nodes())}
     hypergraph_nodes = set(loaded_hypergraph.get_nodes())
     assert back_mapped_nodes == hypergraph_nodes
