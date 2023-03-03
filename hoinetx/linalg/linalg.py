@@ -148,7 +148,7 @@ def incidence_matrices_all_orders(
 
 def adjacency_matrix(
     hypergraph: Hypergraph, return_mapping: bool = False
-) -> sparse.csr_array | Tuple[sparse.csr_array, Dict[int, Any]]:
+) -> sparse.csc_array | Tuple[sparse.csc_array, Dict[int, Any]]:
     """Compute the adjacency matrix of the hypergraph.
     For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix
     counts the number of hyperedges where both i and j are contained.
@@ -174,12 +174,13 @@ def adjacency_matrix(
     return adj
 
 
-def random_walk_adjacency(
+def dual_random_walk_adjacency(
     hypergraph: Hypergraph, return_mapping: bool = False
 ) -> sparse.csr_array | Tuple[sparse.csr_array, Dict[int, Any]]:
-    """Compute the adjacency matrix matrix associated to the hypergraph random walk.
-    For any two hyperedges e, f in the hypergraph, the entry (e, f) of the random walk
-    adjacency has value 1 if their intersection is non-null, else 0.
+    """Compute the adjacency matrix matrix associated to the dual hypergraph random
+    walk. For any two hyperedges e, f in the hypergraph, the entry (e, f) of the random
+    walk adjacency has value 1 if their intersection is non-null, else 0. This is the
+    matrix of adjacency between hyperedges in the dual hypergraph.
 
     Parameters
     ----------
@@ -196,6 +197,7 @@ def random_walk_adjacency(
     """
     incidence, mapping = hypergraph.binary_incidence_matrix(return_mapping=True)
     adj = incidence.transpose() @ incidence
+    adj.data = np.ones_like(adj.data)
     if return_mapping:
         return adj, mapping
     return adj

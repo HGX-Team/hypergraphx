@@ -390,9 +390,9 @@ class Hypergraph:
         return adjacency_matrix(self, return_mapping)
 
     def random_walk_adjacency(self, return_mapping: bool = False):
-        from hoinetx.linalg import random_walk_adjacency
+        from hoinetx.linalg import dual_random_walk_adjacency
 
-        return random_walk_adjacency(self, return_mapping)
+        return dual_random_walk_adjacency(self, return_mapping)
 
     def clear(self):
         self.edge_list.clear()
