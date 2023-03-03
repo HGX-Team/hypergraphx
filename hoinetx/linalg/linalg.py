@@ -91,7 +91,6 @@ def binary_incidence_matrix(
     return incidence
 
 
-# TODO still need to test the following three functions
 def incidence_matrix(
     hypergraph: Hypergraph,
     shape: Optional[Tuple[int]] = None,
@@ -126,7 +125,6 @@ def incidence_matrix(
     return incidence
 
 
-# TODO add return_mapping here and in next function?? HOW???
 def incidence_matrix_by_order(
     hypergraph: Hypergraph, order: int, shape: Optional[Tuple[int]] = None
 ) -> sparse.spmatrix:
@@ -203,7 +201,6 @@ def dual_random_walk_adjacency(
     return adj
 
 
-# TODO add return_mapping to the following Laplacian-related functions???
 def laplacian_matrix_by_order(
     hypergraph: Hypergraph,
     order: int,

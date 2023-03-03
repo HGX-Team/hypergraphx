@@ -1,23 +1,11 @@
 import copy
 from typing import Optional, Tuple
 
-from scipy import sparse
-
 from hoinetx.core.attribute_handler import AttributeHandler
 
 
 class Hypergraph:
     def __init__(self, edge_list=None, weighted=False, weights=None):
-        # TODO add the following remark to the docstrings for Hypergraph: nodes can be
-        #  anything, and are given inside the edge list. However, they need to respect
-        #  two conditions (as far as I can tell from the code below):
-        #  - first, they need to be comparable inside a sorting operation inside every
-        #     hyperedge (since hyperedges are sorted during the hypergraph creation)
-        #  - second, they need to be hashable, since they are keys of the
-        #     Hypergraph._neighbours dictionary.
-        #  In practice, most immutable native python types work, as well as any custom
-        #  object that implements __hash__ (for hasing) and
-        #  __ge__, __le__, etc. (for comparisons)
         self._attr = AttributeHandler()
         self.edge_list = {}
         self._weighted = weighted
