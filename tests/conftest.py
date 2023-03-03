@@ -5,17 +5,15 @@ import pytest
 
 from hoinetx import Hypergraph
 
-DATA_DIR = Path(__file__).resolve().parent.parent.parent / "test_data"
+DATA_DIR = Path(__file__).resolve().parent.parent / "test_data"
 ALL_SMALL_NUMERICAL_DATASETS = (
     "small_hypergraph1",
     "small_hypergraph2",
     "small_hypergraph3",
     "with_isolated_nodes",
 )
-ALL_DATASETS = ALL_SMALL_NUMERICAL_DATASETS + (
-    "with_literal_nodes",
-    "justice",
-)
+ALL_SMALL_DATASETS = ALL_SMALL_NUMERICAL_DATASETS + ("with_literal_nodes",)
+ALL_DATASETS = ALL_SMALL_DATASETS + ("justice",)
 
 
 def _read_hye_list(hye_file: Path) -> List[Tuple[int]]:
@@ -64,7 +62,7 @@ def loaded_hypergraph(
     synthetic_literal_dataset,
     justice_dataset,
     request,
-):
+) -> Hypergraph:
     all_data_dict = {
         **synthetic_small_numerical_datasets,
         **synthetic_literal_dataset,
