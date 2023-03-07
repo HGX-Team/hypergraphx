@@ -1,13 +1,13 @@
 import bisect
-from hoinetx.core import Hypergraph
 from hoinetx.core.attribute_handler import AttributeHandler
 
 
 class TemporalHypergraph:
-    def __init__(self):
+    def __init__(self, edges):
         self.__attr = AttributeHandler()
         self.edges = {}
         self._nodes = set()
+        self.add_edges(edges)
 
     def add_edge(self, edge):
         if not isinstance(edge, tuple):
