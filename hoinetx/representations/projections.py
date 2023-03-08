@@ -4,6 +4,16 @@ from hoinetx.measures.edge_similarity import *
 
 
 def bipartite(h: Hypergraph):
+    """
+    Returns a bipartite graph representation of the hypergraph.
+    Parameters
+    ----------
+    h
+
+    Returns
+    -------
+
+    """
     g = nx.Graph()
     id_to_obj = {}
     obj_to_id = {}
@@ -28,6 +38,16 @@ def bipartite(h: Hypergraph):
 
 
 def clique_projection(h: Hypergraph):
+    """
+    Returns a clique projection of the hypergraph.
+    Parameters
+    ----------
+    h
+
+    Returns
+    -------
+
+    """
     g = nx.Graph()
 
     for edge in h.edge_list:
@@ -39,6 +59,19 @@ def clique_projection(h: Hypergraph):
 
 
 def line_graph(h: Hypergraph, distance='intersection', s=1, weighted=False):
+    """
+    Returns a line graph of the hypergraph.
+    Parameters
+    ----------
+    h
+    distance
+    s
+    weighted
+
+    Returns
+    -------
+
+    """
     def distance(a, b):
         if distance == 'intersection':
             return intersection(a, b)

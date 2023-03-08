@@ -1,6 +1,10 @@
 import pickle
-
 from hoinetx.core.hypergraph import Hypergraph
+
+
+def save_pickle(obj, file_name):
+    with open("{}".format(file_name), "wb") as f:
+        pickle.dump(obj, f)
 
 
 def save(hypergraph: Hypergraph, file_name, file_type="pickle"):

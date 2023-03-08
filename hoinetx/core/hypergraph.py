@@ -15,6 +15,9 @@ class Hypergraph:
         self._max_order = 0
         self.add_edges(edge_list, weights=weights)
 
+    def is_uniform(self):
+        return len(set(self.edge_list.values())) == 1
+
     def get_neighbors(self, node, order=None, size=None):
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
@@ -263,12 +266,14 @@ class Hypergraph:
         return node in self._neighbors
 
     def get_edges(
-        self, ids=False, order=None, size=None, up_to=False, subhypergraph=False
+        self, ids=False, order=None, size=None, up_to=False, subhypergraph=False, keep_isolated_nodes=False
     ):
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
         if ids and subhypergraph:
             raise ValueError("Cannot return subhypergraphs with ids.")
+        if not subhypergraph and keep_isolated_nodes:
+            raise ValueError("Cannot keep nodes if not returning subhypergraphs.")
 
         if order is None and size is None:
             if not ids:
@@ -303,7 +308,12 @@ class Hypergraph:
                         except KeyError:
                             edges += []
 
-        if subhypergraph:
+        if subhypergraph and keep_isolated_nodes:
+            h = Hypergraph()
+            h.add_nodes(self.get_nodes())
+            h.add_edges(edges)
+            return h
+        elif subhypergraph:
             return Hypergraph(edges)
         else:
             return edges

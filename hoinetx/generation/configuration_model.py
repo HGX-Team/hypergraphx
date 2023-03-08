@@ -3,7 +3,7 @@ from collections import Counter
 from hoinetx.core import Hypergraph
 
 
-def configuration_model(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=False):
+def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=False):
     """
     Conduct Markov Chain Monte Carlo in order to approximately
     sample from the space of appropriately-labeled graphs.
@@ -181,3 +181,20 @@ def configuration_model(hypergraph, n_steps=1000, label='edge', n_clash=1, detai
         return vertex_labeled_mh()
     else:
         print('not implemented')
+
+
+def configuration_model(hypergraph, n_steps=1000, label='edge', order=None, size=None, n_clash=1, detailed=False):
+    if order is not None and size is not None:
+        raise ValueError('Only one of order and size can be specified.')
+    if order is None and size is None:
+        return _cm_MCMC(hypergraph, n_steps=n_steps, label=label, n_clash=n_clash, detailed=detailed)
+
+    if size is None:
+        size = order + 1
+
+    tmp_h = hypergraph.get_edges(size=size, up_to=False, subhypergraph=True, keep_isolated_nodes=True)
+    shuffled = _cm_MCMC(tmp_h, n_steps=n_steps, label=label, n_clash=n_clash, detailed=detailed)
+    for e in hypergraph.get_edges():
+        if len(e) != size:
+            shuffled.add_edge(e)
+    return shuffled
