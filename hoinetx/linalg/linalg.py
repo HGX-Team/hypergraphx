@@ -216,7 +216,7 @@ def laplacian_matrix_by_order(
         hypergraph.get_edges(order=order, subhypergraph=True, keep_isolated_nodes=True), shape
     )
     incidence = binary_incidence.multiply(hypergraph.get_weights(order=order)).tocsr()
-
+    #maybe wrong mapping of nodes? binary incidence returns the mapping of the nodes in the hypergraph
     degree_dct = hypergraph.degree_sequence(order)
     degree_lst = [degree_dct[key] for key in sorted(degree_dct.keys(), reverse=False)]
 
