@@ -213,7 +213,7 @@ def laplacian_matrix_by_order(
     shape: Optional[Tuple[int]] = None,
 ) -> sparse.spmatrix:
     binary_incidence = binary_incidence_matrix(
-        hypergraph.get_edges(order=order, subhypergraph=True, keep_nodes=True), shape
+        hypergraph.get_edges(order=order, subhypergraph=True, keep_isolated_nodes=True), shape
     )
     incidence = binary_incidence.multiply(hypergraph.get_weights(order=order)).tocsr()
 
