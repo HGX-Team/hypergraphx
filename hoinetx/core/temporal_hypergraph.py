@@ -1,4 +1,3 @@
-import bisect
 from hoinetx.core.attribute_handler import AttributeHandler
 
 
