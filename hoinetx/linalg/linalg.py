@@ -42,8 +42,11 @@ def hye_list_to_binary_incidence(
         rows.extend(list(set_hye))
         columns.extend([j] * len(set_hye))
 
-    inferred_N = max(rows) + 1
-    inferred_E = len(hye_list)
+    #inferred_N = max(rows) + 1
+    #inferred_E = len(hye_list)
+    inferred_N = shape[0]
+    inferred_E = shape[1]
+
     if shape is not None:
         if shape[0] < inferred_N or shape[1] < inferred_E:
             raise ValueError("Provided shape incompatible with input hyperedge list.")
@@ -84,6 +87,7 @@ def binary_incidence_matrix(
     encoder.fit(hypergraph.get_nodes())
     hye_list = [tuple(encoder.transform(hye)) for hye in hypergraph.get_edges()]
 
+    shape = (hypergraph.num_nodes(), hypergraph.num_edges())
     incidence = hye_list_to_binary_incidence(hye_list, shape).tocsr()
     if return_mapping:
         mapping = dict(zip(encoder.transform(encoder.classes_), encoder.classes_))
@@ -119,6 +123,7 @@ def incidence_matrix(
     binary_incidence, mapping = binary_incidence_matrix(
         hypergraph, shape, return_mapping=True
     )
+    print(binary_incidence.shape)
     incidence = binary_incidence.multiply(hypergraph.get_weights()).tocsr()
     if return_mapping:
         return incidence, mapping
@@ -208,7 +213,7 @@ def laplacian_matrix_by_order(
     shape: Optional[Tuple[int]] = None,
 ) -> sparse.spmatrix:
     binary_incidence = binary_incidence_matrix(
-        hypergraph.get_edges(order=order, subhypergraph=True), shape
+        hypergraph.get_edges(order=order, subhypergraph=True, keep_nodes=True), shape
     )
     incidence = binary_incidence.multiply(hypergraph.get_weights(order=order)).tocsr()
 
