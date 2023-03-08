@@ -6,14 +6,7 @@ from scipy.cluster.hierarchy import fcluster
 from hoinetx.core.hypergraph import Hypergraph
 from hoinetx.readwrite.save import save_pickle
 from hoinetx.readwrite.load import load_pickle
-
-
-def jaccard(sa, sb):
-    sa = set(sa)
-    sb = set(sb)
-    i = sa.intersection(sb)
-    u = sa.union(sb)
-    return 1 - len(i) / len(u)
+from hoinetx.measures.edge_similarity import jaccard_distance as jaccard
 
 
 def hyperlink_communities(H: Hypergraph, load_distances=None, save_distances=None):
