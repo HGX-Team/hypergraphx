@@ -63,11 +63,18 @@ class TemporalHypergraph:
         return edges
 
     def aggregate(self, time_window=None):
-        edges = self.get_edges(time_window)
-        edges = [edge[1] for edge in edges]
         from hoinetx.core.hypergraph import Hypergraph
-        h = Hypergraph(edges)
-        return h
+        aggregated = {}
+        if not isinstance(time_window, int):
+            raise TypeError('Time window must be an integer')
+        t = 0
+        while t < max(self.edges):
+            aggregated[t] = set()
+            for edge in self.get_edges((t, t + time_window)):
+                aggregated[t].add(edge[1])
+            aggregated[t] = Hypergraph(aggregated[t])
+            t += time_window
+        return aggregated
 
     def __str__(self):
         for edge in self.edges:
