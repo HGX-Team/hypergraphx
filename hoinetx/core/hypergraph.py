@@ -15,6 +15,9 @@ class Hypergraph:
         self._max_order = 0
         self.add_edges(edge_list, weights=weights)
 
+    def is_uniform(self):
+        return len(set(self.edge_list.values())) == 1
+
     def get_neighbors(self, node, order=None, size=None):
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
