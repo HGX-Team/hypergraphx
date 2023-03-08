@@ -44,7 +44,8 @@ class TemporalHypergraph:
         pass
 
     def del_edges(self, edges):
-        pass
+        for edge in edges:
+            self.del_edge(edge)
 
     def get_edges(self, time_window=None):
         edges = []
