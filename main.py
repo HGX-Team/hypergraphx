@@ -5,11 +5,16 @@ from hoinetx.representations.projections import bipartite, clique_projection
 from hoinetx.generation.random import *
 
 H = hnx.Hypergraph([(1, 2, 3), (1, 4, 5), (1, 2), (5, 6, 7, 8)])
+H.add_node(0)
+H.add_node(9)
 print(H)
 print("Weights: {}".format(H.get_weights()))
-binary_incidence = binary_incidence_matrix(H, shape=(H.num_nodes(), H.num_edges()))
-print(binary_incidence)
-
+#binary_incidence = binary_incidence_matrix(H, shape=(H.num_nodes(), H.num_edges()))
+#print(binary_incidence.todense())
+inc, m = incidence_matrix(H, return_mapping=True)
+print(inc.todense())
+print(m)
+"""
 H = hnx.Hypergraph([(1, 2, 3), (1, 4, 5), (1, 2), (5, 6, 7, 8), (1, 2, 3)])
 print(H)
 print("Weights: {}".format(H.get_weights()))
@@ -41,3 +46,4 @@ print(H.degree_sequence(size=3))
 print(H.degree_sequence(size=4))
 
 print(H.incidence_matrix())
+"""
