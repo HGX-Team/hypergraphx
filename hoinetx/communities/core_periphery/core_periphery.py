@@ -1,6 +1,7 @@
 from loaders import *
 import numpy as np
 import math
+import random
 
 LOAD_NODES = 100000
 N_ITER = 10000
