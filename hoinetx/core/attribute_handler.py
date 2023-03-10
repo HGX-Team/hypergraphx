@@ -5,14 +5,20 @@ class AttributeHandler:
         self.obj2id = {}
         self.attr = {}
 
-    def get_id(self, obj):
+    def add_obj(self, obj):
         if obj in self.obj2id:
+            raise KeyError("Object {} already exists.".format(obj))
+        self.id2obj[self.id] = obj
+        self.obj2id[obj] = self.id
+        self.attr[self.id] = {}
+        self.id += 1
+        return self.id - 1
+
+    def get_id(self, obj):
+        try:
             return self.obj2id[obj]
-        else:
-            self.id2obj[self.id] = obj
-            self.obj2id[obj] = self.id
-            self.id += 1
-            return self.id - 1
+        except KeyError:
+            raise KeyError("No object {}.".format(obj))
 
     def get_obj(self, idx):
         try:
@@ -32,7 +38,15 @@ class AttributeHandler:
         except KeyError:
             raise KeyError("No object {}.".format(obj))
 
-    def del_obj(self, obj):
+    def add_attr(self, obj, attr, value):
+        idx = self.get_id(obj)
+        self.attr[idx][attr] = value
+
+    def remove_attr(self, obj, attr):
+        idx = self.get_id(obj)
+        del self.attr[idx][attr]
+
+    def remove_obj(self, obj):
         if obj in self.obj2id:
             idx = self.get_id(obj)
             del self.id2obj[idx]

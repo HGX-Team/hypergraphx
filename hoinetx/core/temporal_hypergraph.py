@@ -39,16 +39,16 @@ class TemporalHypergraph:
         for node in nodes:
             self._nodes.add(node)
 
-    def del_edge(self, edge):
+    def remove_edge(self, edge):
         t = edge[0]
         _edge = tuple(sorted(edge[1]))
         if t in self.edges:
             if _edge in self.edges[t]:
                 self.edges[t].remove(_edge)
 
-    def del_edges(self, edges):
+    def remove_edges(self, edges):
         for edge in edges:
-            self.del_edge(edge)
+            self.remove_edge(edge)
 
     def get_edges(self, time_window=None):
         edges = []
@@ -80,10 +80,15 @@ class TemporalHypergraph:
             t += time_window
         return aggregated
 
+    def get_nodes(self):
+        return self._nodes
+
     def __str__(self):
         for edge in self.edges:
             print(edge)
         return ''
+
+
 
 
 

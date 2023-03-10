@@ -32,11 +32,11 @@ def random_shuffle(hg: Hypergraph, order=None, size=None, inplace=True):
         edges.add(tuple(sorted(random.sample(nodes, size))))
 
     if inplace:
-        hg.del_edges(hg.get_edges(size=size))
+        hg.remove_edges(hg.get_edges(size=size))
         hg.add_edges(list(edges))
     else:
         h = hg.copy()
-        h.del_edges(h.get_edges(size=size))
+        h.remove_edges(h.get_edges(size=size))
         h.add_edges(list(edges))
         return h
 

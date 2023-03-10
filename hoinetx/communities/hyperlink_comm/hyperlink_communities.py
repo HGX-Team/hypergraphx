@@ -4,8 +4,8 @@ import scipy.spatial.distance as ssd
 from scipy.cluster.hierarchy import linkage
 from scipy.cluster.hierarchy import fcluster
 from hoinetx.core.hypergraph import Hypergraph
-from hoinetx.readwrite.save import save_pickle
-from hoinetx.readwrite.load import load_pickle
+from hoinetx.readwrite.save import _save_pickle
+from hoinetx.readwrite.load import _load_pickle
 from hoinetx.measures.edge_similarity import jaccard_distance as jaccard
 
 
@@ -35,7 +35,7 @@ def hyperlink_communities(H: Hypergraph, load_distances=None, save_distances=Non
     G.add_nodes_from([i for i in range(len(h))])
 
     try:
-        X = load_pickle("{}.hlcd".format(load_distances))
+        X = _load_pickle("{}.hlcd".format(load_distances))
     except FileNotFoundError:
         vis = {}
         c = 0
@@ -54,7 +54,7 @@ def hyperlink_communities(H: Hypergraph, load_distances=None, save_distances=Non
             c += 1
 
         X = nx.to_numpy_array(G, weight='weight', nonedge=1.0)
-        save_pickle(X, "{}.hlcd".format(save_distances))
+        _save_pickle(X, "{}.hlcd".format(save_distances))
 
     print("dist computed")
 

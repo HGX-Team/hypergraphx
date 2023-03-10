@@ -60,7 +60,7 @@ def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=False):
     def stub_edge_mh(message=True):
         mh_rounds = 0
         mh_steps = 0
-        c_new = [list(c) for c in hypergraph.edge_list]
+        c_new = [list(c) for c in hypergraph._edge_list]
         m = len(c_new)
 
         proposal = proposal_generator(m)
@@ -77,7 +77,7 @@ def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=False):
             n += 1
 
         new_h = Hypergraph()
-        new_h.edge_list = [tuple(sorted(f)) for f in c_new]
+        new_h._edge_list = [tuple(sorted(f)) for f in c_new]
         mh_steps += n
         mh_rounds += 1
 
@@ -93,7 +93,7 @@ def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=False):
 
         k = 0
         done = False
-        c = Counter(hypergraph.edge_list)
+        c = Counter(hypergraph._edge_list)
 
         epoch_num = 0
         n_rejected = 0
@@ -170,7 +170,7 @@ def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=False):
                 n_rejected) + ' steps rejected.')
 
         new_h = Hypergraph()
-        new_h.edge_list = [tuple(sorted(f)) for f in list(c.elements())]
+        new_h._edge_list = [tuple(sorted(f)) for f in list(c.elements())]
         mh_steps += k - n_rejected
         mh_rounds += 1
         return new_h
