@@ -30,7 +30,8 @@ class Hypergraph:
             edges = self.get_adj_edges(node, order=order)
             for edge in edges:
                 neigh.update(edge)
-            neigh.remove(node)
+            if node in neigh:
+                neigh.remove(node)
             return neigh
 
     def get_adj_edges(self, node, order=None, size=None):

@@ -9,7 +9,7 @@ def connected_components(hg: Hypergraph, order=None, size=None):
     components = []
     for node in hg.get_nodes():
         if node not in visited:
-            component = _bfs(hg, node, size=None, order=None)
+            component = _bfs(hg, node, size=order, order=size)
             visited += component
             components.append(component)
     return components
