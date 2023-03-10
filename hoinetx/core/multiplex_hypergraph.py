@@ -58,14 +58,14 @@ class MultiplexHypergraph:
     def aggregated_hypergraph(self):
         h = Hypergraph()
         for layer in self.layers.values():
-            h.add_edges(layer.edge_list.keys())
+            h.add_edges(layer._edge_list.keys())
         return h
 
     def edge_overlap(self, edge):
         edge = tuple(sorted(edge))
         overlap = 0
         for layer in self.layers.values():
-            if edge in layer.edge_list:
+            if edge in layer._edge_list:
                 overlap += layer.get_weight(edge)
         return overlap
 

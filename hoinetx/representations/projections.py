@@ -24,7 +24,7 @@ def bipartite(h: Hypergraph):
         obj_to_id[node] = idx
         idx += 1
 
-    for edge in h.edge_list:
+    for edge in h._edge_list:
         edge = tuple(sorted(edge))
         obj_to_id[edge] = idx
         id_to_obj[idx] = edge
@@ -50,7 +50,7 @@ def clique_projection(h: Hypergraph):
     """
     g = nx.Graph()
 
-    for edge in h.edge_list:
+    for edge in h._edge_list:
         for i in range(len(edge)-1):
             for j in range(i+1, len(edge)):
                 g.add_edge(edge[i], edge[j])
@@ -78,7 +78,7 @@ def line_graph(h: Hypergraph, distance='intersection', s=1, weighted=False):
         if distance == 'jaccard':
             return jaccard(a, b)
 
-    edges = h.edge_list
+    edges = h._edge_list
     adj = h.get_adj_nodes()
 
     edge_to_id = {}
