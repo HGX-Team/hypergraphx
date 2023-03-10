@@ -10,7 +10,7 @@ class AttributeHandler:
             raise KeyError("Object {} already exists.".format(obj))
         self.id2obj[self.id] = obj
         self.obj2id[obj] = self.id
-        self.attr[self.id] = {}
+        self.attr[self.id] = {'name': obj}
         self.id += 1
         return self.id - 1
 

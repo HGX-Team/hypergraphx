@@ -7,8 +7,10 @@ def random_hypergraph(num_nodes, num_edges_by_size={}):
     nodes = list(range(num_nodes))
     h.add_nodes(nodes)
     for size in num_edges_by_size:
-        while h.num_edges(size=size) < num_edges_by_size[size]:
-            h.add_edge(random.sample(nodes, size))
+        edges = set()
+        while len(edges) < num_edges_by_size[size]:
+            edges.add(tuple(sorted(random.sample(nodes, size))))
+        h.add_edges(list(edges))
     return h
 
 

@@ -1,4 +1,5 @@
-import pickle
+import pickle, json
+from hoinetx.core.hypergraph import Hypergraph
 
 
 def _load_pickle(file_name):
@@ -6,14 +7,14 @@ def _load_pickle(file_name):
         return pickle.load(f)
 
 
-def load_hypergraph(file_name, file_type="pickle"):
+def load_hypergraph(file_name, file_type):
+    file_name += ".{}".format(file_type)
     if file_type == "pickle":
         _load_pickle(file_name)
     elif file_type == "json":
-        pass
-    elif file_type == "text":
-        pass
-    elif file_type == "csv":
-        pass
+        with open(file_name, "r") as infile:
+            studentDict = json.load(infile)
+            print(studentDict)
+
     else:
         raise ValueError("Invalid file type.")

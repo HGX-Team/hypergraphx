@@ -113,9 +113,10 @@ class Hypergraph:
                 raise ValueError("The number of edges and weights must be the same.")
 
         if weights is not None and not self._weighted:
-            raise ValueError(
-                "If weights are provided, the hypergraph must be weighted."
+            print(
+                "Warning: weights are provided but the hypergraph is not weighted. The hypergraph will be weighted."
             )
+            self._weighted = True
 
         i = 0
         if edge_list is not None:
