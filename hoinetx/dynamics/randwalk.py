@@ -25,7 +25,8 @@ def transition_matrix(HG : Hypergraph)->sparse.spmatrix:
     [1] Timoteo Carletti, Federico Battiston, Giulia Cencetti, and Duccio Fanelli, Random walks on hypergraphs, Phys. Rev. E 96, 012308 (2017)
     '''
     N = HG.num_nodes()
-
+    # assert if HG i connected
+    assert HG.is_connected(), 'The hypergraph is not connected'
     hedge_list = HG.get_edges()
     T = np.zeros((N,N))
     for l in hedge_list:
