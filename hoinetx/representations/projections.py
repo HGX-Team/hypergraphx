@@ -1,9 +1,10 @@
 import networkx as nx
+from networkx.algorithms import bipartite
 from hoinetx.core.hypergraph import Hypergraph
 from hoinetx.measures.edge_similarity import *
 
 
-def bipartite(h: Hypergraph):
+def bipartite_projection(h: Hypergraph):
     """
     Returns a bipartite graph representation of the hypergraph.
     Parameters
@@ -20,16 +21,19 @@ def bipartite(h: Hypergraph):
     idx = 0
 
     for node in h.get_nodes():
-        id_to_obj[idx] = node
-        obj_to_id[node] = idx
+        id_to_obj['N'+str(idx)] = node
+        obj_to_id[node] = 'N'+str(idx)
         idx += 1
+        g.add_node(obj_to_id[node], bipartite=0)
+
+    idx = 0
 
     for edge in h.get_edges():
         edge = tuple(sorted(edge))
-        obj_to_id[edge] = idx
-        id_to_obj[idx] = edge
+        obj_to_id[edge] = 'E'+str(idx)
+        id_to_obj['E'+str(idx)] = edge
         idx += 1
-        g.add_node(obj_to_id[edge])
+        g.add_node(obj_to_id[edge], bipartite=1)
 
         for node in edge:
             g.add_edge(obj_to_id[edge], obj_to_id[node])
