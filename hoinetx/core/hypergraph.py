@@ -53,7 +53,7 @@ class Hypergraph:
         if node not in self._neighbors:
             self._neighbors[node] = set()
             self._adj[node] = set()
-            self._attr.add_obj(node)
+            self._attr.add_obj(node, obj_type="node")
 
     def add_nodes(self, node_list):
         for node in node_list:
@@ -73,7 +73,7 @@ class Hypergraph:
             )
 
         edge = tuple(sorted(edge))
-        idx = self._attr.add_obj(edge)
+        idx = self._attr.add_obj(edge, obj_type="edge")
         order = len(edge) - 1
 
         if metadata is not None:
@@ -105,6 +105,12 @@ class Hypergraph:
                 self._neighbors[edge[j]].add(edge[i])
 
     def add_edges(self, edge_list, weights=None, metadata=None):
+        if weights is not None and not self._weighted:
+            print(
+                "Warning: weights are provided but the hypergraph is not weighted. The hypergraph will be weighted."
+            )
+            self._weighted = True
+
         if self._weighted and weights is not None:
             if len(set(edge_list)) != len(edge_list):
                 raise ValueError(
@@ -112,12 +118,6 @@ class Hypergraph:
                 )
             if len(edge_list) != len(weights):
                 raise ValueError("The number of edges and weights must be the same.")
-
-        if weights is not None and not self._weighted:
-            print(
-                "Warning: weights are provided but the hypergraph is not weighted. The hypergraph will be weighted."
-            )
-            self._weighted = True
 
         i = 0
         if edge_list is not None:
@@ -241,6 +241,12 @@ class Hypergraph:
     def get_weight(self, edge):
         try:
             return self._edge_list[tuple(sorted(edge))]
+        except KeyError:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+
+    def set_weight(self, edge, weight):
+        try:
+            self._edge_list[tuple(sorted(edge))] = weight
         except KeyError:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
 

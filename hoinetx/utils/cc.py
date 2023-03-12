@@ -3,6 +3,18 @@ from hoinetx.utils.visits import _bfs
 
 
 def connected_components(hg: Hypergraph, order=None, size=None):
+    """
+    Return the connected components of the hypergraph.
+    Parameters
+    ----------
+    hg
+    order
+    size
+
+    Returns
+    -------
+
+    """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
     visited = []
@@ -16,18 +28,55 @@ def connected_components(hg: Hypergraph, order=None, size=None):
 
 
 def node_connected_component(hg: Hypergraph, node, order=None, size=None):
+    """
+    Return the connected component of the hypergraph containing the given node.
+    Parameters
+    ----------
+    hg
+    node
+    order
+    size
+
+    Returns
+    -------
+
+    """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
     return _bfs(hg, node, size=None, order=None)
 
 
 def num_connected_components(hg: Hypergraph, order=None, size=None):
+    """
+    Return the number of connected components of the hypergraph.
+    Parameters
+    ----------
+    hg
+    order
+    size
+
+    Returns
+    -------
+
+    """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
     return len(hg.connected_components(size=None, order=None))
 
 
 def largest_component(hg: Hypergraph, order=None, size=None):
+    """
+    Return the largest connected component of the hypergraph.
+    Parameters
+    ----------
+    hg
+    order
+    size
+
+    Returns
+    -------
+
+    """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
     components = hg.connected_components(size=None, order=None)
@@ -35,24 +84,73 @@ def largest_component(hg: Hypergraph, order=None, size=None):
 
 
 def largest_component_size(hg: Hypergraph, order=None, size=None):
+    """
+    Return the size of the largest connected component of the hypergraph.
+    Parameters
+    ----------
+    hg
+    order
+    size
+
+    Returns
+    -------
+
+    """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
     return len(hg.largest_component(size=None, order=None))
 
 
 def isolated_nodes(hg: Hypergraph, order=None, size=None):
+    """
+    Return the isolated nodes of the hypergraph.
+    Parameters
+    ----------
+    hg
+    order
+    size
+
+    Returns
+    -------
+
+    """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
-    return [node for node in hg.get_nodes() if len(hg.get_neighbors(node)) == 0]
+    return [node for node in hg.get_nodes() if len(hg.get_neighbors(node, order=order, size=size)) == 0]
 
 
 def is_isolated(hg: Hypergraph, node, order=None, size=None):
+    """
+    Return True if the given node is isolated.
+    Parameters
+    ----------
+    hg
+    node
+    order
+    size
+
+    Returns
+    -------
+
+    """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
-    return len(hg.get_neighbors(node)) == 0
+    return len(hg.get_neighbors(node, order=order, size=size)) == 0
 
 
 def is_connected(hg: Hypergraph, order=None, size=None):
+    """
+    Return True if the hypergraph is connected.
+    Parameters
+    ----------
+    hg
+    order
+    size
+
+    Returns
+    -------
+
+    """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
     return len(hg.connected_components(order=order, size=size)) == 1
