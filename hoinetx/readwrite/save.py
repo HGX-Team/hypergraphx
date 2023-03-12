@@ -8,6 +8,18 @@ def _save_pickle(obj, file_name):
 
 
 def save_hypergraph(hypergraph: Hypergraph, file_name, file_type):
+    """
+    Save a hypergraph to a file.
+    Parameters
+    ----------
+    hypergraph: Hypergraph : the hypergraph to save
+    file_name: str : name of the file
+    file_type: str : type of the file
+
+    Returns
+    -------
+    None : the hypergraph is saved to a file
+    """
     if file_type == "pickle":
         _save_pickle(hypergraph, file_name)
     elif file_type == "json":

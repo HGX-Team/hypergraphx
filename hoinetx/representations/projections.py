@@ -8,11 +8,11 @@ def bipartite(h: Hypergraph):
     Returns a bipartite graph representation of the hypergraph.
     Parameters
     ----------
-    h
+    h : Hypergraph. The hypergraph to be projected.
 
     Returns
     -------
-
+    g : networkx.Graph. The bipartite graph representation of the hypergraph.
     """
     g = nx.Graph()
     id_to_obj = {}
@@ -24,7 +24,7 @@ def bipartite(h: Hypergraph):
         obj_to_id[node] = idx
         idx += 1
 
-    for edge in h._edge_list:
+    for edge in h.get_edges():
         edge = tuple(sorted(edge))
         obj_to_id[edge] = idx
         id_to_obj[idx] = edge
@@ -42,15 +42,15 @@ def clique_projection(h: Hypergraph):
     Returns a clique projection of the hypergraph.
     Parameters
     ----------
-    h
+    h : Hypergraph. The hypergraph to be projected.
 
     Returns
     -------
-
+    g : networkx.Graph. The clique projection of the hypergraph.
     """
     g = nx.Graph()
 
-    for edge in h._edge_list:
+    for edge in h.get_edges():
         for i in range(len(edge)-1):
             for j in range(i+1, len(edge)):
                 g.add_edge(edge[i], edge[j])
@@ -63,14 +63,14 @@ def line_graph(h: Hypergraph, distance='intersection', s=1, weighted=False):
     Returns a line graph of the hypergraph.
     Parameters
     ----------
-    h
-    distance
-    s
-    weighted
+    h : Hypergraph. The hypergraph to be projected.
+    distance : str. The distance function to be used. Can be 'intersection' or 'jaccard'.
+    s : float. The threshold for the distance function.
+    weighted : bool. Whether the line graph should be weighted or not.
 
     Returns
     -------
-
+    g : networkx.Graph. The line graph of the hypergraph.
     """
     def distance(a, b):
         if distance == 'intersection':
@@ -78,7 +78,7 @@ def line_graph(h: Hypergraph, distance='intersection', s=1, weighted=False):
         if distance == 'jaccard':
             return jaccard(a, b)
 
-    edges = h._edge_list
+    edges = h.get_edges()
     adj = h.get_adj_nodes()
 
     edge_to_id = {}
