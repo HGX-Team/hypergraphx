@@ -7,13 +7,13 @@ def connected_components(hg: Hypergraph, order=None, size=None):
     Return the connected components of the hypergraph.
     Parameters
     ----------
-    hg
-    order
-    size
+    hg : Hypergraph. The hypergraph to check.
+    order : int. The order of the hyperedges to consider. If None, all hyperedges are considered.
+    size : int. The size of the hyperedges to consider. If None, all hyperedges are considered.
 
     Returns
     -------
-
+    list. The connected components of the hypergraph.
     """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
@@ -32,14 +32,14 @@ def node_connected_component(hg: Hypergraph, node, order=None, size=None):
     Return the connected component of the hypergraph containing the given node.
     Parameters
     ----------
-    hg
-    node
-    order
-    size
+    hg : Hypergraph. The hypergraph to check.
+    node : Node. The node to check.
+    order : int. The order of the hyperedges to consider. If None, all hyperedges are considered.
+    size : int. The size of the hyperedges to consider. If None, all hyperedges are considered.
 
     Returns
     -------
-
+    list. The nodes in the connected component of the input node.
     """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
@@ -51,13 +51,13 @@ def num_connected_components(hg: Hypergraph, order=None, size=None):
     Return the number of connected components of the hypergraph.
     Parameters
     ----------
-    hg
-    order
-    size
+    hg : Hypergraph. The hypergraph to check.
+    order : int. The order of the hyperedges to consider. If None, all hyperedges are considered.
+    size : int. The size of the hyperedges to consider. If None, all hyperedges are considered.
 
     Returns
     -------
-
+    int. The number of connected components.
     """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
@@ -69,13 +69,13 @@ def largest_component(hg: Hypergraph, order=None, size=None):
     Return the largest connected component of the hypergraph.
     Parameters
     ----------
-    hg
-    order
-    size
+    hg : Hypergraph. The hypergraph to check.
+    order : int. The order of the hyperedges to consider. If None, all hyperedges are considered.
+    size : int. The size of the hyperedges to consider. If None, all hyperedges are considered.
 
     Returns
     -------
-
+    list. The nodes in the largest connected component.
     """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
@@ -88,13 +88,13 @@ def largest_component_size(hg: Hypergraph, order=None, size=None):
     Return the size of the largest connected component of the hypergraph.
     Parameters
     ----------
-    hg
-    order
-    size
+    hg : Hypergraph. The hypergraph to check.
+    order : int. The order of the hyperedges to consider. If None, all hyperedges are considered.
+    size : int. The size of the hyperedges to consider. If None, all hyperedges are considered.
 
     Returns
     -------
-
+    int. The size of the largest connected component.
     """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
@@ -106,13 +106,13 @@ def isolated_nodes(hg: Hypergraph, order=None, size=None):
     Return the isolated nodes of the hypergraph.
     Parameters
     ----------
-    hg
-    order
-    size
+    hg: Hypergraph. The hypergraph to check.
+    order: int. The order of the hyperedges to consider. If None, all hyperedges are considered.
+    size: int. The size of the hyperedges to consider. If None, all hyperedges are considered.
 
     Returns
     -------
-
+    list. The isolated nodes.
     """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
@@ -124,14 +124,14 @@ def is_isolated(hg: Hypergraph, node, order=None, size=None):
     Return True if the given node is isolated.
     Parameters
     ----------
-    hg
-    node
-    order
-    size
+    hg : Hypergraph. The hypergraph to check.
+    node : Node. The node to check.
+    order : int. The order of the hyperedges to consider. If None, all hyperedges are considered.
+    size : int. The size of the hyperedges to consider. If None, all hyperedges are considered.
 
     Returns
     -------
-
+    bool. True if the node is isolated, False otherwise.
     """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
@@ -143,13 +143,13 @@ def is_connected(hg: Hypergraph, order=None, size=None):
     Return True if the hypergraph is connected.
     Parameters
     ----------
-    hg
-    order
-    size
+    hg : Hypergraph. The hypergraph to check.
+    order : int. The order of the hyperedges to consider. If None, all hyperedges are considered.
+    size : int. The size of the hyperedges to consider. If None, all hyperedges are considered.
 
     Returns
     -------
-
+    bool. True if the hypergraph is connected, False otherwise.
     """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
