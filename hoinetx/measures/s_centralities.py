@@ -9,12 +9,12 @@ def s_betweenness(H: Hypergraph, s=1):
     Compute the betweenness centrality for each edge in the hypergraph.
     Parameters
     ----------
-    H
+    H : Hypergraph to compute the betweenness centrality for.
     s
 
     Returns
     -------
-
+    dict. The betweenness centrality for each edge in the hypergraph. The keys are the edges and the values are the betweenness centrality.
     """
 
     lg, id_to_edge = line_graph(H, s=s)
@@ -27,12 +27,12 @@ def s_closeness(H: Hypergraph, s=1):
     Compute the closeness centrality for each edge in the hypergraph.
     Parameters
     ----------
-    H
+    H : Hypergraph to compute the closeness centrality for.
     s
 
     Returns
     -------
-
+    dict. The closeness centrality for each edge in the hypergraph. The keys are the edges and the values are the closeness centrality.
     """
     lg, id_to_edge = line_graph(H, s=s)
     c = nx.closeness_centrality(lg)
