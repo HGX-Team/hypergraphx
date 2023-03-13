@@ -46,7 +46,31 @@ def CEC_centrality(HG):
     return {node: dominant_eig[node] for node in range(HG.num_nodes())}
 
 def ZEC_centrality(HG, max_iter=1000, tol=1e-7):
-    
+    '''
+    Compute the ZEC centrality for uniform hypergraphs.
+
+    Parameters
+    ----------
+
+    HG : Hypergraph
+        The uniform hypergraph on which the ZEC centrality is computed.
+    max_iter : int
+        The maximum number of iterations.
+    tol : float
+        The tolerance for the stopping criterion.
+
+    Returns
+    -------
+    ZEC : dict
+        The dictionary of keys nodes of HG and values the ZEC centrality of the node.
+
+    References
+    ----------
+    Three Hypergraph Eigenvector Centralities,
+    Austin R. Benson,
+    https://doi.org/10.1137/18M1203031
+
+    '''
     g = lambda v, e: np.prod(v[list(e)])
 
     x = np.random.uniform(size=(HG.num_nodes()))
@@ -64,7 +88,32 @@ def ZEC_centrality(HG, max_iter=1000, tol=1e-7):
     return {node: x[node] for node in range(HG.num_nodes())}
 
 def HEC_centrality(HG, max_iter=100, tol=1e-6):
+    '''
+    
+    Compute the HEC centrality for uniform hypergraphs.
 
+    Parameters
+    ----------
+
+    HG : Hypergraph
+        The uniform hypergraph on which the HEC centrality is computed.
+    max_iter : int
+        The maximum number of iterations.
+    tol : float
+        The tolerance for the stopping criterion.
+
+    Returns
+    -------
+    HEC : dict
+        The dictionary of keys nodes of HG and values the HEC centrality of the node.
+
+    References
+    ----------
+    Three Hypergraph Eigenvector Centralities,
+    Austin R. Benson,
+    https://doi.org/10.1137/18M1203031
+    
+    '''
     # check if the hypergraph is uniform, use raise exception
     if not HG.is_uniform():
         raise Exception("The hypergraph is not uniform.")
