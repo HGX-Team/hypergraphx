@@ -1,12 +1,12 @@
 from hoinetx.core.hypergraph import Hypergraph
-from hoinetx.core.attribute_handler import AttributeHandler
+from hoinetx.core.meta_handler import MetaHandler
 
 
 class MultiplexHypergraph:
 
     def __init__(self):
         self.layers = {}
-        self.__attr = AttributeHandler()
+        self.__attr = MetaHandler()
 
     def add_layer(self, layer_name, hypergraph: Hypergraph, attr=None):
         self.layers[layer_name] = hypergraph

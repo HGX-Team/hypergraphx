@@ -1,4 +1,4 @@
-class AttributeHandler:
+class MetaHandler:
     def __init__(self):
         self.id = 0
         self.id2obj = {}

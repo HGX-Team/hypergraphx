@@ -1,12 +1,12 @@
 import copy
 from typing import Optional, Tuple
 
-from hoinetx.core.attribute_handler import AttributeHandler
+from hoinetx.core.meta_handler import MetaHandler
 
 
 class Hypergraph:
     def __init__(self, edge_list=None, weighted=False, weights=None, metadata=None):
-        self._attr = AttributeHandler()
+        self._attr = MetaHandler()
         self._weighted = weighted
         self._edges_by_order = {}
         self._neighbors = {}
