@@ -1,9 +1,9 @@
-from hoinetx.core.attribute_handler import AttributeHandler
+from hoinetx.core.meta_handler import MetaHandler
 
 
 class TemporalHypergraph:
     def __init__(self, edges):
-        self.__attr = AttributeHandler()
+        self.__attr = MetaHandler()
         self.edges = {}
         self._nodes = set()
         self.add_edges(edges)

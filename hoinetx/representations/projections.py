@@ -1,5 +1,4 @@
 import networkx as nx
-from networkx.algorithms import bipartite
 from hoinetx.core.hypergraph import Hypergraph
 from hoinetx.measures.edge_similarity import *
 
@@ -41,18 +40,23 @@ def bipartite_projection(h: Hypergraph):
     return g, id_to_obj
 
 
-def clique_projection(h: Hypergraph):
+def clique_projection(h: Hypergraph, keep_isolated=False):
     """
     Returns a clique projection of the hypergraph.
     Parameters
     ----------
     h : Hypergraph. The hypergraph to be projected.
+    keep_isolated : bool. Whether to keep isolated nodes or not.
 
     Returns
     -------
     g : networkx.Graph. The clique projection of the hypergraph.
     """
     g = nx.Graph()
+
+    if keep_isolated:
+        for node in h.get_nodes():
+            g.add_node(node)
 
     for edge in h.get_edges():
         for i in range(len(edge)-1):
@@ -76,7 +80,7 @@ def line_graph(h: Hypergraph, distance='intersection', s=1, weighted=False):
     -------
     g : networkx.Graph. The line graph of the hypergraph.
     """
-    def distance(a, b):
+    def _distance(a, b):
         if distance == 'intersection':
             return intersection(a, b)
         if distance == 'jaccard':
@@ -106,7 +110,7 @@ def line_graph(h: Hypergraph, distance='intersection', s=1, weighted=False):
                 e_i = set(adj[n][i])
                 e_j = set(adj[n][j])
                 if k not in vis:
-                    w = distance(e_i, e_j)
+                    w = _distance(e_i, e_j)
                     if w >= s:
                         if weighted:
                             g.add_edge(edge_to_id[adj[n][i]], edge_to_id[adj[n][j]], weight=w)
