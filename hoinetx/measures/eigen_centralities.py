@@ -1,7 +1,28 @@
 from numpy.linalg import norm
 import numpy as np
 
-def CEC_centrality(HG):
+def power_method(W, max_iter=1000, tol=1e-7):
+    # initialize x
+    x = np.random.rand(len(W))
+    x = x / np.linalg.norm(x)
+    # initialize the residual
+    res = np.inf
+    # initialize the number of iterations
+    k = 0
+    while res > tol and k < max_iter:
+        # compute y
+        y = np.dot(W, x)
+        # compute the norm of y
+        y_norm = np.linalg.norm(y)
+        # compute the residual
+        res = np.linalg.norm(x - y / y_norm)
+        # update x
+        x = y / y_norm
+        # update the number of iterations
+        k += 1
+    return x
+
+def CEC_centrality(HG, tol=1e-7, max_iter=1000):
     '''
     Compute the CEC centrality for uniform hypergraphs.
 
@@ -10,6 +31,10 @@ def CEC_centrality(HG):
     
     HG : Hypergraph
         The uniform hypergraph on which the CEC centrality is computed.
+    tol : float
+        The tolerance for calculating the dominant eigenvalue by power method.
+    max_iter : int
+        The maximum number of iterations for calculating the dominant eigenvalue by power method.
     
     Returns
     -------
@@ -39,10 +64,7 @@ def CEC_centrality(HG):
             for j in range(i + 1, order):
                 W[edge[i], edge[j]] += 1
                 W[edge[j], edge[i]] += 1
-    # compute the dominant eigenvector of W
-    eigval, eigvec = np.linalg.eig(W)
-    # return a dictionary of keys nodes of HG and values the corresponding element of the dominant eigenvector
-    dominant_eig = eigvec[:, np.argmax(eigval)]
+    dominant_eig = power_method(W, tol=tol, max_iter=max_iter)
     return {node: dominant_eig[node] for node in range(HG.num_nodes())}
 
 def ZEC_centrality(HG, max_iter=1000, tol=1e-7):
