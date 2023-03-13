@@ -20,7 +20,7 @@ def draw_SC(HG, pos = None, link_color = 'black',
              with_labels = False,
              ax = None):
     
-    G = clique_projection(HG)
+    G = clique_projection(HG, keep_isolated=True)
     if pos == None:
         pos = nx.spring_layout(G)
     for h_edge in HG.get_edges():

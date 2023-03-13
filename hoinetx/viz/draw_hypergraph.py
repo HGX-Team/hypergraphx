@@ -68,7 +68,7 @@ def draw_HG(HG, pos = None, link_color = 'black',
              with_labels = False,
              ax = None):
     if pos == None:
-        pos = nx.spring_layout(clique_projection(HG))
+        pos = nx.spring_layout(clique_projection(HG, keep_isolated=True))
     links = HG.get_edges(order = 1)
     # create a empty graph with nodes = HG.get_nodes()
     G = nx.Graph()
@@ -95,7 +95,7 @@ def draw_HG(HG, pos = None, link_color = 'black',
             if len(points) == 3:
                 points = [(x_c + 2.5*(x-x_c), y_c + 2.5*(y-y_c)) for x, y in points]
             else:
-                points = [(x_c + 1.5*(x-x_c), y_c + 1.5*(y-y_c)) for x, y in points]
+                points = [(x_c + 1.8*(x-x_c), y_c + 1.8*(y-y_c)) for x, y in points]
             Cartesian_coords_list = points + [points[0]]
 
             obj = Object(Cartesian_coords_list)    
