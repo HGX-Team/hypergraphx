@@ -93,6 +93,12 @@ def ZEC_centrality(HG, max_iter=1000, tol=1e-7):
     https://doi.org/10.1137/18M1203031
 
     '''
+    if not HG.is_uniform():
+        raise Exception("The hypergraph is not uniform.")
+
+    if not HG.is_connected():
+        raise Exception("The hypergraph is not connected.")
+
     g = lambda v, e: np.prod(v[list(e)])
 
     x = np.random.uniform(size=(HG.num_nodes()))
@@ -139,6 +145,9 @@ def HEC_centrality(HG, max_iter=100, tol=1e-6):
     # check if the hypergraph is uniform, use raise exception
     if not HG.is_uniform():
         raise Exception("The hypergraph is not uniform.")
+
+    if not HG.is_connected():
+        raise Exception("The hypergraph is not connected.")
     
     order = len(HG.get_edges()[0]) -1
     f = lambda v, m: np.power(v, 1.0 / m)
