@@ -123,7 +123,6 @@ def incidence_matrix(
     binary_incidence, mapping = binary_incidence_matrix(
         hypergraph, shape, return_mapping=True
     )
-    print(binary_incidence.shape)
     incidence = binary_incidence.multiply(hypergraph.get_weights()).tocsr()
     if return_mapping:
         return incidence, mapping
@@ -131,21 +130,22 @@ def incidence_matrix(
 
 
 def incidence_matrix_by_order(
-    hypergraph: Hypergraph, order: int, shape: Optional[Tuple[int]] = None
+    hypergraph: Hypergraph, order: int, shape: Optional[Tuple[int]] = None, keep_isolated_nodes:bool=False, return_mapping: bool = False,
 ) -> sparse.spmatrix:
-    binary_incidence = binary_incidence_matrix(
-        hypergraph.get_edges(order=order, subhypergraph=True), shape
+    binary_incidence, mapping = binary_incidence_matrix(
+        hypergraph.get_edges(order=order, subhypergraph=True, keep_isolated_nodes=keep_isolated_nodes), shape, return_mapping
     )
     incidence = binary_incidence.multiply(hypergraph.get_weights(order=order)).tocsr()
-    return incidence
+    return incidence, mapping
 
 
 def incidence_matrices_all_orders(
-    hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None
+    hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None, keep_isolated_nodes:bool=False, return_mapping: bool = False,
 ) -> List[sparse.spmatrix]:
     incidence_matrices = {}
     for order in range(1, hypergraph.max_order() + 1):
-        incidence_matrices[order] = incidence_matrix_by_order(hypergraph, order, shape)
+        # fix lista di mappings ad ogni ordine
+        incidence_matrices[order], _ = incidence_matrix_by_order(hypergraph, order, shape, keep_isolated_nodes, return_mapping)
     return incidence_matrices
 
 
@@ -205,6 +205,19 @@ def dual_random_walk_adjacency(
         return adj, mapping
     return adj
 
+def degree_matrix(hypergraph, order, mapping = None):
+    degree_dct = hypergraph.degree_sequence(order)
+    inverse_mapping = {}
+    if not mapping==None:
+        for name in mapping.keys():
+            inverse_mapping[mapping[name]] = name
+    else:
+        # calcolare il mapping dall'ipergrafo
+        pass
+    degree_lst = [degree_dct[inverse_mapping[n]] for n in sorted(inverse_mapping.keys())]
+
+    return sparse.diags(degree_lst)
+
 
 def laplacian_matrix_by_order(
     hypergraph: Hypergraph,
@@ -212,16 +225,11 @@ def laplacian_matrix_by_order(
     weighted=False,
     shape: Optional[Tuple[int]] = None,
 ) -> sparse.spmatrix:
-    binary_incidence = binary_incidence_matrix(
-        hypergraph.get_edges(order=order, subhypergraph=True, keep_isolated_nodes=True), shape
-    )
-    incidence = binary_incidence.multiply(hypergraph.get_weights(order=order)).tocsr()
-    #maybe wrong mapping of nodes? binary incidence returns the mapping of the nodes in the hypergraph
-    degree_dct = hypergraph.degree_sequence(order)
-    degree_lst = [degree_dct[key] for key in sorted(degree_dct.keys(), reverse=False)]
+    incidence, mapping = incidence_matrix_by_order(hypergraph,order,shape,keep_isolated_nodes=True,return_mapping=True)
 
-    degree_matrix = sparse.diags(degree_lst)
-    laplacian = degree_matrix.multiply(order + 1) - incidence.dot(incidence.transpose())
+    #maybe wrong mapping of nodes? binary incidence returns the mapping of the nodes in the hypergraph
+    degree_mtx = degree_matrix(hypergraph, order, mapping)
+    laplacian = degree_mtx.multiply(order + 1) - incidence.dot(incidence.transpose())
 
     if weighted:
         scale_factor = factorial(order - 1)
