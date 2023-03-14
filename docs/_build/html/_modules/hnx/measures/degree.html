@@ -251,18 +251,23 @@ document.write(`
 
 <div class="viewcode-block" id="degree"><a class="viewcode-back" href="../../../hnx.measures.html#hnx.measures.degree.degree">[docs]</a><span class="k">def</span> <span class="nf">degree</span><span class="p">(</span><span class="n">hg</span><span class="p">:</span> <span class="n">Hypergraph</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the degree of a node in the hypergraph.</span>
+<span class="sd">    Computes the degree of a node in the hypergraph.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    hg : Hypergraph. The hypergraph to check.</span>
-<span class="sd">    node : Node. The node to check.</span>
-<span class="sd">    order : int. The order of the hyperedges to consider. If None, all hyperedges are considered.</span>
-<span class="sd">    size : int. The size of the hyperedges to consider. If None, all hyperedges are considered.</span>
+<span class="sd">    hg : Hypergraph</span>
+<span class="sd">        The hypergraph of interest.</span>
+<span class="sd">    node : Node</span>
+<span class="sd">        The node to check.</span>
+<span class="sd">    order : int</span>
+<span class="sd">        The order of the hyperedges to consider. If None, all hyperedges are considered.</span>
+<span class="sd">    size : int</span>
+<span class="sd">        The size of the hyperedges to consider. If None, all hyperedges are considered.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    int. The degree of the node.</span>
+<span class="sd">    int</span>
+<span class="sd">        The degree of the node.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Order and size cannot be both specified.&quot;</span><span class="p">)</span>
@@ -276,12 +281,12 @@ document.write(`
 
 <div class="viewcode-block" id="degree_sequence"><a class="viewcode-back" href="../../../hnx.measures.html#hnx.measures.degree.degree_sequence">[docs]</a><span class="k">def</span> <span class="nf">degree_sequence</span><span class="p">(</span><span class="n">hg</span><span class="p">:</span> <span class="n">Hypergraph</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the degree sequence of the hypergraph.</span>
+<span class="sd">    Computes the degree sequence of the hypergraph.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    hg : Hypergraph</span>
-<span class="sd">        The hypergraph to check.</span>
+<span class="sd">        The hypergraph ofinterest.</span>
 <span class="sd">    order : int</span>
 <span class="sd">        The order of the hyperedges to consider. If None, all hyperedges are considered.</span>
 <span class="sd">    size : int</span>

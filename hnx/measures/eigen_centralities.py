@@ -1,6 +1,7 @@
 from numpy.linalg import norm
 import numpy as np
 
+
 def power_method(W, max_iter=1000, tol=1e-7):
     # initialize x
     x = np.random.rand(len(W))
@@ -21,6 +22,7 @@ def power_method(W, max_iter=1000, tol=1e-7):
         # update the number of iterations
         k += 1
     return x
+
 
 def CEC_centrality(HG, tol=1e-7, max_iter=1000):
     '''
@@ -66,6 +68,7 @@ def CEC_centrality(HG, tol=1e-7, max_iter=1000):
                 W[edge[j], edge[i]] += 1
     dominant_eig = power_method(W, tol=tol, max_iter=max_iter)
     return {node: dominant_eig[node] for node in range(HG.num_nodes())}
+
 
 def ZEC_centrality(HG, max_iter=1000, tol=1e-7):
     '''
@@ -114,6 +117,7 @@ def ZEC_centrality(HG, max_iter=1000, tol=1e-7):
     else:
         "Iteration did not converge!"
     return {node: x[node] for node in range(HG.num_nodes())}
+
 
 def HEC_centrality(HG, max_iter=100, tol=1e-6):
     '''
@@ -168,6 +172,7 @@ def HEC_centrality(HG, max_iter=100, tol=1e-6):
     else:
         print("Iteration did not converge!")
     return {node: x[node] for node in range(HG.num_nodes())}
+
 
 def apply(HG, x, g=lambda v, e: np.sum(v[list(e)])):
 

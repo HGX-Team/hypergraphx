@@ -302,8 +302,8 @@ document.write(`
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.measures.edge_similarity">hnx.measures.edge_similarity module</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.measures.edge_similarity.intersection"><code class="docutils literal notranslate"><span class="pre">intersection()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.measures.edge_similarity.jaccard"><code class="docutils literal notranslate"><span class="pre">jaccard()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.measures.edge_similarity.jaccard_distance"><code class="docutils literal notranslate"><span class="pre">jaccard_distance()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.measures.edge_similarity.jaccard_similarity"><code class="docutils literal notranslate"><span class="pre">jaccard_similarity()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.measures.eigen_centralities">hnx.measures.eigen_centralities module</a><ul class="nav section-nav flex-column">
@@ -345,18 +345,21 @@ document.write(`
 <dl class="py function">
 <dt class="sig sig-object py" id="hnx.measures.degree.degree">
 <span class="sig-prename descclassname"><span class="pre">hnx.measures.degree.</span></span><span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/measures/degree.html#degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.measures.degree.degree" title="Permalink to this definition">#</a></dt>
-<dd><p>Compute the degree of a node in the hypergraph.</p>
+<dd><p>Computes the degree of a node in the hypergraph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>hg</strong> (<em>Hypergraph. The hypergraph to check.</em>) – </p></li>
-<li><p><strong>node</strong> (<em>Node. The node to check.</em>) – </p></li>
-<li><p><strong>order</strong> (<em>int. The order</em><em> of </em><em>the hyperedges to consider. If None</em><em>, </em><em>all hyperedges are considered.</em>) – </p></li>
-<li><p><strong>size</strong> (<em>int. The size</em><em> of </em><em>the hyperedges to consider. If None</em><em>, </em><em>all hyperedges are considered.</em>) – </p></li>
+<li><p><strong>hg</strong> (<a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><em>Hypergraph</em></a>) – The hypergraph of interest.</p></li>
+<li><p><strong>node</strong> (<em>Node</em>) – The node to check.</p></li>
+<li><p><strong>order</strong> (<em>int</em>) – The order of the hyperedges to consider. If None, all hyperedges are considered.</p></li>
+<li><p><strong>size</strong> (<em>int</em>) – The size of the hyperedges to consider. If None, all hyperedges are considered.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>int. The degree of the node.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The degree of the node.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -364,11 +367,11 @@ document.write(`
 <dl class="py function">
 <dt class="sig sig-object py" id="hnx.measures.degree.degree_sequence">
 <span class="sig-prename descclassname"><span class="pre">hnx.measures.degree.</span></span><span class="sig-name descname"><span class="pre">degree_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/measures/degree.html#degree_sequence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.measures.degree.degree_sequence" title="Permalink to this definition">#</a></dt>
-<dd><p>Compute the degree sequence of the hypergraph.</p>
+<dd><p>Computes the degree sequence of the hypergraph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>hg</strong> (<a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><em>Hypergraph</em></a>) – The hypergraph to check.</p></li>
+<li><p><strong>hg</strong> (<a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><em>Hypergraph</em></a>) – The hypergraph ofinterest.</p></li>
 <li><p><strong>order</strong> (<em>int</em>) – The order of the hyperedges to consider. If None, all hyperedges are considered.</p></li>
 <li><p><strong>size</strong> (<em>int</em>) – The size of the hyperedges to consider. If None, all hyperedges are considered.</p></li>
 </ul>
@@ -388,36 +391,84 @@ document.write(`
 <dl class="py function">
 <dt class="sig sig-object py" id="hnx.measures.edge_similarity.intersection">
 <span class="sig-prename descclassname"><span class="pre">hnx.measures.edge_similarity.</span></span><span class="sig-name descname"><span class="pre">intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/measures/edge_similarity.html#intersection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.measures.edge_similarity.intersection" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="hnx.measures.edge_similarity.jaccard">
-<span class="sig-prename descclassname"><span class="pre">hnx.measures.edge_similarity.</span></span><span class="sig-name descname"><span class="pre">jaccard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/measures/edge_similarity.html#jaccard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.measures.edge_similarity.jaccard" title="Permalink to this definition">#</a></dt>
-<dd><p>Compute the Jaccard similarity between two sets.
-:param a:
-:type a: set. The first set.
-:param b:
-:type b: set. The second set.</p>
+<dd><p>Computes the intersection between two sets.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>set</em>) – The first set.</p></li>
+<li><p><strong>b</strong> (<em>set</em>) – The second set.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The size of the intersection between the two sets.</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float. The Jaccard similarity between the two sets.</p>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">intersection</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">})</span>
+<span class="go">2</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="hnx.measures.edge_similarity.jaccard_distance">
 <span class="sig-prename descclassname"><span class="pre">hnx.measures.edge_similarity.</span></span><span class="sig-name descname"><span class="pre">jaccard_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/measures/edge_similarity.html#jaccard_distance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.measures.edge_similarity.jaccard_distance" title="Permalink to this definition">#</a></dt>
-<dd><p>Compute the Jaccard distance between two sets.
-:param a:
-:type a: set. The first set.
-:param b:
-:type b: set. The second set.</p>
+<dd><p>Compute the Jaccard distance between two sets.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>set</em>) – The first set.</p></li>
+<li><p><strong>b</strong> (<em>set</em>) – The second set.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Jaccard distance between the two sets. The distance is 1 - the similarity.</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float. The Jaccard distance between the two sets. The distance is 1 - the similarity.</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#hnx.measures.edge_similarity.jaccard_similarity" title="hnx.measures.edge_similarity.jaccard_similarity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jaccard_similarity</span></code></a></p>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">jaccard_distance</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">})</span>
+<span class="go">0.5</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.measures.edge_similarity.jaccard_similarity">
+<span class="sig-prename descclassname"><span class="pre">hnx.measures.edge_similarity.</span></span><span class="sig-name descname"><span class="pre">jaccard_similarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/measures/edge_similarity.html#jaccard_similarity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.measures.edge_similarity.jaccard_similarity" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the Jaccard similarity between two sets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>set</em>) – The first set.</p></li>
+<li><p><strong>b</strong> (<em>set</em>) – The second set.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Jaccard similarity between the two sets.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#hnx.measures.edge_similarity.jaccard_distance" title="hnx.measures.edge_similarity.jaccard_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jaccard_distance</span></code></a></p>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">jaccard_similarity</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">})</span>
+<span class="go">0.5</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
@@ -514,13 +565,16 @@ Austin R. Benson,
 <dl class="py function">
 <dt class="sig sig-object py" id="hnx.measures.s_centralities.s_betweenness">
 <span class="sig-prename descclassname"><span class="pre">hnx.measures.s_centralities.</span></span><span class="sig-name descname"><span class="pre">s_betweenness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/measures/s_centralities.html#s_betweenness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.measures.s_centralities.s_betweenness" title="Permalink to this definition">#</a></dt>
-<dd><p>Compute the betweenness centrality for each edge in the hypergraph.
-:param H:
-:type H: Hypergraph to compute the betweenness centrality for.
-:param s:</p>
+<dd><p>Computes the betweenness centrality for each edge in the hypergraph.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict. The betweenness centrality for each edge in the hypergraph. The keys are the edges and the values are the betweenness centrality.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>H</strong> (<em>Hypergraph to compute the betweenness centrality for.</em>) – </p></li>
+<li><p><strong>s</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict. The betweenness centrality for each edge in the hypergraph. The keys are the edges and the values are the betweenness centrality.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -528,13 +582,16 @@ Austin R. Benson,
 <dl class="py function">
 <dt class="sig sig-object py" id="hnx.measures.s_centralities.s_closeness">
 <span class="sig-prename descclassname"><span class="pre">hnx.measures.s_centralities.</span></span><span class="sig-name descname"><span class="pre">s_closeness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/measures/s_centralities.html#s_closeness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.measures.s_centralities.s_closeness" title="Permalink to this definition">#</a></dt>
-<dd><p>Compute the closeness centrality for each edge in the hypergraph.
-:param H:
-:type H: Hypergraph to compute the closeness centrality for.
-:param s:</p>
+<dd><p>Compute the closeness centrality for each edge in the hypergraph.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict. The closeness centrality for each edge in the hypergraph. The keys are the edges and the values are the closeness centrality.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>H</strong> (<em>Hypergraph to compute the closeness centrality for.</em>) – </p></li>
+<li><p><strong>s</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict. The closeness centrality for each edge in the hypergraph. The keys are the edges and the values are the closeness centrality.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -622,8 +679,8 @@ defined in the reference paper.</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.measures.edge_similarity">hnx.measures.edge_similarity module</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.measures.edge_similarity.intersection"><code class="docutils literal notranslate"><span class="pre">intersection()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.measures.edge_similarity.jaccard"><code class="docutils literal notranslate"><span class="pre">jaccard()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.measures.edge_similarity.jaccard_distance"><code class="docutils literal notranslate"><span class="pre">jaccard_distance()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.measures.edge_similarity.jaccard_similarity"><code class="docutils literal notranslate"><span class="pre">jaccard_similarity()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.measures.eigen_centralities">hnx.measures.eigen_centralities module</a><ul class="nav section-nav flex-column">

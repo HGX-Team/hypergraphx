@@ -296,7 +296,6 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.readwrite.load">hnx.readwrite.load module</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.readwrite.load.check_existence"><code class="docutils literal notranslate"><span class="pre">check_existence()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.readwrite.load.load_hypergraph"><code class="docutils literal notranslate"><span class="pre">load_hypergraph()</span></code></a></li>
 </ul>
 </li>
@@ -324,37 +323,24 @@ document.write(`
 <section id="module-hnx.readwrite.load">
 <span id="hnx-readwrite-load-module"></span><h2>hnx.readwrite.load module<a class="headerlink" href="#module-hnx.readwrite.load" title="Permalink to this heading">#</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="hnx.readwrite.load.check_existence">
-<span class="sig-prename descclassname"><span class="pre">hnx.readwrite.load.</span></span><span class="sig-name descname"><span class="pre">check_existence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/readwrite/load.html#check_existence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.readwrite.load.check_existence" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if a file exists.
-:param file_name:
-:type file_name: str. Name of the file
-:param file_type:
-:type file_type: str. Type of the file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>bool</strong></p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the file exists, False otherwise.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="hnx.readwrite.load.load_hypergraph">
 <span class="sig-prename descclassname"><span class="pre">hnx.readwrite.load.</span></span><span class="sig-name descname"><span class="pre">load_hypergraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/readwrite/load.html#load_hypergraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.readwrite.load.load_hypergraph" title="Permalink to this definition">#</a></dt>
-<dd><p>Load a hypergraph from a file.
-:param file_name:
-:type file_name: str : name of the file
-:param file_type:
-:type file_type: str : type of the file</p>
+<dd><p>Load a hypergraph from a file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>Hypergraph</strong></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_name</strong> (<em>str</em>) – The name of the file</p></li>
+<li><p><strong>file_type</strong> (<em>str</em>) – The type of the file</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>the loaded hypergraph</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The loaded hypergraph</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph">Hypergraph</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the file type is not valid.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -364,22 +350,28 @@ document.write(`
 <span id="hnx-readwrite-save-module"></span><h2>hnx.readwrite.save module<a class="headerlink" href="#module-hnx.readwrite.save" title="Permalink to this heading">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="hnx.readwrite.save.save_hypergraph">
-<span class="sig-prename descclassname"><span class="pre">hnx.readwrite.save.</span></span><span class="sig-name descname"><span class="pre">save_hypergraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hypergraph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/readwrite/save.html#save_hypergraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.readwrite.save.save_hypergraph" title="Permalink to this definition">#</a></dt>
-<dd><p>Save a hypergraph to a file.
-:param hypergraph:
-:type hypergraph: Hypergraph : the hypergraph to save
-:param file_name:
-:type file_name: str : name of the file
-:param file_type:
-:type file_type: str : type of the file</p>
+<span class="sig-prename descclassname"><span class="pre">hnx.readwrite.save.</span></span><span class="sig-name descname"><span class="pre">save_hypergraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hypergraph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/readwrite/save.html#save_hypergraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.readwrite.save.save_hypergraph" title="Permalink to this definition">#</a></dt>
+<dd><p>Save a hypergraph to a file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hypergraph</strong> (<a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><em>Hypergraph</em></a>) – The hypergraph to save</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – The requested name of the file</p></li>
+<li><p><strong>file_type</strong> (<em>str</em>) – The requested type of the file</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>the hypergraph is saved to a file</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The hypergraph is saved to a file</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the file type is not valid</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The file type can be either “pickle” or “json”.</p>
 </dd></dl>
 
 </section>
@@ -432,7 +424,6 @@ document.write(`
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.readwrite.load">hnx.readwrite.load module</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.readwrite.load.check_existence"><code class="docutils literal notranslate"><span class="pre">check_existence()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.readwrite.load.load_hypergraph"><code class="docutils literal notranslate"><span class="pre">load_hypergraph()</span></code></a></li>
 </ul>
 </li>

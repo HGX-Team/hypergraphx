@@ -6,13 +6,17 @@ from hnx.measures.edge_similarity import *
 def bipartite_projection(h: Hypergraph):
     """
     Returns a bipartite graph representation of the hypergraph.
+
     Parameters
     ----------
-    h : Hypergraph. The hypergraph to be projected.
+    h : Hypergraph
+        The hypergraph to be projected.
 
     Returns
     -------
-    g : networkx.Graph. The bipartite graph representation of the hypergraph.
+    networkx.Graph
+        The bipartite graph representation of the hypergraph.
+
     """
     g = nx.Graph()
     id_to_obj = {}
@@ -43,14 +47,35 @@ def bipartite_projection(h: Hypergraph):
 def clique_projection(h: Hypergraph, keep_isolated=False):
     """
     Returns a clique projection of the hypergraph.
+
     Parameters
     ----------
-    h : Hypergraph. The hypergraph to be projected.
-    keep_isolated : bool. Whether to keep isolated nodes or not.
+    h : Hypergraph
+        The hypergraph to be projected.
+    keep_isolated : bool
+        Whether to keep isolated nodes or not.
 
     Returns
     -------
-    g : networkx.Graph. The clique projection of the hypergraph.
+    networkx.Graph
+        The clique projection of the hypergraph.
+
+    Notes
+    -----
+    Computing the clique projection can be very expensive for large hypergraphs.
+
+    Example
+    -------
+    >>> import networkx as nx
+    >>> from hnx.core.hypergraph import Hypergraph
+    >>> from hnx.representations.projections import clique_projection
+    >>>
+    >>> h = Hypergraph()
+    >>> h.add_nodes([1, 2, 3, 4, 5])
+    >>> h.add_edges([(1, 2), (1, 2, 3), (3, 4, 5)])
+    >>> g = clique_projection(h)
+    >>> g.edges()
+    EdgeView([(1, 2), (1, 3), (2,3), (3, 4), (3, 5), (4, 5)])
     """
     g = nx.Graph()
 
@@ -69,22 +94,32 @@ def clique_projection(h: Hypergraph, keep_isolated=False):
 def line_graph(h: Hypergraph, distance='intersection', s=1, weighted=False):
     """
     Returns a line graph of the hypergraph.
+
     Parameters
     ----------
-    h : Hypergraph. The hypergraph to be projected.
-    distance : str. The distance function to be used. Can be 'intersection' or 'jaccard'.
-    s : float. The threshold for the distance function.
-    weighted : bool. Whether the line graph should be weighted or not.
+    h : Hypergraph
+        The hypergraph to be projected.
+    distance : str
+        The distance function to be used. Can be 'intersection' or 'jaccard'.
+    s : float
+        The threshold for the distance function.
+    weighted : bool
+        Whether the line graph should be weighted or not.
 
     Returns
     -------
-    g : networkx.Graph. The line graph of the hypergraph.
+    networkx.Graph
+        The line graph of the hypergraph.
+
+    Notes
+    -----
+    Computing the line graph can be very expensive for large hypergraphs.
     """
     def _distance(a, b):
         if distance == 'intersection':
             return intersection(a, b)
         if distance == 'jaccard':
-            return jaccard(a, b)
+            return jaccard_similarity(a, b)
 
     edges = h.get_edges()
     adj = h.get_adj_nodes()

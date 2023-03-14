@@ -328,15 +328,16 @@ document.write(`
 <dl class="py function">
 <dt class="sig sig-object py" id="hnx.representations.projections.bipartite_projection">
 <span class="sig-prename descclassname"><span class="pre">hnx.representations.projections.</span></span><span class="sig-name descname"><span class="pre">bipartite_projection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/representations/projections.html#bipartite_projection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.representations.projections.bipartite_projection" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns a bipartite graph representation of the hypergraph.
-:param h:
-:type h: Hypergraph. The hypergraph to be projected.</p>
+<dd><p>Returns a bipartite graph representation of the hypergraph.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>g</strong></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>h</strong> (<a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><em>Hypergraph</em></a>) – The hypergraph to be projected.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>networkx.Graph. The bipartite graph representation of the hypergraph.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The bipartite graph representation of the hypergraph.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>networkx.Graph</p>
 </dd>
 </dl>
 </dd></dl>
@@ -344,41 +345,60 @@ document.write(`
 <dl class="py function">
 <dt class="sig sig-object py" id="hnx.representations.projections.clique_projection">
 <span class="sig-prename descclassname"><span class="pre">hnx.representations.projections.</span></span><span class="sig-name descname"><span class="pre">clique_projection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_isolated</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/representations/projections.html#clique_projection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.representations.projections.clique_projection" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns a clique projection of the hypergraph.
-:param h:
-:type h: Hypergraph. The hypergraph to be projected.
-:param keep_isolated:
-:type keep_isolated: bool. Whether to keep isolated nodes or not.</p>
+<dd><p>Returns a clique projection of the hypergraph.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>g</strong></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>h</strong> (<a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><em>Hypergraph</em></a>) – The hypergraph to be projected.</p></li>
+<li><p><strong>keep_isolated</strong> (<em>bool</em>) – Whether to keep isolated nodes or not.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>networkx.Graph. The clique projection of the hypergraph.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The clique projection of the hypergraph.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>networkx.Graph</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Computing the clique projection can be very expensive for large hypergraphs.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hnx.core.hypergraph</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">hnx.representations.projections</span> <span class="kn">import</span> <span class="n">clique_projection</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">Hypergraph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span><span class="o">.</span><span class="n">add_edges</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">clique_projection</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+<span class="go">EdgeView([(1, 2), (1, 3), (2,3), (3, 4), (3, 5), (4, 5)])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="hnx.representations.projections.line_graph">
 <span class="sig-prename descclassname"><span class="pre">hnx.representations.projections.</span></span><span class="sig-name descname"><span class="pre">line_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'intersection'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weighted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/representations/projections.html#line_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.representations.projections.line_graph" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns a line graph of the hypergraph.
-:param h:
-:type h: Hypergraph. The hypergraph to be projected.
-:param distance:
-:type distance: str. The distance function to be used. Can be ‘intersection’ or ‘jaccard’.
-:param s:
-:type s: float. The threshold for the distance function.
-:param weighted:
-:type weighted: bool. Whether the line graph should be weighted or not.</p>
+<dd><p>Returns a line graph of the hypergraph.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>g</strong></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>h</strong> (<a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><em>Hypergraph</em></a>) – The hypergraph to be projected.</p></li>
+<li><p><strong>distance</strong> (<em>str</em>) – The distance function to be used. Can be ‘intersection’ or ‘jaccard’.</p></li>
+<li><p><strong>s</strong> (<em>float</em>) – The threshold for the distance function.</p></li>
+<li><p><strong>weighted</strong> (<em>bool</em>) – Whether the line graph should be weighted or not.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>networkx.Graph. The line graph of the hypergraph.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The line graph of the hypergraph.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>networkx.Graph</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Computing the line graph can be very expensive for large hypergraphs.</p>
 </dd></dl>
 
 </section>

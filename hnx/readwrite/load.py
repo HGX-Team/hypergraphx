@@ -4,22 +4,38 @@ import os
 from hnx.core.hypergraph import Hypergraph
 
 
-def _load_pickle(file_name):
+def _load_pickle(file_name: str) -> Hypergraph:
+    """
+    Load a pickle file.
+
+    Parameters
+    ----------
+    file_name: str
+        Name of the file
+
+    Returns
+    -------
+    Hypergraph
+        The loaded hypergraph
+    """
     with open("{}".format(file_name), "rb") as f:
         return pickle.load(f)
 
 
-def check_existence(file_name: str, file_type: str):
+def _check_existence(file_name: str, file_type: str):
     """
     Check if a file exists.
     Parameters
     ----------
-    file_name : str. Name of the file
-    file_type : str. Type of the file
+    file_name : str
+        Name of the file
+    file_type : str
+        Type of the file
 
     Returns
     -------
-    bool : True if the file exists, False otherwise.
+    bool
+        True if the file exists, False otherwise.
     """
     file_name += ".{}".format(file_type)
     return os.path.isfile(file_name)
@@ -28,14 +44,23 @@ def check_existence(file_name: str, file_type: str):
 def load_hypergraph(file_name: str, file_type: str):
     """
     Load a hypergraph from a file.
+
     Parameters
     ----------
-    file_name : str : name of the file
-    file_type : str : type of the file
+    file_name : str
+        The name of the file
+    file_type : str
+        The type of the file
 
     Returns
     -------
-    Hypergraph : the loaded hypergraph
+    Hypergraph
+        The loaded hypergraph
+
+    Raises
+    ------
+    ValueError
+        If the file type is not valid.
     """
     file_name += ".{}".format(file_type)
     if file_type == "pickle":
