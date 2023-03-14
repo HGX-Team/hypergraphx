@@ -1,5 +1,5 @@
 import hnx as hnx
-from hnx.generation.scale_free import scale_free
+from hnx.generation.scale_free import scale_free_hypergraph
 from hnx.linalg import *
 from hnx.representations.projections import bipartite_projection, clique_projection
 from hnx.generation.random import *

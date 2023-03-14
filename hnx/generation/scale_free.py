@@ -3,8 +3,30 @@ from scipy.stats import spearmanr
 from hnx import Hypergraph
 
 
-def scale_free(num_nodes: int, edges_by_size: dict, scale_by_size: dict, correlated: bool = True,
-               corr_target: float = None, num_shuffles: int = 0):
+def scale_free_hypergraph(num_nodes: int, edges_by_size: dict, scale_by_size: dict, correlated: bool = True,
+                          corr_target: float = None, num_shuffles: int = 0):
+    """
+    Generate a scale-free hypergraph.
+
+    Parameters
+    ----------
+    num_nodes : int
+        The number of nodes in the hypergraph.
+    edges_by_size : dict
+        A dictionary mapping the size of the hyperedges to the number of hyperedges of that size.
+    scale_by_size : dict
+        A dictionary mapping the size of the hyperedges to the scale parameter of the exponential distribution.
+    correlated : bool
+        Whether the exponential distributions of the different sizes should be correlated.
+    corr_target : float
+        The target correlation between the exponential distributions of the different sizes.
+    num_shuffles : int
+
+    Returns
+    -------
+    Hypergraph
+        A scale-free hypergraph with the given number of nodes and hyperedges for each size.
+    """
     if num_shuffles != 0 and not correlated:
         raise ValueError("Cannot shuffle if correlated == False")
     if num_shuffles < 0:
