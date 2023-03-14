@@ -9,4 +9,4 @@ from hnx.viz.draw_projections import draw_bipartite, draw_clique
 
 H = hnx.Hypergraph([(1, 2, 3), (1, 2), (4, 3)], weights=[1, 2, 3])
 draw_clique(H)
-#prova
+#provaa
