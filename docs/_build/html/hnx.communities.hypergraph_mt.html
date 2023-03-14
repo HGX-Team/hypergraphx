@@ -1,0 +1,576 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>hnx.communities.hypergraph_mt package &#8212; HNX 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'hnx.communities.hypergraph_mt';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="hnx.communities.hyperlink_comm package" href="hnx.communities.hyperlink_comm.html" />
+    <link rel="prev" title="hnx.communities.hy_sc package" href="hnx.communities.hy_sc.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">HNX 1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="modules.html">hnx</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="hnx.html">hnx package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="hnx.communities.html">hnx.communities package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.core_periphery.html">hnx.communities.core_periphery package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.hy_mmsbm.html">hnx.communities.hy_mmsbm package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.hy_sc.html">hnx.communities.hy_sc package</a></li>
+<li class="toctree-l4 current active"><a class="current reference internal" href="#">hnx.communities.hypergraph_mt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.hyperlink_comm.html">hnx.communities.hyperlink_comm package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.core.html">hnx.core package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.dynamics.html">hnx.dynamics package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.filters.html">hnx.filters package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.generation.html">hnx.generation package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.linalg.html">hnx.linalg package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.measures.html">hnx.measures package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.motifs.html">hnx.motifs package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.readwrite.html">hnx.readwrite package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.representations.html">hnx.representations package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.utils.html">hnx.utils package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.viz.html">hnx.viz package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/hnx.communities.hypergraph_mt.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>hnx.communities.hypergraph_mt package</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.communities.hypergraph_mt.model">hnx.communities.hypergraph_mt.model module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.HypergraphMT"><code class="docutils literal notranslate"><span class="pre">HypergraphMT</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.HypergraphMT.check_u"><code class="docutils literal notranslate"><span class="pre">HypergraphMT.check_u()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.HypergraphMT.enforce_constraint_u"><code class="docutils literal notranslate"><span class="pre">HypergraphMT.enforce_constraint_u()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.HypergraphMT.fit"><code class="docutils literal notranslate"><span class="pre">HypergraphMT.fit()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.calculate_u_HySC"><code class="docutils literal notranslate"><span class="pre">calculate_u_HySC()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.extract_indicesHy"><code class="docutils literal notranslate"><span class="pre">extract_indicesHy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.func_lagrange_multiplier"><code class="docutils literal notranslate"><span class="pre">func_lagrange_multiplier()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.u0_w0_from_file"><code class="docutils literal notranslate"><span class="pre">u0_w0_from_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.u0_w0_from_nparray"><code class="docutils literal notranslate"><span class="pre">u0_w0_from_nparray()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.communities.hypergraph_mt">Module contents</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="hnx-communities-hypergraph-mt-package">
+<h1>hnx.communities.hypergraph_mt package<a class="headerlink" href="#hnx-communities-hypergraph-mt-package" title="Permalink to this heading">#</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="module-hnx.communities.hypergraph_mt.model">
+<span id="hnx-communities-hypergraph-mt-model-module"></span><h2>hnx.communities.hypergraph_mt.model module<a class="headerlink" href="#module-hnx.communities.hypergraph_mt.model" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="hnx.communities.hypergraph_mt.model.HypergraphMT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hnx.communities.hypergraph_mt.model.</span></span><span class="sig-name descname"><span class="pre">HypergraphMT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">noise_input_par</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_value_par</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_value_par</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_realizations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_convergence_every</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_for_convergence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/communities/hypergraph_mt/model.html#HypergraphMT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.communities.hypergraph_mt.model.HypergraphMT" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Implementation of the Hypergraph-MT probabilistic model from</p>
+<p>“Inference of hyperedges and overlapping communities in hypergraphs”,
+Contisciani M., Battiston F., De Bacco C.</p>
+<p>The probabilistic generative model infers overlapping communities in hypergraphs.
+It is a mixed-membership model where we assume an assortative structure. The inference is performed
+using an efficient expectation-maximization (EM) algorithm that exploits the sparsity of the network,
+leading to an efficient and scalable implementation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.communities.hypergraph_mt.model.HypergraphMT.check_u">
+<span class="sig-name descname"><span class="pre">check_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/hnx/communities/hypergraph_mt/model.html#HypergraphMT.check_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.communities.hypergraph_mt.model.HypergraphMT.check_u" title="Permalink to this definition">#</a></dt>
+<dd><p>Check the updated value of u[i].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.communities.hypergraph_mt.model.HypergraphMT.enforce_constraint_u">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enforce_constraint_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">den</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/hnx/communities/hypergraph_mt/model.html#HypergraphMT.enforce_constraint_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.communities.hypergraph_mt.model.HypergraphMT.enforce_constraint_u" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the lagrangian multiplier to enforce the constraint on the matrix u.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num</strong> (<em>numerator</em><em> of </em><em>the update</em><em> of </em><em>the membership matrix u.</em>) – </p></li>
+<li><p><strong>den</strong> (<em>denominator</em><em> of </em><em>the update</em><em> of </em><em>the membership matrix u.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>lambda_i</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>lagrangian multiplier.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.communities.hypergraph_mt.model.HypergraphMT.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hypergraph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalizeU</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">extra_params</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/hnx/communities/hypergraph_mt/model.html#HypergraphMT.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.communities.hypergraph_mt.model.HypergraphMT.fit" title="Permalink to this definition">#</a></dt>
+<dd><p>Perform community detection on hypergraphs with a mixed-membership probabilistic model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hypergraph</strong> (<em>the hypergraph to perform inference on.</em>) – </p></li>
+<li><p><strong>K</strong> (<em>number</em><em> of </em><em>communities.</em>) – </p></li>
+<li><p><strong>seed</strong> (<em>random seed.</em>) – </p></li>
+<li><p><strong>normalizeU</strong> (<em>if True</em><em>, </em><em>then the membership matrix u is normalized such that every row sums to 1.</em>) – </p></li>
+<li><p><strong>**extra_params</strong> (<em>additional keyword arguments handed to __check_fit_params to handle u and w.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>u_f</strong> (<em>membership matrix of dimension (N, K).</em>)</p></li>
+<li><p><strong>w_f</strong> (<em>affinity matrix of dimension (D-1, K).</em>)</p></li>
+<li><p><strong>maxL</strong> (<em>maximum log-likelihood value.</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.communities.hypergraph_mt.model.calculate_u_HySC">
+<span class="sig-prename descclassname"><span class="pre">hnx.communities.hypergraph_mt.model.</span></span><span class="sig-name descname"><span class="pre">calculate_u_HySC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hypergraph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="_modules/hnx/communities/hypergraph_mt/model.html#calculate_u_HySC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.communities.hypergraph_mt.model.calculate_u_HySC" title="Permalink to this definition">#</a></dt>
+<dd><p>Calculate the memberships with the Hypergraph Spectral Clustering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hypergraph</strong> (<em>the hypergraph to perform inference on.</em>) – </p></li>
+<li><p><strong>K</strong> (<em>number</em><em> of </em><em>communities.</em>) – </p></li>
+<li><p><strong>seed</strong> (<em>random seed.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Membership matrix.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.communities.hypergraph_mt.model.extract_indicesHy">
+<span class="sig-prename descclassname"><span class="pre">hnx.communities.hypergraph_mt.model.</span></span><span class="sig-name descname"><span class="pre">extract_indicesHy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hyperEdges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/hnx/communities/hypergraph_mt/model.html#extract_indicesHy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.communities.hypergraph_mt.model.extract_indicesHy" title="Permalink to this definition">#</a></dt>
+<dd><p>Lists containing information about the hyperedges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>hyperEdges</strong> (<em>array</em><em> of </em><em>length E</em><em>, </em><em>containing the sets</em><em> of </em><em>hyperedges</em><em> (</em><em>as tuples</em><em>)</em><em>.</em>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HyD2eId</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of list containing the indices of hyperedges with a given degree.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.communities.hypergraph_mt.model.func_lagrange_multiplier">
+<span class="sig-prename descclassname"><span class="pre">hnx.communities.hypergraph_mt.model.</span></span><span class="sig-name descname"><span class="pre">func_lagrange_multiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambda_i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">den</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/hnx/communities/hypergraph_mt/model.html#func_lagrange_multiplier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.communities.hypergraph_mt.model.func_lagrange_multiplier" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the objective function to find the lagrangian multiplier to enforce the constraint on the matrix u.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.communities.hypergraph_mt.model.u0_w0_from_file">
+<span class="sig-prename descclassname"><span class="pre">hnx.communities.hypergraph_mt.model.</span></span><span class="sig-name descname"><span class="pre">u0_w0_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="_modules/hnx/communities/hypergraph_mt/model.html#u0_w0_from_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.communities.hypergraph_mt.model.u0_w0_from_file" title="Permalink to this definition">#</a></dt>
+<dd><p>Load an array from a .npz file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>path</em><em> of </em><em>the stored file.</em>) – </p></li>
+<li><p><strong>par</strong> (<em>name</em><em> of </em><em>the parameter to import.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array to use as initialization for the given parameter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.communities.hypergraph_mt.model.u0_w0_from_nparray">
+<span class="sig-prename descclassname"><span class="pre">hnx.communities.hypergraph_mt.model.</span></span><span class="sig-name descname"><span class="pre">u0_w0_from_nparray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="reference internal" href="_modules/hnx/communities/hypergraph_mt/model.html#u0_w0_from_nparray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.communities.hypergraph_mt.model.u0_w0_from_nparray" title="Permalink to this definition">#</a></dt>
+<dd><p>Import an array.</p>
+</dd></dl>
+
+</section>
+<section id="module-hnx.communities.hypergraph_mt">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-hnx.communities.hypergraph_mt" title="Permalink to this heading">#</a></h2>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="hnx.communities.hy_sc.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">hnx.communities.hy_sc package</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="hnx.communities.hyperlink_comm.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">hnx.communities.hyperlink_comm package</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.communities.hypergraph_mt.model">hnx.communities.hypergraph_mt.model module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.HypergraphMT"><code class="docutils literal notranslate"><span class="pre">HypergraphMT</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.HypergraphMT.check_u"><code class="docutils literal notranslate"><span class="pre">HypergraphMT.check_u()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.HypergraphMT.enforce_constraint_u"><code class="docutils literal notranslate"><span class="pre">HypergraphMT.enforce_constraint_u()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.HypergraphMT.fit"><code class="docutils literal notranslate"><span class="pre">HypergraphMT.fit()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.calculate_u_HySC"><code class="docutils literal notranslate"><span class="pre">calculate_u_HySC()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.extract_indicesHy"><code class="docutils literal notranslate"><span class="pre">extract_indicesHy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.func_lagrange_multiplier"><code class="docutils literal notranslate"><span class="pre">func_lagrange_multiplier()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.u0_w0_from_file"><code class="docutils literal notranslate"><span class="pre">u0_w0_from_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.communities.hypergraph_mt.model.u0_w0_from_nparray"><code class="docutils literal notranslate"><span class="pre">u0_w0_from_nparray()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.communities.hypergraph_mt">Module contents</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner">
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By HNX's authors
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023, HNX&#39;s authors.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div></div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

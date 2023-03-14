@@ -1,0 +1,574 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>hnx.core.hypergraph &#8212; HNX 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for hnx.core.hypergraph</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">hnx.core.meta_handler</span> <span class="kn">import</span> <span class="n">MetaHandler</span>
+
+
+<div class="viewcode-block" id="Hypergraph"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph">[docs]</a><span class="k">class</span> <span class="nc">Hypergraph</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weighted</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span> <span class="o">=</span> <span class="n">MetaHandler</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span> <span class="o">=</span> <span class="n">weighted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_order</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">edge_list</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Hypergraph.is_uniform"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.is_uniform">[docs]</a>    <span class="k">def</span> <span class="nf">is_uniform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="Hypergraph.get_neighbors"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.get_neighbors">[docs]</a>    <span class="k">def</span> <span class="nf">get_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Order and size cannot be both specified.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">neigh</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_adj_edges</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+                <span class="n">neigh</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">neigh</span><span class="p">:</span>
+                <span class="n">neigh</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">neigh</span></div>
+
+<div class="viewcode-block" id="Hypergraph.get_adj_edges"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.get_adj_edges">[docs]</a>    <span class="k">def</span> <span class="nf">get_adj_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Order and size cannot be both specified.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_obj</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">node</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
+                <span class="n">edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_obj</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="o">==</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">edges</span></div>
+
+<div class="viewcode-block" id="Hypergraph.add_node"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.add_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">add_obj</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">obj_type</span><span class="o">=</span><span class="s2">&quot;node&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.add_nodes"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.add_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">add_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.is_weighted"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.is_weighted">[docs]</a>    <span class="k">def</span> <span class="nf">is_weighted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span></div>
+
+<div class="viewcode-block" id="Hypergraph.add_edge"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span> <span class="ow">and</span> <span class="n">weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;If the hypergraph is weighted, a weight must be provided.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span> <span class="ow">and</span> <span class="n">weight</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;If the hypergraph is not weighted, no weight must be provided.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">edge</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">add_obj</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">obj_type</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">)</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">set_attr</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_order</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_max_order</span> <span class="o">=</span> <span class="n">order</span>
+
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">[</span><span class="n">order</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">[</span><span class="n">order</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">edge</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Hypergraph.add_edges"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.add_edges">[docs]</a>    <span class="k">def</span> <span class="nf">add_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_list</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Warning: weights are provided but the hypergraph is not weighted. The hypergraph will be weighted.&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span> <span class="ow">and</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">edge_list</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_list</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;If weights are provided, the edge list must not contain repeated edges.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_list</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The number of edges and weights must be the same.&quot;</span><span class="p">)</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">edge_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edge_list</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span>
+                    <span class="n">edge</span><span class="p">,</span>
+                    <span class="n">weight</span><span class="o">=</span><span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span> <span class="ow">and</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+    <span class="k">def</span> <span class="nf">_compute_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">neighbors</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_obj</span><span class="p">(</span><span class="n">edge</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
+            <span class="n">neighbors</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">neighbors</span>
+
+    <span class="k">def</span> <span class="nf">_compute_max_order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_order</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="p">:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_order</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_max_order</span> <span class="o">=</span> <span class="n">order</span>
+
+<div class="viewcode-block" id="Hypergraph.remove_edge"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.remove_edge">[docs]</a>    <span class="k">def</span> <span class="nf">remove_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+        <span class="n">edge</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">edge</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">edge</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_neighbors</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">[</span><span class="n">order</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">remove_obj</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">[</span><span class="n">order</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_order</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_compute_max_order</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Edge </span><span class="si">{}</span><span class="s2"> not in hypergraph.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Hypergraph.remove_edges"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.remove_edges">[docs]</a>    <span class="k">def</span> <span class="nf">remove_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edge_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.remove_node"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">keep_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">keep_edges</span><span class="p">:</span>
+            <span class="n">to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
+                <span class="n">to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_obj</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_edges</span><span class="p">(</span><span class="n">to_remove</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
+                <span class="n">to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_obj</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">to_remove</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">edge</span> <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="n">node</span><span class="p">])),</span> <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_meta</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">remove_obj</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.remove_nodes"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.remove_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">remove_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_list</span><span class="p">,</span> <span class="n">keep_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">keep_edges</span><span class="o">=</span><span class="n">keep_edges</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.subhypergraph"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.subhypergraph">[docs]</a>    <span class="k">def</span> <span class="nf">subhypergraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">Hypergraph</span><span class="p">(</span><span class="n">weighted</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span><span class="p">)</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">set_meta</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_meta</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">nodes</span><span class="p">)):</span>
+                <span class="n">h</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_meta</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">h</span></div>
+
+<div class="viewcode-block" id="Hypergraph.max_order"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.max_order">[docs]</a>    <span class="k">def</span> <span class="nf">max_order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_order</span></div>
+
+<div class="viewcode-block" id="Hypergraph.max_size"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.max_size">[docs]</a>    <span class="k">def</span> <span class="nf">max_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_order</span> <span class="o">+</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="Hypergraph.get_nodes"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.get_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">metadata</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[(</span><span class="n">node</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_meta</span><span class="p">(</span><span class="n">node</span><span class="p">))</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span></div>
+
+<div class="viewcode-block" id="Hypergraph.num_nodes"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.num_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">num_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Hypergraph.num_edges"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.num_edges">[docs]</a>    <span class="k">def</span> <span class="nf">num_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">up_to</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Order and size cannot be both specified.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">up_to</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">[</span><span class="n">order</span><span class="p">])</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">s</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                        <span class="n">s</span> <span class="o">+=</span> <span class="mi">0</span>
+                <span class="k">return</span> <span class="n">s</span></div>
+
+<div class="viewcode-block" id="Hypergraph.get_weight"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.get_weight">[docs]</a>    <span class="k">def</span> <span class="nf">get_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">edge</span><span class="p">))]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Edge </span><span class="si">{}</span><span class="s2"> not in hypergraph.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Hypergraph.set_weight"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.set_weight">[docs]</a>    <span class="k">def</span> <span class="nf">set_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">edge</span><span class="p">))]</span> <span class="o">=</span> <span class="n">weight</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Edge </span><span class="si">{}</span><span class="s2"> not in hypergraph.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Hypergraph.get_weights"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.get_weights">[docs]</a>    <span class="k">def</span> <span class="nf">get_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">up_to</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Order and size cannot be both specified.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">up_to</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_obj</span><span class="p">(</span><span class="n">idx</span><span class="p">)]</span>
+                    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+                <span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">w</span> <span class="o">+=</span> <span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_obj</span><span class="p">(</span><span class="n">idx</span><span class="p">)]</span>
+                        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="k">return</span> <span class="n">w</span></div>
+
+<div class="viewcode-block" id="Hypergraph.get_sizes"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.get_sizes">[docs]</a>    <span class="k">def</span> <span class="nf">get_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span></div>
+
+<div class="viewcode-block" id="Hypergraph.get_orders"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.get_orders">[docs]</a>    <span class="k">def</span> <span class="nf">get_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span></div>
+
+<div class="viewcode-block" id="Hypergraph.get_meta"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.get_meta">[docs]</a>    <span class="k">def</span> <span class="nf">get_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_attr</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.set_meta"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.set_meta">[docs]</a>    <span class="k">def</span> <span class="nf">set_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">set_attr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.get_attr_meta"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.get_attr_meta">[docs]</a>    <span class="k">def</span> <span class="nf">get_attr_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_attr</span><span class="p">(</span><span class="n">obj</span><span class="p">)[</span><span class="n">attr</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Attribute </span><span class="si">{}</span><span class="s2"> not in metadata for object </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">obj</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Hypergraph.add_attr_meta"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.add_attr_meta">[docs]</a>    <span class="k">def</span> <span class="nf">add_attr_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">add_attr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.remove_attr_meta"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.remove_attr_meta">[docs]</a>    <span class="k">def</span> <span class="nf">remove_attr_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">remove_attr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.check_edge"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.check_edge">[docs]</a>    <span class="k">def</span> <span class="nf">check_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span></div>
+
+<div class="viewcode-block" id="Hypergraph.check_node"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.check_node">[docs]</a>    <span class="k">def</span> <span class="nf">check_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span></div>
+
+<div class="viewcode-block" id="Hypergraph.get_edges"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.get_edges">[docs]</a>    <span class="k">def</span> <span class="nf">get_edges</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">up_to</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">subhypergraph</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keep_isolated_nodes</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Order and size cannot be both specified.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ids</span> <span class="ow">and</span> <span class="n">subhypergraph</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot return subhypergraphs with ids.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">subhypergraph</span> <span class="ow">and</span> <span class="n">keep_isolated_nodes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot keep nodes if not returning subhypergraphs.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ids</span><span class="p">:</span>
+                <span class="n">edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">edges</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">up_to</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ids</span><span class="p">:</span>
+                    <span class="n">edges</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_obj</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+                    <span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">[</span><span class="n">order</span><span class="p">]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ids</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">edges</span> <span class="o">+=</span> <span class="p">[</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_obj</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+                                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                            <span class="p">]</span>
+                        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                            <span class="n">edges</span> <span class="o">+=</span> <span class="p">[]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">edges</span> <span class="o">+=</span> <span class="p">[</span><span class="n">edge</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                            <span class="n">edges</span> <span class="o">+=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">subhypergraph</span> <span class="ow">and</span> <span class="n">keep_isolated_nodes</span><span class="p">:</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">Hypergraph</span><span class="p">(</span><span class="n">weighted</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span><span class="p">)</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">())</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">h</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">():</span>
+                <span class="n">h</span><span class="o">.</span><span class="n">set_meta</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_meta</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">h</span><span class="o">.</span><span class="n">get_edges</span><span class="p">():</span>
+                <span class="n">h</span><span class="o">.</span><span class="n">set_meta</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_meta</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">h</span><span class="o">.</span><span class="n">get_edges</span><span class="p">():</span>
+                    <span class="n">h</span><span class="o">.</span><span class="n">set_weight</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">h</span>
+        <span class="k">elif</span> <span class="n">subhypergraph</span><span class="p">:</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">Hypergraph</span><span class="p">(</span><span class="n">weighted</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span><span class="p">)</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">h</span><span class="o">.</span><span class="n">get_edges</span><span class="p">():</span>
+                <span class="n">h</span><span class="o">.</span><span class="n">set_meta</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_meta</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">h</span><span class="o">.</span><span class="n">get_edges</span><span class="p">():</span>
+                    <span class="n">h</span><span class="o">.</span><span class="n">set_weight</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">h</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">edges</span></div>
+
+<div class="viewcode-block" id="Hypergraph.degree"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.degree">[docs]</a>    <span class="k">def</span> <span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">hnx.measures.degree</span> <span class="kn">import</span> <span class="n">degree</span>
+
+        <span class="k">return</span> <span class="n">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.degree_sequence"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.degree_sequence">[docs]</a>    <span class="k">def</span> <span class="nf">degree_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">hnx.measures.degree</span> <span class="kn">import</span> <span class="n">degree_sequence</span>
+
+        <span class="k">return</span> <span class="n">degree_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.is_connected"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.is_connected">[docs]</a>    <span class="k">def</span> <span class="nf">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">hnx.utils.cc</span> <span class="kn">import</span> <span class="n">is_connected</span>
+
+        <span class="k">return</span> <span class="n">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.connected_components"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.connected_components">[docs]</a>    <span class="k">def</span> <span class="nf">connected_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">hnx.utils.cc</span> <span class="kn">import</span> <span class="n">connected_components</span>
+
+        <span class="k">return</span> <span class="n">connected_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.node_connected_component"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.node_connected_component">[docs]</a>    <span class="k">def</span> <span class="nf">node_connected_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">hnx.utils.cc</span> <span class="kn">import</span> <span class="n">node_connected_component</span>
+
+        <span class="k">return</span> <span class="n">node_connected_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.num_connected_components"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.num_connected_components">[docs]</a>    <span class="k">def</span> <span class="nf">num_connected_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">hnx.utils.cc</span> <span class="kn">import</span> <span class="n">num_connected_components</span>
+
+        <span class="k">return</span> <span class="n">num_connected_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.largest_component"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.largest_component">[docs]</a>    <span class="k">def</span> <span class="nf">largest_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">hnx.utils.cc</span> <span class="kn">import</span> <span class="n">largest_component</span>
+
+        <span class="k">return</span> <span class="n">largest_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.largest_component_size"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.largest_component_size">[docs]</a>    <span class="k">def</span> <span class="nf">largest_component_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">hnx.utils.cc</span> <span class="kn">import</span> <span class="n">largest_component_size</span>
+
+        <span class="k">return</span> <span class="n">largest_component_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.isolated_nodes"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.isolated_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">isolated_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">hnx.utils.cc</span> <span class="kn">import</span> <span class="n">isolated_nodes</span>
+
+        <span class="k">return</span> <span class="n">isolated_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.is_isolated"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.is_isolated">[docs]</a>    <span class="k">def</span> <span class="nf">is_isolated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">hnx.utils.cc</span> <span class="kn">import</span> <span class="n">is_isolated</span>
+
+        <span class="k">return</span> <span class="n">is_isolated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.binary_incidence_matrix"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.binary_incidence_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">binary_incidence_matrix</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_mapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">hnx.linalg</span> <span class="kn">import</span> <span class="n">binary_incidence_matrix</span>
+
+        <span class="k">return</span> <span class="n">binary_incidence_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">return_mapping</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.incidence_matrix"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.incidence_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">incidence_matrix</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_mapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">hnx.linalg</span> <span class="kn">import</span> <span class="n">incidence_matrix</span>
+
+        <span class="k">return</span> <span class="n">incidence_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">return_mapping</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.adjacency_matrix"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.adjacency_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">adjacency_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_mapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">hnx.linalg</span> <span class="kn">import</span> <span class="n">adjacency_matrix</span>
+
+        <span class="k">return</span> <span class="n">adjacency_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_mapping</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.dual_random_walk_adjacency"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.dual_random_walk_adjacency">[docs]</a>    <span class="k">def</span> <span class="nf">dual_random_walk_adjacency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_mapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">hnx.linalg</span> <span class="kn">import</span> <span class="n">dual_random_walk_adjacency</span>
+
+        <span class="k">return</span> <span class="n">dual_random_walk_adjacency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_mapping</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Hypergraph.clear"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_order</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Hypergraph.copy"><a class="viewcode-back" href="../../../hnx.core.html#hnx.core.hypergraph.Hypergraph.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Hypergraph with </span><span class="si">{}</span><span class="s2"> nodes and </span><span class="si">{}</span><span class="s2"> edges.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">details</span> <span class="o">=</span> <span class="s2">&quot;Edge list: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="n">title</span> <span class="o">+</span> <span class="n">details</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="o">.</span><span class="n">items</span><span class="p">())</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">HNX</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">hnx</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, HNX's authors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

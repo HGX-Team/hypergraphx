@@ -1,0 +1,581 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>hnx.generation package &#8212; HNX 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'hnx.generation';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="hnx.linalg package" href="hnx.linalg.html" />
+    <link rel="prev" title="hnx.filters package" href="hnx.filters.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">HNX 1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="modules.html">hnx</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="hnx.html">hnx package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="hnx.communities.html">hnx.communities package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.core_periphery.html">hnx.communities.core_periphery package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.hy_mmsbm.html">hnx.communities.hy_mmsbm package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.hy_sc.html">hnx.communities.hy_sc package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.hypergraph_mt.html">hnx.communities.hypergraph_mt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.hyperlink_comm.html">hnx.communities.hyperlink_comm package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.core.html">hnx.core package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.dynamics.html">hnx.dynamics package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.filters.html">hnx.filters package</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">hnx.generation package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.linalg.html">hnx.linalg package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.measures.html">hnx.measures package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.motifs.html">hnx.motifs package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.readwrite.html">hnx.readwrite package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.representations.html">hnx.representations package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.utils.html">hnx.utils package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.viz.html">hnx.viz package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/hnx.generation.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>hnx.generation package</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.generation.activity_driven">hnx.generation.activity_driven module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.generation.configuration_model">hnx.generation.configuration_model module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.configuration_model.configuration_model"><code class="docutils literal notranslate"><span class="pre">configuration_model()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.generation.hy_mmsbm_sampling">hnx.generation.hy_mmsbm_sampling module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.hy_mmsbm_sampling.HyMMSBMSampler"><code class="docutils literal notranslate"><span class="pre">HyMMSBMSampler</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.hy_mmsbm_sampling.HyMMSBMSampler.sample"><code class="docutils literal notranslate"><span class="pre">HyMMSBMSampler.sample()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.hy_mmsbm_sampling.sample_truncated_poisson"><code class="docutils literal notranslate"><span class="pre">sample_truncated_poisson()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.generation.random">hnx.generation.random module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.random.add_random_edge"><code class="docutils literal notranslate"><span class="pre">add_random_edge()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.random.add_random_edges"><code class="docutils literal notranslate"><span class="pre">add_random_edges()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.random.random_hypergraph"><code class="docutils literal notranslate"><span class="pre">random_hypergraph()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.random.random_shuffle"><code class="docutils literal notranslate"><span class="pre">random_shuffle()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.random.random_uniform_hypergraph"><code class="docutils literal notranslate"><span class="pre">random_uniform_hypergraph()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.generation.scale_free">hnx.generation.scale_free module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.scale_free.scale_free"><code class="docutils literal notranslate"><span class="pre">scale_free()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.generation">Module contents</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="hnx-generation-package">
+<h1>hnx.generation package<a class="headerlink" href="#hnx-generation-package" title="Permalink to this heading">#</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="module-hnx.generation.activity_driven">
+<span id="hnx-generation-activity-driven-module"></span><h2>hnx.generation.activity_driven module<a class="headerlink" href="#module-hnx.generation.activity_driven" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="module-hnx.generation.configuration_model">
+<span id="hnx-generation-configuration-model-module"></span><h2>hnx.generation.configuration_model module<a class="headerlink" href="#module-hnx.generation.configuration_model" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.generation.configuration_model.configuration_model">
+<span class="sig-prename descclassname"><span class="pre">hnx.generation.configuration_model.</span></span><span class="sig-name descname"><span class="pre">configuration_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hypergraph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'edge'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detailed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/generation/configuration_model.html#configuration_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.generation.configuration_model.configuration_model" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-hnx.generation.hy_mmsbm_sampling">
+<span id="hnx-generation-hy-mmsbm-sampling-module"></span><h2>hnx.generation.hy_mmsbm_sampling module<a class="headerlink" href="#module-hnx.generation.hy_mmsbm_sampling" title="Permalink to this heading">#</a></h2>
+<p>MCMC sampler for the Hy-MMSBM probabilistic model, described in</p>
+<dl class="simple">
+<dt>“A Principled, Flexible and Efficient Framework for Hypergraph Benchmarking”</dt><dd><p>Ruggeri N., Contisciani M., Battiston F., De Bacco C.</p>
+</dd>
+</dl>
+<p>Notice that the sampler is separate from the probabilistic model itself.
+In this view, the sampler only takes care of any sampling-related operation,
+and refers back to the model to retrieve any probability-related value
+(e.g. Poisson probabilities, expected degree, etc.).</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="hnx.generation.hy_mmsbm_sampling.HyMMSBMSampler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hnx.generation.hy_mmsbm_sampling.</span></span><span class="sig-name descname"><span class="pre">HyMMSBMSampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_hye_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_dyadic_sampling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burn_in_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intermediate_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/generation/hy_mmsbm_sampling.html#HyMMSBMSampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.generation.hy_mmsbm_sampling.HyMMSBMSampler" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Sampler for the Hy-MMSBM model.
+This class takes care of the approximate sampling routine described in</p>
+<p>“A Principled, Flexible and Efficient Framework for Hypergraph Benchmarking”
+Ruggeri N., Contisciani M., Battiston F., De Bacco C.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.generation.hy_mmsbm_sampling.HyMMSBMSampler.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deg_seq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_seq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_hyg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_rescaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/hnx/generation/hy_mmsbm_sampling.html#HyMMSBMSampler.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.generation.hy_mmsbm_sampling.HyMMSBMSampler.sample" title="Permalink to this definition">#</a></dt>
+<dd><p>Approximate hypergraph sampling routine presented in</p>
+<p>“A Principled, Flexible and Efficient Framework for Hypergraph Benchmarking”
+Ruggeri N., Contisciani M., Battiston F., De Bacco C.</p>
+<p>Possibly, condition the sampling on different quantities: the expected average
+degree, a given degree sequence and/or dimension sequence, or a hypergraph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>deg_seq</strong> (<em>degree sequence</em>) – This is specified as an array of degrees, one per node in the hypergraph.</p></li>
+<li><p><strong>dim_seq</strong> (<em>dimension sequence</em>) – This is specified as a dictionary with {key: value} pairs
+{dimension: number of hyperedges with that dimension}</p></li>
+<li><p><strong>avg_deg</strong> (<em>average degree</em>) – </p></li>
+<li><p><strong>initial_hyg</strong> (<em>an initial hypergraph to start the MCMC from.</em>) – If initial_hyg is provided, all the other inputs (i.e. deg_seq, dim_seq,
+avg_deg, allow_rescaling) are ignored. The MCMC is started using
+initial_hyg as first configuration, which is statistically equivalent to
+conditioning on its degree and dimension sequences. During MCMC, the degree
+and dimension sequences in initial_hyg are preserved.</p></li>
+<li><p><strong>allow_rescaling</strong> (<em>allow the rescaling</em><em> of </em><em>the u and w parameters in place.</em>) – This adjusts for the sampling constraints, e.g. average degree.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>A generator of sampled hypergraphs.</em></p></li>
+<li><p><em>Notice that all the generated hypergraphs are conditioned on the same degree and</em></p></li>
+<li><p><em>dimension sequences (possibly provided as input, otherwise sampled at the</em></p></li>
+<li><p><em>beginning and kept constant). To sample conditioning on different sequences, a</em></p></li>
+<li><p><em>new call to this method is required.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.generation.hy_mmsbm_sampling.sample_truncated_poisson">
+<span class="sig-prename descclassname"><span class="pre">hnx.generation.hy_mmsbm_sampling.</span></span><span class="sig-name descname"><span class="pre">sample_truncated_poisson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/hnx/generation/hy_mmsbm_sampling.html#sample_truncated_poisson"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.generation.hy_mmsbm_sampling.sample_truncated_poisson" title="Permalink to this definition">#</a></dt>
+<dd><p>Sample a truncated Poisson.
+If X is a Poisson random variable with parameter lambda, the relative
+truncated Poisson variable Y with same parameter lambda is defined as
+Y = X | X &gt; 0.</p>
+</dd></dl>
+
+</section>
+<section id="module-hnx.generation.random">
+<span id="hnx-generation-random-module"></span><h2>hnx.generation.random module<a class="headerlink" href="#module-hnx.generation.random" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.generation.random.add_random_edge">
+<span class="sig-prename descclassname"><span class="pre">hnx.generation.random.</span></span><span class="sig-name descname"><span class="pre">add_random_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/generation/random.html#add_random_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.generation.random.add_random_edge" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.generation.random.add_random_edges">
+<span class="sig-prename descclassname"><span class="pre">hnx.generation.random.</span></span><span class="sig-name descname"><span class="pre">add_random_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/generation/random.html#add_random_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.generation.random.add_random_edges" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.generation.random.random_hypergraph">
+<span class="sig-prename descclassname"><span class="pre">hnx.generation.random.</span></span><span class="sig-name descname"><span class="pre">random_hypergraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_edges_by_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/generation/random.html#random_hypergraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.generation.random.random_hypergraph" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.generation.random.random_shuffle">
+<span class="sig-prename descclassname"><span class="pre">hnx.generation.random.</span></span><span class="sig-name descname"><span class="pre">random_shuffle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/generation/random.html#random_shuffle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.generation.random.random_shuffle" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.generation.random.random_uniform_hypergraph">
+<span class="sig-prename descclassname"><span class="pre">hnx.generation.random.</span></span><span class="sig-name descname"><span class="pre">random_uniform_hypergraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_edges</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/generation/random.html#random_uniform_hypergraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.generation.random.random_uniform_hypergraph" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-hnx.generation.scale_free">
+<span id="hnx-generation-scale-free-module"></span><h2>hnx.generation.scale_free module<a class="headerlink" href="#module-hnx.generation.scale_free" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.generation.scale_free.scale_free">
+<span class="sig-prename descclassname"><span class="pre">hnx.generation.scale_free.</span></span><span class="sig-name descname"><span class="pre">scale_free</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_by_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_by_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlated</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr_target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_shuffles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/generation/scale_free.html#scale_free"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.generation.scale_free.scale_free" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-hnx.generation">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-hnx.generation" title="Permalink to this heading">#</a></h2>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="hnx.filters.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">hnx.filters package</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="hnx.linalg.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">hnx.linalg package</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.generation.activity_driven">hnx.generation.activity_driven module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.generation.configuration_model">hnx.generation.configuration_model module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.configuration_model.configuration_model"><code class="docutils literal notranslate"><span class="pre">configuration_model()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.generation.hy_mmsbm_sampling">hnx.generation.hy_mmsbm_sampling module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.hy_mmsbm_sampling.HyMMSBMSampler"><code class="docutils literal notranslate"><span class="pre">HyMMSBMSampler</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.hy_mmsbm_sampling.HyMMSBMSampler.sample"><code class="docutils literal notranslate"><span class="pre">HyMMSBMSampler.sample()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.hy_mmsbm_sampling.sample_truncated_poisson"><code class="docutils literal notranslate"><span class="pre">sample_truncated_poisson()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.generation.random">hnx.generation.random module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.random.add_random_edge"><code class="docutils literal notranslate"><span class="pre">add_random_edge()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.random.add_random_edges"><code class="docutils literal notranslate"><span class="pre">add_random_edges()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.random.random_hypergraph"><code class="docutils literal notranslate"><span class="pre">random_hypergraph()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.random.random_shuffle"><code class="docutils literal notranslate"><span class="pre">random_shuffle()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.random.random_uniform_hypergraph"><code class="docutils literal notranslate"><span class="pre">random_uniform_hypergraph()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.generation.scale_free">hnx.generation.scale_free module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.generation.scale_free.scale_free"><code class="docutils literal notranslate"><span class="pre">scale_free()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.generation">Module contents</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner">
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By HNX's authors
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023, HNX&#39;s authors.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div></div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

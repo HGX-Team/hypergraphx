@@ -1,0 +1,692 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>hnx.dynamics package &#8212; HNX 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'hnx.dynamics';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="hnx.filters package" href="hnx.filters.html" />
+    <link rel="prev" title="hnx.core package" href="hnx.core.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">HNX 1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="modules.html">hnx</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="hnx.html">hnx package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="hnx.communities.html">hnx.communities package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.core_periphery.html">hnx.communities.core_periphery package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.hy_mmsbm.html">hnx.communities.hy_mmsbm package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.hy_sc.html">hnx.communities.hy_sc package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.hypergraph_mt.html">hnx.communities.hypergraph_mt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.hyperlink_comm.html">hnx.communities.hyperlink_comm package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.core.html">hnx.core package</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">hnx.dynamics package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.filters.html">hnx.filters package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.generation.html">hnx.generation package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.linalg.html">hnx.linalg package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.measures.html">hnx.measures package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.motifs.html">hnx.motifs package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.readwrite.html">hnx.readwrite package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.representations.html">hnx.representations package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.utils.html">hnx.utils package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.viz.html">hnx.viz package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/hnx.dynamics.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>hnx.dynamics package</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.dynamics.randwalk">hnx.dynamics.randwalk module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.randwalk.RW_stationary_state"><code class="docutils literal notranslate"><span class="pre">RW_stationary_state()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.randwalk.random_walk"><code class="docutils literal notranslate"><span class="pre">random_walk()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.randwalk.random_walk_density"><code class="docutils literal notranslate"><span class="pre">random_walk_density()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.randwalk.transition_matrix"><code class="docutils literal notranslate"><span class="pre">transition_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.dynamics.synch">hnx.dynamics.synch module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.synch.MSF"><code class="docutils literal notranslate"><span class="pre">MSF()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.synch.MSF_multi_coupling"><code class="docutils literal notranslate"><span class="pre">MSF_multi_coupling()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.synch.higher_order_MSF"><code class="docutils literal notranslate"><span class="pre">higher_order_MSF()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.dynamics.utils">hnx.dynamics.utils module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.utils.is_all_to_all"><code class="docutils literal notranslate"><span class="pre">is_all_to_all()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.utils.is_natural_coupling"><code class="docutils literal notranslate"><span class="pre">is_natural_coupling()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.utils.lin_system"><code class="docutils literal notranslate"><span class="pre">lin_system()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.utils.lin_system_a2a"><code class="docutils literal notranslate"><span class="pre">lin_system_a2a()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.utils.sprott_algorithm"><code class="docutils literal notranslate"><span class="pre">sprott_algorithm()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.utils.sprott_algorithm_multi"><code class="docutils literal notranslate"><span class="pre">sprott_algorithm_multi()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.dynamics">Module contents</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="hnx-dynamics-package">
+<h1>hnx.dynamics package<a class="headerlink" href="#hnx-dynamics-package" title="Permalink to this heading">#</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="module-hnx.dynamics.randwalk">
+<span id="hnx-dynamics-randwalk-module"></span><h2>hnx.dynamics.randwalk module<a class="headerlink" href="#module-hnx.dynamics.randwalk" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.dynamics.randwalk.RW_stationary_state">
+<span class="sig-prename descclassname"><span class="pre">hnx.dynamics.randwalk.</span></span><span class="sig-name descname"><span class="pre">RW_stationary_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">HG</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/hnx/dynamics/randwalk.html#RW_stationary_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.dynamics.randwalk.RW_stationary_state" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the stationary state of the random walk on the hypergraph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>HG</strong> (<a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><em>Hypergraph</em></a>) – The hypergraph on which the random walk is defined.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>stationary_state</strong> – The stationary state of the random walk on the hypergraph.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.dynamics.randwalk.random_walk">
+<span class="sig-prename descclassname"><span class="pre">hnx.dynamics.randwalk.</span></span><span class="sig-name descname"><span class="pre">random_walk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">HG</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/hnx/dynamics/randwalk.html#random_walk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.dynamics.randwalk.random_walk" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the random walk on the hypergraph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>HG</strong> (<a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><em>Hypergraph</em></a>) – The hypergraph on which the random walk is defined.</p></li>
+<li><p><strong>s</strong> (<em>int</em>) – The starting node of the random walk.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>nodes</strong> – The list of nodes visited by the random walk.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.dynamics.randwalk.random_walk_density">
+<span class="sig-prename descclassname"><span class="pre">hnx.dynamics.randwalk.</span></span><span class="sig-name descname"><span class="pre">random_walk_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">HG</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/hnx/dynamics/randwalk.html#random_walk_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.dynamics.randwalk.random_walk_density" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the random walk on the hypergraph with starting density vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>HG</strong> (<a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><em>Hypergraph</em></a>) – The hypergraph on which the random walk is defined.</p></li>
+<li><p><strong>s</strong> (<em>np.ndarray</em>) – The starting density vector of the random walk.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>nodes</strong> – The list of density vectors over time.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.dynamics.randwalk.transition_matrix">
+<span class="sig-prename descclassname"><span class="pre">hnx.dynamics.randwalk.</span></span><span class="sig-name descname"><span class="pre">transition_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">HG</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">spmatrix</span></span></span><a class="reference internal" href="_modules/hnx/dynamics/randwalk.html#transition_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.dynamics.randwalk.transition_matrix" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the transition matrix of the random walk on the hypergraph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>HG</strong> (<a class="reference internal" href="hnx.core.html#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><em>Hypergraph</em></a>) – The hypergraph on which the random walk is defined.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>K</strong> (<em>np.ndarray</em>)</p></li>
+<li><p><em>The transition matrix of the random walk on the hypergraph.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Timoteo Carletti, Federico Battiston, Giulia Cencetti, and Duccio Fanelli, Random walks on hypergraphs, Phys. Rev. E 96, 012308 (2017)</p>
+</dd></dl>
+
+</section>
+<section id="module-hnx.dynamics.synch">
+<span id="hnx-dynamics-synch-module"></span><h2>hnx.dynamics.synch module<a class="headerlink" href="#module-hnx.dynamics.synch" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.dynamics.synch.MSF">
+<span class="sig-prename descclassname"><span class="pre">hnx.dynamics.synch.</span></span><span class="sig-name descname"><span class="pre">MSF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integration_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integration_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/dynamics/synch.html#MSF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.dynamics.synch.MSF" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluates the Master Stability Function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>F</strong> (<em>function determining the dynamics</em><em> of </em><em>the isolated system.</em>) – It is a collable as requested by scipy.solve_ivp</p></li>
+<li><p><strong>JF</strong> (<em>Jacobian matrix</em><em> of </em><em>the function f.</em>) – It is a callable that returns the value of the Jacobian at a given point.</p></li>
+<li><p><strong>params</strong> (<em>parameters</em><em> of </em><em>function f.</em>) – It is a tuple of parameters used by the function F.</p></li>
+<li><p><strong>interval</strong> (<em>the interval</em><em> of </em><em>values over which the MSF is computed.</em>) – It is a list-like object containing the values of alpha at which evaluating the MSF.</p></li>
+<li><p><strong>JH</strong> (<em>Jacobian matrix</em><em> of </em><em>the coupling function.</em>) – It is a callable that returns the value of the Jacobian at a given point.</p></li>
+<li><p><strong>X0</strong> (<em>initial condition</em><em> of </em><em>the isolated system.</em>) – It is a list-like object containg the initial conditions.</p></li>
+<li><p><strong>integration_time</strong> (<em>time over which the system is integrated.</em>) – </p></li>
+<li><p><strong>integration_step</strong> (<em>step</em><em> of </em><em>the integrating function.</em>) – </p></li>
+<li><p><strong>C</strong> (<em>number</em><em> of </em><em>cycles</em><em> of </em><em>the Sprott's algorithm.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>interval</strong> (<em>interval of values over which the MSF is computed.</em>)</p></li>
+<li><p><strong>MSF</strong> (<em>MSF evaluated over the interval of values selected.</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.dynamics.synch.MSF_multi_coupling">
+<span class="sig-prename descclassname"><span class="pre">hnx.dynamics.synch.</span></span><span class="sig-name descname"><span class="pre">MSF_multi_coupling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JHs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integration_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integration_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/dynamics/synch.html#MSF_multi_coupling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.dynamics.synch.MSF_multi_coupling" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluates the Master Stability Function for the higher-order all-to-all network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>F</strong> (<em>function determining the dynamics</em><em> of </em><em>the isolated system.</em>) – It is a collable as requested by scipy.solve_ivp</p></li>
+<li><p><strong>JF</strong> (<em>Jacobian matrix</em><em> of </em><em>the function f.</em>) – It is a callable that returns the value of the Jacobian at a given point.</p></li>
+<li><p><strong>params</strong> (<em>parameters</em><em> of </em><em>function f.</em>) – It is a tuple of parameters used by the function F.</p></li>
+<li><p><strong>interval</strong> (<em>the interval</em><em> of </em><em>values over which the MSF is computed.</em>) – It is a list-like object containing the values of alpha at which evaluating the MSF.</p></li>
+<li><p><strong>sigmas</strong> (<em>coupling strengths.</em>) – It is a list-like object.</p></li>
+<li><p><strong>N</strong> (<em>number</em><em> of </em><em>nodes.</em>) – </p></li>
+<li><p><strong>JH</strong> (<em>Jacobian matrix</em><em> of </em><em>the coupling function.</em>) – It is a callable that returns the value of the Jacobian at a given point.</p></li>
+<li><p><strong>X0</strong> (<em>initial condition</em><em> of </em><em>the isolated system.</em>) – It is a list-like object containg the initial conditions.</p></li>
+<li><p><strong>integration_time</strong> (<em>time over which the system is integrated.</em>) – </p></li>
+<li><p><strong>integration_step</strong> (<em>step</em><em> of </em><em>the integrating function.</em>) – </p></li>
+<li><p><strong>C</strong> (<em>number</em><em> of </em><em>cycles</em><em> of </em><em>the Sprott's algorithm.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>interval</strong> (<em>interval of values over which the MSF is computed.</em>)</p></li>
+<li><p><strong>MSF</strong> (<em>MSF evaluated over the interval of values selected.</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.dynamics.synch.higher_order_MSF">
+<span class="sig-prename descclassname"><span class="pre">hnx.dynamics.synch.</span></span><span class="sig-name descname"><span class="pre">higher_order_MSF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hypergraph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JHs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diffusive_like</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integration_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integration_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/dynamics/synch.html#higher_order_MSF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.dynamics.synch.higher_order_MSF" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-hnx.dynamics.utils">
+<span id="hnx-dynamics-utils-module"></span><h2>hnx.dynamics.utils module<a class="headerlink" href="#module-hnx.dynamics.utils" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.dynamics.utils.is_all_to_all">
+<span class="sig-prename descclassname"><span class="pre">hnx.dynamics.utils.</span></span><span class="sig-name descname"><span class="pre">is_all_to_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hypergraph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/dynamics/utils.html#is_all_to_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.dynamics.utils.is_all_to_all" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.dynamics.utils.is_natural_coupling">
+<span class="sig-prename descclassname"><span class="pre">hnx.dynamics.utils.</span></span><span class="sig-name descname"><span class="pre">is_natural_coupling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">JHs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/dynamics/utils.html#is_natural_coupling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.dynamics.utils.is_natural_coupling" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.dynamics.utils.lin_system">
+<span class="sig-prename descclassname"><span class="pre">hnx.dynamics.utils.</span></span><span class="sig-name descname"><span class="pre">lin_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/dynamics/utils.html#lin_system"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.dynamics.utils.lin_system" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.dynamics.utils.lin_system_a2a">
+<span class="sig-prename descclassname"><span class="pre">hnx.dynamics.utils.</span></span><span class="sig-name descname"><span class="pre">lin_system_a2a</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JHs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/dynamics/utils.html#lin_system_a2a"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.dynamics.utils.lin_system_a2a" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.dynamics.utils.sprott_algorithm">
+<span class="sig-prename descclassname"><span class="pre">hnx.dynamics.utils.</span></span><span class="sig-name descname"><span class="pre">sprott_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integration_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">400.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integration_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/dynamics/utils.html#sprott_algorithm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.dynamics.utils.sprott_algorithm" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluates the Master Stability Function as the maximum Lyapunov exponent using the Sprott’s algorithm [1]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> (<em>value for which the MSF is computed.</em>) – </p></li>
+<li><p><strong>C</strong> (<em>number</em><em> of </em><em>cycles</em><em> of </em><em>the algorithm.</em>) – </p></li>
+<li><p><strong>F</strong> (<em>function determining the dynamics</em><em> of </em><em>the isolated system.</em>) – It is a callable as requested by scipy.solve_ivp</p></li>
+<li><p><strong>JF</strong> (<em>Jacobian matrix</em><em> of </em><em>the function f.</em>) – It is a callable that returns the value of the Jacobian at a given point.</p></li>
+<li><p><strong>JH</strong> (<em>Jacobian matrix</em><em> of </em><em>the coupling function.</em>) – It is a callable that returns the value of the Jacobian at a given point.</p></li>
+<li><p><strong>Y0</strong> (<em>initial condition</em><em> of </em><em>the isolated system</em><em>, </em><em>and initial perturbation.</em>) – It is a list-like object.</p></li>
+<li><p><strong>params</strong> (<em>parameters</em><em> of </em><em>function f.</em>) – It is a tuple of parameters used by the function F.</p></li>
+<li><p><strong>integration_time</strong> (<em>time over which the system is integrated in each cycle.</em>) – </p></li>
+<li><p><strong>integration_step</strong> (<em>step</em><em> of </em><em>the integrating function.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>interval</strong> (<em>interval of values over which the MSF is computed.</em>)</p></li>
+<li><p><strong>MSF</strong> (<em>MSF evaluated over the interval of values selected.</em>)</p></li>
+<li><p><em>Reference</em></p></li>
+<li><p><em>———</em></p></li>
+<li><p><em>[1] J.C. Sprott, Chaos and Time-Series Analysis, Oxford University Press vol.69, pp.116-117 (2003).</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hnx.dynamics.utils.sprott_algorithm_multi">
+<span class="sig-prename descclassname"><span class="pre">hnx.dynamics.utils.</span></span><span class="sig-name descname"><span class="pre">sprott_algorithm_multi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JHs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all2all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integration_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">400.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integration_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/dynamics/utils.html#sprott_algorithm_multi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.dynamics.utils.sprott_algorithm_multi" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluates the Master Stability Function as the maximum Lyapunov exponent using the Sprott’s algorithm [1]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> (<em>value for which the MSF is computed.</em>) – </p></li>
+<li><p><strong>C</strong> (<em>number</em><em> of </em><em>cycles</em><em> of </em><em>the algorithm.</em>) – </p></li>
+<li><p><strong>F</strong> (<em>function determining the dynamics</em><em> of </em><em>the isolated system.</em>) – It is a callable as requested by scipy.solve_ivp</p></li>
+<li><p><strong>JF</strong> (<em>Jacobian matrix</em><em> of </em><em>the function f.</em>) – It is a callable that returns the value of the Jacobian at a given point.</p></li>
+<li><p><strong>JHs</strong> (<em>Jacobian matrices</em><em> of </em><em>the coupling functions.</em>) – It is a list of callables that return the value of the Jacobians at a given point.</p></li>
+<li><p><strong>Y0</strong> (<em>initial condition</em><em> of </em><em>the isolated system</em><em>, </em><em>and initial perturbation.</em>) – It is a list-like object.</p></li>
+<li><p><strong>params</strong> (<em>parameters</em><em> of </em><em>function f.</em>) – It is a tuple of parameters used by the function F.</p></li>
+<li><p><strong>integration_time</strong> (<em>time over which the system is integrated in each cycle.</em>) – </p></li>
+<li><p><strong>integration_step</strong> (<em>step</em><em> of </em><em>the integrating function.</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>interval</strong> (<em>interval of values over which the MSF is computed.</em>)</p></li>
+<li><p><strong>MSF</strong> (<em>MSF evaluated over the interval of values selected.</em>)</p></li>
+<li><p><em>Reference</em></p></li>
+<li><p><em>———</em></p></li>
+<li><p><em>[1] J.C. Sprott, Chaos and Time-Series Analysis, Oxford University Press vol.69, pp.116-117 (2003).</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-hnx.dynamics">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-hnx.dynamics" title="Permalink to this heading">#</a></h2>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="hnx.core.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">hnx.core package</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="hnx.filters.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">hnx.filters package</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.dynamics.randwalk">hnx.dynamics.randwalk module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.randwalk.RW_stationary_state"><code class="docutils literal notranslate"><span class="pre">RW_stationary_state()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.randwalk.random_walk"><code class="docutils literal notranslate"><span class="pre">random_walk()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.randwalk.random_walk_density"><code class="docutils literal notranslate"><span class="pre">random_walk_density()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.randwalk.transition_matrix"><code class="docutils literal notranslate"><span class="pre">transition_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.dynamics.synch">hnx.dynamics.synch module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.synch.MSF"><code class="docutils literal notranslate"><span class="pre">MSF()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.synch.MSF_multi_coupling"><code class="docutils literal notranslate"><span class="pre">MSF_multi_coupling()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.synch.higher_order_MSF"><code class="docutils literal notranslate"><span class="pre">higher_order_MSF()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.dynamics.utils">hnx.dynamics.utils module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.utils.is_all_to_all"><code class="docutils literal notranslate"><span class="pre">is_all_to_all()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.utils.is_natural_coupling"><code class="docutils literal notranslate"><span class="pre">is_natural_coupling()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.utils.lin_system"><code class="docutils literal notranslate"><span class="pre">lin_system()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.utils.lin_system_a2a"><code class="docutils literal notranslate"><span class="pre">lin_system_a2a()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.utils.sprott_algorithm"><code class="docutils literal notranslate"><span class="pre">sprott_algorithm()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.dynamics.utils.sprott_algorithm_multi"><code class="docutils literal notranslate"><span class="pre">sprott_algorithm_multi()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.dynamics">Module contents</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner">
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By HNX's authors
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023, HNX&#39;s authors.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div></div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

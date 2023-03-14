@@ -1,7 +1,7 @@
 import hnx as hnx
 from hnx.generation.scale_free import scale_free
 from hnx.linalg import *
-from hnx.representations.projections import bipartite, clique_projection
+from hnx.representations.projections import bipartite_projection, clique_projection
 from hnx.generation.random import *
 from hnx.readwrite.save import save_hypergraph
 from hnx.readwrite.load import load_hypergraph

@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>hnx.communities.hy_sc.model &#8212; HNX 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for hnx.communities.hy_sc.model</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+
+<span class="kn">from</span> <span class="nn">hnx.core.hypergraph</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
+<span class="kn">from</span> <span class="nn">hnx.linalg.linalg</span> <span class="kn">import</span> <span class="n">binary_incidence_matrix</span><span class="p">,</span> <span class="n">incidence_matrix</span>
+
+
+<div class="viewcode-block" id="HySC"><a class="viewcode-back" href="../../../../hnx.communities.hy_sc.html#hnx.communities.hy_sc.model.HySC">[docs]</a><span class="k">class</span> <span class="nc">HySC</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Implementation of Hypergraph Spectral Clustering from</span>
+<span class="sd">    &quot;Learning with hypergraphs: Clustering, classification, and embedding&quot;,</span>
+<span class="sd">    Zhou D., Huang J., Schölkopf B.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">inf</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">1e40</span><span class="p">,</span>
+        <span class="n">n_realizations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">out_inference</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">out_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;../data/output/&quot;</span><span class="p">,</span>
+        <span class="n">end_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;_sc.dat&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        seed: random seed.</span>
+<span class="sd">        inf: initial value for the log-likelihood.</span>
+<span class="sd">        n_realizations: number of realizations with different random initialization.</span>
+<span class="sd">        verbose: flag to print details.</span>
+<span class="sd">        out_inference: flag to store the inferred parameters.</span>
+<span class="sd">        out_folder: path to store the output.</span>
+<span class="sd">        end_file: output file suffix.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Training related attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inf</span> <span class="o">=</span> <span class="n">inf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_realizations</span> <span class="o">=</span> <span class="n">n_realizations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="c1"># Output related attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_inference</span> <span class="o">=</span> <span class="n">out_inference</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_folder</span> <span class="o">=</span> <span class="n">out_folder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_file</span> <span class="o">=</span> <span class="n">end_file</span>
+        <span class="c1"># Membership matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="HySC.fit"><a class="viewcode-back" href="../../../../hnx.communities.hy_sc.html#hnx.communities.hy_sc.model.HySC.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hypergraph</span><span class="p">:</span> <span class="n">Hypergraph</span><span class="p">,</span> <span class="n">K</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">weighted_L</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Perform community detection on hypergraphs with spectral clustering.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        hypergraph: the hypergraph to perform inference on.</span>
+<span class="sd">        K: number of communities.</span>
+<span class="sd">        weighted_L: flag to use the weighted Laplacian.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        u: hard-membership matrix of dimension (N, K).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Initialize all the parameters needed for training.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_data</span><span class="p">(</span><span class="n">hypergraph</span><span class="o">=</span><span class="n">hypergraph</span><span class="p">,</span> <span class="n">K</span><span class="o">=</span><span class="n">K</span><span class="p">)</span>
+
+        <span class="c1"># Get the Laplacian matrix.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_extract_laplacian</span><span class="p">(</span><span class="n">weighted_L</span><span class="o">=</span><span class="n">weighted_L</span><span class="p">)</span>
+        <span class="c1"># Get eigenvalues and eigenvectors of the Laplacian matrix.</span>
+        <span class="n">e_vals</span><span class="p">,</span> <span class="n">e_vecs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_eigenvectors</span><span class="p">()</span>
+        <span class="c1"># Extract hard-memberships by applying the K-Means algorithm to the eigenvectors.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_kmeans</span><span class="p">(</span><span class="n">e_vecs</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+
+        <span class="c1"># Save inferred parameter.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_inference</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_results</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span></div>
+
+    <span class="k">def</span> <span class="nf">_init_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">hypergraph</span><span class="p">:</span> <span class="n">Hypergraph</span><span class="p">,</span>
+        <span class="n">K</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize parameters for the inference.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        hypergraph: the hypergraph to perform inference on.</span>
+<span class="sd">        K: number of communities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Weighted incidence matrix.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">incidence</span> <span class="o">=</span> <span class="n">incidence_matrix</span><span class="p">(</span><span class="n">hypergraph</span><span class="p">)</span>
+        <span class="c1"># Binary incidence matrix.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">binary_incidence</span> <span class="o">=</span> <span class="n">binary_incidence_matrix</span><span class="p">(</span><span class="n">hypergraph</span><span class="p">)</span>
+
+        <span class="c1"># Number of nodes, and number of hyperedges.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">E</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">incidence</span><span class="o">.</span><span class="n">shape</span>
+        <span class="c1"># Number of communities.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">K</span> <span class="o">=</span> <span class="n">K</span>
+        <span class="c1"># Maximum observed hyperedge size.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hypergraph</span><span class="o">.</span><span class="n">get_edges</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)])</span>
+
+        <span class="c1"># Nodes&#39; degree.</span>
+        <span class="c1"># TODO: is there a better way to get the array with the node degrees?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_degree</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">hypergraph</span><span class="o">.</span><span class="n">degree_sequence</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="c1"># TODO: is there a better way to get the weighted degrees?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_degree_weighted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">incidence</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Hyperedges&#39; size.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hye_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hypergraph</span><span class="o">.</span><span class="n">get_sizes</span><span class="p">())</span>
+        <span class="c1"># TODO: is there a better way to get the weighted sizes?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hye_size_weighted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">incidence</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Isolated nodes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isolates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">incidence</span><span class="o">.</span><span class="n">getnnz</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)[</span>
+            <span class="mi">0</span>
+        <span class="p">]</span>  <span class="c1"># TODO: implement it as a core method</span>
+        <span class="c1"># Non-isolated nodes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">non_isolates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">incidence</span><span class="o">.</span><span class="n">getnnz</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)[</span>
+            <span class="mi">0</span>
+        <span class="p">]</span>  <span class="c1"># TODO: implement it as a core method</span>
+
+    <span class="k">def</span> <span class="nf">_extract_laplacian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weighted_L</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Extract the Laplacian matrix associated to the hypergraph.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        weighted_L: flag to use the weighted Laplacian.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: check whether this is already (or should be) implemented in other scripts</span>
+        <span class="c1"># TODO: and hopefully without making use of dense matrices</span>
+        <span class="n">invDE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">hye_size</span><span class="p">)</span>
+        <span class="n">invDV2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_degree</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">weighted_L</span><span class="p">:</span>
+            <span class="n">dense_incidence</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">incidence</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+            <span class="n">HT</span> <span class="o">=</span> <span class="n">dense_incidence</span><span class="o">.</span><span class="n">T</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span> <span class="o">-</span> <span class="n">invDV2</span> <span class="o">@</span> <span class="n">dense_incidence</span> <span class="o">@</span> <span class="n">invDE</span> <span class="o">@</span> <span class="n">HT</span> <span class="o">@</span> <span class="n">invDV2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dense_binary_incidence</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_incidence</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+            <span class="n">HT</span> <span class="o">=</span> <span class="n">dense_binary_incidence</span><span class="o">.</span><span class="n">T</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span> <span class="o">-</span> <span class="n">invDV2</span> <span class="o">@</span> <span class="n">dense_binary_incidence</span> <span class="o">@</span> <span class="n">invDE</span> <span class="o">@</span> <span class="n">HT</span> <span class="o">@</span> <span class="n">invDV2</span>
+
+<div class="viewcode-block" id="HySC.extract_eigenvectors"><a class="viewcode-back" href="../../../../hnx.communities.hy_sc.html#hnx.communities.hy_sc.model.HySC.extract_eigenvectors">[docs]</a>    <span class="k">def</span> <span class="nf">extract_eigenvectors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Extract eigenvalues and eigenvectors of the Laplacian matrix.&quot;&quot;&quot;</span>
+        <span class="n">e_vals</span><span class="p">,</span> <span class="n">e_vecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">non_isolates</span><span class="p">][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">non_isolates</span><span class="p">])</span>
+        <span class="n">sorted_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">e_vals</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">e_vals</span><span class="p">[</span><span class="n">sorted_indices</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">]],</span> <span class="n">e_vecs</span><span class="p">[:,</span> <span class="n">sorted_indices</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="HySC.apply_kmeans"><a class="viewcode-back" href="../../../../hnx.communities.hy_sc.html#hnx.communities.hy_sc.model.HySC.apply_kmeans">[docs]</a>    <span class="k">def</span> <span class="nf">apply_kmeans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Apply K-means algorithm to the eigenvectors of the Laplacian matrix.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: matrix with eigenvectors.</span>
+<span class="sd">        seed: random seed.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        X_pred: membership matrix.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span>
+            <span class="n">n_clusters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">n_init</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_realizations</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">X_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">non_isolates</span><span class="p">):</span>
+            <span class="n">X_pred</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">X_pred</span></div>
+
+<div class="viewcode-block" id="HySC.output_results"><a class="viewcode-back" href="../../../../hnx.communities.hy_sc.html#hnx.communities.hy_sc.model.HySC.output_results">[docs]</a>    <span class="k">def</span> <span class="nf">output_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Save the results in a .npz file.&quot;&quot;&quot;</span>
+        <span class="n">outfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_folder</span> <span class="o">+</span> <span class="s2">&quot;theta&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_file</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="n">outfile</span> <span class="o">+</span> <span class="s2">&quot;.npz&quot;</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Inferred parameters saved in: </span><span class="si">{</span><span class="n">outfile</span> <span class="o">+</span> <span class="s2">&quot;.npz&quot;</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;To load: theta=np.load(filename), then e.g. theta[&quot;u&quot;]&#39;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">HNX</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">hnx</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, HNX's authors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

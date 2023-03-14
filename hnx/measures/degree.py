@@ -3,17 +3,23 @@ from hnx.core import Hypergraph
 
 def degree(hg: Hypergraph, node, order=None, size=None):
     """
-    Compute the degree of a node in the hypergraph.
+    Computes the degree of a node in the hypergraph.
+
     Parameters
     ----------
-    hg : Hypergraph. The hypergraph to check.
-    node : Node. The node to check.
-    order : int. The order of the hyperedges to consider. If None, all hyperedges are considered.
-    size : int. The size of the hyperedges to consider. If None, all hyperedges are considered.
+    hg : Hypergraph
+        The hypergraph of interest.
+    node : Node
+        The node to check.
+    order : int
+        The order of the hyperedges to consider. If None, all hyperedges are considered.
+    size : int
+        The size of the hyperedges to consider. If None, all hyperedges are considered.
 
     Returns
     -------
-    int. The degree of the node.
+    int
+        The degree of the node.
     """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
@@ -27,16 +33,21 @@ def degree(hg: Hypergraph, node, order=None, size=None):
 
 def degree_sequence(hg: Hypergraph, order=None, size=None):
     """
-    Compute the degree sequence of the hypergraph.
+    Computes the degree sequence of the hypergraph.
+
     Parameters
     ----------
-    hg : Hypergraph. The hypergraph to check.
-    order : int. The order of the hyperedges to consider. If None, all hyperedges are considered.
-    size : int. The size of the hyperedges to consider. If None, all hyperedges are considered.
+    hg : Hypergraph
+        The hypergraph ofinterest.
+    order : int
+        The order of the hyperedges to consider. If None, all hyperedges are considered.
+    size : int
+        The size of the hyperedges to consider. If None, all hyperedges are considered.
 
     Returns
     -------
-    dict. The degree sequence of the hypergraph. The keys are the nodes and the values are the degrees.
+    dict
+        The degree sequence of the hypergraph. The keys are the nodes and the values are the degrees.
     """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
