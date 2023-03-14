@@ -2,7 +2,7 @@ import itertools
 import math
 
 
-def motifs_ho_not_full(edges, N, visited):
+def _motifs_ho_not_full(edges, N, visited):
     mapping, labeling = generate_motifs(N)
 
     T = {}
@@ -82,7 +82,7 @@ def motifs_ho_not_full(edges, N, visited):
     return out, visited
 
 
-def motifs_standard(edges, N, visited):
+def _motifs_standard(edges, N, visited):
     mapping, labeling = generate_motifs(N)
 
     graph = {}
@@ -194,7 +194,7 @@ def motifs_standard(edges, N, visited):
     return out
 
 
-def motifs_ho_full(edges, N):
+def _motifs_ho_full(edges, N):
     mapping, labeling = generate_motifs(N)
 
     T = {}
@@ -260,18 +260,50 @@ def motifs_ho_full(edges, N):
     return out, visited
 
 
-def diff_sum(original, null_models):
+def diff_sum(observed: list, null_models: list):
+    """
+    Compute the relative abundance between the observed frequencies and the null models
+
+    Parameters
+    ----------
+    observed : list
+        Observed frequencies
+    null_models : list
+        Null models
+
+    Returns
+    -------
+    list
+        Relative abundance between the observed frequencies and the null models
+
+    Notes
+    -----
+    The relative abundance is computed as: (observed - null) / (observed + null + 4)
+
+    """
     u_null = avg(null_models)
 
     res = []
-    for i in range(len(original)):
-        res.append((original[i][1] - u_null[i]) / (original[i][1] + u_null[i] + 4))
+    for i in range(len(observed)):
+        res.append((observed[i][1] - u_null[i]) / (observed[i][1] + u_null[i] + 4))
 
     return res
 
 
 def norm_vector(a):
-    res = []
+    """
+    Normalize a vector
+
+    Parameters
+    ----------
+    a : list
+        Vector to be normalized
+
+    Returns
+    -------
+    list
+        Normalized vector
+    """
     M = 0
     for i in a:
         M += i ** 2
@@ -306,18 +338,46 @@ def sigma(motifs):
     return result
 
 
-def z_score(original, null_models):
+def z_score(observed, null_models):
+    """
+    Compute the z-score between the observed frequencies and the null models
+
+    Parameters
+    ----------
+    observed : list
+        Observed frequencies
+    null_models : list
+        Null models
+
+    Returns
+    -------
+    list
+        Z-score between the observed frequencies and the null models
+    """
     u_null = avg(null_models)
     sigma_null = sigma(null_models)
 
     z_scores = []
-    for i in range(len(original)):
-        z_scores.append((original[i][1] - u_null[i]) / (sigma_null[i] + 0.01))
+    for i in range(len(observed)):
+        z_scores.append((observed[i][1] - u_null[i]) / (sigma_null[i] + 0.01))
 
     return z_scores
 
 
 def power_set(A):
+    """
+    Compute the power set of a set
+
+    Parameters
+    ----------
+    A : list
+        Set
+
+    Returns
+    -------
+    list
+        Power set of the set
+    """
     subsets = []
     N = len(A)
 
@@ -333,7 +393,7 @@ def power_set(A):
     return subsets
 
 
-def is_connected(edges, N):
+def _is_connected(edges, N):
     nodes = set()
     for e in edges:
         for n in e:
@@ -373,7 +433,26 @@ def is_connected(edges, N):
     return conn
 
 
-def relabel(edges, relabeling):
+def relabel(edges: list, relabeling: dict):
+    """
+    Relabel the vertices of a hypergraph according to a given relabeling
+
+    Parameters
+    ----------
+    edges : list
+        Edges of the hypergraph
+    relabeling : dict
+        Relabeling
+
+    Returns
+    -------
+    list
+        Edges of the hypergraph with the vertices relabeled
+
+    Notes
+    -----
+    The relabeling is a dictionary that maps the old labels to the new labels
+    """
     res = []
     for edge in edges:
         new_edge = []
@@ -384,6 +463,19 @@ def relabel(edges, relabeling):
 
 
 def generate_motifs(N):
+    """
+    Generates all possible patterns of non-isomorphic subhypergraphs of size N
+
+    Parameters
+    ----------
+    N : int
+        Size of the subhypergraphs
+
+    Returns
+    -------
+    list
+        List of all possible patterns of non-isomorphic subhypergraphs of size N
+    """
     n = N
     assert n >= 2
 
@@ -397,7 +489,7 @@ def generate_motifs(N):
 
     C = []
     for i in range(len(B)):
-        if is_connected(B[i], N):
+        if _is_connected(B[i], N):
             C.append(B[i])
 
     isom_classes = {}

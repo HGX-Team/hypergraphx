@@ -9,7 +9,25 @@ from hnx.readwrite.load import _load_pickle
 from hnx.measures.edge_similarity import jaccard_distance as jaccard
 
 
-def hyperlink_communities(H: Hypergraph, load_distances=None, save_distances=None):
+def hyperlink_communities(H: Hypergraph, load_distances=None, save_distances=None) -> np.ndarray:
+    """
+    Computes the dendrogram of the given hypergraph
+
+    Parameters
+    ----------
+    H : Hypergraph
+        The hypergraph of interest
+    load_distances : str
+        The path to load the distances from
+    save_distances : str
+        The path to save the distances to
+
+    Returns
+    -------
+    np.ndarray
+        The dendrogram of the given hypergraph
+
+    """
     print("Hypergraph info - nodes: {} edges: {}".format(H.num_nodes(), H.num_edges()))
     lcc = H.largest_component()
     H = H.subhypergraph(lcc)
@@ -82,12 +100,42 @@ def _edge_label2node_labels(h, labels):
     return nodes
 
 
-def get_num_hyperlink_communties(dendrogram, cut_height):
+def get_num_hyperlink_communties(dendrogram: np.ndarray, cut_height: float) -> int:
+    """
+    Returns the number of communities in the dendrogram at the cut height
+
+    Parameters
+    ----------
+    dendrogram : np.ndarray
+
+    cut_height : float
+        The cut height
+    Returns
+    -------
+    int
+        The number of communities
+    """
     cut = _cut_dendrogram(dendrogram, cut_height)
     return len(set(cut))
 
 
-def overlapping_communities(H: Hypergraph, dendrogram, cut_height):
+def overlapping_communities(H: Hypergraph, dendrogram: np.ndarray, cut_height: float) -> dict:
+    """
+    Returns the overlapping communities in the dendrogram at the given cut height
+
+    Parameters
+    ----------
+    H : Hypergraph
+        The hypergraph of interest
+    dendrogram : np.ndarray
+        The dendrogram of the given hypergraph
+    cut_height
+        The cut height
+    Returns
+    -------
+    dict
+        The overlapping communities
+    """
     cut = _cut_dendrogram(dendrogram, cut_height)
     h = H.get_edges()
     labels = _edge_label2node_labels(h, cut)
