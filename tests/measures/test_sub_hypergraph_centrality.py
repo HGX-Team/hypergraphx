@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from hoinetx import Hypergraph
-from hoinetx.measures.sub_hypergraph_centrality import subhypergraph_centrality
+from hnx import Hypergraph
+from hnx.measures.sub_hypergraph_centrality import subhypergraph_centrality
 
 
 # Fixture loaded_hypergraph defined inside the package-level conftest.py

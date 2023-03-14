@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import sparse
 
-from hoinetx import Hypergraph
+from hnx import Hypergraph
 
 
 # Fixture loaded_hypergraph defined inside the package-level conftest.py
