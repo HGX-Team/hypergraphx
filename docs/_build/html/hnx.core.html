@@ -1,0 +1,1040 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>hnx.core package &#8212; HNX 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'hnx.core';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="hnx.dynamics package" href="hnx.dynamics.html" />
+    <link rel="prev" title="hnx.communities.hyperlink_comm package" href="hnx.communities.hyperlink_comm.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">HNX 1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="modules.html">hnx</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="hnx.html">hnx package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="hnx.communities.html">hnx.communities package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.core_periphery.html">hnx.communities.core_periphery package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.hy_mmsbm.html">hnx.communities.hy_mmsbm package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.hy_sc.html">hnx.communities.hy_sc package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.hypergraph_mt.html">hnx.communities.hypergraph_mt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hnx.communities.hyperlink_comm.html">hnx.communities.hyperlink_comm package</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">hnx.core package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.dynamics.html">hnx.dynamics package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.filters.html">hnx.filters package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.generation.html">hnx.generation package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.linalg.html">hnx.linalg package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.measures.html">hnx.measures package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.motifs.html">hnx.motifs package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.readwrite.html">hnx.readwrite package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.representations.html">hnx.representations package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.utils.html">hnx.utils package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hnx.viz.html">hnx.viz package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/hnx.core.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>hnx.core package</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.core.hypergraph">hnx.core.hypergraph module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph"><code class="docutils literal notranslate"><span class="pre">Hypergraph</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.add_attr_meta"><code class="docutils literal notranslate"><span class="pre">Hypergraph.add_attr_meta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.add_edge"><code class="docutils literal notranslate"><span class="pre">Hypergraph.add_edge()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.add_edges"><code class="docutils literal notranslate"><span class="pre">Hypergraph.add_edges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.add_node"><code class="docutils literal notranslate"><span class="pre">Hypergraph.add_node()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.add_nodes"><code class="docutils literal notranslate"><span class="pre">Hypergraph.add_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.adjacency_matrix"><code class="docutils literal notranslate"><span class="pre">Hypergraph.adjacency_matrix()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.binary_incidence_matrix"><code class="docutils literal notranslate"><span class="pre">Hypergraph.binary_incidence_matrix()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.check_edge"><code class="docutils literal notranslate"><span class="pre">Hypergraph.check_edge()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.check_node"><code class="docutils literal notranslate"><span class="pre">Hypergraph.check_node()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.clear"><code class="docutils literal notranslate"><span class="pre">Hypergraph.clear()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.connected_components"><code class="docutils literal notranslate"><span class="pre">Hypergraph.connected_components()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.copy"><code class="docutils literal notranslate"><span class="pre">Hypergraph.copy()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.degree"><code class="docutils literal notranslate"><span class="pre">Hypergraph.degree()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.degree_sequence"><code class="docutils literal notranslate"><span class="pre">Hypergraph.degree_sequence()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.dual_random_walk_adjacency"><code class="docutils literal notranslate"><span class="pre">Hypergraph.dual_random_walk_adjacency()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_adj_edges"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_adj_edges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_attr_meta"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_attr_meta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_edges"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_edges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_meta"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_meta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_neighbors"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_neighbors()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_nodes"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_orders"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_orders()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_sizes"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_sizes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_weight"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_weight()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_weights"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_weights()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.incidence_matrix"><code class="docutils literal notranslate"><span class="pre">Hypergraph.incidence_matrix()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.is_connected"><code class="docutils literal notranslate"><span class="pre">Hypergraph.is_connected()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.is_isolated"><code class="docutils literal notranslate"><span class="pre">Hypergraph.is_isolated()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.is_uniform"><code class="docutils literal notranslate"><span class="pre">Hypergraph.is_uniform()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.is_weighted"><code class="docutils literal notranslate"><span class="pre">Hypergraph.is_weighted()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.isolated_nodes"><code class="docutils literal notranslate"><span class="pre">Hypergraph.isolated_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.largest_component"><code class="docutils literal notranslate"><span class="pre">Hypergraph.largest_component()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.largest_component_size"><code class="docutils literal notranslate"><span class="pre">Hypergraph.largest_component_size()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.max_order"><code class="docutils literal notranslate"><span class="pre">Hypergraph.max_order()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.max_size"><code class="docutils literal notranslate"><span class="pre">Hypergraph.max_size()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.node_connected_component"><code class="docutils literal notranslate"><span class="pre">Hypergraph.node_connected_component()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.num_connected_components"><code class="docutils literal notranslate"><span class="pre">Hypergraph.num_connected_components()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.num_edges"><code class="docutils literal notranslate"><span class="pre">Hypergraph.num_edges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.num_nodes"><code class="docutils literal notranslate"><span class="pre">Hypergraph.num_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.remove_attr_meta"><code class="docutils literal notranslate"><span class="pre">Hypergraph.remove_attr_meta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.remove_edge"><code class="docutils literal notranslate"><span class="pre">Hypergraph.remove_edge()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.remove_edges"><code class="docutils literal notranslate"><span class="pre">Hypergraph.remove_edges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.remove_node"><code class="docutils literal notranslate"><span class="pre">Hypergraph.remove_node()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.remove_nodes"><code class="docutils literal notranslate"><span class="pre">Hypergraph.remove_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.set_meta"><code class="docutils literal notranslate"><span class="pre">Hypergraph.set_meta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.set_weight"><code class="docutils literal notranslate"><span class="pre">Hypergraph.set_weight()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.subhypergraph"><code class="docutils literal notranslate"><span class="pre">Hypergraph.subhypergraph()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.core.meta_handler">hnx.core.meta_handler module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler"><code class="docutils literal notranslate"><span class="pre">MetaHandler</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.add_attr"><code class="docutils literal notranslate"><span class="pre">MetaHandler.add_attr()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.add_obj"><code class="docutils literal notranslate"><span class="pre">MetaHandler.add_obj()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.get_attr"><code class="docutils literal notranslate"><span class="pre">MetaHandler.get_attr()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.get_id"><code class="docutils literal notranslate"><span class="pre">MetaHandler.get_id()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.get_obj"><code class="docutils literal notranslate"><span class="pre">MetaHandler.get_obj()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.remove_attr"><code class="docutils literal notranslate"><span class="pre">MetaHandler.remove_attr()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.remove_obj"><code class="docutils literal notranslate"><span class="pre">MetaHandler.remove_obj()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.set_attr"><code class="docutils literal notranslate"><span class="pre">MetaHandler.set_attr()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.core.multiplex_hypergraph">hnx.core.multiplex_hypergraph module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.add_layer"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.add_layer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.aggregated_hypergraph"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.aggregated_hypergraph()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.clear"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.clear()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.degree"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.degree()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.degree_sequence"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.degree_sequence()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.del_layer"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.del_layer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.edge_overlap"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.edge_overlap()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_layer"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.get_layer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_layer_attr"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.get_layer_attr()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_layers"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.get_layers()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_nodes"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.get_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.num_layers"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.num_layers()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.set_layer_attr"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.set_layer_attr()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.core.temporal_hypergraph">hnx.core.temporal_hypergraph module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.add_edge"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.add_edge()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.add_edges"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.add_edges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.add_node"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.add_node()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.add_nodes"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.add_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.aggregate"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.aggregate()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.get_edges"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.get_edges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.get_nodes"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.get_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.remove_edge"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.remove_edge()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.remove_edges"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.remove_edges()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.core">Module contents</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="hnx-core-package">
+<h1>hnx.core package<a class="headerlink" href="#hnx-core-package" title="Permalink to this heading">#</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="module-hnx.core.hypergraph">
+<span id="hnx-core-hypergraph-module"></span><h2>hnx.core.hypergraph module<a class="headerlink" href="#module-hnx.core.hypergraph" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hnx.core.hypergraph.</span></span><span class="sig-name descname"><span class="pre">Hypergraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weighted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.add_attr_meta">
+<span class="sig-name descname"><span class="pre">add_attr_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.add_attr_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.add_attr_meta" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.add_edge">
+<span class="sig-name descname"><span class="pre">add_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.add_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.add_edge" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.add_edges">
+<span class="sig-name descname"><span class="pre">add_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.add_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.add_edges" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.add_node">
+<span class="sig-name descname"><span class="pre">add_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.add_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.add_node" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.add_nodes">
+<span class="sig-name descname"><span class="pre">add_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.add_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.add_nodes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.adjacency_matrix">
+<span class="sig-name descname"><span class="pre">adjacency_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.adjacency_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.adjacency_matrix" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.binary_incidence_matrix">
+<span class="sig-name descname"><span class="pre">binary_incidence_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.binary_incidence_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.binary_incidence_matrix" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.check_edge">
+<span class="sig-name descname"><span class="pre">check_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.check_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.check_edge" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.check_node">
+<span class="sig-name descname"><span class="pre">check_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.check_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.check_node" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.clear" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.connected_components">
+<span class="sig-name descname"><span class="pre">connected_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.connected_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.connected_components" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.copy" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.degree">
+<span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.degree" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.degree_sequence">
+<span class="sig-name descname"><span class="pre">degree_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.degree_sequence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.degree_sequence" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.dual_random_walk_adjacency">
+<span class="sig-name descname"><span class="pre">dual_random_walk_adjacency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.dual_random_walk_adjacency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.dual_random_walk_adjacency" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.get_adj_edges">
+<span class="sig-name descname"><span class="pre">get_adj_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.get_adj_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.get_adj_edges" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.get_attr_meta">
+<span class="sig-name descname"><span class="pre">get_attr_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.get_attr_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.get_attr_meta" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.get_edges">
+<span class="sig-name descname"><span class="pre">get_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">up_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subhypergraph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_isolated_nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.get_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.get_edges" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.get_meta">
+<span class="sig-name descname"><span class="pre">get_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.get_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.get_meta" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.get_neighbors">
+<span class="sig-name descname"><span class="pre">get_neighbors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.get_neighbors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.get_neighbors" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.get_nodes">
+<span class="sig-name descname"><span class="pre">get_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.get_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.get_nodes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.get_orders">
+<span class="sig-name descname"><span class="pre">get_orders</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.get_orders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.get_orders" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.get_sizes">
+<span class="sig-name descname"><span class="pre">get_sizes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.get_sizes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.get_sizes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.get_weight">
+<span class="sig-name descname"><span class="pre">get_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.get_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.get_weight" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.get_weights">
+<span class="sig-name descname"><span class="pre">get_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">up_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.get_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.get_weights" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.incidence_matrix">
+<span class="sig-name descname"><span class="pre">incidence_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.incidence_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.incidence_matrix" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.is_connected">
+<span class="sig-name descname"><span class="pre">is_connected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.is_connected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.is_connected" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.is_isolated">
+<span class="sig-name descname"><span class="pre">is_isolated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.is_isolated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.is_isolated" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.is_uniform">
+<span class="sig-name descname"><span class="pre">is_uniform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.is_uniform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.is_uniform" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.is_weighted">
+<span class="sig-name descname"><span class="pre">is_weighted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.is_weighted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.is_weighted" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.isolated_nodes">
+<span class="sig-name descname"><span class="pre">isolated_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.isolated_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.isolated_nodes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.largest_component">
+<span class="sig-name descname"><span class="pre">largest_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.largest_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.largest_component" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.largest_component_size">
+<span class="sig-name descname"><span class="pre">largest_component_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.largest_component_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.largest_component_size" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.max_order">
+<span class="sig-name descname"><span class="pre">max_order</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.max_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.max_order" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.max_size">
+<span class="sig-name descname"><span class="pre">max_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.max_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.max_size" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.node_connected_component">
+<span class="sig-name descname"><span class="pre">node_connected_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.node_connected_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.node_connected_component" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.num_connected_components">
+<span class="sig-name descname"><span class="pre">num_connected_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.num_connected_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.num_connected_components" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.num_edges">
+<span class="sig-name descname"><span class="pre">num_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">up_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.num_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.num_edges" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.num_nodes">
+<span class="sig-name descname"><span class="pre">num_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.num_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.num_nodes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.remove_attr_meta">
+<span class="sig-name descname"><span class="pre">remove_attr_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.remove_attr_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.remove_attr_meta" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.remove_edge">
+<span class="sig-name descname"><span class="pre">remove_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.remove_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.remove_edge" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.remove_edges">
+<span class="sig-name descname"><span class="pre">remove_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.remove_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.remove_edges" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.remove_node">
+<span class="sig-name descname"><span class="pre">remove_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.remove_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.remove_node" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.remove_nodes">
+<span class="sig-name descname"><span class="pre">remove_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.remove_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.remove_nodes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.set_meta">
+<span class="sig-name descname"><span class="pre">set_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.set_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.set_meta" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.set_weight">
+<span class="sig-name descname"><span class="pre">set_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.set_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.set_weight" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.hypergraph.Hypergraph.subhypergraph">
+<span class="sig-name descname"><span class="pre">subhypergraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/hypergraph.html#Hypergraph.subhypergraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.hypergraph.Hypergraph.subhypergraph" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-hnx.core.meta_handler">
+<span id="hnx-core-meta-handler-module"></span><h2>hnx.core.meta_handler module<a class="headerlink" href="#module-hnx.core.meta_handler" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="hnx.core.meta_handler.MetaHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hnx.core.meta_handler.</span></span><span class="sig-name descname"><span class="pre">MetaHandler</span></span><a class="reference internal" href="_modules/hnx/core/meta_handler.html#MetaHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.meta_handler.MetaHandler" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.meta_handler.MetaHandler.add_attr">
+<span class="sig-name descname"><span class="pre">add_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/meta_handler.html#MetaHandler.add_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.meta_handler.MetaHandler.add_attr" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.meta_handler.MetaHandler.add_obj">
+<span class="sig-name descname"><span class="pre">add_obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/meta_handler.html#MetaHandler.add_obj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.meta_handler.MetaHandler.add_obj" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.meta_handler.MetaHandler.get_attr">
+<span class="sig-name descname"><span class="pre">get_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/meta_handler.html#MetaHandler.get_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.meta_handler.MetaHandler.get_attr" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.meta_handler.MetaHandler.get_id">
+<span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/meta_handler.html#MetaHandler.get_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.meta_handler.MetaHandler.get_id" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.meta_handler.MetaHandler.get_obj">
+<span class="sig-name descname"><span class="pre">get_obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/meta_handler.html#MetaHandler.get_obj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.meta_handler.MetaHandler.get_obj" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.meta_handler.MetaHandler.remove_attr">
+<span class="sig-name descname"><span class="pre">remove_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/meta_handler.html#MetaHandler.remove_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.meta_handler.MetaHandler.remove_attr" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.meta_handler.MetaHandler.remove_obj">
+<span class="sig-name descname"><span class="pre">remove_obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/meta_handler.html#MetaHandler.remove_obj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.meta_handler.MetaHandler.remove_obj" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.meta_handler.MetaHandler.set_attr">
+<span class="sig-name descname"><span class="pre">set_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/meta_handler.html#MetaHandler.set_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.meta_handler.MetaHandler.set_attr" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-hnx.core.multiplex_hypergraph">
+<span id="hnx-core-multiplex-hypergraph-module"></span><h2>hnx.core.multiplex_hypergraph module<a class="headerlink" href="#module-hnx.core.multiplex_hypergraph" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="hnx.core.multiplex_hypergraph.MultiplexHypergraph">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hnx.core.multiplex_hypergraph.</span></span><span class="sig-name descname"><span class="pre">MultiplexHypergraph</span></span><a class="reference internal" href="_modules/hnx/core/multiplex_hypergraph.html#MultiplexHypergraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.multiplex_hypergraph.MultiplexHypergraph.add_layer">
+<span class="sig-name descname"><span class="pre">add_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hypergraph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#hnx.core.hypergraph.Hypergraph" title="hnx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/multiplex_hypergraph.html#MultiplexHypergraph.add_layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.add_layer" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.multiplex_hypergraph.MultiplexHypergraph.aggregated_hypergraph">
+<span class="sig-name descname"><span class="pre">aggregated_hypergraph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/multiplex_hypergraph.html#MultiplexHypergraph.aggregated_hypergraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.aggregated_hypergraph" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.multiplex_hypergraph.MultiplexHypergraph.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/multiplex_hypergraph.html#MultiplexHypergraph.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.clear" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.multiplex_hypergraph.MultiplexHypergraph.degree">
+<span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_sum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/multiplex_hypergraph.html#MultiplexHypergraph.degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.degree" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.multiplex_hypergraph.MultiplexHypergraph.degree_sequence">
+<span class="sig-name descname"><span class="pre">degree_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_sum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/multiplex_hypergraph.html#MultiplexHypergraph.degree_sequence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.degree_sequence" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.multiplex_hypergraph.MultiplexHypergraph.del_layer">
+<span class="sig-name descname"><span class="pre">del_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/multiplex_hypergraph.html#MultiplexHypergraph.del_layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.del_layer" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.multiplex_hypergraph.MultiplexHypergraph.edge_overlap">
+<span class="sig-name descname"><span class="pre">edge_overlap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/multiplex_hypergraph.html#MultiplexHypergraph.edge_overlap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.edge_overlap" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_layer">
+<span class="sig-name descname"><span class="pre">get_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/multiplex_hypergraph.html#MultiplexHypergraph.get_layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_layer" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_layer_attr">
+<span class="sig-name descname"><span class="pre">get_layer_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/multiplex_hypergraph.html#MultiplexHypergraph.get_layer_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_layer_attr" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_layers">
+<span class="sig-name descname"><span class="pre">get_layers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/multiplex_hypergraph.html#MultiplexHypergraph.get_layers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_layers" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_nodes">
+<span class="sig-name descname"><span class="pre">get_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/multiplex_hypergraph.html#MultiplexHypergraph.get_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_nodes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.multiplex_hypergraph.MultiplexHypergraph.num_layers">
+<span class="sig-name descname"><span class="pre">num_layers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/multiplex_hypergraph.html#MultiplexHypergraph.num_layers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.num_layers" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.multiplex_hypergraph.MultiplexHypergraph.set_layer_attr">
+<span class="sig-name descname"><span class="pre">set_layer_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/multiplex_hypergraph.html#MultiplexHypergraph.set_layer_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.set_layer_attr" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-hnx.core.temporal_hypergraph">
+<span id="hnx-core-temporal-hypergraph-module"></span><h2>hnx.core.temporal_hypergraph module<a class="headerlink" href="#module-hnx.core.temporal_hypergraph" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="hnx.core.temporal_hypergraph.TemporalHypergraph">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hnx.core.temporal_hypergraph.</span></span><span class="sig-name descname"><span class="pre">TemporalHypergraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/temporal_hypergraph.html#TemporalHypergraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.temporal_hypergraph.TemporalHypergraph" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.temporal_hypergraph.TemporalHypergraph.add_edge">
+<span class="sig-name descname"><span class="pre">add_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/temporal_hypergraph.html#TemporalHypergraph.add_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.add_edge" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.temporal_hypergraph.TemporalHypergraph.add_edges">
+<span class="sig-name descname"><span class="pre">add_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/temporal_hypergraph.html#TemporalHypergraph.add_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.add_edges" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.temporal_hypergraph.TemporalHypergraph.add_node">
+<span class="sig-name descname"><span class="pre">add_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/temporal_hypergraph.html#TemporalHypergraph.add_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.add_node" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.temporal_hypergraph.TemporalHypergraph.add_nodes">
+<span class="sig-name descname"><span class="pre">add_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/temporal_hypergraph.html#TemporalHypergraph.add_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.add_nodes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.temporal_hypergraph.TemporalHypergraph.aggregate">
+<span class="sig-name descname"><span class="pre">aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/temporal_hypergraph.html#TemporalHypergraph.aggregate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.aggregate" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.temporal_hypergraph.TemporalHypergraph.get_edges">
+<span class="sig-name descname"><span class="pre">get_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/temporal_hypergraph.html#TemporalHypergraph.get_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.get_edges" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.temporal_hypergraph.TemporalHypergraph.get_nodes">
+<span class="sig-name descname"><span class="pre">get_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/temporal_hypergraph.html#TemporalHypergraph.get_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.get_nodes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.temporal_hypergraph.TemporalHypergraph.remove_edge">
+<span class="sig-name descname"><span class="pre">remove_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/temporal_hypergraph.html#TemporalHypergraph.remove_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.remove_edge" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hnx.core.temporal_hypergraph.TemporalHypergraph.remove_edges">
+<span class="sig-name descname"><span class="pre">remove_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hnx/core/temporal_hypergraph.html#TemporalHypergraph.remove_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.remove_edges" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-hnx.core">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-hnx.core" title="Permalink to this heading">#</a></h2>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="hnx.communities.hyperlink_comm.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">hnx.communities.hyperlink_comm package</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="hnx.dynamics.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">hnx.dynamics package</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.core.hypergraph">hnx.core.hypergraph module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph"><code class="docutils literal notranslate"><span class="pre">Hypergraph</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.add_attr_meta"><code class="docutils literal notranslate"><span class="pre">Hypergraph.add_attr_meta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.add_edge"><code class="docutils literal notranslate"><span class="pre">Hypergraph.add_edge()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.add_edges"><code class="docutils literal notranslate"><span class="pre">Hypergraph.add_edges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.add_node"><code class="docutils literal notranslate"><span class="pre">Hypergraph.add_node()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.add_nodes"><code class="docutils literal notranslate"><span class="pre">Hypergraph.add_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.adjacency_matrix"><code class="docutils literal notranslate"><span class="pre">Hypergraph.adjacency_matrix()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.binary_incidence_matrix"><code class="docutils literal notranslate"><span class="pre">Hypergraph.binary_incidence_matrix()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.check_edge"><code class="docutils literal notranslate"><span class="pre">Hypergraph.check_edge()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.check_node"><code class="docutils literal notranslate"><span class="pre">Hypergraph.check_node()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.clear"><code class="docutils literal notranslate"><span class="pre">Hypergraph.clear()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.connected_components"><code class="docutils literal notranslate"><span class="pre">Hypergraph.connected_components()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.copy"><code class="docutils literal notranslate"><span class="pre">Hypergraph.copy()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.degree"><code class="docutils literal notranslate"><span class="pre">Hypergraph.degree()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.degree_sequence"><code class="docutils literal notranslate"><span class="pre">Hypergraph.degree_sequence()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.dual_random_walk_adjacency"><code class="docutils literal notranslate"><span class="pre">Hypergraph.dual_random_walk_adjacency()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_adj_edges"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_adj_edges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_attr_meta"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_attr_meta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_edges"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_edges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_meta"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_meta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_neighbors"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_neighbors()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_nodes"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_orders"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_orders()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_sizes"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_sizes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_weight"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_weight()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.get_weights"><code class="docutils literal notranslate"><span class="pre">Hypergraph.get_weights()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.incidence_matrix"><code class="docutils literal notranslate"><span class="pre">Hypergraph.incidence_matrix()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.is_connected"><code class="docutils literal notranslate"><span class="pre">Hypergraph.is_connected()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.is_isolated"><code class="docutils literal notranslate"><span class="pre">Hypergraph.is_isolated()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.is_uniform"><code class="docutils literal notranslate"><span class="pre">Hypergraph.is_uniform()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.is_weighted"><code class="docutils literal notranslate"><span class="pre">Hypergraph.is_weighted()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.isolated_nodes"><code class="docutils literal notranslate"><span class="pre">Hypergraph.isolated_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.largest_component"><code class="docutils literal notranslate"><span class="pre">Hypergraph.largest_component()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.largest_component_size"><code class="docutils literal notranslate"><span class="pre">Hypergraph.largest_component_size()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.max_order"><code class="docutils literal notranslate"><span class="pre">Hypergraph.max_order()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.max_size"><code class="docutils literal notranslate"><span class="pre">Hypergraph.max_size()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.node_connected_component"><code class="docutils literal notranslate"><span class="pre">Hypergraph.node_connected_component()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.num_connected_components"><code class="docutils literal notranslate"><span class="pre">Hypergraph.num_connected_components()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.num_edges"><code class="docutils literal notranslate"><span class="pre">Hypergraph.num_edges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.num_nodes"><code class="docutils literal notranslate"><span class="pre">Hypergraph.num_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.remove_attr_meta"><code class="docutils literal notranslate"><span class="pre">Hypergraph.remove_attr_meta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.remove_edge"><code class="docutils literal notranslate"><span class="pre">Hypergraph.remove_edge()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.remove_edges"><code class="docutils literal notranslate"><span class="pre">Hypergraph.remove_edges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.remove_node"><code class="docutils literal notranslate"><span class="pre">Hypergraph.remove_node()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.remove_nodes"><code class="docutils literal notranslate"><span class="pre">Hypergraph.remove_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.set_meta"><code class="docutils literal notranslate"><span class="pre">Hypergraph.set_meta()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.set_weight"><code class="docutils literal notranslate"><span class="pre">Hypergraph.set_weight()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.hypergraph.Hypergraph.subhypergraph"><code class="docutils literal notranslate"><span class="pre">Hypergraph.subhypergraph()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.core.meta_handler">hnx.core.meta_handler module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler"><code class="docutils literal notranslate"><span class="pre">MetaHandler</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.add_attr"><code class="docutils literal notranslate"><span class="pre">MetaHandler.add_attr()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.add_obj"><code class="docutils literal notranslate"><span class="pre">MetaHandler.add_obj()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.get_attr"><code class="docutils literal notranslate"><span class="pre">MetaHandler.get_attr()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.get_id"><code class="docutils literal notranslate"><span class="pre">MetaHandler.get_id()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.get_obj"><code class="docutils literal notranslate"><span class="pre">MetaHandler.get_obj()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.remove_attr"><code class="docutils literal notranslate"><span class="pre">MetaHandler.remove_attr()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.remove_obj"><code class="docutils literal notranslate"><span class="pre">MetaHandler.remove_obj()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.meta_handler.MetaHandler.set_attr"><code class="docutils literal notranslate"><span class="pre">MetaHandler.set_attr()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.core.multiplex_hypergraph">hnx.core.multiplex_hypergraph module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.add_layer"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.add_layer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.aggregated_hypergraph"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.aggregated_hypergraph()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.clear"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.clear()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.degree"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.degree()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.degree_sequence"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.degree_sequence()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.del_layer"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.del_layer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.edge_overlap"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.edge_overlap()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_layer"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.get_layer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_layer_attr"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.get_layer_attr()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_layers"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.get_layers()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.get_nodes"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.get_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.num_layers"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.num_layers()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.multiplex_hypergraph.MultiplexHypergraph.set_layer_attr"><code class="docutils literal notranslate"><span class="pre">MultiplexHypergraph.set_layer_attr()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.core.temporal_hypergraph">hnx.core.temporal_hypergraph module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.add_edge"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.add_edge()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.add_edges"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.add_edges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.add_node"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.add_node()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.add_nodes"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.add_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.aggregate"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.aggregate()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.get_edges"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.get_edges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.get_nodes"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.get_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.remove_edge"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.remove_edge()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#hnx.core.temporal_hypergraph.TemporalHypergraph.remove_edges"><code class="docutils literal notranslate"><span class="pre">TemporalHypergraph.remove_edges()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-hnx.core">Module contents</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner">
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By HNX's authors
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023, HNX&#39;s authors.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div></div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

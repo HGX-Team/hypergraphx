@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple
 
 import pytest
 
-from hoinetx import Hypergraph
+from hnx import Hypergraph
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "test_data"
 ALL_SMALL_NUMERICAL_DATASETS = (
