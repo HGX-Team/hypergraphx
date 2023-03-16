@@ -2,6 +2,8 @@
 ## News
     * 2018-03-01: HNX is now available!
 
+## Library highlights
+
 ## Quick start
 
 ### Installation
