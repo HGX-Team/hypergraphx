@@ -26,7 +26,8 @@ class MetaHandler:
         except KeyError:
             raise KeyError("No object with id {}.".format(idx))
 
-    def set_attr(self, idx, attr):
+    def set_attr(self, obj, attr):
+        idx = self.get_id(obj)
         try:
             self.attr[idx] = attr
         except KeyError:

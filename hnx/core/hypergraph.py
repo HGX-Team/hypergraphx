@@ -169,7 +169,7 @@ class Hypergraph:
         order = len(edge) - 1
 
         if metadata is not None:
-            self._attr.set_attr(idx, metadata)
+            self._attr.set_attr(edge, metadata)
 
         if order > self._max_order:
             self._max_order = order

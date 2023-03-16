@@ -41,7 +41,7 @@ def _check_existence(file_name: str, file_type: str):
     return os.path.isfile(file_name)
 
 
-def load_hypergraph(file_name: str, file_type: str):
+def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
     """
     Load a hypergraph from a file.
 
@@ -62,7 +62,6 @@ def load_hypergraph(file_name: str, file_type: str):
     ValueError
         If the file type is not valid.
     """
-    file_name += ".{}".format(file_type)
     if file_type == "pickle":
         return _load_pickle(file_name)
     elif file_type == "json":

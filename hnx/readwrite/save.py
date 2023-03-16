@@ -52,7 +52,6 @@ def save_hypergraph(hypergraph: Hypergraph, file_name: str, file_type: str):
     if file_type == "pickle":
         _save_pickle(hypergraph, file_name)
     elif file_type == "json":
-        file_name += ".json"
         with open(file_name, "w+") as outfile:
             out = []
             for node in hypergraph.get_nodes():
