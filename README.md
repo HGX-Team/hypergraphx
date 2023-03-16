@@ -42,14 +42,14 @@
 ## The HNX team
 
 ### Project coordinators
-* Francesco Lotito (lead developer)
+* Quintino Francesco Lotito (lead developer) - quintino.lotito@unitn.it - <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://twitter.com/FraLotito"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Twitter-logo.svg/512px-Twitter-logo.svg.png"></a> <a title="GitHub, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="[https://commons.wikimedia.org/wiki/File:Octicons-mark-github.svg](https://github.com/FraLotito)"><img width="16" alt="Octicons-mark-github" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/512px-Octicons-mark-github.svg.png"></a>
 * Federico Battiston (project coordinator)
 
 ### Core members
 * Martina Contisciani
 * Caterina De Bacco
 * Leonardo Di Gaetano
-* Luca Gallo
+* Luca Gallo 
 * Alberto Montresor
 * Federico Musciotto
 * Nicolo Ruggeri
