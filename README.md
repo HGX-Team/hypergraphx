@@ -7,7 +7,7 @@
 **HNX** is a Python library for the analysis of real-world complex systems with **group interactions** and provides a comprehensive suite of tools and algorithms for constructing, visualizing, and analyzing **hypergraphs**. <br> The library is designed to be user-friendly and accessible, with a wide range of functionalities that can be applied to a diverse set of applications and use cases.
 
 ## News
-   * 2018-03-01: HNX is now available!
+   * 2023-03-xx: HNX is now available!
 
 ## Table of contents
 - [What are higher-order networks?](#what-are-higher-order-networks)
