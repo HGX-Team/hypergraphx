@@ -1,6 +1,9 @@
+<img src="logo/logo.png" width="500" title="HNX logo">
 
 ## News
     * 2018-03-01: HNX is now available!
+
+## What are higher-order networks?
 
 ## Library highlights
 
