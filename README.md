@@ -1,6 +1,6 @@
 <img src="logo/logo.svg" width="500" title="HNX logo">
 
-:page_facing_up: **[Paper]()** | :paperclip: **[Documentation]()** | :computer: **[Tutorials]()** | :floppy_disk: **[Data]()** | :bug: **[Report bug]()** | :email: **[Contact us]()**
+:page_facing_up: **[Paper]()** | :paperclip: **[Docs]()** | :computer: **[Tutorials]()** | :floppy_disk: **[Data]()** | :bug: **[Report bug]()** | :email: **[Reach us]()**
 -----
 
 
