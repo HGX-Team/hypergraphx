@@ -6,7 +6,8 @@ from hnx.generation.random import *
 from hnx.readwrite.save import save_hypergraph
 from hnx.readwrite.load import load_hypergraph
 from hnx.viz.draw_projections import draw_bipartite, draw_clique
+from hnx.viz.draw_pie import draw_pie
+import sklearn
 
-H = hnx.Hypergraph([(1, 2, 3), (1, 2), (4, 3)], weights=[1, 2, 3])
-draw_clique(H)
-#provaa
+H = hnx.Hypergraph([(1, 2, 3), (1, 3, 4, 5), (1, 2), (3, 4)])
+draw_pie(H)
