@@ -57,6 +57,11 @@
 ## Contributing
 
 ## Citing HNX
+If you use HNX or related data in your paper, please cite:
+
+```
+qui bibtex
+```
 
 ## License
 
