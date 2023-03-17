@@ -27,19 +27,25 @@
 ## What are higher-order networks?
 
 ## Library highlights
+  TODO FRA: copiare dal paper i vari tools ma semplificando il testo 
    * **Motif analysis** is a fundamental tool in network science to describe networked systems at their microscale, identifying their structural and functional building blocks. We provide an implementation for **higher-order motif analysis**: overabundant subgraphs of nodes connected by higher-order interactions. Given their widespread applications and expected use on large-scale real-world datasets, we also provide an approximated algorithm for higher-order motif analysis based on hyperedge sampling that speeds up computations while maintaining accuracy.
 
 ## Quick start
 
 ### Installation
+TODO: come si installa
 
 ### First steps
+TODO: qualche esempio di creazione ipergrafi, loading di dataset e cose basilari
 
 ## Tutorials
+TODO: link ai tutorial con breve descrizione di quello che c'è dentro (una frase)
 
 ## Data
+TODO: link al repo dei dati e qualche spiegazione 
 
 ## The HNX team
+TODO: aggiungere link contatti, per chi vuole. Ho messo esempio di icon twitter e github
 
 ### Project coordinators
 * Quintino Francesco Lotito (lead developer) - quintino.lotito@unitn.it - <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://twitter.com/FraLotito"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Twitter-logo.svg/512px-Twitter-logo.svg.png"></a> <a title="GitHub, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="[https://commons.wikimedia.org/wiki/File:Octicons-mark-github.svg](https://github.com/FraLotito)"><img width="16" alt="Octicons-mark-github" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/512px-Octicons-mark-github.svg.png"></a>
@@ -64,5 +70,7 @@ qui bibtex
 ```
 
 ## License
+TODO: scegliere licenza
 
 ## Other resources
+TODO: linkare altre librerie e tools simili?
