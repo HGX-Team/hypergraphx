@@ -11,5 +11,5 @@ import sklearn
 
 #H = hnx.Hypergraph([(1, 2, 3), (1, 3, 4, 5), (1, 2), (3, 4)])
 #draw_pie(H)
-H = load_hypergraph("test_data/workspace/workspace.json", "json")
+H = load_hypergraph("test_data/workplace/workplace.json", "json")
 print(H.get_meta(875))

@@ -105,14 +105,14 @@ def load_workspace():
 
     H = Hypergraph(edge_list=h_graph_edges, weighted=True, weights=h_weight)
 
-    metadata = pd.read_csv("../../test_data/workspace/workspace_meta.csv")
+    metadata = pd.read_csv("../../test_data/workplace/workplace_meta.csv")
     for i in range(len(metadata)):
         node = metadata["nodeName"][i]
         H.add_attr_meta(node, "class", metadata["class"][i])
         H.add_attr_meta(node, "classID", int(metadata["classID"][i]))
 
-    save_hypergraph(H, "../../test_data/workspace/workspace.json", file_type="json")
-    save_hypergraph(H, "../../test_data/workspace/workspace.pickle", file_type="pickle")
+    save_hypergraph(H, "../../test_data/workplace/workplace.json", file_type="json")
+    save_hypergraph(H, "../../test_data/workplace/workplace.pickle", file_type="pickle")
     return edges
 
 

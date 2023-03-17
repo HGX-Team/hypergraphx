@@ -27,7 +27,7 @@ def draw_bipartite(h: Hypergraph, pos=None, ax=None, align='vertical', **kwargs)
     if ax is None:
         ax = plt.gca()
 
-    nx.draw_networkx(g, pos=pos, ax=ax, align=align, **kwargs)
+    nx.draw_networkx(g, pos=pos, ax=ax, **kwargs)
     plt.show()
     return ax
 
