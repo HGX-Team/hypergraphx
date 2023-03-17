@@ -28,7 +28,7 @@
 
 ## Library highlights
   TODO FRA: copiare dal paper i vari tools ma semplificando il testo 
-   * **Motif analysis** is a fundamental tool in network science to describe networked systems at their microscale, identifying their structural and functional building blocks. We provide an implementation for **higher-order motif analysis**: overabundant subgraphs of nodes connected by higher-order interactions. Given their widespread applications and expected use on large-scale real-world datasets, we also provide an approximated algorithm for higher-order motif analysis based on hyperedge sampling that speeds up computations while maintaining accuracy.
+   * **Motif analysis** is a fundamental tool in network science to describe networked systems at their microscale, identifying their structural and functional building blocks. We provide an implementation for **higher-order motif analysis**: overabundant subgraphs of nodes connected by higher-order interactions. We also provide an approximated algorithm for higher-order motif analysis based on hyperedge sampling that speeds up computations while maintaining accuracy.
 
 ## Quick start
 
@@ -48,14 +48,14 @@ TODO: link al repo dei dati e qualche spiegazione
 TODO: aggiungere link contatti, per chi vuole. Ho messo esempio di icon twitter e github
 
 ### Project coordinators
-* Quintino Francesco Lotito (lead developer) - quintino.lotito@unitn.it - <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://twitter.com/FraLotito"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Twitter-logo.svg/512px-Twitter-logo.svg.png"></a> <a title="GitHub, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="[https://commons.wikimedia.org/wiki/File:Octicons-mark-github.svg](https://github.com/FraLotito)"><img width="16" alt="Octicons-mark-github" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/512px-Octicons-mark-github.svg.png"></a>
+* Quintino Francesco Lotito (lead developer) - quintino.lotito@unitn.it - <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://twitter.com/FraLotito"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Twitter-logo.svg/512px-Twitter-logo.svg.png"></a> <a title="GitHub, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="https://github.com/FraLotito"><img width="16" alt="Octicons-mark-github" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/512px-Octicons-mark-github.svg.png"></a>
 * Federico Battiston (project coordinator)
 
 ### Core members
 * Martina Contisciani
 * Caterina De Bacco
 * Leonardo Di Gaetano
-* Luca Gallo 
+* Luca Gallo - gallol@ceu.edu - <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://twitter.com/l_gajo"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Twitter-logo.svg/512px-Twitter-logo.svg.png"></a> <a title="GitHub, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="https://github.com/lgajo"><img width="16" alt="Octicons-mark-github" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/512px-Octicons-mark-github.svg.png"></a>
 * Alberto Montresor
 * Federico Musciotto
 * Nicolo Ruggeri
