@@ -65,7 +65,7 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
     if file_type == "pickle":
         return _load_pickle(file_name)
     elif file_type == "json":
-        H = Hypergraph()
+        H = Hypergraph(weighted=False)
         with open(file_name, "r") as infile:
             data = json.load(infile)
             for obj in data:
@@ -74,9 +74,12 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
                     H.add_node(obj['name'])
                     H.set_meta(obj['name'], obj)
                 elif obj['type'] == 'edge':
-                    H.add_edge(tuple(sorted(obj['name'])))
-                    if 'weight' in obj:
-                        H.set_weight(tuple(sorted(obj['name'])), obj['weight'])
+                    if H.is_weighted() or 'weight' in obj:
+                        H._weighted = True
+                    if not H.is_weighted():
+                        H.add_edge(tuple(sorted(obj['name'])))
+                    else:
+                        H.add_edge(tuple(sorted(obj['name'])), obj['weight'])
                     H.set_meta(tuple(sorted(obj['name'])), obj)
         return H
     else:
