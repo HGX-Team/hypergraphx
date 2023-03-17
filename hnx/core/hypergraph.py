@@ -423,6 +423,19 @@ class Hypergraph:
     def get_sizes(self):
         return [len(edge) for edge in self._edge_list.keys()]
 
+    def distribution_sizes(self):
+        """
+        Returns the distribution of sizes of the hyperedges in the hypergraph.
+
+        Returns
+        -------
+        collections.Counter
+            Distribution of sizes of the hyperedges in the hypergraph.
+        """
+        import collections as col
+        Counter = col.Counter
+        return Counter(self.get_sizes())
+
     def get_orders(self):
         return [len(edge) - 1 for edge in self._edge_list.keys()]
 

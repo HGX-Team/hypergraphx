@@ -63,6 +63,60 @@ def load_hospital():
     return edges
 
 
+def load_workspace():
+    import networkx as nx
+    dataset = "../../test_data/workspace/workspace.dat"
+
+    fopen = open(dataset, 'r')
+    lines = fopen.readlines()
+
+    graph = {}
+    for l in lines:
+        t, a, b = l.split()
+        t = int(t) - 28820
+        a = int(a)
+        b = int(b)
+        if t in graph:
+            graph[t].append((a, b))
+        else:
+            graph[t] = [(a, b)]
+
+    fopen.close()
+
+    edges = {}
+
+    for k in graph.keys():
+        e_k = graph[k]
+        G = nx.Graph(e_k, directed=False)
+        c = list(nx.find_cliques(G))
+        for i in c:
+            i = tuple(sorted(i))
+            if i in edges:
+                edges[i] += 1
+            else:
+                edges[i] = 1
+
+    h_graph_edges = []
+    h_weight = []
+
+    for k in edges.keys():
+        h_graph_edges.append(k)
+        h_weight.append(edges[k])
+
+    H = Hypergraph(edge_list=h_graph_edges, weighted=True, weights=h_weight)
+
+    metadata = pd.read_csv("../../test_data/workspace/workspace_meta.csv")
+    for i in range(len(metadata)):
+        node = metadata["nodeName"][i]
+        H.add_attr_meta(node, "class", metadata["class"][i])
+        H.add_attr_meta(node, "classID", int(metadata["classID"][i]))
+
+    save_hypergraph(H, "../../test_data/workspace/workspace.json", file_type="json")
+    save_hypergraph(H, "../../test_data/workspace/workspace.pickle", file_type="pickle")
+    return edges
+
+
+
 def load_high_school_meta():
     dataset = "DatasetHigherOrder/High-School_data_2013.csv"
 
@@ -533,44 +587,6 @@ def load_conference_duplicates(N):
     return edges
 
 
-def load_workplace(N):
-    import networkx as nx
-    dataset = "DatasetHigherOrder/workspace.dat"
-
-    fopen = open(dataset, 'r')
-    lines = fopen.readlines()
-
-    graph = {}
-    for l in lines:
-        t, a, b = l.split()
-        t = int(t) - 28820
-        a = int(a)
-        b = int(b)
-        if t in graph:
-            graph[t].append((a, b))
-        else:
-            graph[t] = [(a, b)]
-
-    fopen.close()
-
-    tot = set()
-    edges = set()
-
-    for k in graph.keys():
-        e_k = graph[k]
-        G = nx.Graph(e_k, directed=False)
-        c = list(nx.find_cliques(G))
-        for i in c:
-            i = tuple(sorted(i))
-
-            if len(i) <= N:
-                edges.add(i)
-
-            tot.add(i)
-
-    # plot_dist_hyperedges(tot, "workplace")
-    print(len(edges))
-    return edges
 
 
 def load_workplace_duplicates(N):
@@ -608,7 +624,7 @@ def load_workplace_duplicates(N):
 
             tot.append(i)
 
-    # plot_dist_hyperedges(tot, "workplace")
+    # plot_dist_hyperedges(tot, "workspace")
     print(len(edges))
     return edges
 
@@ -1377,4 +1393,4 @@ def load_recipes():
         h.add(tmp)
     return list(h)
 
-load_hospital()
+load_workplace()
