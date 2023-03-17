@@ -1,0 +1,1 @@
+["{\"type\": \"node\", \"name\": 1}", "{\"type\": \"node\", \"name\": 2}", "{\"type\": \"node\", \"name\": 3}", "{\"type\": \"node\", \"name\": 4}", "{\"type\": \"edge\", \"name\": [1, 2, 3], \"weight\": 1}", "{\"type\": \"edge\", \"name\": [1, 2], \"weight\": 2}", "{\"type\": \"edge\", \"name\": [3, 4], \"weight\": 3}"]
