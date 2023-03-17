@@ -42,8 +42,31 @@ def compute_motifs(hypergraph: Hypergraph, order=3):
         return res
 
     if order == 3:
-        _motifs_order_3(edges)
+        return _motifs_order_3()
     elif order == 4:
-        _motifs_order_4(edges)
+        return _motifs_order_4()
     else:
         print("Exact computation of motifs of order > 4 is not available.")
+
+    """
+    STEPS = len(edges) * 10
+    ROUNDS = 10
+
+    results = []
+
+    for i in range(ROUNDS):
+        e1 = hypergraph(edges)
+        e1.MH(label='stub', n_steps=STEPS)
+        if N == 3:
+            m1 = motifs_order_3(e1.C, i)
+        elif N == 4:
+            m1 = motifs_order_4(e1.C, i)
+        results.append(m1)
+
+    output['config_model'] = results
+
+    delta = diff_sum(output['motifs'], output['config_model'])
+    norm_delta = norm_vector(delta)
+
+    print(norm_delta)
+    """

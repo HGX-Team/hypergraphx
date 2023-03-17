@@ -4,9 +4,114 @@ Useful functions to convert data into hypergraphs in convenient formats such as 
 
 import csv
 import pandas as pd
+import networkx as nx
 
 from hnx import Hypergraph
 from hnx.readwrite import save_hypergraph
+
+def load_high_school():
+    dataset = "../../test_data/hs/High-School_data_2013.csv"
+
+    fopen = open(dataset, 'r')
+    lines = fopen.readlines()
+
+    graph = {}
+    class_school = {}
+    for l in lines:
+        t, a, b, c, d = l.split()
+        if c != '2BIO1' or d != '2BIO1':
+            continue
+        t = int(t) - 1385982020
+        a = int(a)
+        b = int(b)
+        if t in graph:
+            graph[t].append((a, b))
+        else:
+            graph[t] = [(a, b)]
+        if a not in class_school:
+            class_school[a] = c
+        if b not in class_school:
+            class_school[b] = d
+
+    fopen.close()
+
+    edges = {}
+    for k in graph.keys():
+        e_k = graph[k]
+        G = nx.Graph(e_k, directed=False)
+        hyperedges = list(nx.find_cliques(G))
+        for hyperedge in hyperedges:
+            hyperedge = tuple(sorted(hyperedge))
+            if hyperedge in edges:
+                edges[hyperedge] += 1
+            else:
+                edges[hyperedge] = 1
+
+    h_graph_edges = []
+    h_weight = []
+
+    for k in edges.keys():
+        h_graph_edges.append(k)
+        h_weight.append(edges[k])
+
+    H = Hypergraph(edge_list=h_graph_edges, weighted=True, weights=h_weight)
+    for node in class_school:
+        H.add_attr_meta(node, "class_school", class_school[node])
+    save_hypergraph(H, "../../test_data/hs/hs_one_class.json", file_type="json")
+    save_hypergraph(H, "../../test_data/hs/hs_one_class.pickle", file_type="pickle")
+    return H
+
+load_high_school()
+
+def load_primary_school():
+    dataset = "../../test_data/ps/primaryschool.csv"
+
+    fopen = open(dataset, 'r')
+    lines = fopen.readlines()
+
+    graph = {}
+    class_school = {}
+    for l in lines:
+        t, a, b, c, d = l.split()
+        t = int(t) - 31220
+        a = int(a)
+        b = int(b)
+        if t in graph:
+            graph[t].append((a, b))
+        else:
+            graph[t] = [(a, b)]
+        if a not in class_school:
+            class_school[a] = c
+        if b not in class_school:
+            class_school[b] = d
+
+    fopen.close()
+
+    edges = {}
+    for k in graph.keys():
+        e_k = graph[k]
+        G = nx.Graph(e_k, directed=False)
+        hyperedges = list(nx.find_cliques(G))
+        for hyperedge in hyperedges:
+            hyperedge = tuple(sorted(hyperedge))
+            if hyperedge in edges:
+                edges[hyperedge] += 1
+            else:
+                edges[hyperedge] = 1
+
+    h_graph_edges = []
+    h_weight = []
+
+    for k in edges.keys():
+        h_graph_edges.append(k)
+        h_weight.append(edges[k])
+
+    H = Hypergraph(edge_list=h_graph_edges, weighted=True, weights=h_weight)
+    for node in class_school:
+        H.add_attr_meta(node, "class_school", class_school[node])
+    save_hypergraph(H, "../../test_data/ps/ps.json", file_type="json")
+    save_hypergraph(H, "../../test_data/ps/ps.pickle", file_type="pickle")
+    return H
 
 
 def load_hospital():
@@ -353,43 +458,6 @@ def load_PACS_single(S):
     return edges
 
 
-def load_high_school_duplicates(N):
-    import networkx as nx
-    dataset = "DatasetHigherOrder/High-School_data_2013.csv"
-
-    fopen = open(dataset, 'r')
-    lines = fopen.readlines()
-
-    graph = {}
-    for l in lines:
-        t, a, b, c, d = l.split()
-        t = int(t) - 1385982020
-        a = int(a)
-        b = int(b)
-        if t in graph:
-            graph[t].append((a, b))
-        else:
-            graph[t] = [(a, b)]
-
-    fopen.close()
-
-    edges = []
-
-    for k in graph.keys():
-        e_k = graph[k]
-        G = nx.Graph(e_k, directed=False)
-        c = list(nx.find_cliques(G))
-        for i in c:
-            i = tuple(sorted(i))
-
-            if len(i) <= N:
-                edges.append(i)
-
-    # plot_dist_hyperedges(tot, "high_school")
-    print(len(edges))
-    return edges
-
-
 def load_high_school(N):
     import networkx as nx
     dataset = "DatasetHigherOrder/High-School_data_2013.csv"
@@ -426,43 +494,6 @@ def load_high_school(N):
             tot.add(i)
 
     # plot_dist_hyperedges(tot, "high_school")
-    print(len(edges))
-    return edges
-
-
-def load_primary_school_duplicates(N):
-    import networkx as nx
-    dataset = "DatasetHigherOrder/primaryschool.csv"
-
-    fopen = open(dataset, 'r')
-    lines = fopen.readlines()
-
-    graph = {}
-    for l in lines:
-        t, a, b, c, d = l.split()
-        t = int(t) - 31220
-        a = int(a)
-        b = int(b)
-        if t in graph:
-            graph[t].append((a, b))
-        else:
-            graph[t] = [(a, b)]
-
-    fopen.close()
-
-    edges = []
-
-    for k in graph.keys():
-        e_k = graph[k]
-        G = nx.Graph(e_k, directed=False)
-        c = list(nx.find_cliques(G))
-        for i in c:
-            i = tuple(sorted(i))
-
-            if len(i) <= N:
-                edges.append(i)
-
-    ##plot_dist_hyperedges(tot, "primary_school")
     print(len(edges))
     return edges
 
@@ -543,88 +574,6 @@ def load_conference(N):
             tot.add(i)
 
     # plot_dist_hyperedges(tot, "conference")
-    print(len(edges))
-    return edges
-
-
-def load_conference_duplicates(N):
-    import networkx as nx
-    dataset = "DatasetHigherOrder/conference.dat"
-
-    fopen = open(dataset, 'r')
-    lines = fopen.readlines()
-
-    graph = {}
-    for l in lines:
-        t, a, b = l.split()
-        t = int(t) - 32520
-        a = int(a)
-        b = int(b)
-        if t in graph:
-            graph[t].append((a, b))
-        else:
-            graph[t] = [(a, b)]
-
-    fopen.close()
-
-    tot = []
-    edges = []
-
-    for k in graph.keys():
-        e_k = graph[k]
-        G = nx.Graph(e_k, directed=False)
-        c = list(nx.find_cliques(G))
-        for i in c:
-            i = tuple(sorted(i))
-
-            if len(i) <= N:
-                edges.append(i)
-
-            tot.append(i)
-
-    # plot_dist_hyperedges(tot, "conference")
-    print(len(edges))
-    return edges
-
-
-
-
-def load_workplace_duplicates(N):
-    import networkx as nx
-    dataset = "DatasetHigherOrder/workspace.dat"
-
-    fopen = open(dataset, 'r')
-    lines = fopen.readlines()
-
-    graph = {}
-    for l in lines:
-        t, a, b = l.split()
-        t = int(t) - 28820
-        a = int(a)
-        b = int(b)
-        if t in graph:
-            graph[t].append((a, b))
-        else:
-            graph[t] = [(a, b)]
-
-    fopen.close()
-
-    tot = []
-    edges = []
-
-    for k in graph.keys():
-        e_k = graph[k]
-        G = nx.Graph(e_k, directed=False)
-        c = list(nx.find_cliques(G))
-        for i in c:
-            i = tuple(sorted(i))
-
-            if len(i) <= N:
-                edges.append(i)
-
-            tot.append(i)
-
-    # plot_dist_hyperedges(tot, "workspace")
     print(len(edges))
     return edges
 
@@ -1392,5 +1341,3 @@ def load_recipes():
         tmp = tuple(sorted(tmp))
         h.add(tmp)
     return list(h)
-
-load_workplace()

@@ -8,7 +8,7 @@ from sknetwork.data import from_edge_list
 from sknetwork.visualization import svg_graph
 from sknetwork.clustering import Louvain
 from sknetwork.utils import Bunch
-from sknetwork.embedding import Spring
+from sknetwork.embedding import *
 
 
 def _draw_from_matrix(matrix, number_of_items_to_pick=100):
@@ -25,7 +25,7 @@ def _draw_from_matrix(matrix, number_of_items_to_pick=100):
     return edges
 
 
-def get_proportion_hyperedges(hg: Hypergraph, max_size=5):
+def get_proportion_hyperedges(hg: Hypergraph, max_size=4):
     """
     Returns the proportion of hyperedges that contain the node
     """
@@ -34,14 +34,14 @@ def get_proportion_hyperedges(hg: Hypergraph, max_size=5):
         tmp = []
         for size in range(2, max_size + 2):
             if size == max_size + 1:
-                tmp.append((len([edge for edge in hg.get_incident_edges(node)]) - sum(tmp)) / len(hg.get_incident_edges(node)))
+                tmp.append(1 - sum(tmp))
             else:
-                tmp.append(len([edge for edge in hg.get_incident_edges(node, size=size)]) / len(hg.get_incident_edges(node)))
+                tmp.append(len(hg.get_incident_edges(node, size=size)) / len(hg.get_incident_edges(node)))
         p.append(tmp)
     return p
 
 
-def draw_pie(hg: Hypergraph):
+def draw_pie(hg: Hypergraph, num_edges=100):
     node2id = {node: i for i, node in enumerate(hg.get_nodes())}
     id2node = {i: node for i, node in enumerate(hg.get_nodes())}
 
@@ -54,8 +54,9 @@ def draw_pie(hg: Hypergraph):
                 if node != node2:
                     matrix[node2id[node], node2id[node2]] += 1
                     matrix[node2id[node2], node2id[node]] += 1
+    
 
-    edges = _draw_from_matrix(matrix, number_of_items_to_pick=10)
+    edges = _draw_from_matrix(matrix, number_of_items_to_pick=num_edges)
     matrix = np.zeros((len(hg.get_nodes()), len(hg.get_nodes())))
     for edge in edges:
         matrix[edge[0], edge[1]] = 1
@@ -64,18 +65,29 @@ def draw_pie(hg: Hypergraph):
     matrix = matrix.tolist()
     adjacency = sparse.csr_matrix(matrix)
 
-    # probabilities
-    max_size = 2
+    max_size = 5
     membership = sparse.csr_matrix(get_proportion_hyperedges(hg, max_size=max_size))
     COLORS = ['red', 'yellow', 'green', 'blue']
     label_colors = [COLORS[i] for i in range(max_size-1)]
-    label_colors.append('black')
-    print(membership.todense())
+    if hg.max_size() > max_size:
+        label_colors.append('black')
+    #print(membership.todense())
+
+    #embed = ForceAtlas()
+    #position = embed.fit_transform(adjacency)
+    #print(type(position))
+    import networkx as nx
+    position = nx.circular_layout(hg.get_nodes())
+    position = [position[node] for node in position]
+    position = np.array(position)
 
     a = svg_graph(adjacency,
+                  position=position,
                   membership=membership,
-                  node_size=10,
+                  node_size=8,
                   filename='pie',
                   label_colors=label_colors)
+    
+    return a
 
 

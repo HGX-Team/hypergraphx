@@ -553,6 +553,11 @@ class Hypergraph:
 
         return degree_sequence(self, order=order, size=size)
 
+    def degree_distribution(self, order=None, size=None):
+        from hnx.measures.degree import degree_distribution
+
+        return degree_distribution(self, order=order, size=size)
+
     def is_connected(self, size=None, order=None):
         from hnx.utils.cc import is_connected
 

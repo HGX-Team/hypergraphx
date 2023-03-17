@@ -24,11 +24,11 @@ def degree(hg: Hypergraph, node, order=None, size=None):
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
     if order is None and size is None:
-        return sum([1 for edge in hg.get_edges() if node in edge])
+        return len(hg.get_incident_edges(node))
     elif size is not None:
-        return sum([1 for edge in hg.get_edges(size=size) if node in edge])
+        return len(hg.get_incident_edges(node, size=size))
     elif order is not None:
-        return sum([1 for edge in hg.get_edges(order=order) if node in edge])
+        return len(hg.get_incident_edges(node, order=order))
 
 
 def degree_sequence(hg: Hypergraph, order=None, size=None):
@@ -57,3 +57,39 @@ def degree_sequence(hg: Hypergraph, order=None, size=None):
         return {node: hg.degree(node) for node in hg.get_nodes()}
     else:
         return {node: hg.degree(node, order=order) for node in hg.get_nodes()}
+
+
+def degree_distribution(hg: Hypergraph, order=None, size=None):
+    """
+    Computes the degree distribution of the hypergraph.
+
+    Parameters
+    ----------
+    hg : Hypergraph
+        The hypergraph of interest.
+    order : int
+        The order of the hyperedges to consider. If None, all hyperedges are considered.
+    size : int
+        The size of the hyperedges to consider. If None, all hyperedges are considered.
+
+    Returns
+    -------
+    dict
+        The degree distribution of the hypergraph. The keys are the degrees and the values are the number of nodes with that degree.
+    """
+    if order is not None and size is not None:
+        raise ValueError("Order and size cannot be both specified.")
+    if size is not None:
+        order = size - 1
+    if order is None:
+        degree_seq = hg.degree_sequence()
+    else:
+        degree_seq = hg.degree_sequence(order=order)
+
+    degree_dist = {}
+    for node, deg in degree_seq.items():
+        if deg not in degree_dist:
+            degree_dist[deg] = 0
+        degree_dist[deg] += 1
+
+    return degree_dist
