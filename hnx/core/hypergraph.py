@@ -434,7 +434,7 @@ class Hypergraph:
         """
         import collections as col
         Counter = col.Counter
-        return Counter(self.get_sizes())
+        return dict(Counter(self.get_sizes()))
 
     def get_orders(self):
         return [len(edge) - 1 for edge in self._edge_list.keys()]
@@ -634,7 +634,7 @@ class Hypergraph:
         title = "Hypergraph with {} nodes and {} edges.\n".format(
             self.num_nodes(), self.num_edges()
         )
-        details = "Edge list: {}".format(list(self._edge_list.keys()))
+        details = "Distribution of hyperedge sizes: {}".format(self.distribution_sizes())
         return title + details
 
     def __len__(self):
