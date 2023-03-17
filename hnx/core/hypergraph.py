@@ -1,5 +1,6 @@
 import copy
 from typing import Optional, Tuple
+from sklearn.preprocessing import LabelEncoder
 from hnx.core.meta_handler import MetaHandler
 
 
@@ -27,6 +28,19 @@ class Hypergraph:
         self._max_order = 0
         self._edge_list = {}
         self.add_edges(edge_list, weights=weights, metadata=metadata)
+
+    def get_mapping(self):
+        """
+        Map the nodes of the hypergraph to integers in [0, n_nodes).
+
+        Returns
+        -------
+        LabelEncoder
+            The mapping.
+        """
+        encoder = LabelEncoder()
+        encoder.fit(self.get_nodes())
+        return encoder
 
     def is_uniform(self):
         """
@@ -432,8 +446,7 @@ class Hypergraph:
         collections.Counter
             Distribution of sizes of the hyperedges in the hypergraph.
         """
-        import collections as col
-        Counter = col.Counter
+        from collections import Counter
         return dict(Counter(self.get_sizes()))
 
     def get_orders(self):

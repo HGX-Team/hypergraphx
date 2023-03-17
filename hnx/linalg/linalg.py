@@ -8,6 +8,7 @@ from scipy.special import factorial
 from sklearn.preprocessing import LabelEncoder
 
 from hnx.core.hypergraph import Hypergraph
+from hnx.utils.labeling import get_inverse_mapping
 
 
 def hye_list_to_binary_incidence(
@@ -83,14 +84,14 @@ def binary_incidence_matrix(
     The binary adjacency matrix representing the hyperedges.
     If return_mapping is True, return the dictionary of node mappings.
     """
-    encoder = LabelEncoder()
-    encoder.fit(hypergraph.get_nodes())
+    encoder = hypergraph.get_mapping()
     hye_list = [tuple(encoder.transform(hye)) for hye in hypergraph.get_edges()]
 
     shape = (hypergraph.num_nodes(), hypergraph.num_edges())
     incidence = hye_list_to_binary_incidence(hye_list, shape).tocsr()
     if return_mapping:
-        mapping = dict(zip(encoder.transform(encoder.classes_), encoder.classes_))
+        #mapping = dict(zip(encoder.transform(encoder.classes_), encoder.classes_))
+        mapping = get_inverse_mapping(encoder)
         return incidence, mapping
     return incidence
 
@@ -299,35 +300,32 @@ def are_commuting(laplacian_matrices: List[sparse.spmatrix], verbose=True) -> bo
     return True
 
 
-# for a HG of order m, create a tensor of order m+1 where i,j,k... is 1 if the hyperedge (i,j,k...) is in HG and 0 otherwise
-def adjacency_tensor(HG):
-    '''
+def adjacency_tensor(hypergraph: Hypergraph) -> np.ndarray:
+    """
     Compute the tensor of a uniform hypergraph.
+    For a hypergraph of order m, create a tensor of order m+1 where i,j,k... is 1 if the hyperedge (i,j,k...) is in the
+    hypergraph and 0 otherwise
 
     Parameters
     ----------
     
-    HG : Hypergraph
+    hypergraph : Hypergraph
         The uniform hypergraph on which the tensor is computed.
     
     Returns
     -------
     T : np.ndarray
         The tensor of the hypergraph.
-    '''
-    # check if the hypergraph is uniform, use raise exception
-    if not HG.is_uniform():
+    """
+
+    if not hypergraph.is_uniform():
         raise Exception("The hypergraph is not uniform.")
     
-    order = len(HG.get_edges()[0]) -1
-    # create a tensor order dimensional tensor
-    T = np.zeros((HG.num_nodes(),)*(order+1))
-    # for each hyperedge in HG
-    for edge in HG.get_edges():
-        # set to 1 the corresponding element of T and all the permutations of the hyperedge
+    order = len(hypergraph.get_edges()[0]) - 1
+    T = np.zeros((hypergraph.num_nodes(),) * (order + 1))
+    for edge in hypergraph.get_edges():
         from itertools import permutations
         for perm in permutations(edge):
-
             T[tuple(perm)] = 1
             
     return T
