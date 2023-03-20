@@ -19,7 +19,7 @@ def load_high_school():
     class_school = {}
     for l in lines:
         t, a, b, c, d = l.split()
-        if c != '2BIO1' or d != '2BIO1':
+        if c != '2BIO2' or d != '2BIO2':
             continue
         t = int(t) - 1385982020
         a = int(a)

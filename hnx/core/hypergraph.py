@@ -319,6 +319,32 @@ class Hypergraph:
                 h.add_edge(edge, metadata=self.get_meta(edge))
         return h
 
+    def subhypergraph_by_orders(self, orders:list=None, sizes:list=None, keep_nodes=True):
+        if orders is None and sizes is None:
+            raise ValueError("At least one between orders and sizes should be specified")
+        if orders is not None and sizes is not None:
+            raise ValueError("Order and size cannot be both specified.")
+        h = Hypergraph(weighted=self.is_weighted())
+        if keep_nodes:
+            h.add_nodes(node_list=self.get_nodes())
+            for node in self.get_nodes():
+                h.set_meta(self.get_meta(node))
+
+        if sizes is None:
+            sizes = []
+            for order in orders:
+                sizes.append(order + 1)
+
+        for size in sizes:
+            edges = self.get_edges(size=size)
+            for edge in edges:
+                if h.is_weighted():
+                    h.add_edge(edge, self.get_weight(edge), self.get_meta(edge))
+                else:
+                    h.add_edge(edge, metadata=self.get_meta(edge))
+
+        return h
+
     def max_order(self):
         """
         Returns the maximum order of the hypergraph.
