@@ -659,7 +659,7 @@ class HyMMSBM:
         else:
             if self.assortative:
                 if isinstance(self.w_prior, float):
-                    prior_mean = np.ones(K) / self.w_prior
+                    prior_mean = np.diag(np.eye(K) / self.w_prior)
                 else:
                     prior_mean = 1 / np.diag(self.w_prior)
                 self.w = np.diag(rng.exponential(prior_mean))
