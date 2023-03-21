@@ -102,7 +102,7 @@ class HySC:
 
         # Nodes' degree.
         # TODO: is there a better way to get the array with the node degrees?
-        self.node_degree = np.array(list(hypergraph.degree_sequence().values()))
+        self.node_degree = self.node_degree = self.binary_incidence.sum(axis=1)
         # TODO: is there a better way to get the weighted degrees?
         self.node_degree_weighted = self.incidence.sum(axis=1)
         # Hyperedges' size.
