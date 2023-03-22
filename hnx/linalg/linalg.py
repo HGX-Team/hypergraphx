@@ -177,6 +177,27 @@ def adjacency_matrix(
         return adj, mapping
     return adj
 
+def adjacency_matrix_by_order(
+    hypergraph: Hypergraph, order: int
+) -> sparse.csc_array | Tuple[sparse.csc_array, Dict[int, Any]]:
+    """Compute the adjacency matrix of the hypergraph by order.
+    For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix
+    counts the number of hyperedges of a given order where both i and j are contained.
+
+    Parameters
+    ----------
+    hypergraph: the hypergraph.
+    order: the order.
+
+    Returns
+    -------
+    The adjacency matrix of the hypergraph for a given order and the dictionary of node mappings.
+    """
+    incidence, mapping = incidence_matrix_by_order(hypergraph,order,keep_isolated_nodes=True,return_mapping=True)
+    adj = incidence @ incidence.transpose()
+    adj.setdiag(0)
+    return adj, mapping
+
 
 def dual_random_walk_adjacency(
     hypergraph: Hypergraph, return_mapping: bool = False

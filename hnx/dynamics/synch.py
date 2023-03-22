@@ -97,7 +97,7 @@ def MSF_multi_coupling(F, JF, params, interval, sigmas, N, JHs, X0, integration_
 
     # Integrating the dynamics of the perturbation using Sprott's algorithm
     dim = len(X0)
-    Eta0 = np.random.random(size=(dim,))*1e-6
+    Eta0 = np.random.random(size=(dim,))*1e-9
     Eta0_norm = np.linalg.norm(Eta0)
     Y0 = np.concatenate((X0, Eta0))
 

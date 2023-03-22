@@ -165,9 +165,9 @@ def is_all_to_all(hypergraph, verbose = True):
         return False
     else:
         N = hypergraph.num_nodes()
-        for order in range(2, hypergraph.max_order() + 1):
-            num_edges = hypergraph.get_edges_by_order(order).num_edges()
-            if not comb(N,order) == num_edges:
+        for order in range(1, hypergraph.max_order() + 1):
+            num_edges = hypergraph.num_edges(order=order)
+            if not comb(N,order+1) == num_edges:
                 if verbose: print("The higher-order network is not all-to-all")
                 return False
 
