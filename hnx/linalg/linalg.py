@@ -223,7 +223,7 @@ def temporal_adjacency_matrix_by_order(
 
 def temporal_adjacency_matrices_all_orders(
     temporal_hypergraph: Dict[int, Hypergraph], max_order: int
-) -> Dict[int, sparse.csc_array]:
+): # -> Dict[int, Tuple[sparse.csc_array]] ### Fra, I am not sure how to declare the output type
     """Compute the temporal adjacency matrices of the temporal hypergraph for all orders.
     For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix of order d at time t
     counts the number of hyperedges of order d, existing at time t, where both i and j are contained.
@@ -247,6 +247,26 @@ def temporal_adjacency_matrices_all_orders(
         temporal_adjacencies[t] = tuple(adjacency_list_t)   
     return temporal_adjacencies, mapping
 
+def annealed_adjacency_matrix_by_order(
+    temporal_adjacency_matrix: Dict[int, sparse.csc_array], order: int
+) -> sparse.csc_array:
+    """Compute the annealed adjacency matrix of the temporal hypergraph by order.
+    For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix
+    counts the average number of hyperedges of a given order where both i and j are contained over time.
+
+    Parameters
+    ----------
+    temporal_adjacency_matrix: a dictionary {time : adjacency matrix}.
+    order: the order.
+
+    Returns
+    -------
+    The annealed adjacency matrix for order d, and the dictionary of node mappings.
+    """
+    T = max(temporal_adjacency_matrix.keys())
+    temporal_adjacency_matrix_lst = temporal_adjacency_matrix.values()
+    annealed_adjacency_matrix = sum(temporal_adjacency_matrix_lst)/T
+    return annealed_adjacency_matrix
 
 def dual_random_walk_adjacency(
     hypergraph: Hypergraph, return_mapping: bool = False
