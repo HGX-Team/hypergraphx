@@ -198,6 +198,29 @@ def adjacency_matrix_by_order(
     adj.setdiag(0)
     return adj, mapping
 
+def temporal_adjacency_matrix_by_order(
+    temporal_hypergraph: Dict[int, Hypergraph], order: int
+) -> Dict[int, sparse.csc_array]:
+    """Compute the temporal adjacency matrix of the temporal hypergraph by order.
+    For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix
+    counts the number of hyperedges of a given order where both i and j are contained.
+
+    Parameters
+    ----------
+    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    order: the order.
+
+    Returns
+    -------
+    A dictionary encoding the temporal adjacency matrix, i.e., {time : adjacency matrix}, and the dictionary of node mappings.
+    """
+    temporal_adjacency = {}
+    for t in temporal_hypergraph.keys():
+        hypergraph_t = temporal_hypergraph[t]
+        adj_t, mapping = adjacency_matrix_by_order(hypergraph_t, order)
+        temporal_adjacency[t] = adj_t   
+    return temporal_adjacency, mapping
+
 
 def dual_random_walk_adjacency(
     hypergraph: Hypergraph, return_mapping: bool = False
