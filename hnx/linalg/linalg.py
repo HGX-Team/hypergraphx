@@ -268,6 +268,32 @@ def annealed_adjacency_matrix_by_order(
     annealed_adjacency_matrix = sum(temporal_adjacency_matrix_lst)/T
     return annealed_adjacency_matrix
 
+def annealed_adjacency_matrices_all_orders(
+    temporal_adjacency_matrices
+): # -> Tuple[sparse.csc_array]: ###Fra, here as well I am not sure!
+    """Compute the annealed adjacency matrices of the temporal hypergraph for all orders.
+    For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix of order d
+    counts the average number of hyperedges of order d where both i and j are contained over time.
+
+    Parameters
+    ----------
+    temporal_adjacency_matrix: a dictionary {time : adjacency matrix}.
+    order: the order.
+
+    Returns
+    -------
+    The annealed adjacency matrix for order d, and the dictionary of node mappings.
+    """
+    temporal_adjacency_matrices_vals = temporal_adjacency_matrices.values()
+    max_order = len(temporal_adjacency_matrices_vals[0])
+    annealed_adjacency_matrices = []
+    for order in range(max_order):
+        temporal_adjacency_matrix_lst = [adjacencies_matrices_t[order] for adjacencies_matrices_t in temporal_adjacency_matrices_vals]
+        temporal_adjacency_matrix_dct = dict(zip(temporal_adjacency_matrices.keys(), temporal_adjacency_matrix_lst))
+        annealed_adjacency_matrix = annealed_adjacency_matrix_by_order(temporal_adjacency_matrix_dct, order)
+        annealed_adjacency_matrices.append(annealed_adjacency_matrix)
+    return tuple(annealed_adjacency_matrices)
+
 def dual_random_walk_adjacency(
     hypergraph: Hypergraph, return_mapping: bool = False
 ) -> sparse.csr_array | Tuple[sparse.csr_array, Dict[int, Any]]:
