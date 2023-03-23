@@ -1,5 +1,6 @@
 import numpy as np
 from scipy import sparse
+from scipy.linalg import eigh
 from scipy.integrate import solve_ivp
 
 from hnx.linalg.linalg import *
@@ -30,7 +31,6 @@ def MSF(F, JF, params, interval, JH, X0, integration_time=2000.0, integration_st
 
     Returns
     -------
-    interval: interval of values over which the MSF is computed.
     MSF: MSF evaluated over the interval of values selected.
     """
 
@@ -52,6 +52,7 @@ def MSF(F, JF, params, interval, JH, X0, integration_time=2000.0, integration_st
         print("Evaluating the Master Stability Function...")
     MSF = np.zeros(shape=len(interval))
     for i, alpha in enumerate(interval):
+        if verbose: print("alpha = "+str(alpha))
         MSF[i] = sprott_algorithm(alpha, C, F, JF, JH, Y0, params, integration_time/C, integration_step, verbose)
 
     return MSF
@@ -83,7 +84,6 @@ def MSF_multi_coupling(F, JF, params, interval, sigmas, N, JHs, X0, integration_
 
     Returns
     -------
-    interval: interval of values over which the MSF is computed.
     MSF: MSF evaluated over the interval of values selected.
     """
 
@@ -105,6 +105,7 @@ def MSF_multi_coupling(F, JF, params, interval, sigmas, N, JHs, X0, integration_
         print("Evaluating the Master Stability Function...")
     MSF = np.zeros(shape=len(interval))
     for i, alpha in enumerate(interval):
+        if verbose: print("alpha = "+str(alpha))
         MSF[i] = sprott_algorithm_multi(alpha, C, F, JF, sigmas, N, JHs, Y0, params, True, integration_time/C, integration_step, verbose)
 
     return MSF
@@ -112,14 +113,18 @@ def MSF_multi_coupling(F, JF, params, interval, sigmas, N, JHs, X0, integration_
 def higher_order_MSF(hypergraph, dim, F, JF, params, sigmas, JHs, X0, interval, diffusive_like=True, 
                     integration_time = 2000.0, integration_step = 0.01, C = 5, verbose=True):
 
+    N = hypergraph.num_nodes()
+
     # If the coupling is natural, we evaluate a single-parameter MSF for this scenario
     natural_coupling = is_natural_coupling(JHs, dim, verbose)
     if natural_coupling and diffusive_like:
         multiorder_laplacian = compute_multiorder_laplacian(hypergraph, sigmas, order_weighted=True, degree_weighted=False)
-        spectrum = sparse.linalg.eigsh(multiorder_laplacian, k=N, which='LM', return_eigenvectors=False)
-    
+        spectrum = eigh(multiorder_laplacian.toarray(), eigvals_only=True)
+
+        if verbose: print("Starting the evaluation of the Master Stability Function...")
         master_stability_function = MSF(F, JF, params, interval, JHs[0], X0, integration_time, integration_step, C, verbose)
 
+        if verbose: print("Starting the evaluation of the Lyapunov exponents for the Laplacian eigenvalues...")
         hon_master_stability_function = MSF(F, JF, params, spectrum[1:], JHs[0], X0, integration_time, integration_step, C, verbose)
 
         return master_stability_function, hon_master_stability_function, spectrum
@@ -128,7 +133,6 @@ def higher_order_MSF(hypergraph, dim, F, JF, params, sigmas, JHs, X0, interval, 
     # we check if the higher-order network is all-to-all
     all2all = is_all_to_all(hypergraph, verbose)
     if all2all:
-        N = hypergraph.num_nodes()
         master_stability_function = MSF_multi_coupling(F, JF, params, interval, sigmas, N, JHs, X0, integration_time, integration_step, C, verbose)
 
         hon_master_stability_function = MSF_multi_coupling(F, JF, params, [sigmas[0]*N], sigmas, N, JHs, X0, integration_time, integration_step, C, verbose)

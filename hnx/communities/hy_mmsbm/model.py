@@ -137,7 +137,7 @@ class HyMMSBM:
     def fit(
         self,
         hypergraph: Hypergraph,
-        n_iter: int = 10,
+        n_iter: int = 500,
         tolerance: Optional[float] = None,
         check_convergence_every: int = 10,
     ) -> None:

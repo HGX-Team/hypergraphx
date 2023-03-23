@@ -177,6 +177,96 @@ def adjacency_matrix(
         return adj, mapping
     return adj
 
+def adjacency_matrix_by_order(
+    hypergraph: Hypergraph, order: int
+) -> sparse.csc_array | Tuple[sparse.csc_array, Dict[int, Any]]:
+    """Compute the adjacency matrix of the hypergraph by order.
+    For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix
+    counts the number of hyperedges of a given order where both i and j are contained.
+
+    Parameters
+    ----------
+    hypergraph: the hypergraph.
+    order: the order.
+
+    Returns
+    -------
+    The adjacency matrix of the hypergraph for a given order and the dictionary of node mappings.
+    """
+    incidence, mapping = incidence_matrix_by_order(hypergraph,order,keep_isolated_nodes=True,return_mapping=True)
+    adj = incidence @ incidence.transpose()
+    adj.setdiag(0)
+    return adj, mapping
+
+def temporal_adjacency_matrix_by_order(
+    temporal_hypergraph: Dict[int, Hypergraph], order: int
+) -> Dict[int, sparse.csc_array]:
+    """Compute the temporal adjacency matrix of the temporal hypergraph by order.
+    For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix at time t
+    counts the number of hyperedges of a given order, existing at time t, where both i and j are contained.
+
+    Parameters
+    ----------
+    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    order: the order.
+
+    Returns
+    -------
+    A dictionary encoding the temporal adjacency matrix, i.e., {time : adjacency matrix}, and the dictionary of node mappings.
+    """
+    temporal_adjacency = {}
+    for t in temporal_hypergraph.keys():
+        hypergraph_t = temporal_hypergraph[t]
+        adj_t, mapping = adjacency_matrix_by_order(hypergraph_t, order)
+        temporal_adjacency[t] = adj_t   
+    return temporal_adjacency, mapping
+
+def temporal_adjacency_matrices_all_orders(
+    temporal_hypergraph: Dict[int, Hypergraph], max_order: int
+): # -> Dict[int, Tuple[sparse.csc_array]] ### Fra, I am not sure how to declare the output type
+    """Compute the temporal adjacency matrices of the temporal hypergraph for all orders.
+    For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix of order d at time t
+    counts the number of hyperedges of order d, existing at time t, where both i and j are contained.
+
+    Parameters
+    ----------
+    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    max_order: the maximum order of the hypergraph.
+
+    Returns
+    -------
+    A dictionary encoding the temporal adjacency matrices, i.e., {time : (adjacency matrices)}, and the dictionary of node mappings.
+    """
+    temporal_adjacencies = {}
+    for t in temporal_hypergraph.keys():
+        hypergraph_t = temporal_hypergraph[t]
+        adjacency_list_t = []
+        for order in range(1,max_order + 1):
+            adj_t_order_d, mapping = adjacency_matrix_by_order(hypergraph_t, order)
+            adjacency_list_t.append(adj_t_order_d)
+        temporal_adjacencies[t] = tuple(adjacency_list_t)   
+    return temporal_adjacencies, mapping
+
+def annealed_adjacency_matrix_by_order(
+    temporal_adjacency_matrix: Dict[int, sparse.csc_array], order: int
+) -> sparse.csc_array:
+    """Compute the annealed adjacency matrix of the temporal hypergraph by order.
+    For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix
+    counts the average number of hyperedges of a given order where both i and j are contained over time.
+
+    Parameters
+    ----------
+    temporal_adjacency_matrix: a dictionary {time : adjacency matrix}.
+    order: the order.
+
+    Returns
+    -------
+    The annealed adjacency matrix for order d, and the dictionary of node mappings.
+    """
+    T = max(temporal_adjacency_matrix.keys())
+    temporal_adjacency_matrix_lst = temporal_adjacency_matrix.values()
+    annealed_adjacency_matrix = sum(temporal_adjacency_matrix_lst)/T
+    return annealed_adjacency_matrix
 
 def dual_random_walk_adjacency(
     hypergraph: Hypergraph, return_mapping: bool = False

@@ -70,10 +70,11 @@ def sprott_algorithm(alpha, C, F, JF, JH, Y0, params, integration_time = 400.0, 
     [1] J.C. Sprott, Chaos and Time-Series Analysis, Oxford University Press vol.69, pp.116-117 (2003).
     """
     dim = len(Y0)//2
-    Eta0_norm = Y0[dim:]
+    Eta0 = Y0[dim:]
+    Eta0_norm = np.linalg.norm(Eta0)
 
     lyap = np.zeros((C,))
-    for iter in C:
+    for iter in range(C):
         if verbose: print("Integrating over cycle "+str(iter+1)+" of "+str(C))
         sol = solve_ivp(fun=lin_system, t_span=[0.0,integration_time], t_eval=np.arange(0.0,integration_time,integration_step), 
                         y0=Y0, args=(F, JF, JH, alpha, *params), method='LSODA')
@@ -83,7 +84,7 @@ def sprott_algorithm(alpha, C, F, JF, JH, Y0, params, integration_time = 400.0, 
 
         lyap[iter] = np.log(EtaT_norm/Eta0_norm)/integration_time
 
-        Eta0 = EtaT*Eta0_norm/EtaT_norm 
+        Eta0 = EtaT*Eta0_norm/EtaT_norm
 
         Y0[dim:] = Eta0
 
@@ -120,10 +121,11 @@ def sprott_algorithm_multi(alpha, C, F, JF, sigmas, N, JHs, Y0, params, all2all 
     [1] J.C. Sprott, Chaos and Time-Series Analysis, Oxford University Press vol.69, pp.116-117 (2003).
     """
     dim = len(Y0)//2
-    Eta0_norm = Y0[dim:]
+    Eta0 = Y0[dim:]
+    Eta0_norm = np.linalg.norm(Eta0)
 
     lyap = np.zeros((C,))
-    for iter in C:
+    for iter in range(C):
         if verbose: print("Integrating over cycle "+str(iter+1)+" of "+str(C))
 
         if all2all:
@@ -135,7 +137,8 @@ def sprott_algorithm_multi(alpha, C, F, JF, sigmas, N, JHs, Y0, params, all2all 
 
         lyap[iter] = np.log(EtaT_norm/Eta0_norm)/integration_time
 
-        Eta0 = EtaT*Eta0_norm/EtaT_norm 
+        Eta0 = EtaT*Eta0_norm/EtaT_norm
+        Eta0_norm = np.linalg.norm(Eta0) 
 
         Y0[dim:] = Eta0
 
@@ -149,7 +152,7 @@ def is_natural_coupling(JHs, dim, verbose = True):
         JH1 = JHs[d]
         JH2 = JHs[d+1]
 
-        if not (JH1(X) - JH2(X)).any():
+        if (JH1(X) - JH2(X)).any():
             if verbose: print("The coupling is not natural")
             return False 
 
@@ -162,9 +165,9 @@ def is_all_to_all(hypergraph, verbose = True):
         return False
     else:
         N = hypergraph.num_nodes()
-        for order in range(2, hypergraph.max_order() + 1):
-            num_edges = hypergraph.get_edges_by_order(order).num_edges()
-            if not comb(N,order) == num_edges:
+        for order in range(1, hypergraph.max_order() + 1):
+            num_edges = hypergraph.num_edges(order=order)
+            if not comb(N,order+1) == num_edges:
                 if verbose: print("The higher-order network is not all-to-all")
                 return False
 
