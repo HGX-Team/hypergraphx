@@ -202,8 +202,8 @@ def temporal_adjacency_matrix_by_order(
     temporal_hypergraph: Dict[int, Hypergraph], order: int
 ) -> Dict[int, sparse.csc_array]:
     """Compute the temporal adjacency matrix of the temporal hypergraph by order.
-    For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix
-    counts the number of hyperedges of a given order where both i and j are contained.
+    For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix at time t
+    counts the number of hyperedges of a given order, existing at time t, where both i and j are contained.
 
     Parameters
     ----------
@@ -220,6 +220,32 @@ def temporal_adjacency_matrix_by_order(
         adj_t, mapping = adjacency_matrix_by_order(hypergraph_t, order)
         temporal_adjacency[t] = adj_t   
     return temporal_adjacency, mapping
+
+def temporal_adjacency_matrices_all_orders(
+    temporal_hypergraph: Dict[int, Hypergraph], max_order: int
+) -> Dict[int, sparse.csc_array]:
+    """Compute the temporal adjacency matrices of the temporal hypergraph for all orders.
+    For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix of order d at time t
+    counts the number of hyperedges of order d, existing at time t, where both i and j are contained.
+
+    Parameters
+    ----------
+    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    max_order: the maximum order of the hypergraph.
+
+    Returns
+    -------
+    A dictionary encoding the temporal adjacency matrices, i.e., {time : (adjacency matrices)}, and the dictionary of node mappings.
+    """
+    temporal_adjacencies = {}
+    for t in temporal_hypergraph.keys():
+        hypergraph_t = temporal_hypergraph[t]
+        adjacency_list_t = []
+        for order in range(1,max_order + 1):
+            adj_t_order_d, mapping = adjacency_matrix_by_order(hypergraph_t, order)
+            adjacency_list_t.append(adj_t_order_d)
+        temporal_adjacencies[t] = tuple(adjacency_list_t)   
+    return temporal_adjacencies, mapping
 
 
 def dual_random_walk_adjacency(
