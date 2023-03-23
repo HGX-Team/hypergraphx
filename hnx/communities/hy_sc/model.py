@@ -18,7 +18,6 @@ class HySC:
         seed: int = 0,
         inf: int = 1e40,
         n_realizations: int = 10,
-        verbose: bool = True,
         out_inference: bool = False,
         out_folder: str = "../data/output/",
         end_file: str = "_sc.dat",
@@ -30,7 +29,6 @@ class HySC:
         seed: random seed.
         inf: initial value for the log-likelihood.
         n_realizations: number of realizations with different random initialization.
-        verbose: flag to print details.
         out_inference: flag to store the inferred parameters.
         out_folder: path to store the output.
         end_file: output file suffix.
@@ -39,7 +37,6 @@ class HySC:
         self.seed = seed
         self.inf = inf
         self.n_realizations = n_realizations
-        self.verbose = verbose
         # Output related attributes.
         self.out_inference = out_inference
         self.out_folder = out_folder
@@ -102,7 +99,7 @@ class HySC:
 
         # Nodes' degree.
         # TODO: is there a better way to get the array with the node degrees?
-        self.node_degree = self.node_degree = self.binary_incidence.sum(axis=1)
+        self.node_degree = self.binary_incidence.sum(axis=1)
         # TODO: is there a better way to get the weighted degrees?
         self.node_degree_weighted = self.incidence.sum(axis=1)
         # Hyperedges' size.
