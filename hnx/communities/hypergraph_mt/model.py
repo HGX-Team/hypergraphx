@@ -34,7 +34,7 @@ class HypergraphMT:
         noise_input_par: float = 0.001,
         min_value_par: float = 1e-5,
         max_value_par: float = 1e2,
-        n_realizations: int = 15,
+        n_realizations: int = 10,
         max_iter: int = 500,
         check_convergence_every: int = 1,
         tolerance: float = 0.1,
@@ -79,6 +79,7 @@ class HypergraphMT:
         K: int,
         seed: Optional[int] = None,
         normalizeU: bool = False,
+        baseline_r0: bool = True,
         **extra_params,
     ) -> Tuple[np.array, np.array, float]:
         """Perform community detection on hypergraphs with a mixed-membership probabilistic model.
@@ -89,6 +90,7 @@ class HypergraphMT:
         K: number of communities.
         seed: random seed.
         normalizeU: if True, then the membership matrix u is normalized such that every row sums to 1.
+        baseline_r0: if True, then for the first iteration u is initialized around the solution of the Hypergraph Spectral Clustering.
         **extra_params: additional keyword arguments handed to __check_fit_params to handle u and w.
 
         Returns
@@ -103,6 +105,7 @@ class HypergraphMT:
             K=K,
             seed=seed,
             normalizeU=normalizeU,
+            baseline_r0=baseline_r0,
             **extra_params,
         )
 
@@ -120,7 +123,7 @@ class HypergraphMT:
             # around the input values chosen with "initialize_u0".
             # In the end, we choose the realization with the best likelihood.
             if r == 0:
-                self._initialize_u_w(hyperEdges=self.hyperEdges, baseline_HySC=True)
+                self._initialize_u_w(hyperEdges=self.hyperEdges, baseline_HySC=self.baseline_r0)
             else:
                 self._initialize_u_w(hyperEdges=self.hyperEdges, baseline_HySC=False)
 
@@ -197,6 +200,7 @@ class HypergraphMT:
         K: int,
         seed: Optional[int] = None,
         normalizeU: bool = False,
+        baseline_r0: bool = True,
         **extra_params,
     ) -> None:
         """Pre-process the data and initialize parameters for the inference.
@@ -255,6 +259,9 @@ class HypergraphMT:
         # Normalize u such that every row sums to 1.
         self.normalizeU = normalizeU
 
+        # Initialize u around the solution of the Hypergraph Spectral Clustering for the first iteration.
+        self.baseline_r0 = baseline_r0
+
         available_extra_params = [
             "fix_communities",  # flag to keep the communities fixed
             "fix_w",  # flag to keep the affinity matrix fixed
@@ -307,7 +314,7 @@ class HypergraphMT:
         if "out_inference" in extra_params:
             self.out_inference = extra_params["out_inference"]
         else:
-            self.out_inference = True
+            self.out_inference = False
 
         if "out_folder" in extra_params:
             self.out_folder = extra_params["out_folder"]
