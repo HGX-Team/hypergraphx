@@ -35,7 +35,9 @@ def intra_order_correlation_matrix_by_order(
         centered_adjacency_matrix_t_lagged = adjacency_matrix_t_lagged - annealed_adjacency_matrix
 
         correlation_matrix = correlation_matrix + centered_adjacency_matrix_t.dot(centered_adjacency_matrix_t_lagged.tranpose())
-        
+    
+    correlation_matrix = correlation_matrix/(factorial(order)**2)/(T-tau)
+
     return correlation_matrix
 
 def intra_order_correlation_function_by_order(
