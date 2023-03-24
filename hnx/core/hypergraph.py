@@ -576,7 +576,6 @@ class Hypergraph:
 
     def degree_sequence(self, order=None, size=None):
         from hnx.measures.degree import degree_sequence
-
         return degree_sequence(self, order=order, size=size)
 
     def degree_distribution(self, order=None, size=None):
