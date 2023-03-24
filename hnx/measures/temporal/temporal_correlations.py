@@ -77,5 +77,6 @@ def intra_order_correlation_matrices_all_orders(
     correlation_matrices = []
     for order in range(max_order):
         correlation_matrix = intra_order_correlation_function_by_order(temporal_hypergraph, order, tau)
+        correlation_matrices.append(correlation_matrix)
         
-    return correlation_matrix ### to finish
+    return tuple(correlation_matrices)
