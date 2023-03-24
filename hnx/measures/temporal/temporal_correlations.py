@@ -37,3 +37,23 @@ def intra_order_correlation_matrix_by_order(
         correlation_matrix = correlation_matrix + centered_adjacency_matrix_t.dot(centered_adjacency_matrix_t_lagged.tranpose())
         
     return correlation_matrix
+
+def intra_order_correlation_function_by_order(
+    temporal_hypergraph: Dict[int, Hypergraph], order: int, tau: int
+) -> float:
+    """ Compute the intra-order correlation function for hyperedges of order d and time lag tau.
+
+    Parameters
+    ----------
+    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    order: the order.
+    tau: the temporal lag.
+
+    Returns
+    -------
+    The intra-order correlation function of order d at time lag tau.
+    """
+    correlation_matrix = intra_order_correlation_matrix_by_order(temporal_hypergraph, order, tau)
+    correlation_function = correlation_matrix.trace()
+
+    return correlation_function
