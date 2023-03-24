@@ -105,7 +105,7 @@ def intra_order_correlation_functions_all_orders(
 
     return tuple(correlation_functions)
 
-def cross_order_correlation_matrix_by_order(
+def cross_order_correlation_matrix_two_orders(
     temporal_hypergraph: Dict[int, Hypergraph], order1: int, order2: int, tau: int
 ) -> sparse.csc_array:
     """ Compute the cross-order correlation matrix between hyperedges of orders d1 and d2, and time lag tau.
@@ -140,3 +140,24 @@ def cross_order_correlation_matrix_by_order(
     correlation_matrix = correlation_matrix/(factorial(order1)*factorial(order2))/(T-tau)
 
     return correlation_matrix
+
+def cross_order_correlation_function_two_orders(
+    temporal_hypergraph: Dict[int, Hypergraph], order1: int, order2: int, tau: int
+) -> float:
+    """ Compute the cross-order correlation function between hyperedges of order d1 and d2, at time lag tau.
+
+    Parameters
+    ----------
+    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    order1: the first order.
+    order2: the second order.
+    tau: the temporal lag.
+
+    Returns
+    -------
+    The cross-order correlation function between orders d1 and d2, at time lag tau.
+    """
+    correlation_matrix = cross_order_correlation_matrix_two_orders(temporal_hypergraph, order1, order2, tau)
+    correlation_function = correlation_matrix.trace()
+
+    return correlation_function
