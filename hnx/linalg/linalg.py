@@ -247,7 +247,7 @@ def temporal_adjacency_matrices_all_orders(
         temporal_adjacencies[t] = tuple(adjacency_list_t)   
     return temporal_adjacencies, mapping
 
-def annealed_adjacency_matrix_by_order(
+def annealed_adjacency_matrix(
     temporal_adjacency_matrix: Dict[int, sparse.csc_array]
 ) -> sparse.csc_array:
     """Compute the annealed adjacency matrix of the temporal hypergraph by order.
