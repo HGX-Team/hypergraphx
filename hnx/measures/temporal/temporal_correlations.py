@@ -179,7 +179,7 @@ def cross_order_correlation_matrices_all_orders(
     Returns
     -------
     The cross-order correlation matrices between each couple of orders, at time lag tau, 
-    as a dictionary {(order1, order2) : sparse matrix}.
+    as a dictionary {(d1, d2) : sparse matrix}.
     """
 
     correlation_matrices = {}
@@ -192,3 +192,32 @@ def cross_order_correlation_matrices_all_orders(
                 correlation_matrices[(order2+1, order1+1)] = correlation_matrix
         
     return correlation_matrices
+
+def cross_order_correlation_functions_all_orders(
+    temporal_hypergraph: Dict[int, Hypergraph], max_order: int, tau: int
+) -> float:
+    """ Compute the cross-order correlation functions between each couple of orders, at time lag tau.
+
+    Parameters
+    ----------
+    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    max_order: the maximum order.
+    tau: the temporal lag.
+
+    Returns
+    -------
+    The cross-order correlation functions between each couple of orders, at time lag tau,
+    as a dictionary {(d1, d2 : function)}
+    """
+    correlation_functions = {}
+    for order1 in range(max_order-1):
+        for order2 in range(order1, max_order):
+            correlation_matrix = cross_order_correlation_matrix_two_orders(temporal_hypergraph, order1, order2, tau)
+            correlation_function = correlation_matrix.trace()
+            correlation_functions[(order1+1, order2+1)] = correlation_function
+            if not order1 == order2:
+                correlation_matrix = cross_order_correlation_matrix_two_orders(temporal_hypergraph, order2, order1, tau)
+                correlation_function = correlation_matrix.trace()
+                correlation_functions[(order2+1, order1+1)] = correlation_matrix
+
+    return correlation_functions

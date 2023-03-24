@@ -289,7 +289,7 @@ def annealed_adjacency_matrices_all_orders(
     for order in range(max_order):
         temporal_adjacency_matrix_lst = [adjacencies_matrices_t[order] for adjacencies_matrices_t in temporal_adjacency_matrices_vals]
         temporal_adjacency_matrix_dct = dict(zip(temporal_adjacency_matrices.keys(), temporal_adjacency_matrix_lst))
-        annealed_adjacency_matrix = annealed_adjacency_matrix_by_order(temporal_adjacency_matrix_dct, order)
+        annealed_adjacency_matrix = annealed_adjacency_matrix(temporal_adjacency_matrix_dct)
         annealed_adjacency_matrices.append(annealed_adjacency_matrix)
     return tuple(annealed_adjacency_matrices)
 
