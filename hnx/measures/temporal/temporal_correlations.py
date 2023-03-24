@@ -60,8 +60,8 @@ def intra_order_correlation_function_by_order(
 
 def intra_order_correlation_matrices_all_orders(
     temporal_hypergraph: Dict[int, Hypergraph], max_order: int, tau: int
-) -> sparse.csc_array:
-    """ Compute the intra-order correlation matrix for hyperedges of order d and time lag tau.
+): # -> Tuple[sparse.csc_array]: ### to check
+    """ Compute the intra-order correlation matrices for hyperedges of all orders and time lag tau.
 
     Parameters
     ----------
@@ -71,7 +71,7 @@ def intra_order_correlation_matrices_all_orders(
 
     Returns
     -------
-    The intra-order correlation matrix of order d at time lag tau, as a sparse matrix.
+    The intra-order correlation matrices for all orders at time lag tau, as sparse matrices.
     """
 
     correlation_matrices = []
@@ -80,3 +80,25 @@ def intra_order_correlation_matrices_all_orders(
         correlation_matrices.append(correlation_matrix)
         
     return tuple(correlation_matrices)
+
+def intra_order_correlation_functions_all_orders(
+    temporal_hypergraph: Dict[int, Hypergraph], max_order: int, tau: int
+): # -> Tuple[float]: ### to check
+    """ Compute the intra-order correlation function for hyperedges of every order and time lag tau.
+
+    Parameters
+    ----------
+    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    max_order: the maximum order.
+    tau: the temporal lag.
+
+    Returns
+    -------
+    The intra-order correlation functions for all orders at time lag tau.
+    """
+    correlation_functions = []
+    for order in range(max_order):
+        correlation_function = intra_order_correlation_function_by_order(temporal_hypergraph, order, tau)
+        correlation_functions.append(correlation_function)
+
+    return tuple(correlation_functions)
