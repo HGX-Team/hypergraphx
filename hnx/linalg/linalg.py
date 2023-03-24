@@ -248,7 +248,7 @@ def temporal_adjacency_matrices_all_orders(
     return temporal_adjacencies, mapping
 
 def annealed_adjacency_matrix_by_order(
-    temporal_adjacency_matrix: Dict[int, sparse.csc_array], order: int
+    temporal_adjacency_matrix: Dict[int, sparse.csc_array]
 ) -> sparse.csc_array:
     """Compute the annealed adjacency matrix of the temporal hypergraph by order.
     For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix
@@ -256,12 +256,11 @@ def annealed_adjacency_matrix_by_order(
 
     Parameters
     ----------
-    temporal_adjacency_matrix: a dictionary {time : adjacency matrix}.
-    order: the order.
+    temporal_adjacency_matrix: the temporal adjacency matrix for a given order, as a dictionary {time : adjacency matrix}.
 
     Returns
     -------
-    The annealed adjacency matrix for order d.
+    The annealed adjacency matrix for a given order.
     """
     T = max(temporal_adjacency_matrix.keys())
     temporal_adjacency_matrix_lst = temporal_adjacency_matrix.values()

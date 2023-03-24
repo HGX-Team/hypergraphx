@@ -24,7 +24,7 @@ def intra_order_correlation_matrix_by_order(
     """
     T = max(temporal_hypergraph.keys())
     temporal_adjacency_matrix = temporal_adjacency_matrix_by_order(temporal_hypergraph, order)
-    annealed_adjacency_matrix = annealed_adjacency_matrix_by_order(temporal_adjacency_matrix, order)
+    annealed_adjacency_matrix = annealed_adjacency_matrix_by_order(temporal_adjacency_matrix)
 
     correlation_matrix = sparse.csc_array(annealed_adjacency_matrix.shape, dtype=np.int8)
     for t in range(T-tau):
@@ -104,3 +104,39 @@ def intra_order_correlation_functions_all_orders(
         correlation_functions.append(correlation_function)
 
     return tuple(correlation_functions)
+
+def cross_order_correlation_matrix_by_order(
+    temporal_hypergraph: Dict[int, Hypergraph], order1: int, order2: int, tau: int
+) -> sparse.csc_array:
+    """ Compute the cross-order correlation matrix between hyperedges of orders d1 and d2, and time lag tau.
+
+    Parameters
+    ----------
+    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    order1: the first order.
+    order2: the second order.
+    tau: the temporal lag.
+
+    Returns
+    -------
+    The cross-order correlation matrix between orders d1 and d2 at time lag tau, as a sparse matrix.
+    """
+    T = max(temporal_hypergraph.keys())
+    temporal_adjacency_matrix_d1 = temporal_adjacency_matrix_by_order(temporal_hypergraph, order1)
+    temporal_adjacency_matrix_d2 = temporal_adjacency_matrix_by_order(temporal_hypergraph, order2)
+    annealed_adjacency_matrix_d1 = annealed_adjacency_matrix_by_order(temporal_adjacency_matrix_d1)
+    annealed_adjacency_matrix_d2 = annealed_adjacency_matrix_by_order(temporal_adjacency_matrix_d2)
+
+    correlation_matrix = sparse.csc_array(annealed_adjacency_matrix_d1.shape, dtype=np.int8)
+    for t in range(T-tau):
+        adjacency_matrix_d1_t = temporal_adjacency_matrix_d1[t]
+        adjacency_matrix_d2_t_lagged = temporal_adjacency_matrix_d2[t+tau]   
+
+        centered_adjacency_matrix_d1_t = adjacency_matrix_d1_t - annealed_adjacency_matrix_d1
+        centered_adjacency_matrix_d2_t_lagged = adjacency_matrix_d2_t_lagged - annealed_adjacency_matrix_d2
+
+        correlation_matrix = correlation_matrix + centered_adjacency_matrix_d1_t.dot(centered_adjacency_matrix_d2_t_lagged.tranpose())
+    
+    correlation_matrix = correlation_matrix/(factorial(order1)*factorial(order2))/(T-tau)
+
+    return correlation_matrix
