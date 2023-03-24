@@ -261,7 +261,7 @@ def annealed_adjacency_matrix_by_order(
 
     Returns
     -------
-    The annealed adjacency matrix for order d, and the dictionary of node mappings.
+    The annealed adjacency matrix for order d.
     """
     T = max(temporal_adjacency_matrix.keys())
     temporal_adjacency_matrix_lst = temporal_adjacency_matrix.values()
@@ -282,7 +282,7 @@ def annealed_adjacency_matrices_all_orders(
 
     Returns
     -------
-    The annealed adjacency matrix for order d, and the dictionary of node mappings.
+    The annealed adjacency matrix for all orders.
     """
     temporal_adjacency_matrices_vals = temporal_adjacency_matrices.values()
     max_order = len(temporal_adjacency_matrices_vals[0])
