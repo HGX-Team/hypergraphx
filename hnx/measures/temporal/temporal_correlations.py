@@ -221,3 +221,28 @@ def cross_order_correlation_functions_all_orders(
                 correlation_functions[(order2+1, order1+1)] = correlation_matrix
 
     return correlation_functions
+
+def cross_order_gap_function_two_orders(
+    temporal_hypergraph: Dict[int, Hypergraph], order1: int, order2: int, tau: int
+) -> float:
+    """ Compute the cross-order correlation function between hyperedges of order d1 and d2, at time lag tau.
+
+    Parameters
+    ----------
+    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    order1: the first order.
+    order2: the second order.
+    tau: the temporal lag.
+
+    Returns
+    -------
+    The cross-order correlation function between orders d1 and d2, at time lag tau.
+    """
+    sigma_d1 = intra_order_correlation_function_by_order(temporal_hypergraph, order1, tau=0)
+    sigma_d2 = intra_order_correlation_function_by_order(temporal_hypergraph, order2, tau=0)
+    normalization = 2*np.sqrt(sigma_d1*sigma_d2)
+    cross_order_correlation_function_d1_d2 = cross_order_correlation_function_two_orders(temporal_hypergraph, order1, order2, tau)
+    cross_order_correlation_function_d2_d1 = cross_order_correlation_function_two_orders(temporal_hypergraph, order2, order1, tau)
+    
+    cross_order_gap = (cross_order_correlation_function_d1_d2 - cross_order_correlation_function_d2_d1)/normalization
+    return cross_order_gap
