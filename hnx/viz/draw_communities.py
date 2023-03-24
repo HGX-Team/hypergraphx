@@ -1,63 +1,106 @@
-import matplotlib.pyplot as plt
-from hnx.representations.projections import clique_projection
-import networkx as nx
+from typing import Optional, Tuple
+
 import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
+
+from hnx.core.hypergraph import Hypergraph
+from hnx.representations.projections import clique_projection
+
 
 def draw_communities(
-    H,
-    figsize = (12, 6),
-    ns = 50,
-    mrk = 'o',
-    edgecolor_node = 'grey',
-    edgecolor_edge = 'lightgrey',
-    overlapping = True,
-    radius = 0.005
+    hypergraph: Hypergraph,
+    u: np.array,
+    col: dict,
+    figsize: tuple = (7, 7),
+    ax: Optional[plt.Axes] = None,
+    edge_color: str = "lightgrey",
+    edge_width: float = 0.3,
+    threshold_group: float = 0.1,
+    wedge_color: str = "lightgrey",
+    wedge_width: float = 1.5,
+    node_label: bool = True,
+    label_size: float = 10,
+    label_col: str = "black",
+    c_node_size: float = 0.004,
+    title: Optional[str] = None,
+    title_size: float = 15,
+    seed: int = 20,
+    scale: int = 2,
+    iterations: int = 100,
+    opt_dist: float = 0.2,
 ):
-
-    plt.figure(figsize=figsize)
-    wedgeprops = {'edgecolor': edgecolor_edge}
-
-    G = clique_projection(H)
-    pos = nx.spring_layout(G, k=0.1, seed=0)
-    degree = dict(G.degree())
-
-    if overlapping:
-        plt.subplot(1, 2, 1)
+    """Plot"""
+    # Initialize figure.
+    if ax is None:
+        plt.figure(figsize=figsize)
+        plt.subplot(1, 1, 1)
         ax = plt.gca()
-        nx.draw_networkx_edges(G, pos, arrows=False, edge_color=edgecolor_edge)
-        for n, d in G.nodes(data=True):
-            wedge_sizes, wedge_colors = viz.extract_bridge_properties(vcm.nodeName2Id[n], cm, vcm.U['gt'], threshold=0.01)
-            if len(wedge_sizes) > 0:
-                pie, t = plt.pie(wedge_sizes, center=pos[n], colors=wedge_colors, radius=(min(10, degree[n])) * radius,
-                                 wedgeprops=wedgeprops)
-                ax.axis("equal")
-        plt.tight_layout()
-        plt.title('Metadata')
 
-        plt.subplot(1, 2, 2)
-        ax = plt.gca()
-        nx.draw_networkx_edges(G, pos, arrows=False, edge_color=edgecolor_edge)
-        for n, d in G.nodes(data=True):
-            wedge_sizes, wedge_colors = viz.extract_bridge_properties(vcm.nodeName2Id[n], cm, vcm.U['HyMT'], threshold=0.01)
-            if len(wedge_sizes) > 0:
-                pie, t = plt.pie(wedge_sizes, center=pos[n], colors=wedge_colors, radius=(min(10, degree[n])) * radius,
-                                 wedgeprops=wedgeprops, normalize=True)
-                ax.axis("equal")
-        plt.tight_layout()
-        # plt.title('Hypergraph-MT')
+    # Get the clique projection of the hypergraph.
+    G = clique_projection(hypergraph, keep_isolated=True)
 
-    else:
-        plt.subplot(1, 2, 1)
-        nx.draw_networkx_edges(G, pos, arrows=False, edge_color=edgecolor_edge)
-        for n, d in G.nodes(data=True):
-            nx.draw_networkx_nodes(G, pos, [n], node_size=ns, node_shape=mrk, node_color=[int(d['node_color_gt'])],
-                                   edgecolors=edgecolor_node, cmap=cmap, vmin=0, vmax=cmax)
-        plt.title('Metadata')
+    # Extract position.
+    pos = nx.spring_layout(G, k=opt_dist, iterations=iterations, seed=seed, scale=scale)
 
-        plt.subplot(1, 2, 2)
-        ax = plt.gca()
-        nx.draw_networkx_edges(G, pos, arrows=False, edge_color=edgecolor_edge)
-        for nid, n in enumerate(list(G.nodes())):
-            nx.draw_networkx_nodes(G, pos, [n], node_size=ns, node_shape=mrk, node_color=[np.argmax(vcm.U['HyMT'][nid])],
-                                   edgecolors=edgecolor_node, cmap=cmap, vmin=0, vmax=cmax)
-        plt.title('Hypergraph-MT')
+    # Get node degrees and node sizes proportional to the degree.
+    degree = hypergraph.degree_sequence()
+    node_size = {n: degree[n] * c_node_size for n in G.nodes()}
+
+    # Get node mappings.
+    _, mappingID2Name = hypergraph.binary_incidence_matrix(return_mapping=True)
+    mappingName2ID = {n: i for i, n in mappingID2Name.items()}
+
+    # Plot edges.
+    nx.draw_networkx_edges(G, pos, width=edge_width, edge_color=edge_color, ax=ax)
+
+    # Plot nodes.
+    for n in G.nodes():
+        wedge_sizes, wedge_colors = extract_pie_properties(
+            mappingName2ID[n], u, col, threshold=threshold_group
+        )
+        if len(wedge_sizes) > 0:
+            plt.pie(
+                wedge_sizes,
+                center=pos[n],
+                colors=wedge_colors,
+                radius=node_size[n],
+                wedgeprops={"edgecolor": wedge_color, "linewidth": wedge_width},
+                normalize=True,
+            )
+            if node_label:
+                ax.annotate(
+                    n,
+                    (pos[n][0] - 0.1, pos[n][1] - 0.06),
+                    fontsize=label_size,
+                    color=label_col,
+                )
+            if title is not None:
+                plt.title(title, fontsize=title_size)
+            ax.axis("equal")
+            plt.axis("off")
+    plt.tight_layout()
+
+
+def extract_pie_properties(
+    i: int, u: np.array, colors: dict, threshold: float = 0.1
+) -> Tuple[np.array, np.array]:
+    """Given a node, it extracts the wedge sizes and the respective colors for the pie chart
+    that represents its membership.
+
+    Parameters
+    ----------
+    i: node id.
+    u: membership matrix.
+    colors: dictionary of colors, where key represent the group id and values are colors.
+    threshold: threshold for node membership.
+
+    Returns
+    -------
+    wedge_sizes: wedge sizes.
+    wedge_colors: sequence of colors through which the pie chart will cycle.
+    """
+    valid_groups = np.where(u[i] > threshold)[0]
+    wedge_sizes = u[i][valid_groups]
+    wedge_colors = [colors[k] for k in valid_groups]
+    return wedge_sizes, wedge_colors
