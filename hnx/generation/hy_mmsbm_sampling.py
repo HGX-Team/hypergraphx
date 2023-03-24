@@ -9,6 +9,7 @@ and refers back to the model to retrieve any probability-related value
 (e.g. Poisson probabilities, expected degree, etc.).
 """
 import logging
+import warnings
 from typing import Dict, Iterable, Iterator, List, Optional, Set, Tuple, Union
 
 import numpy as np
@@ -117,7 +118,11 @@ class HyMMSBMSampler:
                 deg_seq, dim_seq, avg_deg, allow_rescaling
             )
         else:
-            initial_config = [set(hye) for hye in initial_hyg]
+            # Map from node to an id in [0, N) where N is the number of nodes.
+            mapping = initial_hyg.get_mapping()
+            initial_config = [
+                set(hye) for hye in map(mapping.transform, initial_hyg.get_edges())
+            ]
             samples = self._mcmc_routine(initial_config)
 
         while True:
@@ -128,9 +133,11 @@ class HyMMSBMSampler:
             )
             hye_size = np.fromiter(map(len, hye_list), dtype=int)
 
-            log_poisson = np.log(
-                self._model.poisson_params(binary_incidence)
-            ) - self._model.log_kappa(hye_size)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                log_poisson = np.log(
+                    self._model.poisson_params(binary_incidence)
+                ) - self._model.log_kappa(hye_size)
             poisson_mean = np.exp(log_poisson)
             # Weights can't be zero, remedy numerical underflow by clipping.
             poisson_mean = np.clip(poisson_mean, a_min=1.0e-10, a_max=None)
@@ -143,8 +150,21 @@ class HyMMSBMSampler:
             weights = weights[nonzero]
             hye_list = [hye_list[idx] for idx in nonzero]
 
+            # Map indices in [0, N) back to the original nodes.
+            if initial_hyg:
+                hye_list = [
+                    tuple(edge) for edge in map(mapping.inverse_transform, hye_list)
+                ]
+
+            # Remove duplicates and sum weights
+            hye_with_weights = {edge: 0 for edge in set(hye_list)}
+            for edge, w in zip(hye_list, weights):
+                hye_with_weights[edge] += w
+
             yield Hypergraph(
-                [hye for hye, weight in zip(hye_list, weights) for _ in range(weight)]
+                edge_list=list(hye_with_weights),
+                weighted=True,
+                weights=list(hye_with_weights.values()),
             )
 
     def _sampling_from_sequences(
@@ -309,13 +329,13 @@ class HyMMSBMSampler:
         new_hye1, new_hye2 = self._pairwise_reshuffle(hye1, hye2)
 
         # Get Poisson parameters for the four hyperedges.
-        hye1 = list(hye1)
-        hye2 = list(hye2)
-        new_hye1 = list(new_hye1)
-        new_hye2 = list(new_hye2)
+        hye1 = tuple(hye1)
+        hye2 = tuple(hye2)
+        new_hye1 = tuple(new_hye1)
+        new_hye2 = tuple(new_hye2)
 
         incidence_matrix = hye_list_to_binary_incidence(
-            (hye1, hye2, new_hye1, new_hye2), shape=(self._model.N, 4)
+            [hye1, hye2, new_hye1, new_hye2], shape=(self._model.N, 4)
         )
         poisson_lambda = self._model.poisson_params(incidence_matrix)
         log_kappa = self._model.log_kappa(
@@ -454,14 +474,17 @@ class HyMMSBMSampler:
 
         # To avoid numerical errors with parameters underflowing to 0.
         poisson_lambda = poisson_lambda + 1.0e-30
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            log_lambda = np.log(poisson_lambda)
 
         prob_ratio = 1.0
         for old, new in [(0, 2), (1, 3)]:
-            if np.all((log_kappa - np.log(poisson_lambda))[[old, new]] > approx_thresh):
+            if np.all((log_kappa - log_lambda)[[old, new]] > approx_thresh):
                 prob_ratio *= poisson_lambda[new] / poisson_lambda[old]
             else:
-                prob_old = np.exp(np.log(poisson_lambda[old]) - log_kappa[old])
-                prob_new = np.exp(np.log(poisson_lambda[new]) - log_kappa[new])
+                prob_old = np.exp(log_lambda[old] - log_kappa[old])
+                prob_new = np.exp(log_lambda[new] - log_kappa[new])
                 prob_ratio *= np.clip(
                     np.expm1(prob_new) / np.expm1(prob_old),
                     a_min=1.0e-30,
