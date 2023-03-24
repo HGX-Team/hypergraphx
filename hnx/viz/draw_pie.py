@@ -73,13 +73,14 @@ def draw_pie(hg: Hypergraph, num_edges=100):
         label_colors.append('black')
     #print(membership.todense())
 
-    #embed = ForceAtlas()
-    #position = embed.fit_transform(adjacency)
+    embed = ForceAtlas()
+    position = embed.fit_transform(adjacency)
     #print(type(position))
-    import networkx as nx
-    position = nx.circular_layout(hg.get_nodes())
-    position = [position[node] for node in position]
-    position = np.array(position)
+    
+    #import networkx as nx
+    #position = nx.circular_layout(hg.get_nodes())
+    # position = [position[node] for node in position]
+    #position = np.array(position)
 
     a = svg_graph(adjacency,
                   position=position,
