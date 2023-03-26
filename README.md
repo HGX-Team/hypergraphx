@@ -4,10 +4,10 @@
 -----
 
 
-**HNX** is a Python library for the analysis of real-world complex systems with **group interactions** and provides a comprehensive suite of tools and algorithms for constructing, visualizing, and analyzing **hypergraphs**. <br> The library is designed to be user-friendly and accessible, with a wide range of functionalities that can be applied to a diverse set of applications and use cases.
+**HGX** is a Python library for the analysis of real-world complex systems with **group interactions** and provides a comprehensive suite of tools and algorithms for constructing, visualizing, and analyzing **hypergraphs**. <br> The library is designed to be user-friendly and accessible, with a wide range of functionalities that can be applied to a diverse set of applications and use cases.
 
 ## News
-   * 2023-03-28: HNX is now available!
+   * 2023-03-28: HGX is now available!
 
 ## Table of contents
 - [What are higher-order networks?](#what-are-higher-order-networks)
@@ -16,11 +16,11 @@
   * [Installation](#installation)
 - [Tutorials](#tutorials)
 - [Data](#data)
-- [The HNX team](#the-hnx-team)
+- [The HGX team](#the-hnx-team)
   * [Project coordinators](#project-coordinators)
   * [Core members](#core-members)
 - [Contributing](#contributing)
-- [Citing HNX](#citing-hnx)
+- [Citing HGX](#citing-hnx)
 - [License](#license)
 - [Other resources](#other-resources)
 
@@ -66,7 +66,7 @@ TODO: aggiungere link contatti, per chi vuole. Ho messo esempio di icon twitter 
 If you use HNX or related data in your paper, please cite:
 
 ```
-qui bibtex
+bibtex
 ```
 
 ## License
