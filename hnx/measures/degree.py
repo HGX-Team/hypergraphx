@@ -1,3 +1,4 @@
+import numpy as np
 from hnx.core import Hypergraph
 
 
@@ -59,8 +60,22 @@ def degree_sequence(hg: Hypergraph, order=None, size=None):
         return {node: hg.degree(node, order=order) for node in hg.get_nodes()}
 
 
-def degree_correlation(hg: Hypergraph):
-    import numpy as np
+def degree_correlation(hg: Hypergraph) -> np.ndarray:
+    """
+    Computes the degree sequence correlation matrix of the hypergraph.
+
+    Parameters
+    ----------
+    hg: Hypergraph
+        The hypergraph of interest.
+
+    Returns
+    -------
+    np.ndarray
+        The degree sequence correlation matrix of the hypergraph.
+        The (i, j) entry is the Pearson correlation coefficient between the degree sequence at size i + 2
+        and the degree sequence at size j + 2.
+    """
     from scipy.stats import pearsonr
     seqs = [hg.degree_sequence(size=size) for size in range(2, hg.max_size() + 1)]
     matrix_degree_corr = np.zeros((len(seqs), len(seqs)))
