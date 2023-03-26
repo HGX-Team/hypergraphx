@@ -63,8 +63,8 @@ class Object():
 
 def draw_HG(HG, pos = None, link_color = 'black',
              hyperlink_color_by_order = {2:'r', 3:'orange', 4:'green'}, 
-             link_width = 1, node_size = 20,
-             node_color = '#5494DA', alpha = .35,
+             link_width = 1, node_size = 40,
+             node_color = '#5494DA', alpha = .5,
              with_labels = False,
              ax = None, save_name = None):
     if pos == None:
