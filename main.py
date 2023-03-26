@@ -8,7 +8,7 @@ from hnx.readwrite.load import load_hypergraph
 from hnx.viz.draw_projections import draw_bipartite, draw_clique
 from hnx.viz.draw_pie import draw_pie
 import sklearn
+from hnx.measures.degree import *
 
 H = load_hypergraph("test_data/hs/hs.pickle", "pickle")
-H = H.get_edges(up_to=3)
-print(H)
+print(degree_correlation(H))
