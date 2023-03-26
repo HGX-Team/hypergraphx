@@ -41,7 +41,7 @@ def get_proportion_hyperedges(hg: Hypergraph, max_size=4):
     return p
 
 
-def draw_pie(hg: Hypergraph, num_edges=100):
+def draw_pie(hg: Hypergraph, num_edges=100, colors=[plt.cm.Dark2(0), plt.cm.Dark2(1), plt.cm.Dark2(2), plt.cm.Dark2(3)]):
     node2id = {node: i for i, node in enumerate(hg.get_nodes())}
     id2node = {i: node for i, node in enumerate(hg.get_nodes())}
 
@@ -67,10 +67,10 @@ def draw_pie(hg: Hypergraph, num_edges=100):
 
     max_size = 5
     membership = sparse.csr_matrix(get_proportion_hyperedges(hg, max_size=max_size))
-    COLORS = ['red', 'yellow', 'green', 'blue']
-    label_colors = [COLORS[i] for i in range(max_size-1)]
-    if hg.max_size() > max_size:
-        label_colors.append('black')
+    label_colors = [colors[i] for i in range(max_size-1)]
+    #print(label_colors)
+    #if hg.max_size() > max_size:
+    #    label_colors.append('black')
     #print(membership.todense())
 
     embed = ForceAtlas()

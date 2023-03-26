@@ -63,12 +63,12 @@ class Object():
 
 def draw_HG(HG, pos = None, link_color = 'black',
              hyperlink_color_by_order = {2:'r', 3:'orange', 4:'green'}, 
-             link_width = 2, node_size = 150,
-             node_color = '#5494DA', alpha = .5,
+             link_width = 1, node_size = 20,
+             node_color = '#5494DA', alpha = .35,
              with_labels = False,
-             ax = None):
+             ax = None, save_name = None):
     if pos == None:
-        pos = nx.spring_layout(clique_projection(HG, keep_isolated=True))
+        pos = nx.spring_layout(clique_projection(HG, keep_isolated=True), k=0.5)
     links = HG.get_edges(order = 1)
     # create a empty graph with nodes = HG.get_nodes()
     G = nx.Graph()
@@ -77,7 +77,7 @@ def draw_HG(HG, pos = None, link_color = 'black',
     for link in links:
         G.add_edge(link[0], link[1])
         
-    # loop in HG.get_edges() from the end to the beginning
+    # loop in HG.get_edges() from the end to the beginning [CHANGED]
     
     for h_edge in list(HG.get_edges())[::-1]:
         
@@ -113,6 +113,7 @@ def draw_HG(HG, pos = None, link_color = 'black',
     # change node color for node 0
     
     nx.draw(G, pos, node_color = node_color, edge_color = link_color, with_labels = with_labels, width = link_width, node_size = node_size, ax = ax)
-
+    if save_name != None:
+        plt.savefig("{}.svg".format(save_name))
 
     

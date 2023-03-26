@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 import numpy as np
 import networkx as nx
@@ -14,14 +14,16 @@ def draw_communities(
     col: dict,
     figsize: tuple = (7, 7),
     ax: Optional[plt.Axes] = None,
+    pos: Optional[dict] = None,
     edge_color: str = "lightgrey",
     edge_width: float = 0.3,
     threshold_group: float = 0.1,
     wedge_color: str = "lightgrey",
     wedge_width: float = 1.5,
-    node_label: bool = True,
+    with_node_labels: bool = True,
     label_size: float = 10,
     label_col: str = "black",
+    node_size: Union[None, float, int, dict] = None,
     c_node_size: float = 0.004,
     title: Optional[str] = None,
     title_size: float = 15,
@@ -30,7 +32,35 @@ def draw_communities(
     iterations: int = 100,
     opt_dist: float = 0.2,
 ):
-    """Plot"""
+    """Visualize the node memberships of a hypergraph. Nodes are colored according to their memberships,
+    which can be either hard- or soft-membership, and the node size is proportional to the degree in the hypergraph.
+    Edges are the pairwise interactions of the hypergraph clique projection.
+
+    Parameters
+    ----------
+    hypergraph: the hypergraph to visualize.
+    u: membership matrix of dimension NxK, where N is the number of nodes and K is the number of communities.
+    col: dictionary of colors for nodes, where key represent the group id and values are colors.
+    figsize: size of the figure to use when ax=None.
+    ax: axes to use for the visualization.
+    pos: dictionary of positions for nodes, with node as keys and values as a coordinate list or tuple.
+    edge_color: color of the edges.
+    edge_width: width of the edges.
+    threshold_group: minimum membership value to keep in the plot.
+    wedge_color: color of the wedge borders.
+    wedge_width: width of the wedge borders.
+    with_node_labels: flag to print the node labels.
+    label_size: fontsize of the node labels.
+    label_col: color of the node labels.
+    node_size: sizes of nodes.
+    c_node_size: constant to regularize the node size proportional to the node degree (when node_size=None).
+    title: plot title.
+    title_size: fontsize of the title.
+    seed: random seed for fixing the position with the spring layout.
+    scale: scale factor for positions.
+    iterations: maximum number of iterations taken for fixing the position with the spring layout.
+    opt_dist: optimal distance between nodes.
+    """
     # Initialize figure.
     if ax is None:
         plt.figure(figsize=figsize)
@@ -40,12 +70,17 @@ def draw_communities(
     # Get the clique projection of the hypergraph.
     G = clique_projection(hypergraph, keep_isolated=True)
 
-    # Extract position.
-    pos = nx.spring_layout(G, k=opt_dist, iterations=iterations, seed=seed, scale=scale)
+    # Extract node positions.
+    if pos is None:
+        pos = nx.spring_layout(G, k=opt_dist, iterations=iterations, seed=seed, scale=scale)
 
-    # Get node degrees and node sizes proportional to the degree.
+    # Get node degrees and node sizes.
     degree = hypergraph.degree_sequence()
-    node_size = {n: degree[n] * c_node_size for n in G.nodes()}
+    if node_size is None:
+        # Proportional to the node degree.
+        node_size = {n: degree[n] * c_node_size for n in G.nodes()}
+    elif type(node_size) != np.array:
+        node_size = {n: node_size for n in G.nodes()}
 
     # Get node mappings.
     _, mappingID2Name = hypergraph.binary_incidence_matrix(return_mapping=True)
@@ -68,7 +103,7 @@ def draw_communities(
                 wedgeprops={"edgecolor": wedge_color, "linewidth": wedge_width},
                 normalize=True,
             )
-            if node_label:
+            if with_node_labels:
                 ax.annotate(
                     n,
                     (pos[n][0] - 0.1, pos[n][1] - 0.06),
