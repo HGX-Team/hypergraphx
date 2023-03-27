@@ -1,12 +1,42 @@
 import numpy as np
-from scipy import sparse
-from scipy.integrate import solve_ivp
-
 from hypergraphx.utils.labeling import *
 
+
 def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
+    """
+    Simulates the contagion process on a simplicial hypergraph.
+    The process is run for T time steps.
+    The initial condition is given by I_0, which is a vector of length equal to the number of nodes in the hypergraph.
+    The infection rate is beta, the three-body infection rate is beta_D, and the recovery rate is mu.
+    The output is a vector of length T, where the i-th entry is the fraction of infected nodes at time i.
+
+    Parameters
+    ----------
+    hypergraph : hypergraphx.Hypergraph
+        The hypergraph on which the contagion process is run.
+
+    I_0 : numpy.ndarray
+        The initial condition of the contagion process.
+
+    T : int
+        The number of time steps.
+
+    beta : float
+        The infection rate.
+
+    beta_D : float
+        The three-body infection rate.
+
+    mu : float
+        The recovery rate.
+
+    Returns
+    -------
+    numpy.ndarray
+        The fraction of infected nodes at each time step.
+    """
     
-    numberInf = np.linspace(0,0,T)
+    numberInf = np.linspace(0, 0, T)
     Infected = np.sum(I_0)
     numberInf[0] = Infected
     N = len(I_0)
@@ -49,4 +79,4 @@ def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
         numberInf[t] = Infected
         t = t+1
     
-    return numberInf/N
+    return numberInf / N
