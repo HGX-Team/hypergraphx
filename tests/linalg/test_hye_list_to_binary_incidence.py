@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from scipy import sparse
 
-from hnx.linalg.linalg import hye_list_to_binary_incidence
+from hypergraphx.linalg.linalg import hye_list_to_binary_incidence
 
 hye_lists = [
     [
