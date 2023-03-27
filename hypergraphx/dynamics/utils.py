@@ -159,6 +159,7 @@ def is_natural_coupling(JHs, dim, verbose = True):
     if verbose: print("The coupling is natural")
     return True
 
+
 def is_all_to_all(hypergraph, verbose = True):
     if hypergraph.is_weighted():
         print("The higher-order network is weighted. Only unweighted higher-order networks are considered")

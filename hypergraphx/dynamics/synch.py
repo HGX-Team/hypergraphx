@@ -57,6 +57,7 @@ def MSF(F, JF, params, interval, JH, X0, integration_time=2000.0, integration_st
 
     return MSF
 
+
 def MSF_multi_coupling(F, JF, params, interval, sigmas, N, JHs, X0, integration_time=2000.0, integration_step=0.01, C=5, verbose=True):
     """
     Evaluates the Master Stability Function for the higher-order all-to-all network

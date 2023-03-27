@@ -1,3 +1,4 @@
+import numpy as np
 from hypergraphx.linalg.linalg import *
 
 
