@@ -9,5 +9,5 @@ from hypergraphx.viz.draw_projections import draw_bipartite, draw_clique
 import sklearn
 from hypergraphx.measures.degree import *
 
-H = load_hypergraph("test_data/hs/hs.pickle", "pickle")
+H = load_hypergraph("test_data/hs/hs.json", "json")
 print(degree_correlation(H))
