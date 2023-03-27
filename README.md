@@ -94,4 +94,16 @@ bibtex
 TODO: scegliere licenza
 
 ## Other resources
-TODO: linkare altre librerie e tools simili?
+
+#### Python
+- [HyperNetX](https://github.com/pnnl/HyperNetX)
+- [Reticula](https://github.com/reticula-network/reticula)
+- [XGI](https://github.com/ComplexGroupInteractions/xgi)
+
+#### Julia
+- [HyperGraphs.jl](https://github.com/lpmdiaz/HyperGraphs.jl)
+- [SimpleHypergraphs.jl](https://github.com/pszufe/SimpleHypergraphs.jl)
+
+#### R
+- [hyperG](https://cran.r-project.org/web/packages/HyperG/index.html)
+
