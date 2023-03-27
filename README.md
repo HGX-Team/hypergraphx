@@ -42,7 +42,14 @@ TODO: qualche esempio di creazione ipergrafi, loading di dataset e cose basilari
 TODO: link ai tutorial con breve descrizione di quello che c'è dentro (una frase)
 
 ## Data
-TODO: link al repo dei dati e qualche spiegazione 
+TODO: link al repo dei dati e qualche spiegazione
+
+## Citing HNX
+If you use HNX or related data in your paper, please cite:
+
+```
+bibtex
+```
 
 ## The HNX team
 
@@ -83,13 +90,6 @@ HGX is a collaborative project and we welcome suggestions and contributions. If 
 - Talk about how HGX has been useful for your research problem
 - Engage in a discussion with the core members of the library
 
-## Citing HNX
-If you use HNX or related data in your paper, please cite:
-
-```
-bibtex
-```
-
 ## License
 TODO: scegliere licenza
 
@@ -106,4 +106,3 @@ TODO: scegliere licenza
 
 #### R
 - [hyperG](https://cran.r-project.org/web/packages/HyperG/index.html)
-
