@@ -1,13 +1,8 @@
-import numpy as np
-from scipy import sparse
-from scipy.integrate import solve_ivp
-
 from hypergraphx.linalg.linalg import *
 
 
-# define a function called transition_matrix that given an object HG of this type hypergraphx.core.hypergraph.Hypergraph returns K
-def transition_matrix(HG : Hypergraph)->sparse.spmatrix:
-    '''Compute the transition matrix of the random walk on the hypergraph.
+def transition_matrix(HG: Hypergraph) -> sparse.spmatrix:
+    """Compute the transition matrix of the random walk on the hypergraph.
     
     Parameters
     ----------
@@ -23,7 +18,7 @@ def transition_matrix(HG : Hypergraph)->sparse.spmatrix:
     References
     ----------
     [1] Timoteo Carletti, Federico Battiston, Giulia Cencetti, and Duccio Fanelli, Random walks on hypergraphs, Phys. Rev. E 96, 012308 (2017)
-    '''
+    """
     N = HG.num_nodes()
     # assert if HG i connected
     assert HG.is_connected(), 'The hypergraph is not connected'
@@ -44,9 +39,8 @@ def transition_matrix(HG : Hypergraph)->sparse.spmatrix:
     return T
 
 
-
-def random_walk(HG : Hypergraph, s : int, time : int)->list:
-    '''Compute the random walk on the hypergraph.
+def random_walk(HG: Hypergraph, s: int, time: int) -> list:
+    """Compute the random walk on the hypergraph.
     
     Parameters
     ----------
@@ -54,12 +48,14 @@ def random_walk(HG : Hypergraph, s : int, time : int)->list:
         The hypergraph on which the random walk is defined.
     s : int
         The starting node of the random walk.
+    time : int
+        The number of steps of the random walk.
         
     Returns
     -------
     nodes : list
         The list of nodes visited by the random walk.
-    '''
+    """
     K = np.array(transition_matrix(HG).todense() )
     nodes = [s]
     for t in range(time):
@@ -68,8 +64,8 @@ def random_walk(HG : Hypergraph, s : int, time : int)->list:
     return nodes
 
 
-def RW_stationary_state(HG : Hypergraph)->np.ndarray:
-    '''Compute the stationary state of the random walk on the hypergraph.
+def RW_stationary_state(HG: Hypergraph) -> np.ndarray:
+    """Compute the stationary state of the random walk on the hypergraph.
     
     Parameters
     ----------
@@ -80,17 +76,15 @@ def RW_stationary_state(HG : Hypergraph)->np.ndarray:
     -------
     stationary_state : np.ndarray
         The stationary state of the random walk on the hypergraph.
-    '''
+    """
     K = np.array(transition_matrix(HG).todense() )
     stationary_state = np.linalg.solve(np.eye(K.shape[0]) - K.T, np.ones(K.shape[0]))
     stationary_state = stationary_state / np.sum(stationary_state)
     return stationary_state
 
 
-
-# generalize the function random_walk to the case of starting density vector
-def random_walk_density(HG : Hypergraph, s : np.ndarray, time : int)->list:
-    '''Compute the random walk on the hypergraph with starting density vector.
+def random_walk_density(HG: Hypergraph, s: np.ndarray, time: int) -> list:
+    """Compute the random walk on the hypergraph with starting density vector.
         
     Parameters
     ----------
@@ -103,8 +97,7 @@ def random_walk_density(HG : Hypergraph, s : np.ndarray, time : int)->list:
     -------
     nodes : list
         The list of density vectors over time.
-    '''
-    # check if s is a density vector and write assertionerror that the vector is not a probability density
+    """
     assert np.isclose(np.sum(s), 1), "The vector is not a probability density"
     
     K = np.array(transition_matrix(HG).todense() )
