@@ -45,7 +45,6 @@ TODO: link ai tutorial con breve descrizione di quello che c'è dentro (una fras
 TODO: link al repo dei dati e qualche spiegazione 
 
 ## The HNX team
-TODO: aggiungere link contatti, per chi vuole. Ho messo esempio di icon twitter e github
 
 ### Project coordinators
 * Quintino Francesco Lotito (lead developer) - quintino.lotito@unitn.it - <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://twitter.com/FraLotito"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Twitter-logo.svg/512px-Twitter-logo.svg.png"></a> <a title="GitHub, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="https://github.com/FraLotito"><img width="16" alt="Octicons-mark-github" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/512px-Octicons-mark-github.svg.png"></a>
