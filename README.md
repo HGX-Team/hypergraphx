@@ -59,7 +59,29 @@ TODO: link al repo dei dati e qualche spiegazione
 * Federico Musciotto - federico.musciotto@unipa.it <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://twitter.com/musci8"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Twitter-logo.svg/512px-Twitter-logo.svg.png"></a> <a title="GitHub, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="https://github.com/musci8"><img width="16" alt="Octicons-mark-github" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/512px-Octicons-mark-github.svg.png"></a>
 * Nicolo Ruggeri - nicolo.ruggeri@tuebingen.mpg.de <a title="Icons8, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="https://nickruggeri.github.io/"><img width="16" alt="Icons8 flat link" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Icons8_flat_link.svg/512px-Icons8_flat_link.svg.png"></a> <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://twitter.com/NikRuggeri"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Twitter-logo.svg/512px-Twitter-logo.svg.png"></a> <a title="GitHub, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="https://github.com/nickruggeri"><img width="16" alt="Octicons-mark-github" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/512px-Octicons-mark-github.svg.png"></a> 
 
-## Contributing
+## Contributing :handshake:
+
+HGX is a collaborative project and we welcome suggestions and contributions. If you are interested in contributing to HGX or have any questions about our project, please do not hesitate to reach out to us. We look forward to hearing from you!
+
+:running: **I only have 1 minute**
+- Tweet about our library and spread the voice!
+- Give the project a star on GitHub :star:!
+
+:hourglass_flowing_sand: **I've got 10 minutes**
+- Try out our [tutorials](https://github.com/HGX-Team/hypergraphx/tree/master/tutorials)
+- [Suggest](https://github.com/HGX-Team/hypergraphx/issues) ideas and engage in discussions
+- [Help](https://github.com/HGX-Team/hypergraphx/issues) someone with a problem
+- [Report a bug](https://github.com/HGX-Team/hypergraphx/issues) someone with a problem
+
+:computer: **I've got a few hours to work on this**
+- Create new tools for the community 
+- Help solving bugs reported in the [issues](https://github.com/HGX-Team/hypergraphx/issues)
+- Please read the more detailed [contributing guidelines](CONTRIBUTING.md)
+
+:tada: **I want to help grow the community**
+- Spread the voice!
+- Talk about how HGX has been useful for your research problem
+- Engage in a discussion with the core members of the library
 
 ## Citing HNX
 If you use HNX or related data in your paper, please cite:
