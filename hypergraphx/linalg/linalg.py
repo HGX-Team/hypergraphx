@@ -133,6 +133,28 @@ def incidence_matrix(
 def incidence_matrix_by_order(
     hypergraph: Hypergraph, order: int, shape: Optional[Tuple[int]] = None, keep_isolated_nodes:bool=False, return_mapping: bool = False,
 ) -> sparse.spmatrix:
+    """ Produce the incidence matrix of a hypergraph at a given order.
+    For any node i and hyperedge e, the entry (i, e) of the incidence matrix is the
+    weight of the hyperedge if the node belongs to it, 0 otherwise.
+
+    Parameters
+    ----------
+    hypergraph
+        The hypergraph.
+    order
+        The order of the hyperedges to consider.
+    shape
+        The shape of the incidence matrix.
+    keep_isolated_nodes
+        If True, keep the isolated nodes in the incidence matrix.
+    return_mapping
+        If True, return the dictionary mapping the node indices in the matrix to the hypergraph nodes.
+
+    Returns
+    -------
+    The incidence matrix.
+    If return_mapping is True, return the dictionary of node mappings.
+    """
     binary_incidence, mapping = binary_incidence_matrix(
         hypergraph.get_edges(order=order, subhypergraph=True, keep_isolated_nodes=keep_isolated_nodes), shape, return_mapping
     )
@@ -143,6 +165,26 @@ def incidence_matrix_by_order(
 def incidence_matrices_all_orders(
     hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None, keep_isolated_nodes:bool=False, return_mapping: bool = False,
 ) -> List[sparse.spmatrix]:
+    """ Produce the incidence matrices of a hypergraph at all orders.
+    For any node i and hyperedge e, the entry (i, e) of the incidence matrix is the
+    weight of the hyperedge if the node belongs to it, 0 otherwise.
+
+    Parameters
+    ----------
+    hypergraph
+        The hypergraph.
+    shape
+        The shape of the incidence matrix.
+    keep_isolated_nodes
+        If True, keep the isolated nodes in the incidence matrix.
+    return_mapping
+        If True, return the dictionary mapping the node indices in the matrix to the hypergraph nodes.
+
+    Returns
+    -------
+    The incidence matrix.
+    If return_mapping is True, return the dictionary of node mappings.
+    """
     incidence_matrices = {}
     for order in range(1, hypergraph.max_order() + 1):
         # fix lista di mappings ad ogni ordine
@@ -176,6 +218,7 @@ def adjacency_matrix(
     if return_mapping:
         return adj, mapping
     return adj
+
 
 def adjacency_matrix_by_order(
     hypergraph: Hypergraph, order: int
@@ -247,6 +290,7 @@ def temporal_adjacency_matrices_all_orders(
         temporal_adjacencies[t] = tuple(adjacency_list_t)   
     return temporal_adjacencies, mapping
 
+
 def annealed_adjacency_matrix(
     temporal_adjacency_matrix: Dict[int, sparse.csc_array]
 ) -> sparse.csc_array:
@@ -293,6 +337,7 @@ def annealed_adjacency_matrices_all_orders(
         annealed_adjacency_matrices.append(annealed_adjacency_matrix)
     return tuple(annealed_adjacency_matrices)
 
+
 def dual_random_walk_adjacency(
     hypergraph: Hypergraph, return_mapping: bool = False
 ) -> sparse.csr_array | Tuple[sparse.csr_array, Dict[int, Any]]:
@@ -321,7 +366,25 @@ def dual_random_walk_adjacency(
         return adj, mapping
     return adj
 
+
 def degree_matrix(hypergraph, order, mapping = None):
+    """
+    Compute the degree matrix of the hypergraph for a given order.
+    For any node i in the hypergraph, the entry (i, i) of the degree matrix of order d is the degree of i in the hypergraph of order d.
+
+    Parameters
+    ----------
+    hypergraph
+        the hypergraph.
+    order
+        the order.
+    mapping
+        the dictionary mapping the new node indices to the hypergraph nodes.
+
+    Returns
+    -------
+    The degree matrix of the hypergraph for a given order.
+    """
     degree_dct = hypergraph.degree_sequence(order)
     inverse_mapping = {}
     if not mapping==None:
