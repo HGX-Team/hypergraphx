@@ -113,6 +113,8 @@ def draw_hypergraph(
     # Set color hyperedges of size > 2 (order > 1).
     if hyperedge_color_by_order is None:
         hyperedge_color_by_order = {2: "#FFBC79", 3: "#79BCFF", 4: "#4C9F4C"}
+    if hyperedge_facecolor_by_order is None:
+        hyperedge_facecolor_by_order = {2: "#FFBC79", 3: "#79BCFF", 4: "#4C9F4C"}
 
     # Extract edges (hyperedges of size=2/order=1).
     edges = hypergraph.get_edges(order=1)

@@ -9,15 +9,21 @@ def draw_bipartite(h: Hypergraph, pos=None, ax=None, align='vertical', **kwargs)
     Draws a bipartite graph representation of the hypergraph.
     Parameters
     ----------
-    h : Hypergraph. The hypergraph to be projected.
-    pos : dict. A dictionary with nodes as keys and positions as values.
-    ax : matplotlib.axes.Axes. The axes to draw the graph on.
-    kwargs : dict. Keyword arguments to be passed to networkx.draw_networkx.
-    align : str. The alignment of the nodes. Can be 'vertical' or 'horizontal'.
+    h : Hypergraph.
+        The hypergraph to be projected.
+    pos : dict.
+        A dictionary with nodes as keys and positions as values.
+    ax : matplotlib.axes.Axes.
+        The axes to draw the graph on.
+    kwargs : dict.
+        Keyword arguments to be passed to networkx.draw_networkx.
+    align : str.
+        The alignment of the nodes. Can be 'vertical' or 'horizontal'.
 
     Returns
     -------
-    ax : matplotlib.axes.Axes. The axes the graph was drawn on.
+    ax : matplotlib.axes.Axes.
+        The axes the graph was drawn on.
     """
     g, id_to_obj = bipartite_projection(h)
 
@@ -37,10 +43,14 @@ def draw_clique(h: Hypergraph, pos=None, ax=None, **kwargs):
     Draws a clique projection of the hypergraph.
     Parameters
     ----------
-    h : Hypergraph. The hypergraph to be projected.
-    pos : dict. A dictionary with nodes as keys and positions as values.
-    ax : matplotlib.axes.Axes. The axes to draw the graph on.
-    kwargs : dict. Keyword arguments to be passed to networkx.draw_networkx.
+    h : Hypergraph.
+        The hypergraph to be projected.
+    pos : dict.
+        A dictionary with nodes as keys and positions as values.
+    ax : matplotlib.axes.Axes.
+        The axes to draw the graph on.
+    kwargs : dict.
+        Keyword arguments to be passed to networkx.draw_networkx.
 
     Returns
     -------

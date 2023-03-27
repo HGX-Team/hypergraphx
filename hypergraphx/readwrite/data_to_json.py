@@ -6,7 +6,7 @@ import csv
 import pandas as pd
 import networkx as nx
 
-from hypergraphx import Hypergraph
+from hypergraphx.core import Hypergraph
 from hypergraphx.readwrite import save_hypergraph
 
 def load_high_school():
@@ -60,8 +60,6 @@ def load_high_school():
     save_hypergraph(H, "../../test_data/hs/hs_one_class.json", file_type="json")
     save_hypergraph(H, "../../test_data/hs/hs_one_class.pickle", file_type="pickle")
     return H
-
-load_high_school()
 
 def load_primary_school():
     dataset = "../../test_data/ps/primaryschool.csv"
@@ -168,7 +166,7 @@ def load_hospital():
     return edges
 
 
-def load_workspace():
+def load_workplace():
     import networkx as nx
     dataset = "../../test_data/workspace/workspace.dat"
 
@@ -219,61 +217,6 @@ def load_workspace():
     save_hypergraph(H, "../../test_data/workplace/workplace.json", file_type="json")
     save_hypergraph(H, "../../test_data/workplace/workplace.pickle", file_type="pickle")
     return edges
-
-
-
-def load_high_school_meta():
-    dataset = "DatasetHigherOrder/High-School_data_2013.csv"
-
-    fopen = open(dataset, 'r')
-    lines = fopen.readlines()
-
-    graph = {}
-    role = {}
-    for l in lines:
-        t, a, b, c, d = l.split()
-        t = int(t) - 1385982020
-        a = int(a)
-        b = int(b)
-        if t in graph:
-            graph[t].append((a, b))
-        else:
-            graph[t] = [(a, b)]
-        if a not in role:
-            role[a] = c
-        if b not in role:
-            role[b] = d
-
-    fopen.close()
-    return role
-
-
-def load_primary_school_meta():
-    import networkx as nx
-    dataset = "DatasetHigherOrder/primaryschool.csv"
-
-    fopen = open(dataset, 'r')
-    lines = fopen.readlines()
-    role = {}
-    graph = {}
-    for l in lines:
-        t, a, b, c, d = l.split()
-        t = int(t) - 31220
-        a = int(a)
-        b = int(b)
-        if t in graph:
-            graph[t].append((a, b))
-        else:
-            graph[t] = [(a, b)]
-
-        if a not in role:
-            role[a] = c
-        if b not in role:
-            role[b] = d
-
-    fopen.close()
-
-    return role
 
 
 def load_gene_disease(N):
@@ -455,86 +398,6 @@ def load_PACS_single(S):
     print(dist)
 
     # print(len(edges))
-    return edges
-
-
-def load_high_school(N):
-    import networkx as nx
-    dataset = "DatasetHigherOrder/High-School_data_2013.csv"
-
-    fopen = open(dataset, 'r')
-    lines = fopen.readlines()
-
-    graph = {}
-    for l in lines:
-        t, a, b, c, d = l.split()
-        t = int(t) - 1385982020
-        a = int(a)
-        b = int(b)
-        if t in graph:
-            graph[t].append((a, b))
-        else:
-            graph[t] = [(a, b)]
-
-    fopen.close()
-
-    tot = set()
-    edges = set()
-
-    for k in graph.keys():
-        e_k = graph[k]
-        G = nx.Graph(e_k, directed=False)
-        c = list(nx.find_cliques(G))
-        for i in c:
-            i = tuple(sorted(i))
-
-            if len(i) <= N:
-                edges.add(i)
-
-            tot.add(i)
-
-    # plot_dist_hyperedges(tot, "high_school")
-    print(len(edges))
-    return edges
-
-
-def load_primary_school(N):
-    import networkx as nx
-    dataset = "DatasetHigherOrder/primaryschool.csv"
-
-    fopen = open(dataset, 'r')
-    lines = fopen.readlines()
-
-    graph = {}
-    for l in lines:
-        t, a, b, c, d = l.split()
-        t = int(t) - 31220
-        a = int(a)
-        b = int(b)
-        if t in graph:
-            graph[t].append((a, b))
-        else:
-            graph[t] = [(a, b)]
-
-    fopen.close()
-
-    tot = set()
-    edges = set()
-
-    for k in graph.keys():
-        e_k = graph[k]
-        G = nx.Graph(e_k, directed=False)
-        c = list(nx.find_cliques(G))
-        for i in c:
-            i = tuple(sorted(i))
-
-            if len(i) <= N:
-                edges.add(i)
-
-            tot.add(i)
-
-    ##plot_dist_hyperedges(tot, "primary_school")
-    print(len(edges))
     return edges
 
 
@@ -942,41 +805,6 @@ def load_babbuini(N):
 
             tot.add(i)
 
-    ##plot_dist_hyperedges(tot, "babbuini")
-    print(len(edges))
-    return edges
-
-
-def load_wiki(N):
-    fopen = open("DatasetHigherOrder/wiki.txt", 'r')
-    lines = fopen.readlines()
-
-    edges = set()
-    tot = set()
-    votes = {}
-
-    for l in lines:
-        l = l.split()
-
-        if len(l) == 0:
-            for k in votes:
-                e = tuple(sorted(votes[k]))
-                tot.add(e)
-                if len(e) > 1 and len(e) <= N:
-                    edges.add(e)
-            votes = {}
-            continue
-
-        if l[0] != 'V':
-            continue
-
-        _, vote, u_id, _, _, _ = l
-        if vote in votes:
-            votes[vote].append(u_id)
-        else:
-            votes[vote] = [u_id]
-
-    ##plot_dist_hyperedges(tot, "wiki")
     print(len(edges))
     return edges
 

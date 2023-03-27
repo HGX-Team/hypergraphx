@@ -56,7 +56,7 @@ def CEC_centrality(HG, tol=1e-7, max_iter=1000):
     if not HG.is_uniform():
         raise Exception("The hypergraph is not uniform.")
     # check if HG is connected, use raise exception
-    if not HG._is_connected():
+    if not HG.is_connected():
         raise Exception("The hypergraph is not connected.")
     # define W, matrix N x N where i,j is the number of common edges between i and j
     W = np.zeros((HG.num_nodes(), HG.num_nodes()))
@@ -99,7 +99,7 @@ def ZEC_centrality(HG, max_iter=1000, tol=1e-7):
     if not HG.is_uniform():
         raise Exception("The hypergraph is not uniform.")
 
-    if not HG._is_connected():
+    if not HG.is_connected():
         raise Exception("The hypergraph is not connected.")
 
     g = lambda v, e: np.prod(v[list(e)])
@@ -150,7 +150,7 @@ def HEC_centrality(HG, max_iter=100, tol=1e-6):
     if not HG.is_uniform():
         raise Exception("The hypergraph is not uniform.")
 
-    if not HG._is_connected():
+    if not HG.is_connected():
         raise Exception("The hypergraph is not connected.")
     
     order = len(HG.get_edges()[0]) -1

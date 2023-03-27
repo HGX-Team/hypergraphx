@@ -253,6 +253,22 @@ class Hypergraph:
                 self._max_order = order
 
     def remove_edge(self, edge):
+        """ Remove an edge from the hypergraph.
+
+        Parameters
+        ----------
+        edge : tuple
+            The edge to remove.
+
+        Returns
+        -------
+        None
+        
+        Raises
+        ------
+        KeyError
+            If the edge is not in the hypergraph.
+        """
         edge = tuple(sorted(edge))
         try:
             del self._edge_list[edge]
@@ -272,10 +288,46 @@ class Hypergraph:
             print("Edge {} not in hypergraph.".format(edge))
 
     def remove_edges(self, edge_list):
+        """
+        Remove a list of edges from the hypergraph.
+        
+        Parameters
+        ----------
+        edge_list : list
+            The list of edges to remove.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        KeyError
+        """
         for edge in edge_list:
             self.remove_edge(edge)
 
     def remove_node(self, node, keep_edges=False):
+        """ Remove a node from the hypergraph.
+
+        Parameters
+        ----------
+        node
+            The node to remove.
+        keep_edges : bool, optional
+            If True, the edges incident to the node are kept, but the node is removed from the edges. If False, the edges incident to the node are removed. Default is False.
+        
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        KeyError
+            If the node is not in the hypergraph.
+        """
+        if node not in self._adj:
+            raise KeyError("Node {} not in hypergraph.".format(node))
         if not keep_edges:
             to_remove = []
             for edge in self._adj[node]:
@@ -293,6 +345,27 @@ class Hypergraph:
         self._attr.remove_obj(node)
 
     def remove_nodes(self, node_list, keep_edges=False):
+        """
+        Remove a list of nodes from the hypergraph.
+        
+        Parameters
+        ----------
+        node_list : list
+            The list of nodes to remove.
+            
+        keep_edges : bool, optional
+            If True, the edges incident to the nodes are kept, but the nodes are removed from the edges. If False, the edges incident to the nodes are removed. Default is False.
+        
+        
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        KeyError
+            If any of the nodes is not in the hypergraph.
+        """
         for node in node_list:
             self.remove_node(node, keep_edges=keep_edges)
 
@@ -397,6 +470,24 @@ class Hypergraph:
         return len(self.get_nodes())
 
     def num_edges(self, order=None, size=None, up_to=False):
+        """ Returns the number of edges in the hypergraph. If order is specified, it returns the number of edges of the specified order. 
+        If size is specified, it returns the number of edges of the specified size. If both order and size are specified, it raises a ValueError. 
+        If up_to is True, it returns the number of edges of order smaller or equal to the specified order.
+        
+        Parameters
+        ----------
+        order : int, optional
+            Order of the edges to count.
+        size : int, optional
+            Size of the edges to count.
+        up_to : bool, optional
+            If True, it returns the number of edges of order smaller or equal to the specified order. Default is False.
+
+        Returns
+        -------
+        int
+            Number of edges in the hypergraph.
+        """
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
 
@@ -420,12 +511,43 @@ class Hypergraph:
                 return s
 
     def get_weight(self, edge):
+        """ Returns the weight of the specified edge.
+
+        Parameters
+        ----------
+        edge : tuple
+            The edge to get the weight of.
+
+        Returns
+        -------
+        float
+            Weight of the specified edge.
+        """
         try:
             return self._edge_list[tuple(sorted(edge))]
         except KeyError:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
 
     def set_weight(self, edge, weight):
+        """ Sets the weight of the specified edge.
+
+        Parameters
+        ----------
+        edge : tuple
+            The edge to set the weight of.
+
+        weight : float
+            The weight to set.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        ValueError
+            If the edge is not in the hypergraph.
+        """
         try:
             self._edge_list[tuple(sorted(edge))] = weight
         except KeyError:
