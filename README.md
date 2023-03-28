@@ -25,24 +25,25 @@
 - [Other resources](#other-resources)
 
 ## What are higher-order networks?
+To appear soon
 
 ## Library highlights
-  TODO FRA: copiare dal paper i vari tools ma semplificando il testo 
-   * **Motif analysis** is a fundamental tool in network science to describe networked systems at their microscale, identifying their structural and functional building blocks. We provide an implementation for **higher-order motif analysis**: overabundant subgraphs of nodes connected by higher-order interactions. We also provide an approximated algorithm for higher-order motif analysis based on hyperedge sampling that speeds up computations while maintaining accuracy.
+* To appear soon
+* **Motif analysis** is a fundamental tool in network science to describe networked systems at their microscale, identifying their structural and functional building blocks. We provide an implementation for **higher-order motif analysis**: overabundant subgraphs of nodes connected by higher-order interactions. We also provide an approximated algorithm for higher-order motif analysis based on hyperedge sampling that speeds up computations while maintaining accuracy.
 
 ## Quick start
 
 ### Installation
-TODO: come si installa
+TODO
 
 ### First steps
-TODO: qualche esempio di creazione ipergrafi, loading di dataset e cose basilari
+TODO
 
 ## Tutorials
-TODO: link ai tutorial con breve descrizione di quello che c'è dentro (una frase)
+TODO
 
 ## Data
-TODO: link al repo dei dati e qualche spiegazione
+To appear soon
 
 ## Citing HNX
 If you use HNX or related data in your paper, please cite:
@@ -98,7 +99,7 @@ HGX is a collaborative project and we welcome suggestions and contributions. If 
 - Engage in a discussion with the core members of the library
 
 ## License
-TODO: scegliere licenza
+TODO
 
 ## Other resources
 
