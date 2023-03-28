@@ -33,7 +33,7 @@
 ## What are higher-order networks?
 In the last few decades, networks have emerged as the natural tool to model a wide variety of natural, social and man-made systems. 
 Networks, collections of nodes and links connecting pairs of them, are able to capture dyadic interactions only. 
-However, in many real-world systems units interact in groups of three or more. Systems with non-dyadic interactions are ubiquitous, with examples ranging from cellular networks, drug recombination, structural and functional brain networks,human~\cite{cencetti2021temporal} and animal face-to-face interactions, and collaboration networks. These higher-order interactions can be naturally described by alternative mathematical structures such as hypergraphs, where hyperedges connect groups of nodes of arbitrary size.
+However, in many real-world systems units interact in groups of three or more. Systems with non-dyadic interactions are ubiquitous, with examples ranging from cellular networks, drug recombination, structural and functional brain networks, human and animal face-to-face interactions, and collaboration networks. These higher-order interactions can be naturally described by alternative mathematical structures such as hypergraphs, where hyperedges connect groups of nodes of arbitrary size.
 
 <img src="images/hypergraph.png" width="350" title="Hypergraph example">
 
