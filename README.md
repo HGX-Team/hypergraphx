@@ -1,6 +1,6 @@
 <img src="logo/logo.svg" width="500" title="HNX logo">
 
-:page_facing_up: **[Paper]()** | :paperclip: **[Docs]()** | :computer: **[Tutorials]()** | :floppy_disk: **[Data]()** | :bug: **[Report bug]()** | :email: **[Reach us]()**
+:page_facing_up: **[Paper](https://arxiv.org/pdf/2303.15356.pdf)** | :paperclip: **[Docs](https://hypergraphx.readthedocs.io/en/latest/#)** | :computer: **[Tutorials]()** | :floppy_disk: **[Data]()** | :bug: **[Report bug]()** | :email: **[Reach us]()**
 -----
 
 
@@ -48,7 +48,14 @@ TODO: link al repo dei dati e qualche spiegazione
 If you use HNX or related data in your paper, please cite:
 
 ```
-bibtex
+@misc{lotito2023hypergraphx,
+      title={Hypergraphx: a library for higher-order network analysis}, 
+      author={Quintino Francesco Lotito and Martina Contisciani and Caterina De Bacco and Leonardo Di Gaetano and Luca Gallo and Alberto Montresor and Federico Musciotto and Nicolò Ruggeri and Federico Battiston},
+      year={2023},
+      eprint={2303.15356},
+      archivePrefix={arXiv},
+      primaryClass={physics.soc-ph}
+}
 ```
 
 ## The HNX team
