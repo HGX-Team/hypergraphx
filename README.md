@@ -83,7 +83,7 @@ HGX is a collaborative project and we welcome suggestions and contributions. If 
 - Give the project a star on GitHub :star:!
 
 :hourglass_flowing_sand: **I've got 10 minutes**
-- Try out our [tutorials](https://github.com/HGX-Team/hypergraphx/tree/master/tutorials)
+- Are you interested in higher-order motif analysis or community detection in hypergraphs? Try out our [tutorials](https://github.com/HGX-Team/hypergraphx/tree/master/tutorials)!
 - [Suggest](https://github.com/HGX-Team/hypergraphx/issues) ideas and engage in discussions
 - [Help](https://github.com/HGX-Team/hypergraphx/issues) someone with a problem
 - [Report a bug](https://github.com/HGX-Team/hypergraphx/issues) someone with a problem
