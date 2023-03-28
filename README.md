@@ -35,16 +35,16 @@ To appear soon
 <img src="images/hypergraph.png" width="350" title="Hypergraph example">
 
 ## Library highlights
-* HGX allows to store higher-order data as hypergraphs and to convert them to bipartite networks, maximal simplicial complexes, higher-order line graphs, dual hypergraphs, and clique-expansion graphs.
-* It provides simple tools to characterize basic node and hyperedge statistics, such as hyperdegree distributions, correlations and assortativity, at the level of the whole higher-order network and of the individual nodes.
-* Our library provides a variety of higher-order centrality measures for nodes and hyperedges, based on participation in different subhypergraphs, on spectral approaches, and on shortest paths and betweenness flows.
-* HGX implements higher-order motif analysis. It also provides an approximated algorithm for motif analysis based on hyperedge sampling, able to speed up computations by orders of magnitudes with only a minimal compromise in accuracy.
-* Our library provides spectral method to recover hard communities, generative models to extract overlapping communities and to infer hyperedges, methods to capture assortative and disassortative community structure and core-periphery organization in higher-order systems.
-* We implement a variety of different tools to filter the most informative higher-order interactions, based on extracting statistically validated hypergraphs and identifying significant maximally interacting node groups.
-* HGX offers a synthetic hypergraph samplers library, implementing various models such as Erdős-Rényi, scale-free, configuration and community-based models. It also includes a higher-order activity-driven model for temporal group interactions.
-* We provide functions to simulate and analyze several dynamical process on higher-order networks, including synchronization, social contagion and random walks.
-* HGX is highly flexible. It allows to store and analyze hypergraphs with a rich set of features associated with hyperedges, including interactions of different intensity, directions, sign, that vary in time or belong to different layers of a multiplex system.
-* The adoption of higher-order networks is rapidly increasing, and the development of standard tools to visualize them is still in progress. Our library provides different visualization tools to gain visual insights into the higher-order organization of real-world systems.
+* HGX allows to store **higher-order data** as **hypergraphs** and to **convert** them to bipartite networks, maximal simplicial complexes, higher-order line graphs, dual hypergraphs, and clique-expansion graphs.
+* It provides simple tools to characterize basic **node and hyperedge statistics**, such as hyperdegree distributions, correlations and assortativity, at the level of the whole higher-order network and of the individual nodes.
+* Our library provides a variety of **higher-order centrality measures** for nodes and hyperedges, based on participation in different subhypergraphs, on spectral approaches, and on shortest paths and betweenness flows.
+* HGX implements **higher-order motif analysis**. It also provides an approximated algorithm for motif analysis based on hyperedge sampling, able to speed up computations by orders of magnitudes with only a minimal compromise in accuracy.
+* Our library provides spectral method to recover **hard communities**, generative models to extract **overlapping communities** and to **infer hyperedges**, methods to capture **assortative and disassortative community structure** and **core-periphery organization** in higher-order systems.
+* We implement a variety of different tools to **filter** the most informative higher-order interactions, based on extracting statistically validated hypergraphs and identifying significant maximally interacting node groups.
+* HGX offers a **synthetic hypergraph samplers library**, implementing various models such as Erdős-Rényi, scale-free, configuration and community-based models. It also includes a higher-order activity-driven model for temporal group interactions.
+* We provide functions to simulate and analyze several **dynamical process on higher-order networks**, including synchronization, social contagion and random walks.
+* HGX is highly flexible. It allows to store and analyze hypergraphs with a **rich set of features associated with hyperedges**, including interactions of different intensity, directions, sign, that vary in time or belong to different layers of a multiplex system.
+* Our library provides different **visualization tools** to gain visual insights into the higher-order organization of real-world systems.
 
 
 ## Quick start
