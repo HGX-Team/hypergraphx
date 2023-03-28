@@ -45,7 +45,7 @@ TODO:
 TODO: add basic tutorial
 
 ## Tutorials
-TODO: add links
+You can find tutorials covering a variety of use cases [here](https://github.com/HGX-Team/hypergraphx/tree/master/tutorials)
 
 ## Data
 To appear soon
