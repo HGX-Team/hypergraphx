@@ -34,13 +34,13 @@ To appear soon
 ## Quick start
 
 ### Installation
-TODO
+TODO: 
 
 ### First steps
-TODO
+TODO: add basic tutorial
 
 ## Tutorials
-TODO
+TODO: add links
 
 ## Data
 To appear soon
@@ -100,6 +100,8 @@ HGX is a collaborative project and we welcome suggestions and contributions. If 
 
 ## License
 Released under the 3-Clause BSD license (see [LICENSE.md](https://github.com/HGX-Team/hypergraphx/blob/master/LICENSE.md))
+
+HGX contains copied or modified code from third sources. The licenses of such code sources can be found in our [license file](https://github.com/HGX-Team/hypergraphx/blob/master/LICENSE.md)
 
 ## Other resources
 
