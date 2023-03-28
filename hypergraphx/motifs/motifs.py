@@ -1,8 +1,8 @@
 from hypergraphx.core.hypergraph import Hypergraph
-from hypergraphx.motifs.utils import _motifs_ho_full, _motifs_ho_not_full, _motifs_standard
+from hypergraphx.motifs.utils import _motifs_ho_full, _motifs_ho_not_full, _motifs_standard, diff_sum, norm_vector
 
 
-def compute_motifs(hypergraph: Hypergraph, order=3):
+def compute_motifs(hypergraph: Hypergraph, order=3, runs_config_model=10):
     """
     Compute the number of motifs of a given order in a hypergraph.
 
@@ -12,11 +12,17 @@ def compute_motifs(hypergraph: Hypergraph, order=3):
         The hypergraph of interest
     order : int
         The order of the motifs to compute
+    runs_config_model : int
+        The number of runs of the configuration model
 
     Returns
     -------
-    list
-        The list of motifs of the given order with their number of occurrences
+    dict
+        keys: 'observed', 'config_model', 'norm_delta'
+        'observed' reports the number of occurrences of each motif in the observed hypergraph
+        'config_model' reports the number of occurrences of each motif in each sample of the configuration model
+        'norm_delta' reports the norm of the difference between the observed and the configuration model
+        
     """
     edges = hypergraph.get_edges()
 
@@ -40,33 +46,34 @@ def compute_motifs(hypergraph: Hypergraph, order=3):
             res.append((full[i][0], max([full[i][1], not_full[i][1], standard[i][1]])))
 
         return res
+    
+    output = {}
 
     if order == 3:
-        return _motifs_order_3()
+        output['observed'] = _motifs_order_3()
     elif order == 4:
-        return _motifs_order_4()
+        output['observed'] = _motifs_order_4()
     else:
-        print("Exact computation of motifs of order > 4 is not available.")
+        raise ValueError("Exact computation of motifs of order > 4 is not available.")
 
-    """
-    STEPS = len(edges) * 10
-    ROUNDS = 10
+    STEPS = hypergraph.num_edges(up_to=order) * 10
+    ROUNDS = runs_config_model
 
     results = []
 
     for i in range(ROUNDS):
         e1 = hypergraph(edges)
         e1.MH(label='stub', n_steps=STEPS)
-        if N == 3:
-            m1 = motifs_order_3(e1.C, i)
-        elif N == 4:
-            m1 = motifs_order_4(e1.C, i)
+        if order == 3:
+            m1 = _motifs_order_3(e1.C, i)
+        elif order == 4:
+            m1 = _motifs_order_4(e1.C, i)
         results.append(m1)
 
     output['config_model'] = results
 
-    delta = diff_sum(output['motifs'], output['config_model'])
+    delta = diff_sum(output['observed'], output['config_model'])
     norm_delta = norm_vector(delta)
+    output['norm_delta'] = norm_delta
 
-    print(norm_delta)
-    """
+    return output
