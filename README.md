@@ -16,6 +16,7 @@
 
 ## Table of contents
 - [What are higher-order networks?](#what-are-higher-order-networks)
+- [What is hypergraphx?](#what-is-hypergraphx)
 - [Library highlights](#library-highlights)
 - [Quick start](#quick-start)
   * [Installation](#installation)
@@ -30,9 +31,18 @@
 - [Other resources](#other-resources)
 
 ## What are higher-order networks?
-To appear soon
+In the last few decades, networks have emerged as the natural tool to model a wide variety of natural, social and man-made systems. 
+Networks, collections of nodes and links connecting pairs of them, are able to capture dyadic interactions only. 
+However, in many real-world systems units interact in groups of three or more. Systems with non-dyadic interactions are ubiquitous, with examples ranging from cellular networks, drug recombination, structural and functional brain networks,human~\cite{cencetti2021temporal} and animal face-to-face interactions, and collaboration networks. These higher-order interactions can be naturally described by alternative mathematical structures such as hypergraphs, where hyperedges connect groups of nodes of arbitrary size.
 
 <img src="images/hypergraph.png" width="350" title="Hypergraph example">
+
+## What is hypergraphx?
+The library is conceived by researchers with several years of experience and direct contributions to the field of higher-order interactions.
+Developed by a diverse multidisciplinary team with complementary skills and expertise, HGX aims to provide, as a single source, a comprehensive suite of tools and algorithms for constructing, storing, analysing and visualizing systems with higher-order interactions. 
+These include different ways to convert data across distinct higher-order representations, a large variety of measures of higher-order organization at the local and the mesoscale, statistical filters to sparsify higher-order data, a wide array of static and dynamic generative models, an implementation of different dynamical processes, from epidemics to diffusion and synchronization, with higher-order interactions, and more. 
+Our computational framework is general, and allows to analyse hypergraphs with weighted, directed, signed, temporal and multiplex group interactions. 
+Beyond experts in the field, we hope that our library will make higher-order network analysis accessible to everyone interested in exploring the higher-order dimension of relational data.
 
 ## Library highlights
 * HGX allows to store **higher-order data** as **hypergraphs** and to **convert** them to bipartite networks, maximal simplicial complexes, higher-order line graphs, dual hypergraphs, and clique-expansion graphs.
