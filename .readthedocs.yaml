@@ -1,0 +1,4 @@
+sphinx:
+   configuration: docs/source/conf.py
+
+requirements_file: requirements_docs.txt
