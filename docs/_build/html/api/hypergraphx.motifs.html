@@ -229,20 +229,24 @@
 <span id="hypergraphx-motifs-motifs-module"></span><h2>hypergraphx.motifs.motifs module<a class="headerlink" href="#module-hypergraphx.motifs.motifs" title="Permalink to this heading">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="hypergraphx.motifs.motifs.compute_motifs">
-<span class="sig-prename descclassname"><span class="pre">hypergraphx.motifs.motifs.</span></span><span class="sig-name descname"><span class="pre">compute_motifs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hypergraph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph" title="hypergraphx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hypergraphx/motifs/motifs.html#compute_motifs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hypergraphx.motifs.motifs.compute_motifs" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">hypergraphx.motifs.motifs.</span></span><span class="sig-name descname"><span class="pre">compute_motifs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hypergraph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph" title="hypergraphx.core.hypergraph.Hypergraph"><span class="pre">Hypergraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runs_config_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hypergraphx/motifs/motifs.html#compute_motifs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hypergraphx.motifs.motifs.compute_motifs" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute the number of motifs of a given order in a hypergraph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>hypergraph</strong> (<a class="reference internal" href="hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph" title="hypergraphx.core.hypergraph.Hypergraph"><em>Hypergraph</em></a>) – The hypergraph of interest</p></li>
 <li><p><strong>order</strong> (<em>int</em>) – The order of the motifs to compute</p></li>
+<li><p><strong>runs_config_model</strong> (<em>int</em>) – The number of runs of the configuration model</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The list of motifs of the given order with their number of occurrences</p>
+<dd class="field-even"><p>keys: ‘observed’, ‘config_model’, ‘norm_delta’
+‘observed’ reports the number of occurrences of each motif in the observed hypergraph
+‘config_model’ reports the number of occurrences of each motif in each sample of the configuration model
+‘norm_delta’ reports the norm of the difference between the observed and the configuration model</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list</p>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
