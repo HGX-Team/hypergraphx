@@ -8,7 +8,7 @@ setup(
   author = 'HGX-Team',              
   author_email = 'lotitoqf@gmail.com',      
   url = 'https://github.com/HGX-Team/hypergraphx',   
-  download_url = 'https://github.com/HGX-Team/hypergraphx/archive/refs/tags/1.1.tar.gz',    
+  download_url = 'https://github.com/HGX-Team/hypergraphx/archive/refs/tags/1.1.1.tar.gz',    
   keywords = ['hypergraphs', 'networks'], 
   install_requires=[
           'numpy',
