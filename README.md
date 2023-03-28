@@ -32,6 +32,8 @@
 ## What are higher-order networks?
 To appear soon
 
+<img src="images/hypergraph.png" width="350" title="Hypergraph example">
+
 ## Library highlights
 * To appear soon
 * **Motif analysis** is a fundamental tool in network science to describe networked systems at their microscale, identifying their structural and functional building blocks. We provide an implementation for **higher-order motif analysis**: overabundant subgraphs of nodes connected by higher-order interactions. We also provide an approximated algorithm for higher-order motif analysis based on hyperedge sampling that speeds up computations while maintaining accuracy.
