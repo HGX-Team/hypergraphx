@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'hypergraphx',         
   packages = ['hypergraphx'], 
-  version = '1.1',      
+  version = '1.1.1',      
   license='BSD-3-Clause license',        
   description = 'HGX is a multi-purpose, open-source Python library for higher-order network analysis',   
   author = 'HGX-Team',              
