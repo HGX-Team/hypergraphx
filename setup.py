@@ -2,13 +2,13 @@ from distutils.core import setup
 setup(
   name = 'hypergraphx',         
   packages = ['hypergraphx'], 
-  version = '1.0',      
+  version = '1.1',      
   license='BSD-3-Clause license',        
   description = 'HGX is a multi-purpose, open-source Python library for higher-order network analysis',   
   author = 'HGX-Team',              
   author_email = 'lotitoqf@gmail.com',      
   url = 'https://github.com/HGX-Team/hypergraphx',   
-  download_url = 'https://github.com/HGX-Team/hypergraphx/archive/refs/tags/Alpha.tar.gz',    
+  download_url = 'https://github.com/HGX-Team/hypergraphx/archive/refs/tags/Alpha1.tar.gz',    
   keywords = ['hypergraphs', 'networks'], 
   install_requires=[
           'numpy',
