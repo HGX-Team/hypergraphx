@@ -1,9 +1,9 @@
-numpy>=1.22
-scipy~=1.7.3
-networkx~=3.0
-rpy2~=3.5.8
-pandas~=1.5.1
-scikit-learn~=1.2.0
-pytest~=7.2.1
-matplotlib~=3.7.1
+numpy
+scipy
+networkx
+rpy2
+pandas
+scikit-learn
+pytest
+matplotlib
 seaborn~=0.12.1

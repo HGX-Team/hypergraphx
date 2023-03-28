@@ -7,7 +7,7 @@ import pandas as pd
 import networkx as nx
 
 from hypergraphx.core import Hypergraph
-from hypergraphx.readwrite import save_hypergraph
+from hypergraphx.readwrite.save import save_hypergraph
 
 def load_high_school():
     dataset = "../../test_data/hs/High-School_data_2013.csv"
@@ -168,7 +168,7 @@ def load_hospital():
 
 def load_workplace():
     import networkx as nx
-    dataset = "../../test_data/workspace/workspace.dat"
+    dataset = "../../test_data/workplace/workplace.dat"
 
     fopen = open(dataset, 'r')
     lines = fopen.readlines()
@@ -217,6 +217,8 @@ def load_workplace():
     save_hypergraph(H, "../../test_data/workplace/workplace.json", file_type="json")
     save_hypergraph(H, "../../test_data/workplace/workplace.pickle", file_type="pickle")
     return edges
+
+load_workplace()
 
 
 def load_gene_disease(N):
