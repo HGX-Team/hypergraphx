@@ -99,7 +99,7 @@ HGX is a collaborative project and we welcome suggestions and contributions. If 
 - Engage in a discussion with the core members of the library
 
 ## License
-TODO
+Released under the 3-Clause BSD license (see [LICENSE.md](https://github.com/HGX-Team/hypergraphx/blob/master/LICENSE.md))
 
 ## Other resources
 
