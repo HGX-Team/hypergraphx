@@ -1,4 +1,4 @@
-numpy~=1.21.6
+numpy>=1.22
 scipy~=1.7.3
 networkx~=3.0
 rpy2~=3.5.8
