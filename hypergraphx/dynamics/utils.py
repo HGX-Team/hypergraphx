@@ -62,10 +62,12 @@ def sprott_algorithm(alpha, C, F, JF, JH, Y0, params, integration_time = 400.0, 
 
     Returns
     -------
-    interval: interval of values over which the MSF is computed.
-    MSF: MSF evaluated over the interval of values selected.
+    interval
+        interval of values over which the MSF is computed.
+    MSF
+        MSF evaluated over the interval of values selected.
 
-    Reference
+    References
     ---------
     [1] J.C. Sprott, Chaos and Time-Series Analysis, Oxford University Press vol.69, pp.116-117 (2003).
     """

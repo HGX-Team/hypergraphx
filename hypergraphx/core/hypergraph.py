@@ -169,6 +169,26 @@ class Hypergraph:
         return self._weighted
 
     def add_edge(self, edge, weight=None, metadata=None):
+        """ Add a hyperedge to the hypergraph. If the hyperedge is already in the hypergraph, its weight is updated.
+        
+        Parameters
+        ----------
+        edge : tuple
+            The hyperedge to add.
+        weight : float, optional
+            The weight of the hyperedge. If the hypergraph is weighted, this must be provided.
+        metadata : dict, optional
+            The metadata of the hyperedge.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        ValueError
+            If the hypergraph is weighted and no weight is provided or if the hypergraph is not weighted and a weight is provided.
+        """
         if self._weighted and weight is None:
             raise ValueError(
                 "If the hypergraph is weighted, a weight must be provided."
@@ -211,6 +231,29 @@ class Hypergraph:
                 self._neighbors[edge[j]].add(edge[i])
 
     def add_edges(self, edge_list, weights=None, metadata=None):
+        """ Add a list of hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.
+
+        Parameters
+        ----------
+        edge_list : list
+            The list of hyperedges to add.
+
+        weights : list, optional
+            The list of weights of the hyperedges. If the hypergraph is weighted, this must be provided.
+
+        metadata : list, optional
+            The list of metadata of the hyperedges.
+        
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        ValueError
+            If the hypergraph is weighted and no weights are provided or if the hypergraph is not weighted and weights are provided.
+        
+        """
         if weights is not None and not self._weighted:
             print(
                 "Warning: weights are provided but the hypergraph is not weighted. The hypergraph will be weighted."
@@ -393,6 +436,27 @@ class Hypergraph:
         return h
 
     def subhypergraph_by_orders(self, orders:list=None, sizes:list=None, keep_nodes=True):
+        """ Return a subhypergraph induced by the edges of the specified orders.
+
+        Parameters
+        ----------
+        orders : list, optional
+            List of orders of the edges to be included in the subhypergraph. If None, the sizes parameter should be specified.
+        sizes : list, optional
+            List of sizes of the edges to be included in the subhypergraph. If None, the orders parameter should be specified.
+        keep_nodes : bool, optional
+            If True, the nodes of the original hypergraph are kept in the subhypergraph. If False, only the edges are kept. Default is True.
+        
+        Returns
+        -------
+        Hypergraph
+            Subhypergraph induced by the edges of the specified orders.
+
+        Raises
+        ------
+        ValueError
+            If both orders and sizes are None or if both orders and sizes are specified.
+        """
         if orders is None and sizes is None:
             raise ValueError("At least one between orders and sizes should be specified")
         if orders is not None and sizes is not None:
@@ -554,6 +618,32 @@ class Hypergraph:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
 
     def get_weights(self, order=None, size=None, up_to=False):
+        """ Returns the list of weights of the edges in the hypergraph. If order is specified, it returns the list of weights of the edges of the specified order.
+        If size is specified, it returns the list of weights of the edges of the specified size. If both order and size are specified, it raises a ValueError.
+        If up_to is True, it returns the list of weights of the edges of order smaller or equal to the specified order.
+
+        Parameters
+        ----------
+        order : int, optional
+            Order of the edges to get the weights of.
+        
+        size : int, optional
+            Size of the edges to get the weights of.
+        
+        up_to : bool, optional
+            If True, it returns the list of weights of the edges of order smaller or equal to the specified order. Default is False.
+
+        Returns
+        -------
+        list
+            List of weights of the edges in the hypergraph.
+
+        Raises
+        ------
+        ValueError
+            If both order and size are specified.
+        
+        """
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
         if order is None and size is None:
@@ -583,6 +673,14 @@ class Hypergraph:
             return w
 
     def get_sizes(self):
+        """ Returns the list of sizes of the hyperedges in the hypergraph.
+
+        Returns
+        -------
+        list
+            List of sizes of the hyperedges in the hypergraph.
+        
+        """
         return [len(edge) for edge in self._edge_list.keys()]
 
     def distribution_sizes(self):
@@ -598,15 +696,71 @@ class Hypergraph:
         return dict(Counter(self.get_sizes()))
 
     def get_orders(self):
+        """ Returns the list of orders of the hyperedges in the hypergraph.
+
+        Returns
+        -------
+        list
+            List of orders of the hyperedges in the hypergraph.
+        
+        """
         return [len(edge) - 1 for edge in self._edge_list.keys()]
 
     def get_meta(self, obj):
+        """ Returns the metadata of the specified object.
+
+        Parameters
+        ----------
+        obj : Object
+            The object to get the metadata of.
+        
+        Returns
+        -------
+        dict
+            Metadata of the specified object.
+        """
         return self._attr.get_attr(obj)
 
     def set_meta(self, obj, attr):
+        """ Sets the metadata of the specified object.
+
+        Parameters
+        ----------
+        obj : Object
+            The object to set the metadata of.
+
+        attr : dict
+            The metadata to set.
+
+        Returns
+        -------
+        None
+        
+        """
         self._attr.set_attr(obj, attr)
 
     def get_attr_meta(self, obj, attr):
+        """ Returns the value of the specified metadata attribute of the specified object.
+
+        Parameters
+        ----------
+        obj : Object
+            The object to get the metadata of.
+
+        attr : str
+            The attribute to get the value of.
+
+        Returns
+        -------
+        Object
+            Value of the specified metadata attribute of the specified object.
+
+        Raises
+        ------
+        ValueError
+            If the attribute is not in the metadata of the object.
+        
+        """
         try:
             return self._attr.get_attr(obj)[attr]
         except KeyError:
@@ -619,9 +773,35 @@ class Hypergraph:
         self._attr.remove_attr(obj, attr)
 
     def check_edge(self, edge):
+        """ Checks if the specified edge is in the hypergraph.
+
+        Parameters
+        ----------
+        edge : tuple
+            The edge to check.
+
+        Returns
+        -------
+        bool
+            True if the edge is in the hypergraph, False otherwise.
+        
+        """
         return tuple(sorted(edge)) in self._edge_list
 
     def check_node(self, node):
+        """ Checks if the specified node is in the hypergraph.
+
+        Parameters
+        ----------
+        node : Object
+            The node to check.
+
+        Returns
+        -------
+        bool
+            True if the node is in the hypergraph, False otherwise.
+        
+        """
         return node in self._neighbors
 
     def get_edges(
