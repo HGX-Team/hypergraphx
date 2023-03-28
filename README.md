@@ -1,6 +1,6 @@
 <img src="logo/logo.svg" width="500" title="HNX logo">
 
-:page_facing_up: **[Paper](https://arxiv.org/pdf/2303.15356.pdf)** | :paperclip: **[Docs](https://hypergraphx.readthedocs.io/en/latest/#)** | :computer: **[Tutorials]()** | :floppy_disk: **[Data]()** | :bug: **[Report bug]()** | :email: **[Reach us]()**
+:page_facing_up: **[Paper](https://arxiv.org/pdf/2303.15356.pdf)** | :paperclip: **[Docs](https://hypergraphx.readthedocs.io/en/latest/#)** | :computer: **[Tutorials](https://github.com/HGX-Team/hypergraphx/tree/master/tutorials)** | :floppy_disk: **[Data]()** | :bug: **[Report bug]()** | :email: **[Reach us]()**
 -----
 
 
