@@ -1,4 +1,4 @@
-<img src="logo/logo.svg" width="500" title="HNX logo">
+<img src="logo/logo.svg" width="500" title="HGX logo">
 
 :page_facing_up: **[Paper](https://arxiv.org/pdf/2303.15356.pdf)** | :paperclip: **[Docs](https://hypergraphx.readthedocs.io/en/latest/#)** | :computer: **[Tutorials](https://github.com/HGX-Team/hypergraphx/tree/master/tutorials)** | :floppy_disk: **[Data]()** | :bug: **[Report bug]()** | :email: **[Reach us]()**
 -----
@@ -22,11 +22,11 @@
   * [Installation](#installation)
 - [Tutorials](#tutorials)
 - [Data](#data)
-- [The HGX team](#the-hnx-team)
+- [The HGX team](#the-hgx-team)
   * [Project coordinators](#project-coordinators)
   * [Core members](#core-members)
 - [Contributing](#contributing)
-- [Citing HGX](#citing-hnx)
+- [Citing HGX](#citing-hgx)
 - [License](#license)
 - [Other resources](#other-resources)
 
@@ -71,8 +71,8 @@ You can find tutorials covering a variety of use cases [here](https://github.com
 ## Data
 To appear soon
 
-## Citing HNX
-If you use HNX or related data in your paper, please cite:
+## Citing HGX
+If you use HGX or related data in your paper, please cite:
 
 ```
 @misc{lotito2023hypergraphx,
@@ -85,7 +85,7 @@ If you use HNX or related data in your paper, please cite:
 }
 ```
 
-## The HNX team
+## The HGX team
 
 ### Project coordinators
 * Quintino Francesco Lotito (lead developer) - quintino.lotito@unitn.it - <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://twitter.com/FraLotito"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Twitter-logo.svg/512px-Twitter-logo.svg.png"></a> <a title="GitHub, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="https://github.com/FraLotito"><img width="16" alt="Octicons-mark-github" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/512px-Octicons-mark-github.svg.png"></a>
