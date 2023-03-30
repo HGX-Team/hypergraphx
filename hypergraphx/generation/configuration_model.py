@@ -3,7 +3,7 @@ from collections import Counter
 from hypergraphx.core import Hypergraph
 
 
-def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=False):
+def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=True):
     """
     Conduct Markov Chain Monte Carlo in order to approximately
     sample from the space of appropriately-labeled graphs.
@@ -60,7 +60,7 @@ def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=False):
     def stub_edge_mh(message=True):
         mh_rounds = 0
         mh_steps = 0
-        c_new = [list(c) for c in hypergraph._edge_list]
+        c_new = [list(c) for c in hypergraph.get_edges()]
         m = len(c_new)
 
         proposal = proposal_generator(m)
@@ -77,7 +77,9 @@ def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=False):
             n += 1
 
         new_h = Hypergraph()
-        new_h._edge_list = [tuple(sorted(f)) for f in c_new]
+        # check this behavior
+        generated_edges = list(set([tuple(sorted(f)) for f in c_new]))
+        new_h.add_edges(generated_edges)
         mh_steps += n
         mh_rounds += 1
 
@@ -170,7 +172,7 @@ def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=False):
                 n_rejected) + ' steps rejected.')
 
         new_h = Hypergraph()
-        new_h._edge_list = [tuple(sorted(f)) for f in list(c.elements())]
+        new_h.add_edges([tuple(sorted(f)) for f in list(c.elements())])
         mh_steps += k - n_rejected
         mh_rounds += 1
         return new_h
@@ -183,7 +185,7 @@ def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=False):
         print('not implemented')
 
 
-def configuration_model(hypergraph, n_steps=1000, label='edge', order=None, size=None, n_clash=1, detailed=False):
+def configuration_model(hypergraph, n_steps=1000, label='edge', order=None, size=None, n_clash=1, detailed=True):
     if order is not None and size is not None:
         raise ValueError('Only one of order and size can be specified.')
     if order is None and size is None:

@@ -1,6 +1,6 @@
-from hypergraphx.core.hypergraph import Hypergraph
+from hypergraphx.core import Hypergraph
 from hypergraphx.motifs.utils import _motifs_ho_full, _motifs_ho_not_full, _motifs_standard, diff_sum, norm_vector
-
+from hypergraphx.generation.configuration_model import configuration_model
 
 def compute_motifs(hypergraph: Hypergraph, order=3, runs_config_model=10):
     """
@@ -24,9 +24,8 @@ def compute_motifs(hypergraph: Hypergraph, order=3, runs_config_model=10):
         'norm_delta' reports the norm of the difference between the observed and the configuration model
         
     """
-    edges = hypergraph.get_edges()
 
-    def _motifs_order_3():
+    def _motifs_order_3(edges):
         full, visited = _motifs_ho_full(edges, 3)
         standard = _motifs_standard(edges, 3, visited)
 
@@ -36,7 +35,7 @@ def compute_motifs(hypergraph: Hypergraph, order=3, runs_config_model=10):
 
         return res
 
-    def _motifs_order_4():
+    def _motifs_order_4(edges):
         full, visited = _motifs_ho_full(edges, 4)
         not_full, visited = _motifs_ho_not_full(edges, 4, visited)
         standard = _motifs_standard(edges, 4, visited)
@@ -47,12 +46,16 @@ def compute_motifs(hypergraph: Hypergraph, order=3, runs_config_model=10):
 
         return res
     
+    edges = hypergraph.get_edges(up_to=order)
     output = {}
+    print(hypergraph)
+
+    print("Computing observed motifs of order {}...".format(order))
 
     if order == 3:
-        output['observed'] = _motifs_order_3()
+        output['observed'] = _motifs_order_3(edges)
     elif order == 4:
-        output['observed'] = _motifs_order_4()
+        output['observed'] = _motifs_order_4(edges)
     else:
         raise ValueError("Exact computation of motifs of order > 4 is not available.")
 
@@ -62,18 +65,21 @@ def compute_motifs(hypergraph: Hypergraph, order=3, runs_config_model=10):
     results = []
 
     for i in range(ROUNDS):
-        e1 = hypergraph(edges)
-        e1.MH(label='stub', n_steps=STEPS)
+        print("Computing config model motifs of order {}. Step: {}".format(order, i+1))
+        e1 = configuration_model(hypergraph, label='stub', n_steps=STEPS)
         if order == 3:
-            m1 = _motifs_order_3(e1.C, i)
+            m1 = _motifs_order_3(e1.get_edges())
         elif order == 4:
-            m1 = _motifs_order_4(e1.C, i)
+            m1 = _motifs_order_4(e1.get_edges())
         results.append(m1)
 
     output['config_model'] = results
 
     delta = diff_sum(output['observed'], output['config_model'])
     norm_delta = norm_vector(delta)
-    output['norm_delta'] = norm_delta
+    output['norm_delta'] = []
+
+    for i in range(len(delta)):
+        output['norm_delta'].append((output['observed'][i][0], norm_delta[i]))
 
     return output
