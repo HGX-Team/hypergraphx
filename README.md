@@ -132,6 +132,7 @@ HGX contains copied or modified code from third sources. The licenses of such co
 ## Other resources
 
 #### Python
+- [ASH](https://github.com/GiulioRossetti/ASH)
 - [HyperNetX](https://github.com/pnnl/HyperNetX)
 - [Reticula](https://github.com/reticula-network/reticula)
 - [XGI](https://github.com/ComplexGroupInteractions/xgi)
