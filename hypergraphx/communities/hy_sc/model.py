@@ -127,6 +127,8 @@ class HySC:
         # TODO: and hopefully without making use of dense matrices
         invDE = np.diag(1.0 / self.hye_size)
         invDV2 = np.diag(np.sqrt(1.0 / self.node_degree))
+        # set to zero for isolated nodes
+        invDV2 = np.diag(np.where(invDV2, 0, invDV2))
         if weighted_L:
             dense_incidence = self.incidence.toarray()
             HT = dense_incidence.T

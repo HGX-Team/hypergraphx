@@ -476,7 +476,7 @@ class HypergraphMT:
             )
             if len(ds) > 0:
                 print("setting certain d in w to zero:", ds)
-                w0 = 0.0
+                w0[ds] = 0.0
         return w0
 
     def _add_noise_input(self, par0: np.array) -> np.array:
