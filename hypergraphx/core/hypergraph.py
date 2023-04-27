@@ -870,6 +870,8 @@ class Hypergraph:
             return h
         else:
             return edges
+        
+    """
 
     def degree(self, node, order=None, size=None):
         from hypergraphx.measures.degree import degree
@@ -948,6 +950,7 @@ class Hypergraph:
         from hypergraphx.linalg import dual_random_walk_adjacency
 
         return dual_random_walk_adjacency(self, return_mapping)
+    """
 
     def clear(self):
         self._edge_list.clear()
