@@ -1,7 +1,7 @@
 import copy
 from typing import Optional, Tuple
 from sklearn.preprocessing import LabelEncoder
-from hypergraphx.core.meta_handler import MetaHandler
+from meta_handler import MetaHandler
 
 
 class Hypergraph:
