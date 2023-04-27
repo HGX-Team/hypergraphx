@@ -61,7 +61,7 @@ Beyond experts in the field, we hope that our library will make higher-order net
 
 ### Installation
 ```
-pip install pip@git+https://github.com/HGX-Team/hypergraphx
+pip install hypergraphx@git+https://github.com/HGX-Team/hypergraphx
 ```
 
 ### First steps
