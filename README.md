@@ -60,7 +60,7 @@ Beyond experts in the field, we hope that our library will make higher-order net
 ## Quick start
 
 ### Installation
-TODO: 
+pip install pip@git+https://github.com/HGX-Team/hypergraphx
 
 ### First steps
 TODO: add basic tutorial
