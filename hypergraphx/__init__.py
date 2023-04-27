@@ -27,6 +27,3 @@ from .readwrite import *
 from .representations import *
 from .utils import *
 from .viz import *
-
-__version__ = pkg_resources.get_distribution("hypergraphx").version
-
