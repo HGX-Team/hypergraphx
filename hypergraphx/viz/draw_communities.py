@@ -1,10 +1,10 @@
 from typing import Optional, Tuple, Union
 
-import numpy as np
-import networkx as nx
 import matplotlib.pyplot as plt
+import networkx as nx
+import numpy as np
 
-from hypergraphx.core.hypergraph import Hypergraph
+from hypergraphx import Hypergraph
 from hypergraphx.representations.projections import clique_projection
 
 
@@ -72,7 +72,9 @@ def draw_communities(
 
     # Extract node positions.
     if pos is None:
-        pos = nx.spring_layout(G, k=opt_dist, iterations=iterations, seed=seed, scale=scale)
+        pos = nx.spring_layout(
+            G, k=opt_dist, iterations=iterations, seed=seed, scale=scale
+        )
 
     # Get node degrees and node sizes.
     degree = hypergraph.degree_sequence()

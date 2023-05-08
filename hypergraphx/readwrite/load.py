@@ -1,7 +1,8 @@
-import pickle
 import json
 import os
-from hypergraphx.core.hypergraph import Hypergraph
+import pickle
+
+from hypergraphx import Hypergraph
 
 
 def _load_pickle(file_name: str) -> Hypergraph:

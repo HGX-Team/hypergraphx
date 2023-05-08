@@ -1,5 +1,7 @@
 import numpy as np
-from hypergraphx.linalg.linalg import *
+from scipy import sparse
+
+from hypergraphx import Hypergraph
 
 
 def transition_matrix(HG: Hypergraph) -> sparse.spmatrix:

@@ -1,4 +1,3 @@
-from numpy.linalg import norm
 import numpy as np
 
 
@@ -25,32 +24,32 @@ def power_method(W, max_iter=1000, tol=1e-7):
 
 
 def CEC_centrality(HG, tol=1e-7, max_iter=1000):
-    '''
+    """
     Compute the CEC centrality for uniform hypergraphs.
 
     Parameters
     ----------
-    
+
     HG : Hypergraph
         The uniform hypergraph on which the CEC centrality is computed.
     tol : float
         The tolerance for calculating the dominant eigenvalue by power method.
     max_iter : int
         The maximum number of iterations for calculating the dominant eigenvalue by power method.
-    
+
     Returns
     -------
-    cec : dict 
+    cec : dict
         The dictionary of keys nodes of HG and values the CEC centrality of the node.
 
-        
+
     References
     ----------
     Three Hypergraph Eigenvector Centralities,
     Austin R. Benson,
-    https://doi.org/10.1137/18M1203031  
-    
-    '''
+    https://doi.org/10.1137/18M1203031
+
+    """
 
     # check if the hypergraph is uniform, use raise exception
     if not HG.is_uniform():
@@ -71,7 +70,7 @@ def CEC_centrality(HG, tol=1e-7, max_iter=1000):
 
 
 def ZEC_centrality(HG, max_iter=1000, tol=1e-7):
-    '''
+    """
     Compute the ZEC centrality for uniform hypergraphs.
 
     Parameters
@@ -95,7 +94,7 @@ def ZEC_centrality(HG, max_iter=1000, tol=1e-7):
     Austin R. Benson,
     https://doi.org/10.1137/18M1203031
 
-    '''
+    """
     if not HG.is_uniform():
         raise Exception("The hypergraph is not uniform.")
 
@@ -105,13 +104,13 @@ def ZEC_centrality(HG, max_iter=1000, tol=1e-7):
     g = lambda v, e: np.prod(v[list(e)])
 
     x = np.random.uniform(size=(HG.num_nodes()))
-    x = x / norm(x, 1)
+    x = x / np.linalg.norm(x, 1)
 
     for iter in range(max_iter):
         new_x = apply(HG, x, g)
         # multiply by the sign to try and enforce positivity
-        new_x = np.sign(new_x[0]) * new_x / norm(new_x, 1)
-        if norm(x - new_x) <= tol:
+        new_x = np.sign(new_x[0]) * new_x / np.linalg.norm(new_x, 1)
+        if np.linalg.norm(x - new_x) <= tol:
             break
         x = new_x.copy()
     else:
@@ -120,8 +119,8 @@ def ZEC_centrality(HG, max_iter=1000, tol=1e-7):
 
 
 def HEC_centrality(HG, max_iter=100, tol=1e-6):
-    '''
-    
+    """
+
     Compute the HEC centrality for uniform hypergraphs.
 
     Parameters
@@ -144,29 +143,28 @@ def HEC_centrality(HG, max_iter=100, tol=1e-6):
     Three Hypergraph Eigenvector Centralities,
     Austin R. Benson,
     https://doi.org/10.1137/18M1203031
-    
-    '''
+
+    """
     # check if the hypergraph is uniform, use raise exception
     if not HG.is_uniform():
         raise Exception("The hypergraph is not uniform.")
 
     if not HG.is_connected():
         raise Exception("The hypergraph is not connected.")
-    
-    order = len(HG.get_edges()[0]) -1
+
+    order = len(HG.get_edges()[0]) - 1
     f = lambda v, m: np.power(v, 1.0 / m)
     g = lambda v, x: np.prod(v[list(x)])
 
     x = np.random.uniform(size=(HG.num_nodes()))
-    x = x / norm(x, 1)
+    x = x / np.linalg.norm(x, 1)
 
     for iter in range(max_iter):
         new_x = apply(HG, x, g)
         new_x = f(new_x, order)
-        # multiply by the sign to try and enforce positivity
-        #print(np.sign(new_x[0]) )
-        new_x = np.sign(new_x[0]) * new_x / norm(new_x, 1)
-        if norm(x - new_x) <= tol:
+        # Multiply by the sign to try and enforce positivity.
+        new_x = np.sign(new_x[0]) * new_x / np.linalg.norm(new_x, 1)
+        if np.linalg.norm(x - new_x) <= tol:
             break
         x = new_x.copy()
     else:
@@ -179,11 +177,7 @@ def apply(HG, x, g=lambda v, e: np.sum(v[list(e)])):
     new_x = np.zeros(HG.num_nodes())
     for edge in HG.get_edges():
         edge = list(edge)
-        #print(edge)
-        # ordered permutations
+        # Ordered permutations.
         for shift in range(len(edge)):
-            #print(shift)
-            #print(edge[shift + 1 :] + edge[:shift])
             new_x[edge[shift]] += g(x, edge[shift + 1 :] + edge[:shift])
-            #print(new_x)
     return new_x

@@ -1,1 +1,1 @@
-from .motifs import compute_motifs
+from hypergraphx.motifs.motifs import compute_motifs

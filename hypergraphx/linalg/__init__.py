@@ -1,1 +1,1 @@
-from .linalg import *
+from hypergraphx.linalg.linalg import *

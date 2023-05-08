@@ -3,7 +3,8 @@ Generate random hypergraphs
 """
 
 import random
-from hypergraphx.core.hypergraph import Hypergraph
+
+from hypergraphx import Hypergraph
 
 
 def random_hypergraph(num_nodes: int, num_edges_by_size: dict):

@@ -1,3 +1,4 @@
+from hypergraphx import Hypergraph
 from hypergraphx.core.meta_handler import MetaHandler
 
 
@@ -67,7 +68,6 @@ class TemporalHypergraph:
         return edges
 
     def aggregate(self, time_window=None):
-        from hypergraphx.core.hypergraph import Hypergraph
         aggregated = {}
         if not isinstance(time_window, int):
             raise TypeError('Time window must be an integer')

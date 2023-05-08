@@ -1,4 +1,4 @@
-from hypergraphx.core import Hypergraph
+from hypergraphx import Hypergraph
 
 
 def _bfs(hg: Hypergraph, start, max_depth=None, order=None, size=None):

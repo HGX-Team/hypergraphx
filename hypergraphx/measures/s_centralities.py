@@ -1,6 +1,6 @@
 import networkx as nx
 
-from hypergraphx.core.hypergraph import Hypergraph
+from hypergraphx import Hypergraph
 from hypergraphx.representations.projections import line_graph
 
 

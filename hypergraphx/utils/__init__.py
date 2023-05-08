@@ -1,1 +1,1 @@
-from .community import normalize_array, calculate_permutation_matrix
+from hypergraphx.utils.community import calculate_permutation_matrix, normalize_array

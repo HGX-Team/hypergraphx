@@ -1,7 +1,6 @@
 import numpy as np
-from scipy import sparse
 from scipy.integrate import solve_ivp
-from scipy.special import factorial, comb
+from scipy.special import comb, factorial
 
 
 def lin_system(t, X, F, JF, JH, alpha, *params):

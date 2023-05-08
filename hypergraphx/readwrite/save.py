@@ -1,5 +1,7 @@
-import pickle, os, json
-from hypergraphx.core.hypergraph import Hypergraph
+import json
+import pickle
+
+from hypergraphx import Hypergraph
 
 
 def _save_pickle(obj, file_name: str):

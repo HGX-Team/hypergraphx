@@ -1,12 +1,12 @@
-import numpy as np
 import networkx as nx
+import numpy as np
 import scipy.spatial.distance as ssd
-from scipy.cluster.hierarchy import linkage
-from scipy.cluster.hierarchy import fcluster
-from hypergraphx.core.hypergraph import Hypergraph
-from hypergraphx.readwrite.save import _save_pickle
-from hypergraphx.readwrite.load import _load_pickle
+from scipy.cluster.hierarchy import fcluster, linkage
+
+from hypergraphx import Hypergraph
 from hypergraphx.measures.edge_similarity import jaccard_distance as jaccard
+from hypergraphx.readwrite.load import _load_pickle
+from hypergraphx.readwrite.save import _save_pickle
 
 
 def hyperlink_communities(H: Hypergraph, load_distances=None, save_distances=None) -> np.ndarray:

@@ -3,7 +3,7 @@ from typing import Optional, Tuple
 import numpy as np
 from sklearn.cluster import KMeans
 
-from hypergraphx.core.hypergraph import Hypergraph
+from hypergraphx import Hypergraph
 from hypergraphx.linalg.linalg import binary_incidence_matrix, incidence_matrix
 
 

@@ -1,4 +1,4 @@
-from hypergraphx.core import Hypergraph
+from hypergraphx import Hypergraph
 from hypergraphx.utils.visits import _bfs
 
 

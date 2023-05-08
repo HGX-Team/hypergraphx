@@ -1,5 +1,6 @@
-from hypergraphx import Hypergraph
 import json
+
+from hypergraphx import Hypergraph
 
 
 def load_high_school(file_name: str, filter_by_class=None) -> Hypergraph:

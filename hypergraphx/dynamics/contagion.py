@@ -1,5 +1,6 @@
 import numpy as np
-from hypergraphx.utils.labeling import *
+
+from hypergraphx.utils.labeling import map_node, map_nodes
 
 
 def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):

@@ -3,11 +3,13 @@ Useful functions to convert data into hypergraphs in convenient formats such as 
 """
 
 import csv
-import pandas as pd
-import networkx as nx
 
-from hypergraphx.core import Hypergraph
-from hypergraphx.readwrite.save import save_hypergraph
+import networkx as nx
+import pandas as pd
+
+from hypergraphx import Hypergraph
+from hypergraphx.readwrite import save_hypergraph
+
 
 def load_high_school():
     dataset = "../../test_data/hs/High-School_data_2013.csv"
@@ -317,7 +319,7 @@ def pickle_PACS():
 
 
 def load_PACS(N):
-    import pickle, math
+    import pickle
 
     papers = pickle.load(open("PACS.pickle", "rb"))
 

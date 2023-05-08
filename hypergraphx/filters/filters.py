@@ -1,14 +1,15 @@
-import pandas as pd
-from itertools import combinations
-from collections import OrderedDict, Counter, defaultdict
-from scipy.special import binom
+from collections import Counter, OrderedDict, defaultdict
 from functools import reduce
-import scipy.stats as st
-import numpy as np
+from itertools import combinations
 from multiprocessing import Pool, cpu_count
+
+import numpy as np
+import pandas as pd
+import scipy.stats as st
+from rpy2.robjects import IntVector, r
 from rpy2.robjects.packages import importr
-from rpy2.robjects import r, IntVector
 from rpy2.robjects.vectors import ListVector
+from scipy.special import binom
 
 
 def _approximated_pvalue(t):

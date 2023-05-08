@@ -1,8 +1,7 @@
 import numpy as np
-from hypergraphx.core import Hypergraph
 
 
-def degree(hg: Hypergraph, node, order=None, size=None):
+def degree(hg: "Hypergraph", node, order=None, size=None):
     """
     Computes the degree of a node in the hypergraph.
 
@@ -32,7 +31,7 @@ def degree(hg: Hypergraph, node, order=None, size=None):
         return len(hg.get_incident_edges(node, order=order))
 
 
-def degree_sequence(hg: Hypergraph, order=None, size=None):
+def degree_sequence(hg: "Hypergraph", order=None, size=None):
     """
     Computes the degree sequence of the hypergraph.
 
@@ -60,7 +59,7 @@ def degree_sequence(hg: Hypergraph, order=None, size=None):
         return {node: hg.degree(node, order=order) for node in hg.get_nodes()}
 
 
-def degree_correlation(hg: Hypergraph) -> np.ndarray:
+def degree_correlation(hg: "Hypergraph") -> np.ndarray:
     """
     Computes the degree sequence correlation matrix of the hypergraph.
 
@@ -87,7 +86,7 @@ def degree_correlation(hg: Hypergraph) -> np.ndarray:
 
 
 
-def degree_distribution(hg: Hypergraph, order=None, size=None):
+def degree_distribution(hg: "Hypergraph", order=None, size=None):
     """
     Computes the degree distribution of the hypergraph.
 

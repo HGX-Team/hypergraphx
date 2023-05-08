@@ -3,8 +3,8 @@ from typing import Dict, Optional, Tuple, Union
 import numpy as np
 from scipy import sparse
 
+from hypergraphx import Hypergraph
 from hypergraphx.communities.hy_mmsbm._linear_ops import bf, bf_and_sum, qf, qf_and_sum
-from hypergraphx.core.hypergraph import Hypergraph
 from hypergraphx.linalg.linalg import binary_incidence_matrix
 
 

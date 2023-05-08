@@ -1,6 +1,8 @@
-import numpy as np
 from collections import Counter
-from hypergraphx.core import Hypergraph
+
+import numpy as np
+
+from hypergraphx import Hypergraph
 
 
 def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=True):

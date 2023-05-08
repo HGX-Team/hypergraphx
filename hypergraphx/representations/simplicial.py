@@ -1,5 +1,6 @@
 from itertools import chain, combinations
-from hypergraphx.core.hypergraph import Hypergraph
+
+from hypergraphx import Hypergraph
 
 
 def get_all_subsets(s):

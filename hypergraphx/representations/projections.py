@@ -1,6 +1,7 @@
 import networkx as nx
-from hypergraphx.core.hypergraph import Hypergraph
-from hypergraphx.measures.edge_similarity import *
+
+from hypergraphx import Hypergraph
+from hypergraphx.measures.edge_similarity import intersection, jaccard_similarity
 
 
 def bipartite_projection(h: Hypergraph):
@@ -67,7 +68,7 @@ def clique_projection(h: Hypergraph, keep_isolated=False):
     Example
     -------
     >>> import networkx as nx
-    >>> from hypergraphx.core.hypergraph import Hypergraph
+    >>> from hypergraphx import Hypergraph
     >>> from hypergraphx.representations.projections import clique_projection
     >>>
     >>> h = Hypergraph()

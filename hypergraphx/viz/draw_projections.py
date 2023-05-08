@@ -1,7 +1,11 @@
-import networkx as nx
 import matplotlib.pyplot as plt
-from hypergraphx.core.hypergraph import Hypergraph
-from hypergraphx.representations.projections import bipartite_projection, clique_projection
+import networkx as nx
+
+from hypergraphx import Hypergraph
+from hypergraphx.representations.projections import (
+    bipartite_projection,
+    clique_projection,
+)
 
 
 def draw_bipartite(h: Hypergraph, pos=None, ax=None, align='vertical', **kwargs):

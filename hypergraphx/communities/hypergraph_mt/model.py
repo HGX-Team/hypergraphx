@@ -1,16 +1,15 @@
+import os
+import time
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
-import time
-import os
-
-from scipy.special import comb
 from scipy.optimize import root
+from scipy.special import comb
 
-from hypergraphx.core.hypergraph import Hypergraph
-from hypergraphx.linalg.linalg import binary_incidence_matrix, incidence_matrix
+from hypergraphx import Hypergraph
 from hypergraphx.communities.hy_sc.model import HySC
+from hypergraphx.linalg.linalg import binary_incidence_matrix, incidence_matrix
 
 DEFAULT_SEED = 10
 DEFAULT_INF = 1e10  # infinite initial value for the log-likelihood

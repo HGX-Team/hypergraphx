@@ -1,9 +1,8 @@
-import sys
-import numpy as np
 import matplotlib.pyplot as plt
-sys.path.append("..")
-from hypergraphx.representations.projections import *
-from hypergraphx.core.hypergraph import Hypergraph
+import networkx as nx
+
+from hypergraphx.representations.projections import clique_projection
+
 
 def find_triplets(list):
     triplets = []

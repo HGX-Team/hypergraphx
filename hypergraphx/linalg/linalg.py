@@ -5,9 +5,8 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 from scipy import sparse
 from scipy.special import factorial
-from sklearn.preprocessing import LabelEncoder
 
-from hypergraphx.core.hypergraph import Hypergraph
+from hypergraphx import Hypergraph
 from hypergraphx.utils.labeling import get_inverse_mapping
 
 

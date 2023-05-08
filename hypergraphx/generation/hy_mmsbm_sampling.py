@@ -15,8 +15,8 @@ from typing import Dict, Iterable, Iterator, List, Optional, Set, Tuple, Union
 import numpy as np
 from scipy import stats
 
+from hypergraphx import Hypergraph
 from hypergraphx.communities.hy_mmsbm.model import HyMMSBM
-from hypergraphx.core.hypergraph import Hypergraph
 from hypergraphx.linalg.linalg import hye_list_to_binary_incidence
 
 

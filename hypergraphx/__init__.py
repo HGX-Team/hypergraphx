@@ -1,1 +1,1 @@
-from core.hypergraph import Hypergraph 
+from hypergraphx.core.hypergraph import Hypergraph

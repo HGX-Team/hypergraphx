@@ -1,6 +1,12 @@
-from hypergraphx.core import Hypergraph
-from hypergraphx.motifs.utils import _motifs_ho_full, _motifs_ho_not_full, _motifs_standard, diff_sum, norm_vector
+from hypergraphx import Hypergraph
 from hypergraphx.generation.configuration_model import configuration_model
+from hypergraphx.motifs.utils import (
+    _motifs_ho_full,
+    _motifs_ho_not_full,
+    _motifs_standard,
+    diff_sum, norm_vector,
+)
+
 
 def compute_motifs(hypergraph: Hypergraph, order=3, runs_config_model=10):
     """

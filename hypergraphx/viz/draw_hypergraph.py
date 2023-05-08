@@ -1,12 +1,11 @@
 from typing import Optional, Union
 
-import sys
-import numpy as np
-import networkx as nx
 import matplotlib.pyplot as plt
+import networkx as nx
+import numpy as np
 
+from hypergraphx import Hypergraph
 from hypergraphx.representations.projections import clique_projection
-from hypergraphx.core.hypergraph import Hypergraph
 
 
 def Sum_points(P1, P2):

@@ -1,5 +1,5 @@
-import numpy as np
 import random
+
 from hypergraphx.core.temporal_hypergraph import TemporalHypergraph
 from hypergraphx.dynamics.randwalk import *
 
