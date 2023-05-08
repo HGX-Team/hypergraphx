@@ -1,10 +1,6 @@
-from loaders import *
-import numpy as np
 import math
-import random
 
-LOAD_NODES = 100000
-N_ITER = 10000
+import numpy as np
 
 
 def count_nodes(d):
@@ -39,7 +35,9 @@ def transition_function(i, N_nodes, a, b):
     if i <= math.floor(b * N_nodes):
         return (i * (1 - a)) / (2 * math.floor(b * N_nodes))
     else:
-        return ((i - math.floor(b * N_nodes)) * (1 - a)) / (2 * (N_nodes - math.floor(b * N_nodes))) + (1 + a) / 2
+        return ((i - math.floor(b * N_nodes)) * (1 - a)) / (
+            2 * (N_nodes - math.floor(b * N_nodes))
+        ) + (1 + a) / 2
 
 
 def aggregation_function(values):
@@ -70,75 +68,3 @@ def get_adj(d):
                 adj[n] = [tuple(sorted(list(e)))]
 
     return adj
-
-
-# d = load_gene_disease(N_max)
-# d = load_star_dyadic(10)
-d = load_babbuini(LOAD_NODES)
-N_nodes, node2id, d = count_nodes(d)
-adj = get_adj(d)
-id2node = {v: k for k, v in node2id.items()}
-
-cs = {i: 0 for i in range(N_nodes)}
-
-NUM_SWITCH = N_nodes * 10
-
-for n_iter in range(N_ITER):
-    a, b = sample_params()
-    local_core_values = {}
-
-    for i in range(1, N_nodes + 1):
-        local_core_values[i - 1] = transition_function(i, N_nodes, a, b)
-
-    order = {}
-
-    # initial permutation
-    tmp = [i for i in range(N_nodes)]
-    random.shuffle(tmp)
-    for i in range(N_nodes):
-        order[i] = tmp[i]
-
-    R = get_core_quality(d, order, local_core_values)
-
-    # label switching
-    for _ in range(NUM_SWITCH):
-        i, j = random.sample(range(N_nodes), 2)
-
-        new_R = R
-        for e in adj[i]:
-            new_R -= aggregate_local_core_values(list(e), order, local_core_values)
-
-        for e in adj[j]:
-            new_R -= aggregate_local_core_values(list(e), order, local_core_values)
-
-        s_tmp = order[i]
-        order[i] = order[j]
-        order[j] = s_tmp
-
-        for e in adj[i]:
-            new_R += aggregate_local_core_values(list(e), order, local_core_values)
-
-        for e in adj[j]:
-            new_R += aggregate_local_core_values(list(e), order, local_core_values)
-
-        if new_R < R:
-            s_tmp = order[i]
-            order[i] = order[j]
-            order[j] = s_tmp
-        else:
-            R = new_R
-
-    for node in range(N_nodes):
-        cs[node] = cs[node] + local_core_values[order[node]] * R
-
-    if n_iter % 1000 == 0:
-        print("{} of {} iter".format(n_iter, N_ITER))
-
-max_node = max(cs, key=cs.get)
-Z = 1 / cs[max_node]
-
-for node in range(N_nodes):
-    cs[node] = Z * cs[node]
-
-for node in range(N_nodes):
-    print(id2node[node], cs[node])
