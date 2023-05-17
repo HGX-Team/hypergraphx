@@ -28,7 +28,6 @@ def read_requirements(path):
 
 setup(
   name = 'hypergraphx',         
-  packages = ['hypergraphx', 'hypergraphx.core'], 
   version = '1.0',      
   license='BSD-3-Clause license',        
   description = 'HGX is a multi-purpose, open-source Python library for higher-order network analysis',   
@@ -41,11 +40,7 @@ setup(
   keywords = ['hypergraphs', 'networks'], 
   packages=find_packages(exclude=["tests", ".github"]),
   install_requires=read_requirements("requirements.txt"),
-  entry_points={
-      "console_scripts": ["project_name = project_name.__main__:main"]
-  },
-  extras_require={"test": read_requirements("requirements-test.txt")},
-  
+  #extras_require={"test": read_requirements("requirements-test.txt")},
   classifiers=[
     'Development Status :: 3 - Alpha',      
     'Intended Audience :: Developers',      
