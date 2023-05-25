@@ -68,10 +68,10 @@ def clique_projection(h: Hypergraph, keep_isolated=False):
     Example
     -------
     >>> import networkx as nx
-    >>> from hypergraphx import Hypergraph
+    >>> import hypergraphx as hgx
     >>> from hypergraphx.representations.projections import clique_projection
     >>>
-    >>> h = Hypergraph()
+    >>> h = hgx.Hypergraph()
     >>> h.add_nodes([1, 2, 3, 4, 5])
     >>> h.add_edges([(1, 2), (1, 2, 3), (3, 4, 5)])
     >>> g = clique_projection(h)
@@ -115,7 +115,21 @@ def line_graph(h: Hypergraph, distance='intersection', s=1, weighted=False):
     Notes
     -----
     Computing the line graph can be very expensive for large hypergraphs.
+
+    Example
+    -------
+    >>> import networkx as nx
+    >>> import hypergraphx as hgx
+    >>> from hypergraphx.representations.projections import line_graph
+    >>>
+    >>> h = hgx.Hypergraph()
+    >>> h.add_nodes([1, 2, 3, 4, 5])
+    >>> h.add_edges([(1, 2), (1, 2, 3), (3, 4, 5)])
+    >>> g, idx = line_graph(h)
+    >>> g.edges()
+    EdgeView([(0, 1), (1, 2)])
     """
+
     def _distance(a, b):
         if distance == 'intersection':
             return intersection(a, b)
@@ -123,7 +137,11 @@ def line_graph(h: Hypergraph, distance='intersection', s=1, weighted=False):
             return jaccard_similarity(a, b)
 
     edges = h.get_edges()
-    adj = h.get_adj_nodes()
+    nodes = h.get_nodes()
+    adj = {}
+
+    for node in nodes:
+        adj[node] = h.get_incident_edges(node)
 
     edge_to_id = {}
     id_to_edge = {}
