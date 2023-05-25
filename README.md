@@ -60,9 +60,13 @@ Beyond experts in the field, we hope that our library will make higher-order net
 ## Quick start
 
 ### Installation
+Install R-base, then
+
 ```
 pip install hypergraphx@git+https://github.com/HGX-Team/hypergraphx
 ```
+
+!!: we are working on removing R-base from the dependancies of the library.
 
 ### First steps
 TODO: add basic tutorial
