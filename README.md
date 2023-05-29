@@ -81,13 +81,19 @@ To appear soon
 If you use HGX or related data in your paper, please cite:
 
 ```
-@misc{lotito2023hypergraphx,
-      title={Hypergraphx: a library for higher-order network analysis}, 
-      author={Quintino Francesco Lotito and Martina Contisciani and Caterina De Bacco and Leonardo Di Gaetano and Luca Gallo and Alberto Montresor and Federico Musciotto and Nicolò Ruggeri and Federico Battiston},
-      year={2023},
-      eprint={2303.15356},
-      archivePrefix={arXiv},
-      primaryClass={physics.soc-ph}
+@article{lotito2023hypergraphx,
+    author = {Lotito, Quintino Francesco and Contisciani, Martina and De Bacco, Caterina and Di Gaetano, Leonardo and Gallo, Luca and Montresor, Alberto and Musciotto, Federico and Ruggeri, Nicolò and Battiston, Federico},
+    title = "{Hypergraphx: a library for higher-order network analysis}",
+    journal = {Journal of Complex Networks},
+    volume = {11},
+    number = {3},
+    year = {2023},
+    month = {05},
+    issn = {2051-1329},
+    doi = {10.1093/comnet/cnad019},
+    url = {https://doi.org/10.1093/comnet/cnad019},
+    note = {cnad019},
+    eprint = {https://academic.oup.com/comnet/article-pdf/11/3/cnad019/50461094/cnad019.pdf},
 }
 ```
 
