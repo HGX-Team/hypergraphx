@@ -386,6 +386,7 @@ class Hypergraph:
             for edge in to_remove:
                 self.add_edge(
                     tuple(sorted([n for n in edge if n != node])),
+                    weight=self.get_weight(edge),
                     metadata=self.get_meta(edge),
                 )
                 self.remove_edge(edge)
@@ -438,7 +439,7 @@ class Hypergraph:
             h.set_meta(node, self.get_meta(node))
         for edge in self._edge_list:
             if set(edge).issubset(set(nodes)):
-                h.add_edge(edge, metadata=self.get_meta(edge))
+                h.add_edge(edge, weight=self._edge_list[edge], metadata=self.get_meta(edge))
         return h
 
     def subhypergraph_by_orders(
