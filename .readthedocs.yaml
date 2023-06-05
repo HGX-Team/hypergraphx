@@ -1,3 +1,6 @@
+build:
+  image: testing
+
 sphinx:
    configuration: docs/conf.py
 
