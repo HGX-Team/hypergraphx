@@ -4,6 +4,7 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.9"
+    r-base: "4.1"
 
 sphinx:
    configuration: docs/conf.py
