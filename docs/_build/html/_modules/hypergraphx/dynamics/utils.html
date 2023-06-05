@@ -217,9 +217,8 @@
         <article role="main">
           <h1>Source code for hypergraphx.dynamics.utils</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span>
 <span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">solve_ivp</span>
-<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">factorial</span><span class="p">,</span> <span class="n">comb</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">comb</span><span class="p">,</span> <span class="n">factorial</span>
 
 
 <div class="viewcode-block" id="lin_system"><a class="viewcode-back" href="../../../api/hypergraphx.dynamics.html#hypergraphx.dynamics.utils.lin_system">[docs]</a><span class="k">def</span> <span class="nf">lin_system</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">JF</span><span class="p">,</span> <span class="n">JH</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">):</span>

@@ -5,7 +5,7 @@
 
 Welcome to Hypergraphx's documentation!
 =======================================
-.. image:: ../logo/logo.svg
+.. image:: ../logo/logo.png
   :width: 200
 
 .. toctree::

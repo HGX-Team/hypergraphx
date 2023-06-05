@@ -218,11 +218,11 @@
           <h1>Source code for hypergraphx.viz.draw_communities</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">hypergraphx.core.hypergraph</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
+<span class="kn">from</span> <span class="nn">hypergraphx</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
 <span class="kn">from</span> <span class="nn">hypergraphx.representations.projections</span> <span class="kn">import</span> <span class="n">clique_projection</span>
 
 
@@ -290,7 +290,9 @@
 
     <span class="c1"># Extract node positions.</span>
     <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">opt_dist</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="n">iterations</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">)</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span>
+            <span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">opt_dist</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="n">iterations</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span>
+        <span class="p">)</span>
 
     <span class="c1"># Get node degrees and node sizes.</span>
     <span class="n">degree</span> <span class="o">=</span> <span class="n">hypergraph</span><span class="o">.</span><span class="n">degree_sequence</span><span class="p">()</span>

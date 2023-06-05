@@ -217,7 +217,8 @@
         <article role="main">
           <h1>Source code for hypergraphx.dynamics.contagion</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">hypergraphx.utils.labeling</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">hypergraphx.utils.labeling</span> <span class="kn">import</span> <span class="n">map_node</span><span class="p">,</span> <span class="n">map_nodes</span>
 
 
 <div class="viewcode-block" id="simplicial_contagion"><a class="viewcode-back" href="../../../api/hypergraphx.dynamics.html#hypergraphx.dynamics.contagion.simplicial_contagion">[docs]</a><span class="k">def</span> <span class="nf">simplicial_contagion</span><span class="p">(</span><span class="n">hypergraph</span><span class="p">,</span> <span class="n">I_0</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">beta_D</span><span class="p">,</span> <span class="n">mu</span><span class="p">):</span>

@@ -218,13 +218,12 @@
           <h1>Source code for hypergraphx.viz.draw_hypergraph</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+<span class="kn">from</span> <span class="nn">hypergraphx</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
 <span class="kn">from</span> <span class="nn">hypergraphx.representations.projections</span> <span class="kn">import</span> <span class="n">clique_projection</span>
-<span class="kn">from</span> <span class="nn">hypergraphx.core.hypergraph</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
 
 
 <div class="viewcode-block" id="Sum_points"><a class="viewcode-back" href="../../../api/hypergraphx.viz.html#hypergraphx.viz.draw_hypergraph.Sum_points">[docs]</a><span class="k">def</span> <span class="nf">Sum_points</span><span class="p">(</span><span class="n">P1</span><span class="p">,</span> <span class="n">P2</span><span class="p">):</span>

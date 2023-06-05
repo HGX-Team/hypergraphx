@@ -218,7 +218,9 @@
           <h1>Source code for hypergraphx.core.hypergraph</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelEncoder</span>
+
 <span class="kn">from</span> <span class="nn">hypergraphx.core.meta_handler</span> <span class="kn">import</span> <span class="n">MetaHandler</span>
 
 
@@ -237,6 +239,7 @@
 <span class="sd">    weights : list of floats, optional</span>
 <span class="sd">        A list of weights for the hyperedges. If the hypergraph is weighted, this must be provided.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weighted</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span> <span class="o">=</span> <span class="n">MetaHandler</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span> <span class="o">=</span> <span class="n">weighted</span>
@@ -387,8 +390,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span></div>
 
 <div class="viewcode-block" id="Hypergraph.add_edge"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Add a hyperedge to the hypergraph. If the hyperedge is already in the hypergraph, its weight is updated.</span>
-<span class="sd">        </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a hyperedge to the hypergraph. If the hyperedge is already in the hypergraph, its weight is updated.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        edge : tuple</span>
@@ -449,7 +452,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="Hypergraph.add_edges"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.add_edges">[docs]</a>    <span class="k">def</span> <span class="nf">add_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_list</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Add a list of hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a list of hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -461,7 +464,7 @@
 
 <span class="sd">        metadata : list, optional</span>
 <span class="sd">            The list of metadata of the hyperedges.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
@@ -470,7 +473,7 @@
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
 <span class="sd">            If the hypergraph is weighted and no weights are provided or if the hypergraph is not weighted and weights are provided.</span>
-<span class="sd">        </span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span>
@@ -514,7 +517,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_max_order</span> <span class="o">=</span> <span class="n">order</span>
 
 <div class="viewcode-block" id="Hypergraph.remove_edge"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.remove_edge">[docs]</a>    <span class="k">def</span> <span class="nf">remove_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Remove an edge from the hypergraph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove an edge from the hypergraph.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -524,7 +527,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
-<span class="sd">        </span>
+
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        KeyError</span>
@@ -551,7 +554,7 @@
 <div class="viewcode-block" id="Hypergraph.remove_edges"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.remove_edges">[docs]</a>    <span class="k">def</span> <span class="nf">remove_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_list</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a list of edges from the hypergraph.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        edge_list : list</span>
@@ -569,7 +572,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Hypergraph.remove_node"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">keep_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Remove a node from the hypergraph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove a node from the hypergraph.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -577,7 +580,7 @@
 <span class="sd">            The node to remove.</span>
 <span class="sd">        keep_edges : bool, optional</span>
 <span class="sd">            If True, the edges incident to the node are kept, but the node is removed from the edges. If False, the edges incident to the node are removed. Default is False.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
@@ -599,7 +602,11 @@
             <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
                 <span class="n">to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_obj</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">to_remove</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">edge</span> <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="n">node</span><span class="p">])),</span> <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_meta</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span>
+                    <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">edge</span> <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="n">node</span><span class="p">])),</span>
+                    <span class="n">weight</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_weight</span><span class="p">(</span><span class="n">edge</span><span class="p">),</span>
+                    <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_meta</span><span class="p">(</span><span class="n">edge</span><span class="p">),</span>
+                <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
@@ -608,16 +615,16 @@
 <div class="viewcode-block" id="Hypergraph.remove_nodes"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.remove_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">remove_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_list</span><span class="p">,</span> <span class="n">keep_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a list of nodes from the hypergraph.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        node_list : list</span>
 <span class="sd">            The list of nodes to remove.</span>
-<span class="sd">            </span>
+
 <span class="sd">        keep_edges : bool, optional</span>
 <span class="sd">            If True, the edges incident to the nodes are kept, but the nodes are removed from the edges. If False, the edges incident to the nodes are removed. Default is False.</span>
-<span class="sd">        </span>
-<span class="sd">        </span>
+
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
@@ -650,11 +657,13 @@
             <span class="n">h</span><span class="o">.</span><span class="n">set_meta</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_meta</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">nodes</span><span class="p">)):</span>
-                <span class="n">h</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_meta</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
+                <span class="n">h</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="p">[</span><span class="n">edge</span><span class="p">],</span> <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_meta</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">h</span></div>
 
-<div class="viewcode-block" id="Hypergraph.subhypergraph_by_orders"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.subhypergraph_by_orders">[docs]</a>    <span class="k">def</span> <span class="nf">subhypergraph_by_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">orders</span><span class="p">:</span><span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sizes</span><span class="p">:</span><span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Return a subhypergraph induced by the edges of the specified orders.</span>
+<div class="viewcode-block" id="Hypergraph.subhypergraph_by_orders"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.subhypergraph_by_orders">[docs]</a>    <span class="k">def</span> <span class="nf">subhypergraph_by_orders</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">orders</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sizes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keep_nodes</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a subhypergraph induced by the edges of the specified orders.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -664,7 +673,7 @@
 <span class="sd">            List of sizes of the edges to be included in the subhypergraph. If None, the orders parameter should be specified.</span>
 <span class="sd">        keep_nodes : bool, optional</span>
 <span class="sd">            If True, the nodes of the original hypergraph are kept in the subhypergraph. If False, only the edges are kept. Default is True.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Hypergraph</span>
@@ -676,7 +685,9 @@
 <span class="sd">            If both orders and sizes are None or if both orders and sizes are specified.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">orders</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sizes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least one between orders and sizes should be specified&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;At least one between orders and sizes should be specified&quot;</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">orders</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sizes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Order and size cannot be both specified.&quot;</span><span class="p">)</span>
         <span class="n">h</span> <span class="o">=</span> <span class="n">Hypergraph</span><span class="p">(</span><span class="n">weighted</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_weighted</span><span class="p">())</span>
@@ -752,10 +763,10 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Hypergraph.num_edges"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.num_edges">[docs]</a>    <span class="k">def</span> <span class="nf">num_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">up_to</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the number of edges in the hypergraph. If order is specified, it returns the number of edges of the specified order. </span>
-<span class="sd">        If size is specified, it returns the number of edges of the specified size. If both order and size are specified, it raises a ValueError. </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the number of edges in the hypergraph. If order is specified, it returns the number of edges of the specified order.</span>
+<span class="sd">        If size is specified, it returns the number of edges of the specified size. If both order and size are specified, it raises a ValueError.</span>
 <span class="sd">        If up_to is True, it returns the number of edges of order smaller or equal to the specified order.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        order : int, optional</span>
@@ -793,7 +804,7 @@
                 <span class="k">return</span> <span class="n">s</span></div>
 
 <div class="viewcode-block" id="Hypergraph.get_weight"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.get_weight">[docs]</a>    <span class="k">def</span> <span class="nf">get_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the weight of the specified edge.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the weight of the specified edge.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -811,7 +822,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Edge </span><span class="si">{}</span><span class="s2"> not in hypergraph.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Hypergraph.set_weight"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.set_weight">[docs]</a>    <span class="k">def</span> <span class="nf">set_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Sets the weight of the specified edge.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the weight of the specified edge.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -836,7 +847,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Edge </span><span class="si">{}</span><span class="s2"> not in hypergraph.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Hypergraph.get_weights"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.get_weights">[docs]</a>    <span class="k">def</span> <span class="nf">get_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">up_to</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the list of weights of the edges in the hypergraph. If order is specified, it returns the list of weights of the edges of the specified order.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the list of weights of the edges in the hypergraph. If order is specified, it returns the list of weights of the edges of the specified order.</span>
 <span class="sd">        If size is specified, it returns the list of weights of the edges of the specified size. If both order and size are specified, it raises a ValueError.</span>
 <span class="sd">        If up_to is True, it returns the list of weights of the edges of order smaller or equal to the specified order.</span>
 
@@ -844,10 +855,10 @@
 <span class="sd">        ----------</span>
 <span class="sd">        order : int, optional</span>
 <span class="sd">            Order of the edges to get the weights of.</span>
-<span class="sd">        </span>
+
 <span class="sd">        size : int, optional</span>
 <span class="sd">            Size of the edges to get the weights of.</span>
-<span class="sd">        </span>
+
 <span class="sd">        up_to : bool, optional</span>
 <span class="sd">            If True, it returns the list of weights of the edges of order smaller or equal to the specified order. Default is False.</span>
 
@@ -860,7 +871,7 @@
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
 <span class="sd">            If both order and size are specified.</span>
-<span class="sd">        </span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Order and size cannot be both specified.&quot;</span><span class="p">)</span>
@@ -891,13 +902,13 @@
             <span class="k">return</span> <span class="n">w</span></div>
 
 <div class="viewcode-block" id="Hypergraph.get_sizes"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.get_sizes">[docs]</a>    <span class="k">def</span> <span class="nf">get_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the list of sizes of the hyperedges in the hypergraph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the list of sizes of the hyperedges in the hypergraph.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        list</span>
 <span class="sd">            List of sizes of the hyperedges in the hypergraph.</span>
-<span class="sd">        </span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span></div>
 
@@ -911,27 +922,28 @@
 <span class="sd">            Distribution of sizes of the hyperedges in the hypergraph.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_sizes</span><span class="p">()))</span></div>
 
 <div class="viewcode-block" id="Hypergraph.get_orders"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.get_orders">[docs]</a>    <span class="k">def</span> <span class="nf">get_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the list of orders of the hyperedges in the hypergraph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the list of orders of the hyperedges in the hypergraph.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        list</span>
 <span class="sd">            List of orders of the hyperedges in the hypergraph.</span>
-<span class="sd">        </span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span></div>
 
 <div class="viewcode-block" id="Hypergraph.get_meta"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.get_meta">[docs]</a>    <span class="k">def</span> <span class="nf">get_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the metadata of the specified object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the metadata of the specified object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        obj : Object</span>
 <span class="sd">            The object to get the metadata of.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
@@ -940,7 +952,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_attr</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Hypergraph.set_meta"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.set_meta">[docs]</a>    <span class="k">def</span> <span class="nf">set_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Sets the metadata of the specified object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the metadata of the specified object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -953,12 +965,12 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
-<span class="sd">        </span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">set_attr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Hypergraph.get_attr_meta"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.get_attr_meta">[docs]</a>    <span class="k">def</span> <span class="nf">get_attr_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the value of the specified metadata attribute of the specified object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the value of the specified metadata attribute of the specified object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -977,12 +989,14 @@
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
 <span class="sd">            If the attribute is not in the metadata of the object.</span>
-<span class="sd">        </span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_attr</span><span class="p">(</span><span class="n">obj</span><span class="p">)[</span><span class="n">attr</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Attribute </span><span class="si">{}</span><span class="s2"> not in metadata for object </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">obj</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Attribute </span><span class="si">{}</span><span class="s2"> not in metadata for object </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Hypergraph.add_attr_meta"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.add_attr_meta">[docs]</a>    <span class="k">def</span> <span class="nf">add_attr_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">add_attr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
@@ -991,7 +1005,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">remove_attr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Hypergraph.check_edge"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.check_edge">[docs]</a>    <span class="k">def</span> <span class="nf">check_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Checks if the specified edge is in the hypergraph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the specified edge is in the hypergraph.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1002,12 +1016,12 @@
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
 <span class="sd">            True if the edge is in the hypergraph, False otherwise.</span>
-<span class="sd">        </span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span></div>
 
 <div class="viewcode-block" id="Hypergraph.check_node"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.check_node">[docs]</a>    <span class="k">def</span> <span class="nf">check_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Checks if the specified node is in the hypergraph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the specified node is in the hypergraph.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1018,12 +1032,18 @@
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
 <span class="sd">            True if the node is in the hypergraph, False otherwise.</span>
-<span class="sd">        </span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighbors</span></div>
 
 <div class="viewcode-block" id="Hypergraph.get_edges"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.get_edges">[docs]</a>    <span class="k">def</span> <span class="nf">get_edges</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">up_to</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">subhypergraph</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keep_isolated_nodes</span><span class="o">=</span><span class="kc">False</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ids</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">up_to</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">subhypergraph</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">keep_isolated_nodes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Order and size cannot be both specified.&quot;</span><span class="p">)</span>
@@ -1038,14 +1058,15 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">edges</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_id</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_list</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">order</span> <span class="o">=</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">up_to</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">ids</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ids</span> <span class="ow">and</span> <span class="n">order</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">:</span>
                     <span class="n">edges</span> <span class="o">=</span> <span class="p">[</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_attr</span><span class="o">.</span><span class="n">get_obj</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
                     <span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">order</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">:</span>
                     <span class="n">edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_by_order</span><span class="p">[</span><span class="n">order</span><span class="p">]]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1096,6 +1117,7 @@
 
 <div class="viewcode-block" id="Hypergraph.degree_sequence"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.degree_sequence">[docs]</a>    <span class="k">def</span> <span class="nf">degree_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">hypergraphx.measures.degree</span> <span class="kn">import</span> <span class="n">degree_sequence</span>
+
         <span class="k">return</span> <span class="n">degree_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Hypergraph.degree_distribution"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.hypergraph.Hypergraph.degree_distribution">[docs]</a>    <span class="k">def</span> <span class="nf">degree_distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1197,7 +1219,9 @@
         <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Hypergraph with </span><span class="si">{}</span><span class="s2"> nodes and </span><span class="si">{}</span><span class="s2"> edges.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span>
         <span class="p">)</span>
-        <span class="n">details</span> <span class="o">=</span> <span class="s2">&quot;Distribution of hyperedge sizes: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">distribution_sizes</span><span class="p">())</span>
+        <span class="n">details</span> <span class="o">=</span> <span class="s2">&quot;Distribution of hyperedge sizes: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">distribution_sizes</span><span class="p">()</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">title</span> <span class="o">+</span> <span class="n">details</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

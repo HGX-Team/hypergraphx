@@ -216,19 +216,18 @@
         </div>
         <article role="main">
           <h1>Source code for hypergraphx.communities.hypergraph_mt.model</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">os</span>
-
-<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">comb</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">root</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">comb</span>
 
-<span class="kn">from</span> <span class="nn">hypergraphx.core.hypergraph</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
-<span class="kn">from</span> <span class="nn">hypergraphx.linalg.linalg</span> <span class="kn">import</span> <span class="n">binary_incidence_matrix</span><span class="p">,</span> <span class="n">incidence_matrix</span>
+<span class="kn">from</span> <span class="nn">hypergraphx</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
 <span class="kn">from</span> <span class="nn">hypergraphx.communities.hy_sc.model</span> <span class="kn">import</span> <span class="n">HySC</span>
+<span class="kn">from</span> <span class="nn">hypergraphx.linalg.linalg</span> <span class="kn">import</span> <span class="n">binary_incidence_matrix</span><span class="p">,</span> <span class="n">incidence_matrix</span>
 
 <span class="n">DEFAULT_SEED</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">DEFAULT_INF</span> <span class="o">=</span> <span class="mf">1e10</span>  <span class="c1"># infinite initial value for the log-likelihood</span>
@@ -694,7 +693,7 @@
             <span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;setting certain d in w to zero:&quot;</span><span class="p">,</span> <span class="n">ds</span><span class="p">)</span>
-                <span class="n">w0</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="n">w0</span><span class="p">[</span><span class="n">ds</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">return</span> <span class="n">w0</span>
 
     <span class="k">def</span> <span class="nf">_add_noise_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">par0</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>

@@ -216,10 +216,14 @@
         </div>
         <article role="main">
           <h1>Source code for hypergraphx.viz.draw_projections</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">hypergraphx.core.hypergraph</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
-<span class="kn">from</span> <span class="nn">hypergraphx.representations.projections</span> <span class="kn">import</span> <span class="n">bipartite_projection</span><span class="p">,</span> <span class="n">clique_projection</span>
+<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+<span class="kn">from</span> <span class="nn">hypergraphx</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
+<span class="kn">from</span> <span class="nn">hypergraphx.representations.projections</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">bipartite_projection</span><span class="p">,</span>
+    <span class="n">clique_projection</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="draw_bipartite"><a class="viewcode-back" href="../../../api/hypergraphx.viz.html#hypergraphx.viz.draw_projections.draw_bipartite">[docs]</a><span class="k">def</span> <span class="nf">draw_bipartite</span><span class="p">(</span><span class="n">h</span><span class="p">:</span> <span class="n">Hypergraph</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

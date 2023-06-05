@@ -216,7 +216,8 @@
         </div>
         <article role="main">
           <h1>Source code for hypergraphx.core.temporal_hypergraph</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">hypergraphx.core.meta_handler</span> <span class="kn">import</span> <span class="n">MetaHandler</span>
+<span></span><span class="kn">from</span> <span class="nn">hypergraphx</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
+<span class="kn">from</span> <span class="nn">hypergraphx.core.meta_handler</span> <span class="kn">import</span> <span class="n">MetaHandler</span>
 
 
 <div class="viewcode-block" id="TemporalHypergraph"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.temporal_hypergraph.TemporalHypergraph">[docs]</a><span class="k">class</span> <span class="nc">TemporalHypergraph</span><span class="p">:</span>
@@ -285,7 +286,6 @@
         <span class="k">return</span> <span class="n">edges</span></div>
 
 <div class="viewcode-block" id="TemporalHypergraph.aggregate"><a class="viewcode-back" href="../../../api/hypergraphx.core.html#hypergraphx.core.temporal_hypergraph.TemporalHypergraph.aggregate">[docs]</a>    <span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">hypergraphx.core.hypergraph</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
         <span class="n">aggregated</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">time_window</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Time window must be an integer&#39;</span><span class="p">)</span>

@@ -217,8 +217,9 @@
         <article role="main">
           <h1>Source code for hypergraphx.representations.projections</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
-<span class="kn">from</span> <span class="nn">hypergraphx.core.hypergraph</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
-<span class="kn">from</span> <span class="nn">hypergraphx.measures.edge_similarity</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">hypergraphx</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
+<span class="kn">from</span> <span class="nn">hypergraphx.measures.edge_similarity</span> <span class="kn">import</span> <span class="n">intersection</span><span class="p">,</span> <span class="n">jaccard_similarity</span>
 
 
 <div class="viewcode-block" id="bipartite_projection"><a class="viewcode-back" href="../../../api/hypergraphx.representations.html#hypergraphx.representations.projections.bipartite_projection">[docs]</a><span class="k">def</span> <span class="nf">bipartite_projection</span><span class="p">(</span><span class="n">h</span><span class="p">:</span> <span class="n">Hypergraph</span><span class="p">):</span>
@@ -285,10 +286,10 @@
 <span class="sd">    Example</span>
 <span class="sd">    -------</span>
 <span class="sd">    &gt;&gt;&gt; import networkx as nx</span>
-<span class="sd">    &gt;&gt;&gt; from hypergraphx.core.hypergraph import Hypergraph</span>
+<span class="sd">    &gt;&gt;&gt; import hypergraphx as hgx</span>
 <span class="sd">    &gt;&gt;&gt; from hypergraphx.representations.projections import clique_projection</span>
 <span class="sd">    &gt;&gt;&gt;</span>
-<span class="sd">    &gt;&gt;&gt; h = Hypergraph()</span>
+<span class="sd">    &gt;&gt;&gt; h = hgx.Hypergraph()</span>
 <span class="sd">    &gt;&gt;&gt; h.add_nodes([1, 2, 3, 4, 5])</span>
 <span class="sd">    &gt;&gt;&gt; h.add_edges([(1, 2), (1, 2, 3), (3, 4, 5)])</span>
 <span class="sd">    &gt;&gt;&gt; g = clique_projection(h)</span>
@@ -332,7 +333,21 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    Computing the line graph can be very expensive for large hypergraphs.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; import networkx as nx</span>
+<span class="sd">    &gt;&gt;&gt; import hypergraphx as hgx</span>
+<span class="sd">    &gt;&gt;&gt; from hypergraphx.representations.projections import line_graph</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; h = hgx.Hypergraph()</span>
+<span class="sd">    &gt;&gt;&gt; h.add_nodes([1, 2, 3, 4, 5])</span>
+<span class="sd">    &gt;&gt;&gt; h.add_edges([(1, 2), (1, 2, 3), (3, 4, 5)])</span>
+<span class="sd">    &gt;&gt;&gt; g, idx = line_graph(h)</span>
+<span class="sd">    &gt;&gt;&gt; g.edges()</span>
+<span class="sd">    EdgeView([(0, 1), (1, 2)])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">_distance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">distance</span> <span class="o">==</span> <span class="s1">&#39;intersection&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">intersection</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
@@ -340,7 +355,11 @@
             <span class="k">return</span> <span class="n">jaccard_similarity</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="n">edges</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">get_edges</span><span class="p">()</span>
-    <span class="n">adj</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">get_adj_nodes</span><span class="p">()</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">()</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+        <span class="n">adj</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">get_incident_edges</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 
     <span class="n">edge_to_id</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">id_to_edge</span> <span class="o">=</span> <span class="p">{}</span>

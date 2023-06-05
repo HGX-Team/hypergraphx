@@ -217,15 +217,30 @@
         <article role="main">
           <h1>Source code for hypergraphx.dynamics.synch</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span>
-<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">eigh</span>
 <span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">solve_ivp</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">eigh</span>
 
-<span class="kn">from</span> <span class="nn">hypergraphx.linalg.linalg</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">hypergraphx.dynamics.utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">hypergraphx.dynamics.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">is_all_to_all</span><span class="p">,</span>
+    <span class="n">is_natural_coupling</span><span class="p">,</span>
+    <span class="n">sprott_algorithm</span><span class="p">,</span>
+    <span class="n">sprott_algorithm_multi</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">hypergraphx.linalg.linalg</span> <span class="kn">import</span> <span class="n">compute_multiorder_laplacian</span>
 
 
-<div class="viewcode-block" id="MSF"><a class="viewcode-back" href="../../../api/hypergraphx.dynamics.html#hypergraphx.dynamics.synch.MSF">[docs]</a><span class="k">def</span> <span class="nf">MSF</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">JF</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">JH</span><span class="p">,</span> <span class="n">X0</span><span class="p">,</span> <span class="n">integration_time</span><span class="o">=</span><span class="mf">2000.0</span><span class="p">,</span> <span class="n">integration_step</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="MSF"><a class="viewcode-back" href="../../../api/hypergraphx.dynamics.html#hypergraphx.dynamics.synch.MSF">[docs]</a><span class="k">def</span> <span class="nf">MSF</span><span class="p">(</span>
+    <span class="n">F</span><span class="p">,</span>
+    <span class="n">JF</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">,</span>
+    <span class="n">interval</span><span class="p">,</span>
+    <span class="n">JH</span><span class="p">,</span>
+    <span class="n">X0</span><span class="p">,</span>
+    <span class="n">integration_time</span><span class="o">=</span><span class="mf">2000.0</span><span class="p">,</span>
+    <span class="n">integration_step</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">C</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluates the Master Stability Function</span>
 
@@ -252,17 +267,22 @@
 <span class="sd">    MSF: MSF evaluated over the interval of values selected.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Here we make sure to be on the system attractor </span>
+    <span class="c1"># Here we make sure to be on the system attractor</span>
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Getting to the attractor...&quot;</span><span class="p">)</span>
-    <span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">F</span><span class="p">,</span> <span class="n">t_span</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">integration_time</span><span class="p">],</span> <span class="n">t_eval</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">integration_time</span><span class="p">,</span> <span class="n">integration_step</span><span class="p">),</span> <span class="n">y0</span><span class="o">=</span><span class="n">X0</span><span class="p">,</span>
-                    <span class="n">args</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;LSODA&#39;</span><span class="p">)</span>
+    <span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span>
+        <span class="n">fun</span><span class="o">=</span><span class="n">F</span><span class="p">,</span>
+        <span class="n">t_span</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">integration_time</span><span class="p">],</span>
+        <span class="n">t_eval</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">integration_time</span><span class="p">,</span> <span class="n">integration_step</span><span class="p">),</span>
+        <span class="n">y0</span><span class="o">=</span><span class="n">X0</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;LSODA&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">X0</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
 
     <span class="c1"># Integrating the dynamics of the perturbation using Sprott&#39;s algorithm</span>
     <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X0</span><span class="p">)</span>
-    <span class="n">Eta0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">dim</span><span class="p">,))</span><span class="o">*</span><span class="mf">1e-9</span>
+    <span class="n">Eta0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">dim</span><span class="p">,))</span> <span class="o">*</span> <span class="mf">1e-9</span>
     <span class="n">Eta0_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">Eta0</span><span class="p">)</span>
     <span class="n">Y0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">X0</span><span class="p">,</span> <span class="n">Eta0</span><span class="p">))</span>
 
@@ -270,13 +290,38 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Evaluating the Master Stability Function...&quot;</span><span class="p">)</span>
     <span class="n">MSF</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">interval</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">interval</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;alpha = &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span>
-        <span class="n">MSF</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sprott_algorithm</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">JF</span><span class="p">,</span> <span class="n">JH</span><span class="p">,</span> <span class="n">Y0</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">integration_time</span><span class="o">/</span><span class="n">C</span><span class="p">,</span> <span class="n">integration_step</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;alpha = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span>
+        <span class="n">MSF</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sprott_algorithm</span><span class="p">(</span>
+            <span class="n">alpha</span><span class="p">,</span>
+            <span class="n">C</span><span class="p">,</span>
+            <span class="n">F</span><span class="p">,</span>
+            <span class="n">JF</span><span class="p">,</span>
+            <span class="n">JH</span><span class="p">,</span>
+            <span class="n">Y0</span><span class="p">,</span>
+            <span class="n">params</span><span class="p">,</span>
+            <span class="n">integration_time</span> <span class="o">/</span> <span class="n">C</span><span class="p">,</span>
+            <span class="n">integration_step</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">MSF</span></div>
 
 
-<div class="viewcode-block" id="MSF_multi_coupling"><a class="viewcode-back" href="../../../api/hypergraphx.dynamics.html#hypergraphx.dynamics.synch.MSF_multi_coupling">[docs]</a><span class="k">def</span> <span class="nf">MSF_multi_coupling</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">JF</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">sigmas</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">JHs</span><span class="p">,</span> <span class="n">X0</span><span class="p">,</span> <span class="n">integration_time</span><span class="o">=</span><span class="mf">2000.0</span><span class="p">,</span> <span class="n">integration_step</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="MSF_multi_coupling"><a class="viewcode-back" href="../../../api/hypergraphx.dynamics.html#hypergraphx.dynamics.synch.MSF_multi_coupling">[docs]</a><span class="k">def</span> <span class="nf">MSF_multi_coupling</span><span class="p">(</span>
+    <span class="n">F</span><span class="p">,</span>
+    <span class="n">JF</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">,</span>
+    <span class="n">interval</span><span class="p">,</span>
+    <span class="n">sigmas</span><span class="p">,</span>
+    <span class="n">N</span><span class="p">,</span>
+    <span class="n">JHs</span><span class="p">,</span>
+    <span class="n">X0</span><span class="p">,</span>
+    <span class="n">integration_time</span><span class="o">=</span><span class="mf">2000.0</span><span class="p">,</span>
+    <span class="n">integration_step</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">C</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluates the Master Stability Function for the higher-order all-to-all network</span>
 
@@ -292,7 +337,7 @@
 <span class="sd">        It is a list-like object containing the values of alpha at which evaluating the MSF.</span>
 <span class="sd">    sigmas: coupling strengths.</span>
 <span class="sd">        It is a list-like object.</span>
-<span class="sd">    N: number of nodes. </span>
+<span class="sd">    N: number of nodes.</span>
 <span class="sd">    JH: Jacobian matrix of the coupling function.</span>
 <span class="sd">        It is a callable that returns the value of the Jacobian at a given point.</span>
 <span class="sd">    X0: initial condition of the isolated system.</span>
@@ -306,17 +351,22 @@
 <span class="sd">    MSF: MSF evaluated over the interval of values selected.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Here we make sure to be on the system attractor </span>
+    <span class="c1"># Here we make sure to be on the system attractor</span>
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Getting to the attractor...&quot;</span><span class="p">)</span>
-    <span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">F</span><span class="p">,</span> <span class="n">t_span</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">integration_time</span><span class="p">],</span> <span class="n">t_eval</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">integration_time</span><span class="p">,</span> <span class="n">integration_step</span><span class="p">),</span> <span class="n">y0</span><span class="o">=</span><span class="n">X0</span><span class="p">,</span>
-                    <span class="n">args</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;LSODA&#39;</span><span class="p">)</span>
+    <span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span>
+        <span class="n">fun</span><span class="o">=</span><span class="n">F</span><span class="p">,</span>
+        <span class="n">t_span</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">integration_time</span><span class="p">],</span>
+        <span class="n">t_eval</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">integration_time</span><span class="p">,</span> <span class="n">integration_step</span><span class="p">),</span>
+        <span class="n">y0</span><span class="o">=</span><span class="n">X0</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;LSODA&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">X0</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
 
     <span class="c1"># Integrating the dynamics of the perturbation using Sprott&#39;s algorithm</span>
     <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X0</span><span class="p">)</span>
-    <span class="n">Eta0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">dim</span><span class="p">,))</span><span class="o">*</span><span class="mf">1e-9</span>
+    <span class="n">Eta0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">dim</span><span class="p">,))</span> <span class="o">*</span> <span class="mf">1e-9</span>
     <span class="n">Eta0_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">Eta0</span><span class="p">)</span>
     <span class="n">Y0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">X0</span><span class="p">,</span> <span class="n">Eta0</span><span class="p">))</span>
 
@@ -324,45 +374,128 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Evaluating the Master Stability Function...&quot;</span><span class="p">)</span>
     <span class="n">MSF</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">interval</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">interval</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;alpha = &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span>
-        <span class="n">MSF</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sprott_algorithm_multi</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">JF</span><span class="p">,</span> <span class="n">sigmas</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">JHs</span><span class="p">,</span> <span class="n">Y0</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">integration_time</span><span class="o">/</span><span class="n">C</span><span class="p">,</span> <span class="n">integration_step</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;alpha = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span>
+        <span class="n">MSF</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sprott_algorithm_multi</span><span class="p">(</span>
+            <span class="n">alpha</span><span class="p">,</span>
+            <span class="n">C</span><span class="p">,</span>
+            <span class="n">F</span><span class="p">,</span>
+            <span class="n">JF</span><span class="p">,</span>
+            <span class="n">sigmas</span><span class="p">,</span>
+            <span class="n">N</span><span class="p">,</span>
+            <span class="n">JHs</span><span class="p">,</span>
+            <span class="n">Y0</span><span class="p">,</span>
+            <span class="n">params</span><span class="p">,</span>
+            <span class="kc">True</span><span class="p">,</span>
+            <span class="n">integration_time</span> <span class="o">/</span> <span class="n">C</span><span class="p">,</span>
+            <span class="n">integration_step</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">MSF</span></div>
-            
-<div class="viewcode-block" id="higher_order_MSF"><a class="viewcode-back" href="../../../api/hypergraphx.dynamics.html#hypergraphx.dynamics.synch.higher_order_MSF">[docs]</a><span class="k">def</span> <span class="nf">higher_order_MSF</span><span class="p">(</span><span class="n">hypergraph</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">JF</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">sigmas</span><span class="p">,</span> <span class="n">JHs</span><span class="p">,</span> <span class="n">X0</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">diffusive_like</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
-                    <span class="n">integration_time</span> <span class="o">=</span> <span class="mf">2000.0</span><span class="p">,</span> <span class="n">integration_step</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+
+<div class="viewcode-block" id="higher_order_MSF"><a class="viewcode-back" href="../../../api/hypergraphx.dynamics.html#hypergraphx.dynamics.synch.higher_order_MSF">[docs]</a><span class="k">def</span> <span class="nf">higher_order_MSF</span><span class="p">(</span>
+    <span class="n">hypergraph</span><span class="p">,</span>
+    <span class="n">dim</span><span class="p">,</span>
+    <span class="n">F</span><span class="p">,</span>
+    <span class="n">JF</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">,</span>
+    <span class="n">sigmas</span><span class="p">,</span>
+    <span class="n">JHs</span><span class="p">,</span>
+    <span class="n">X0</span><span class="p">,</span>
+    <span class="n">interval</span><span class="p">,</span>
+    <span class="n">diffusive_like</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">integration_time</span><span class="o">=</span><span class="mf">2000.0</span><span class="p">,</span>
+    <span class="n">integration_step</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">C</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
 
     <span class="n">N</span> <span class="o">=</span> <span class="n">hypergraph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span>
 
     <span class="c1"># If the coupling is natural, we evaluate a single-parameter MSF for this scenario</span>
     <span class="n">natural_coupling</span> <span class="o">=</span> <span class="n">is_natural_coupling</span><span class="p">(</span><span class="n">JHs</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">natural_coupling</span> <span class="ow">and</span> <span class="n">diffusive_like</span><span class="p">:</span>
-        <span class="n">multiorder_laplacian</span> <span class="o">=</span> <span class="n">compute_multiorder_laplacian</span><span class="p">(</span><span class="n">hypergraph</span><span class="p">,</span> <span class="n">sigmas</span><span class="p">,</span> <span class="n">order_weighted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">degree_weighted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">multiorder_laplacian</span> <span class="o">=</span> <span class="n">compute_multiorder_laplacian</span><span class="p">(</span>
+            <span class="n">hypergraph</span><span class="p">,</span> <span class="n">sigmas</span><span class="p">,</span> <span class="n">order_weighted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">degree_weighted</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
         <span class="n">spectrum</span> <span class="o">=</span> <span class="n">eigh</span><span class="p">(</span><span class="n">multiorder_laplacian</span><span class="o">.</span><span class="n">toarray</span><span class="p">(),</span> <span class="n">eigvals_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting the evaluation of the Master Stability Function...&quot;</span><span class="p">)</span>
-        <span class="n">master_stability_function</span> <span class="o">=</span> <span class="n">MSF</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">JF</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">JHs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X0</span><span class="p">,</span> <span class="n">integration_time</span><span class="p">,</span> <span class="n">integration_step</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting the evaluation of the Master Stability Function...&quot;</span><span class="p">)</span>
+        <span class="n">master_stability_function</span> <span class="o">=</span> <span class="n">MSF</span><span class="p">(</span>
+            <span class="n">F</span><span class="p">,</span>
+            <span class="n">JF</span><span class="p">,</span>
+            <span class="n">params</span><span class="p">,</span>
+            <span class="n">interval</span><span class="p">,</span>
+            <span class="n">JHs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">X0</span><span class="p">,</span>
+            <span class="n">integration_time</span><span class="p">,</span>
+            <span class="n">integration_step</span><span class="p">,</span>
+            <span class="n">C</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="p">,</span>
+        <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting the evaluation of the Lyapunov exponents for the Laplacian eigenvalues...&quot;</span><span class="p">)</span>
-        <span class="n">hon_master_stability_function</span> <span class="o">=</span> <span class="n">MSF</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">JF</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">JHs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X0</span><span class="p">,</span> <span class="n">integration_time</span><span class="p">,</span> <span class="n">integration_step</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Starting the evaluation of the Lyapunov exponents for the Laplacian eigenvalues...&quot;</span>
+            <span class="p">)</span>
+        <span class="n">hon_master_stability_function</span> <span class="o">=</span> <span class="n">MSF</span><span class="p">(</span>
+            <span class="n">F</span><span class="p">,</span>
+            <span class="n">JF</span><span class="p">,</span>
+            <span class="n">params</span><span class="p">,</span>
+            <span class="n">spectrum</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
+            <span class="n">JHs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">X0</span><span class="p">,</span>
+            <span class="n">integration_time</span><span class="p">,</span>
+            <span class="n">integration_step</span><span class="p">,</span>
+            <span class="n">C</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">master_stability_function</span><span class="p">,</span> <span class="n">hon_master_stability_function</span><span class="p">,</span> <span class="n">spectrum</span>
 
-    <span class="c1"># If the coupling is not natural but the Laplacian matrices commute, </span>
+    <span class="c1"># If the coupling is not natural but the Laplacian matrices commute,</span>
     <span class="c1"># we check if the higher-order network is all-to-all</span>
     <span class="n">all2all</span> <span class="o">=</span> <span class="n">is_all_to_all</span><span class="p">(</span><span class="n">hypergraph</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">all2all</span><span class="p">:</span>
-        <span class="n">master_stability_function</span> <span class="o">=</span> <span class="n">MSF_multi_coupling</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">JF</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">sigmas</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">JHs</span><span class="p">,</span> <span class="n">X0</span><span class="p">,</span> <span class="n">integration_time</span><span class="p">,</span> <span class="n">integration_step</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="n">master_stability_function</span> <span class="o">=</span> <span class="n">MSF_multi_coupling</span><span class="p">(</span>
+            <span class="n">F</span><span class="p">,</span>
+            <span class="n">JF</span><span class="p">,</span>
+            <span class="n">params</span><span class="p">,</span>
+            <span class="n">interval</span><span class="p">,</span>
+            <span class="n">sigmas</span><span class="p">,</span>
+            <span class="n">N</span><span class="p">,</span>
+            <span class="n">JHs</span><span class="p">,</span>
+            <span class="n">X0</span><span class="p">,</span>
+            <span class="n">integration_time</span><span class="p">,</span>
+            <span class="n">integration_step</span><span class="p">,</span>
+            <span class="n">C</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="p">,</span>
+        <span class="p">)</span>
 
-        <span class="n">hon_master_stability_function</span> <span class="o">=</span> <span class="n">MSF_multi_coupling</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">JF</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="p">[</span><span class="n">sigmas</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="p">],</span> <span class="n">sigmas</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">JHs</span><span class="p">,</span> <span class="n">X0</span><span class="p">,</span> <span class="n">integration_time</span><span class="p">,</span> <span class="n">integration_step</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="n">hon_master_stability_function</span> <span class="o">=</span> <span class="n">MSF_multi_coupling</span><span class="p">(</span>
+            <span class="n">F</span><span class="p">,</span>
+            <span class="n">JF</span><span class="p">,</span>
+            <span class="n">params</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">sigmas</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">N</span><span class="p">],</span>
+            <span class="n">sigmas</span><span class="p">,</span>
+            <span class="n">N</span><span class="p">,</span>
+            <span class="n">JHs</span><span class="p">,</span>
+            <span class="n">X0</span><span class="p">,</span>
+            <span class="n">integration_time</span><span class="p">,</span>
+            <span class="n">integration_step</span><span class="p">,</span>
+            <span class="n">C</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="p">,</span>
+        <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">master_stability_function</span><span class="p">,</span> <span class="n">hon_master_stability_function</span><span class="p">,</span> <span class="p">[</span><span class="n">sigmas</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">N</span><span class="p">]</span>
-        
+        <span class="k">return</span> <span class="n">master_stability_function</span><span class="p">,</span> <span class="n">hon_master_stability_function</span><span class="p">,</span> <span class="p">[</span><span class="n">sigmas</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">N</span><span class="p">]</span>
+
     <span class="c1"># If the coupling is not natural and the hypergraph is not all-to-all, no MSF can be calculated</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No Master Stability Function can be evaluated for this system.&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="kc">None</span></div>
-
 </pre></div>
         </article>
       </div>

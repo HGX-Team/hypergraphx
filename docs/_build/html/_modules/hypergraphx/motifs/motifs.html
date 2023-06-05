@@ -216,8 +216,14 @@
         </div>
         <article role="main">
           <h1>Source code for hypergraphx.motifs.motifs</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">hypergraphx.core.hypergraph</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
-<span class="kn">from</span> <span class="nn">hypergraphx.motifs.utils</span> <span class="kn">import</span> <span class="n">_motifs_ho_full</span><span class="p">,</span> <span class="n">_motifs_ho_not_full</span><span class="p">,</span> <span class="n">_motifs_standard</span><span class="p">,</span> <span class="n">diff_sum</span><span class="p">,</span> <span class="n">norm_vector</span>
+<span></span><span class="kn">from</span> <span class="nn">hypergraphx</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
+<span class="kn">from</span> <span class="nn">hypergraphx.generation.configuration_model</span> <span class="kn">import</span> <span class="n">configuration_model</span>
+<span class="kn">from</span> <span class="nn">hypergraphx.motifs.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_motifs_ho_full</span><span class="p">,</span>
+    <span class="n">_motifs_ho_not_full</span><span class="p">,</span>
+    <span class="n">_motifs_standard</span><span class="p">,</span>
+    <span class="n">diff_sum</span><span class="p">,</span> <span class="n">norm_vector</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="compute_motifs"><a class="viewcode-back" href="../../../api/hypergraphx.motifs.html#hypergraphx.motifs.motifs.compute_motifs">[docs]</a><span class="k">def</span> <span class="nf">compute_motifs</span><span class="p">(</span><span class="n">hypergraph</span><span class="p">:</span> <span class="n">Hypergraph</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">runs_config_model</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
@@ -242,9 +248,8 @@
 <span class="sd">        &#39;norm_delta&#39; reports the norm of the difference between the observed and the configuration model</span>
 <span class="sd">        </span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">edges</span> <span class="o">=</span> <span class="n">hypergraph</span><span class="o">.</span><span class="n">get_edges</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_motifs_order_3</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">_motifs_order_3</span><span class="p">(</span><span class="n">edges</span><span class="p">):</span>
         <span class="n">full</span><span class="p">,</span> <span class="n">visited</span> <span class="o">=</span> <span class="n">_motifs_ho_full</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
         <span class="n">standard</span> <span class="o">=</span> <span class="n">_motifs_standard</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">visited</span><span class="p">)</span>
 
@@ -254,7 +259,7 @@
 
         <span class="k">return</span> <span class="n">res</span>
 
-    <span class="k">def</span> <span class="nf">_motifs_order_4</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">_motifs_order_4</span><span class="p">(</span><span class="n">edges</span><span class="p">):</span>
         <span class="n">full</span><span class="p">,</span> <span class="n">visited</span> <span class="o">=</span> <span class="n">_motifs_ho_full</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
         <span class="n">not_full</span><span class="p">,</span> <span class="n">visited</span> <span class="o">=</span> <span class="n">_motifs_ho_not_full</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">visited</span><span class="p">)</span>
         <span class="n">standard</span> <span class="o">=</span> <span class="n">_motifs_standard</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">visited</span><span class="p">)</span>
@@ -265,12 +270,16 @@
 
         <span class="k">return</span> <span class="n">res</span>
     
+    <span class="n">edges</span> <span class="o">=</span> <span class="n">hypergraph</span><span class="o">.</span><span class="n">get_edges</span><span class="p">(</span><span class="n">up_to</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">hypergraph</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Computing observed motifs of order </span><span class="si">{}</span><span class="s2">...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">order</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;observed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_motifs_order_3</span><span class="p">()</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;observed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_motifs_order_3</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
-        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;observed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_motifs_order_4</span><span class="p">()</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;observed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_motifs_order_4</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Exact computation of motifs of order &gt; 4 is not available.&quot;</span><span class="p">)</span>
 
@@ -280,19 +289,22 @@
     <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ROUNDS</span><span class="p">):</span>
-        <span class="n">e1</span> <span class="o">=</span> <span class="n">hypergraph</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
-        <span class="n">e1</span><span class="o">.</span><span class="n">MH</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;stub&#39;</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">STEPS</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Computing config model motifs of order </span><span class="si">{}</span><span class="s2">. Step: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">e1</span> <span class="o">=</span> <span class="n">configuration_model</span><span class="p">(</span><span class="n">hypergraph</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;stub&#39;</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">STEPS</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">m1</span> <span class="o">=</span> <span class="n">_motifs_order_3</span><span class="p">(</span><span class="n">e1</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">m1</span> <span class="o">=</span> <span class="n">_motifs_order_3</span><span class="p">(</span><span class="n">e1</span><span class="o">.</span><span class="n">get_edges</span><span class="p">())</span>
         <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
-            <span class="n">m1</span> <span class="o">=</span> <span class="n">_motifs_order_4</span><span class="p">(</span><span class="n">e1</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">m1</span> <span class="o">=</span> <span class="n">_motifs_order_4</span><span class="p">(</span><span class="n">e1</span><span class="o">.</span><span class="n">get_edges</span><span class="p">())</span>
         <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m1</span><span class="p">)</span>
 
     <span class="n">output</span><span class="p">[</span><span class="s1">&#39;config_model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span>
 
     <span class="n">delta</span> <span class="o">=</span> <span class="n">diff_sum</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;observed&#39;</span><span class="p">],</span> <span class="n">output</span><span class="p">[</span><span class="s1">&#39;config_model&#39;</span><span class="p">])</span>
     <span class="n">norm_delta</span> <span class="o">=</span> <span class="n">norm_vector</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
-    <span class="n">output</span><span class="p">[</span><span class="s1">&#39;norm_delta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">norm_delta</span>
+    <span class="n">output</span><span class="p">[</span><span class="s1">&#39;norm_delta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">delta</span><span class="p">)):</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;norm_delta&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;observed&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">norm_delta</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
 
     <span class="k">return</span> <span class="n">output</span></div>
 </pre></div>

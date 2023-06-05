@@ -217,10 +217,9 @@
         <article role="main">
           <h1>Source code for hypergraphx.measures.degree</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">hypergraphx.core</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
 
 
-<div class="viewcode-block" id="degree"><a class="viewcode-back" href="../../../api/hypergraphx.measures.html#hypergraphx.measures.degree.degree">[docs]</a><span class="k">def</span> <span class="nf">degree</span><span class="p">(</span><span class="n">hg</span><span class="p">:</span> <span class="n">Hypergraph</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="degree"><a class="viewcode-back" href="../../../api/hypergraphx.measures.html#hypergraphx.measures.degree.degree">[docs]</a><span class="k">def</span> <span class="nf">degree</span><span class="p">(</span><span class="n">hg</span><span class="p">:</span> <span class="s2">&quot;Hypergraph&quot;</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the degree of a node in the hypergraph.</span>
 
@@ -250,7 +249,7 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">hg</span><span class="o">.</span><span class="n">get_incident_edges</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="degree_sequence"><a class="viewcode-back" href="../../../api/hypergraphx.measures.html#hypergraphx.measures.degree.degree_sequence">[docs]</a><span class="k">def</span> <span class="nf">degree_sequence</span><span class="p">(</span><span class="n">hg</span><span class="p">:</span> <span class="n">Hypergraph</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="degree_sequence"><a class="viewcode-back" href="../../../api/hypergraphx.measures.html#hypergraphx.measures.degree.degree_sequence">[docs]</a><span class="k">def</span> <span class="nf">degree_sequence</span><span class="p">(</span><span class="n">hg</span><span class="p">:</span> <span class="s2">&quot;Hypergraph&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the degree sequence of the hypergraph.</span>
 
@@ -278,7 +277,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="n">hg</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">hg</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">()}</span></div>
 
 
-<div class="viewcode-block" id="degree_correlation"><a class="viewcode-back" href="../../../api/hypergraphx.measures.html#hypergraphx.measures.degree.degree_correlation">[docs]</a><span class="k">def</span> <span class="nf">degree_correlation</span><span class="p">(</span><span class="n">hg</span><span class="p">:</span> <span class="n">Hypergraph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="degree_correlation"><a class="viewcode-back" href="../../../api/hypergraphx.measures.html#hypergraphx.measures.degree.degree_correlation">[docs]</a><span class="k">def</span> <span class="nf">degree_correlation</span><span class="p">(</span><span class="n">hg</span><span class="p">:</span> <span class="s2">&quot;Hypergraph&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the degree sequence correlation matrix of the hypergraph.</span>
 
@@ -305,7 +304,7 @@
 
 
 
-<div class="viewcode-block" id="degree_distribution"><a class="viewcode-back" href="../../../api/hypergraphx.measures.html#hypergraphx.measures.degree.degree_distribution">[docs]</a><span class="k">def</span> <span class="nf">degree_distribution</span><span class="p">(</span><span class="n">hg</span><span class="p">:</span> <span class="n">Hypergraph</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="degree_distribution"><a class="viewcode-back" href="../../../api/hypergraphx.measures.html#hypergraphx.measures.degree.degree_distribution">[docs]</a><span class="k">def</span> <span class="nf">degree_distribution</span><span class="p">(</span><span class="n">hg</span><span class="p">:</span> <span class="s2">&quot;Hypergraph&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the degree distribution of the hypergraph.</span>
 

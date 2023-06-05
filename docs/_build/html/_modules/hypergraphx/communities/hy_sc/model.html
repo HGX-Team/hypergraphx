@@ -221,7 +221,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
 
-<span class="kn">from</span> <span class="nn">hypergraphx.core.hypergraph</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
+<span class="kn">from</span> <span class="nn">hypergraphx</span> <span class="kn">import</span> <span class="n">Hypergraph</span>
 <span class="kn">from</span> <span class="nn">hypergraphx.linalg.linalg</span> <span class="kn">import</span> <span class="n">binary_incidence_matrix</span><span class="p">,</span> <span class="n">incidence_matrix</span>
 
 
@@ -345,6 +345,8 @@
         <span class="c1"># TODO: and hopefully without making use of dense matrices</span>
         <span class="n">invDE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">hye_size</span><span class="p">)</span>
         <span class="n">invDV2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_degree</span><span class="p">))</span>
+        <span class="c1"># set to zero for isolated nodes</span>
+        <span class="n">invDV2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">invDV2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">invDV2</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">weighted_L</span><span class="p">:</span>
             <span class="n">dense_incidence</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">incidence</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
             <span class="n">HT</span> <span class="o">=</span> <span class="n">dense_incidence</span><span class="o">.</span><span class="n">T</span>

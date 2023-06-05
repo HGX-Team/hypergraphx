@@ -1,7 +1,7 @@
 About
 =====
 
-.. image:: ../logo/logo.svg
+.. image:: ../logo/logo.png
   :width: 200
 
 Hypergraphx (HGX) is a Python library for higher-order network analysis.
