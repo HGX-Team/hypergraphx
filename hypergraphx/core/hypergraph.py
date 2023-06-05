@@ -840,14 +840,15 @@ class Hypergraph:
             else:
                 edges = [self._attr.get_id(edge) for edge in self._edge_list.keys()]
         else:
+            edges = []
             if size is not None:
                 order = size - 1
             if not up_to:
-                if not ids:
+                if not ids and order in self._edges_by_order:
                     edges = [
                         self._attr.get_obj(edge) for edge in self._edges_by_order[order]
                     ]
-                else:
+                elif order in self._edges_by_order:
                     edges = [edge for edge in self._edges_by_order[order]]
             else:
                 edges = []
