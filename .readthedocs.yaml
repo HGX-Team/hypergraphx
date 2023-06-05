@@ -7,5 +7,3 @@ build:
 
 sphinx:
    configuration: docs/conf.py
-
-requirements_file: requirements_docs.txt
