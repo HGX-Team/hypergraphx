@@ -32,6 +32,7 @@ class HyMMSBM:
         max_hye_size: Optional[int] = None,
         u_prior: Union[float, np.ndarray] = 0.0,
         w_prior: Union[float, np.ndarray] = 1.0,
+        seed: Optional[int] = None,
     ):
         """Initialize the probabilistic model.
         The parameters u and w can be provided as input, either both, only one or none.
@@ -68,6 +69,7 @@ class HyMMSBM:
             Similar to the exponential rate for u. If an array, it needs to be a
             symmetric matrix with same shape as w.
             To avoid specifying a prior for w, set w_prior to the 0. float value.
+        seed: random seed.
         """
         super().__init__()
 
@@ -96,6 +98,9 @@ class HyMMSBM:
         self.trained: bool = False  # The model has been trained or not.
         self.training_iter: Optional[int] = None  # Number of EM iterations performed.
         self.tolerance_reached: bool = False  # Stopping criterion satisfied.
+
+        # Random number generator.
+        self._rng: np.random.Generator = np.random.default_rng(seed)
 
     @property
     def N(self) -> Union[None, int]:
@@ -388,7 +393,9 @@ class HyMMSBM:
         if expected:
             return mean
 
-        return sample_discretized_positive_gaussian(loc=mean, scale=np.sqrt(mean))
+        return sample_discretized_positive_gaussian(
+            loc=mean, scale=np.sqrt(mean), rng=self._rng
+        )
 
     def dimension_sequence(
         self,
@@ -426,7 +433,9 @@ class HyMMSBM:
                 dim: mean_count for dim, mean_count in zip(dims, mean) if mean_count > 0
             }
 
-        hye_count = sample_discretized_positive_gaussian(loc=mean, scale=np.sqrt(mean))
+        hye_count = sample_discretized_positive_gaussian(
+            loc=mean, scale=np.sqrt(mean), rng=self._rng
+        )
         dim_seq = {dim: count for dim, count in zip(dims, hye_count) if count > 0}
         return dim_seq
 
@@ -457,7 +466,7 @@ class HyMMSBM:
         This is returned as a square upper-triangular matrix.
         """
         poisson_lambda = bf(self.u, self.u, self.w) / np.exp(self.log_kappa(2))
-        adjacency = np.random.poisson(poisson_lambda) > 0
+        adjacency = self._rng.poisson(poisson_lambda) > 0
         return np.triu(adjacency, 1)
 
     def _w_update(
@@ -648,7 +657,7 @@ class HyMMSBM:
 
     def _init_w(self) -> None:
         K = self.K
-        rng = np.random.default_rng()
+        rng = self._rng
 
         if isinstance(self.w_prior, float) and self.w_prior == 0.0:
             w = rng.random((K, K))
@@ -674,7 +683,7 @@ class HyMMSBM:
 
     def _init_u(self, N: int) -> None:
         K = self.K
-        rng = np.random.default_rng()
+        rng = self._rng
 
         if isinstance(self.u_prior, float) and self.u_prior == 0.0:
             self.u = rng.random((N, K))
@@ -718,11 +727,14 @@ def log_binomial(n: int, k: int) -> float:
     return np.log(np.arange(n - k + 1, n + 1)).sum() - np.log(np.arange(1, k + 1)).sum()
 
 
-def sample_discretized_positive_gaussian(loc: np.array, scale: np.array) -> np.ndarray:
+def sample_discretized_positive_gaussian(
+    loc: np.array, scale: np.array, rng: Optional[np.random.Generator] = None
+) -> np.ndarray:
     """Sample a Gaussian, then round its samples to the nearest integer
     and clip them to be greater than 0.
     """
-    samples = np.random.normal(loc=loc, scale=scale)
+    rng = rng if rng is not None else np.random.default_rng()
+    samples = rng.normal(loc=loc, scale=scale)
     samples = np.rint(samples)
     samples[samples < 0] = 0.0
     return samples.astype(int)
