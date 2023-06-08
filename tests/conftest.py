@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Dict, List, Tuple
+from collections import Counter
 
+import numpy as np
 import pytest
 
 from hypergraphx import Hypergraph
@@ -22,9 +24,17 @@ def _read_hye_list(hye_file: Path) -> List[Tuple[int]]:
         for hye in file.readlines():
             hye = hye.strip("\n").split(" ")
             hye = map(int, hye)
-            hye = tuple(hye)
+            hye = tuple(sorted(hye))
             hye_list.append(hye)
-    return hye_list
+
+    counts = Counter(hye_list)
+    if all(count == 1 for count in counts.values()):
+        weights = None
+    else:
+        hye_list = list(counts.keys())
+        weights = np.fromiter(counts.values(), dtype=int)
+
+    return hye_list, weights
 
 
 @pytest.fixture(scope="package")
@@ -32,7 +42,9 @@ def synthetic_small_numerical_datasets() -> Dict[str, Hypergraph]:
     datasets = dict()
     for dataset in ALL_SMALL_NUMERICAL_DATASETS:
         hye_file = DATA_DIR / dataset / "hyperedges.txt"
-        datasets[dataset] = Hypergraph(_read_hye_list(hye_file))
+        hye_list, weights = _read_hye_list(hye_file)
+        weighted = weights is not None
+        datasets[dataset] = Hypergraph(edge_list=hye_list, weighted=weighted, weights=weights)
 
     return datasets
 
@@ -48,7 +60,7 @@ def synthetic_literal_dataset() -> Dict[str, Hypergraph]:
 
 @pytest.fixture(scope="package")
 def justice_dataset() -> Dict[str, Hypergraph]:
-    hye_list = _read_hye_list(DATA_DIR / "justice_data" / "hyperedges.txt")
+    hye_list, _ = _read_hye_list(DATA_DIR / "justice_data" / "hyperedges.txt")
 
     with open(DATA_DIR / "justice_data" / "weights.txt") as file:
         weight_list = list(map(int, file.readlines()))

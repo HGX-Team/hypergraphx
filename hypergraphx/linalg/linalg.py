@@ -60,7 +60,6 @@ def hye_list_to_binary_incidence(
 
 def binary_incidence_matrix(
     hypergraph: Hypergraph,
-    shape: Optional[Tuple[int]] = None,
     return_mapping: bool = False,
 ) -> sparse.csr_array | Tuple[sparse.csr_array, Dict[int, Any]]:
     """Produce the binary incidence matrix representing a hypergraph.
@@ -71,8 +70,6 @@ def binary_incidence_matrix(
     ----------
     hypergraph: instance of the class Hypergraph.
         Every hyperedge is represented as either a tuple or list of nodes.
-    shape: the shape of the adjacency matrix, passed to the array constructor.
-        If None, it is inferred.
     return_mapping: return the dictionary mapping the new node indices to the hypergraph
         nodes.
         The node indices in the incidence matrix vary from 0 to N-1, where N is the
@@ -89,7 +86,6 @@ def binary_incidence_matrix(
     shape = (hypergraph.num_nodes(), hypergraph.num_edges())
     incidence = hye_list_to_binary_incidence(hye_list, shape).tocsr()
     if return_mapping:
-        #mapping = dict(zip(encoder.transform(encoder.classes_), encoder.classes_))
         mapping = get_inverse_mapping(encoder)
         return incidence, mapping
     return incidence
@@ -97,7 +93,6 @@ def binary_incidence_matrix(
 
 def incidence_matrix(
     hypergraph: Hypergraph,
-    shape: Optional[Tuple[int]] = None,
     return_mapping: bool = False,
 ) -> sparse.csr_array | Tuple[sparse.csr_array, Dict[int, Any]]:
     """Produce the binary incidence matrix representing a hypergraph.
@@ -108,8 +103,6 @@ def incidence_matrix(
     ----------
     hypergraph: instance of the class Hypergraph.
         Every hyperedge is represented as either a tuple or list of nodes.
-    shape: the shape of the adjacency matrix, passed to the array constructor.
-        If None, it is inferred.
     return_mapping: return the dictionary mapping the new node indices to the hypergraph
         nodes.
         The node indices in the incidence matrix vary from 0 to N-1, where N is the
@@ -121,7 +114,7 @@ def incidence_matrix(
     If return_mapping is True, return the dictionary of node mappings.
     """
     binary_incidence, mapping = binary_incidence_matrix(
-        hypergraph, shape, return_mapping=True
+        hypergraph, return_mapping=True
     )
     incidence = binary_incidence.multiply(hypergraph.get_weights()).tocsr()
     if return_mapping:

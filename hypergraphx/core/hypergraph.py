@@ -948,11 +948,10 @@ class Hypergraph:
         return is_isolated(self, node, size=size, order=order)
 
     def binary_incidence_matrix(
-        self, shape: Optional[Tuple[int]] = None, return_mapping: bool = False
+        self, return_mapping: bool = False
     ):
         from hypergraphx.linalg import binary_incidence_matrix
-
-        return binary_incidence_matrix(self, shape, return_mapping)
+        return binary_incidence_matrix(self, return_mapping)
 
     def incidence_matrix(
         self, shape: Optional[Tuple[int]] = None, return_mapping: bool = False
