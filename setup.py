@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
   name = 'hypergraphx',         
-  version = '1.3',      
+  version = '1.4',      
   license='BSD-3-Clause license',        
   description = 'HGX is a multi-purpose, open-source Python library for higher-order network analysis',   
   long_description=read("README.md"),
