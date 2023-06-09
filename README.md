@@ -63,6 +63,12 @@ Beyond experts in the field, we hope that our library will make higher-order net
 Install R-base, then
 
 ```
+pip install hypergraphx
+```
+
+or, if you really want the latest updates
+
+```
 pip install hypergraphx@git+https://github.com/HGX-Team/hypergraphx
 ```
 
