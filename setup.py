@@ -28,7 +28,7 @@ def read_requirements(path):
 
 setup(
   name = 'hypergraphx',         
-  version = '1.0',      
+  version = '1.3',      
   license='BSD-3-Clause license',        
   description = 'HGX is a multi-purpose, open-source Python library for higher-order network analysis',   
   long_description=read("README.md"),
@@ -36,7 +36,7 @@ setup(
   author = 'HGX-Team',              
   author_email = 'lotitoqf@gmail.com',      
   url = 'https://github.com/HGX-Team/hypergraphx',   
-  download_url = 'https://github.com/HGX-Team/hypergraphx/archive/refs/tags/1.1.1.tar.gz',    
+  #download_url = 'https://github.com/HGX-Team/hypergraphx/archive/refs/tags/1.1.1.tar.gz',    
   keywords = ['hypergraphs', 'networks'], 
   packages=find_packages(exclude=["tests", ".github"]),
   install_requires=read_requirements("requirements.txt"),
