@@ -2,30 +2,6 @@ import io
 import os
 from setuptools import find_packages, setup
 
-def read(*paths, **kwargs):
-    """Read the contents of a text file safely.
-    >>> read("project_name", "VERSION")
-    '0.1.0'
-    >>> read("README.md")
-    ...
-    """
-
-    content = ""
-    with io.open(
-        os.path.join(os.path.dirname(__file__), *paths),
-        encoding=kwargs.get("encoding", "utf8"),
-    ) as open_file:
-        content = open_file.read().strip()
-    return content
-
-
-def read_requirements(path):
-    return [
-        line.strip()
-        for line in read(path).split("\n")
-        if not line.startswith(('"', "#", "-", "git+"))
-    ]
-
 setup(
   name = 'hypergraphx',         
   version = '1.3',      
@@ -36,10 +12,8 @@ setup(
   author = 'HGX-Team',              
   author_email = 'lotitoqf@gmail.com',      
   url = 'https://github.com/HGX-Team/hypergraphx',   
-  #download_url = 'https://github.com/HGX-Team/hypergraphx/archive/refs/tags/1.1.1.tar.gz',    
   keywords = ['hypergraphs', 'networks'], 
   packages=find_packages(exclude=["tests", ".github"]),
-  #install_requires=read_requirements("requirements.txt"),
   install_requires=['numpy',
                    'scipy',
                    'networkx',
@@ -49,7 +23,6 @@ setup(
                    'pytest',
                    'matplotlib',
                    'seaborn'],
-  #extras_require={"test": read_requirements("requirements-test.txt")},
   classifiers=[
     'Development Status :: 3 - Alpha',      
     'Intended Audience :: Developers',      
