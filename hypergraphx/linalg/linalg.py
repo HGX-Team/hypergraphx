@@ -148,7 +148,7 @@ def incidence_matrix_by_order(
     If return_mapping is True, return the dictionary of node mappings.
     """
     binary_incidence, mapping = binary_incidence_matrix(
-        hypergraph.get_edges(order=order, subhypergraph=True, keep_isolated_nodes=keep_isolated_nodes), shape, return_mapping
+        hypergraph.get_edges(order=order, subhypergraph=True, keep_isolated_nodes=keep_isolated_nodes), return_mapping
     )
     incidence = binary_incidence.multiply(hypergraph.get_weights(order=order)).tocsr()
     return incidence, mapping
