@@ -1,4 +1,4 @@
-def intersection(a, b):
+def intersection(a: set, b: set):
     """
     Computes the intersection between two sets.
 
@@ -22,7 +22,7 @@ def intersection(a, b):
     return len(a.intersection(b))
 
 
-def jaccard_similarity(a, b):
+def jaccard_similarity(a: set, b: set):
     """
     Computes the Jaccard similarity between two sets.
 
@@ -52,7 +52,7 @@ def jaccard_similarity(a, b):
     return len(a.intersection(b)) / len(a.union(b))
 
 
-def jaccard_distance(a, b):
+def jaccard_distance(a: set, b: set):
     """
     Compute the Jaccard distance between two sets.
 
