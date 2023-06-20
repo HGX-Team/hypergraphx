@@ -7,8 +7,7 @@
 **HGX** is a Python library for the analysis of real-world complex systems with **group interactions** and provides a comprehensive suite of tools and algorithms for constructing, visualizing, and analyzing **hypergraphs**. <br> The library is designed to be user-friendly and accessible, with a wide range of functionalities that can be applied to a diverse set of applications and use cases.
 
 ## Temporary disclaimer
-* We are finalizing the process of uploading the codebase, the documentation and the datasets. We expect to make the first official release available via pip in the next couple of days.
-* In the meanwhile, if you want to try HGX you can clone the repository and manually install the library.
+* We are finalizing the process of uploading the datasets.
 * We welcome early feedbacks, discussions, ideas and contributions.
 
 ## News
