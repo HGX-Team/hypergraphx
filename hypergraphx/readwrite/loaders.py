@@ -60,7 +60,3 @@ def load_high_school(file_name: str, filter_by_class=None) -> Hypergraph:
                         H.add_edge(edge, obj['weight'])
                     H.set_meta(edge, obj)
     return H
-
-
-#H = load_high_school("../../test_data/hs/hs.json")
-#print(H.get_meta(151))
