@@ -76,9 +76,7 @@ Core members:
 
 Reference
 ===================
-
-* `Hypergraphx: a library for higher-order network analysis
-  <https://arxiv.org/pdf/2303.15356.pdf>`_, Quintino Francesco Lotito, Martina Contisciani, Caterina De Bacco, Leonardo Di Gaetano, Luca Gallo, Alberto Montresor, Federico Musciotto, Nicolò Ruggeri, Federico Battiston, arXiv:2303.15356, 2023.
+* Lotito, Quintino Francesco, et al. "Hypergraphx: a library for higher-order network analysis." Journal of Complex Networks 11.3 (2023): cnad019.
 
 Contributing
 ============
