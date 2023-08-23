@@ -1,7 +1,6 @@
 numpy
 scipy
 networkx
-rpy2
 pandas
 scikit-learn
 pytest

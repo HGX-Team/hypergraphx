@@ -15,7 +15,7 @@ def read(*paths, **kwargs):
 
 setup(
     name='hypergraphx',
-    version='1.5',
+    version='1.6',
     license='BSD-3-Clause license',
     description='HGX is a multi-purpose, open-source Python library for higher-order network analysis',
     long_description=read("README.md"),
@@ -28,7 +28,6 @@ setup(
     install_requires=['numpy',
                       'scipy',
                       'networkx',
-                      'rpy2',
                       'pandas',
                       'scikit-learn',
                       'pytest',
