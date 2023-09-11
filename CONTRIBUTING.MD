@@ -6,13 +6,13 @@ Follow this step-by-step guide to contribute to Hypergraphx.
 If you haven't already, create a GitHub account at [GitHub.com](https://github.com/).
 
 ## 2. Fork the Repository
-- Go to the main page of the "Hypergraphx" repository.
+- Go to the main page of the Hypergraphx repository.
 - In the top-right corner of the page, click on the "Fork" button. This will create a copy of the repository in your GitHub account.
 
 ## 3. Clone Your Forked Repository
 - Navigate to your forked repository in your GitHub account.
 - Click the "Code" button and copy the URL.
-- Open your terminal or command prompt and navigate to the directory where you want to clone the repository.
+- Open your terminal and navigate to the directory where you want to clone the repository.
 - Run the following command:
 
 ```bash
@@ -27,10 +27,8 @@ To keep your forked repository updated with the changes from the original reposi
 - Run the following command:
 
 ```bash
-git clone [URL]
+git remote add upstream https://github.com/HGX-Team/hypergraphx.git
 ```
-
-Replace `original-owner` with the username of the original repository owner.
 
 ## 5. Create a New Branch
 Before making any changes, it's a good practice to create a new branch:
@@ -38,7 +36,7 @@ Before making any changes, it's a good practice to create a new branch:
 - Run the following command to create and switch to a new branch:
 
 ```bash
-git clone [URL]
+git checkout -b your-branch-name
 ```
 
 ## 6. Make Your Changes
@@ -50,31 +48,32 @@ git clone [URL]
 - Run the following commands to add and commit your changes:
 
 ```bash
-git clone [URL]
+git add .
+git commit -m "Your commit message here"
 ```
 
 ## 8. Push Your Changes to GitHub
 - Push your changes to your forked repository on GitHub:
 
 ```bash
-git clone [URL]
+git push origin your-branch-name
 ```
 
 ## 9. Create a Pull Request (PR)
 - Go to your forked repository on GitHub.
 - Click on the "Pull requests" tab and then click on the "New pull request" button.
-- Ensure the base repository is the original "Hypergraphx" repository and the base branch is the branch you want to merge your changes into (usually `main` or `master`).
+- Ensure the base repository is the original Hypergraphx repository and the base branch is the branch you want to merge your changes into (usually `main`).
 - Ensure the head repository is your forked repository and the compare branch is the branch you made your changes in.
 - Click on the "Create pull request" button.
 - Fill in the PR title and description, explaining your changes.
 - Click on the "Create pull request" button to submit your PR.
 
 ## 10. Wait for Review
-- The maintainers of the "Hypergraphx" repository will review your PR.
+- The maintainers of the Hypergraphx repository will review your PR.
 - They might request some changes or improvements. If so, make the required changes in your branch, commit them, and push them to GitHub. Your PR will be automatically updated.
 
 ## 11. PR Gets Merged
-Once your PR is approved, the maintainers will merge it into the main branch of the "Hypergraphx" repository.
+Once your PR is approved, the maintainers will merge it into the main branch of the Hypergraphx repository.
 
 **Note:** Always follow the contribution guidelines provided by the repository maintainers, and always be respectful and constructive in your interactions.
 
