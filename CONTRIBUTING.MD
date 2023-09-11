@@ -15,4 +15,10 @@ If you haven't already, create a GitHub account at [GitHub.com](https://github.c
 - Open your terminal or command prompt and navigate to the directory where you want to clone the repository.
 - Run the following command:
 
+```bash
+git clone [URL]
+```
+
+Replace `[URL]` with the URL you copied.
+
 
