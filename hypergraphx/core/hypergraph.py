@@ -954,11 +954,11 @@ class Hypergraph:
         return binary_incidence_matrix(self, return_mapping)
 
     def incidence_matrix(
-        self, shape: Optional[Tuple[int]] = None, return_mapping: bool = False
+        self, return_mapping: bool = False
     ):
         from hypergraphx.linalg import incidence_matrix
 
-        return incidence_matrix(self, shape, return_mapping)
+        return incidence_matrix(self, return_mapping)
 
     def adjacency_matrix(self, return_mapping: bool = False):
         from hypergraphx.linalg import adjacency_matrix
