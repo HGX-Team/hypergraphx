@@ -95,7 +95,7 @@ def incidence_matrix(
     hypergraph: Hypergraph,
     return_mapping: bool = False,
 ) -> sparse.csr_array | Tuple[sparse.csr_array, Dict[int, Any]]:
-    """Produce the binary incidence matrix representing a hypergraph.
+    """Produce the incidence matrix representing a hypergraph.
     For any node i and hyperedge e, the entry (i, e) of the binary incidence matrix is
     the weight of the hyperedge if the node belongs to it, 0 otherwise.
 
@@ -148,10 +148,12 @@ def incidence_matrix_by_order(
     If return_mapping is True, return the dictionary of node mappings.
     """
     binary_incidence, mapping = binary_incidence_matrix(
-        hypergraph.get_edges(order=order, subhypergraph=True, keep_isolated_nodes=keep_isolated_nodes), return_mapping
+        hypergraph.get_edges(order=order, subhypergraph=True, keep_isolated_nodes=keep_isolated_nodes), return_mapping=True
     )
     incidence = binary_incidence.multiply(hypergraph.get_weights(order=order)).tocsr()
-    return incidence, mapping
+    if return_mapping:
+        return incidence, mapping
+    return incidence
 
 
 def incidence_matrices_all_orders(
