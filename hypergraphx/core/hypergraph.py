@@ -963,13 +963,6 @@ class Hypergraph:
         from hypergraphx.linalg import incidence_matrix
 
         return incidence_matrix(self, return_mapping)
-    
-    def incidence_matrix_by_order(
-            self, order: int, shape: Optional[Tuple[int]] = None, keep_isolated_nodes:bool=False, return_mapping: bool = False
-    ):
-        from hypergraphx.linalg import incidence_matrix_by_order
-
-        return incidence_matrix_by_order(self, order, shape, keep_isolated_nodes, return_mapping)
 
     def adjacency_matrix(self, return_mapping: bool = False):
         from hypergraphx.linalg import adjacency_matrix
