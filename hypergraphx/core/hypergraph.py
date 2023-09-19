@@ -871,23 +871,27 @@ class Hypergraph:
         if subhypergraph and keep_isolated_nodes:
             h = Hypergraph(weighted=self._weighted)
             h.add_nodes(self.get_nodes())
-            h.add_edges(edges)
+            if self._weighted:
+                edge_weights = [self.get_weight(edge) for edge in edges]
+                h.add_edges(edges, edge_weights)
+            else:
+                h.add_edges(edges)
+                
             for node in h.get_nodes():
                 h.set_meta(node, self.get_meta(node))
             for edge in h.get_edges():
                 h.set_meta(edge, self.get_meta(edge))
-            if self._weighted:
-                for edge in h.get_edges():
-                    h.set_weight(edge, self.get_weight(edge))
             return h
         elif subhypergraph:
             h = Hypergraph(weighted=self._weighted)
-            h.add_edges(edges)
+            if self._weighted:
+                edge_weights = [self.get_weight(edge) for edge in edges]
+                h.add_edges(edges, edge_weights)
+            else:
+                h.add_edges(edges)
+
             for edge in h.get_edges():
                 h.set_meta(edge, self.get_meta(edge))
-            if self._weighted:
-                for edge in h.get_edges():
-                    h.set_weight(edge, self.get_weight(edge))
             return h
         else:
             return edges
