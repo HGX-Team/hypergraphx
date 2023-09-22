@@ -181,8 +181,10 @@ def incidence_matrices_all_orders(
     """
     incidence_matrices = {}
     for order in range(1, hypergraph.max_order() + 1):
-        # fix lista di mappings ad ogni ordine
-        incidence_matrices[order], _ = incidence_matrix_by_order(hypergraph, order, shape, keep_isolated_nodes, return_mapping)
+        if return_mapping:
+            incidence_matrices[order], _ = incidence_matrix_by_order(hypergraph, order, shape, keep_isolated_nodes, return_mapping)
+        else:
+            incidence_matrices[order] = incidence_matrix_by_order(hypergraph, order, shape, keep_isolated_nodes, return_mapping)
     return incidence_matrices
 
 
