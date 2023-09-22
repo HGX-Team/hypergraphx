@@ -44,13 +44,13 @@ def compute_all_nodes_shortest_path(G):
 
 def compute_all_edges_shortest_path(H, graph_distance=None, verbose=False, aggregate=False):
     """
-    Compute the shortest path lengths between all pairs of edges in a HyperGraph.
+    Compute the shortest path lengths between all pairs of edges in a (temporal) HyperGraph.
 
     Args:
-        H: The input HyperGraph.
+        H: The input (temporal) HyperGraph.
         graph_distance: Precomputed node shortest path distances (optional).
         verbose: If True, print progress information.
-        aggregate: If True, use H for aggregation; otherwise, use max(H.edges) + 100.
+        aggregate: If True, assume H as a time-aggregated hypergraph; otherwise, aggregate the temporal hypergraph.
 
     Returns:
         dict: A dictionary containing edge pairs as keys and their corresponding shortest path lengths as values.
@@ -418,8 +418,24 @@ def topological_temporal_cond_distance(H, order, distance_dict=None, same_order=
 
 
     Returns:
-        tot_dic_dst_counter_gen: A dictionary containing the overall topological distances among events and the one conditioned to their temporal delays.
+        A dictionary with the following keys:
+            avg_top_dist: float
+            the average topological distance among all considered events
+
+            cond_top_dist_distribution: dict = {k:v}
+            
+            k is an element of dt_list
+            v is the counter of the relative topological distances between events with temporal delay smaller than k
+
+            avg_cond_top_dist: dict = {k,v}
+            k is an element of dt_list
+            v is the average topological conditional distance of events with delay smaller than k
+
+            temp_top_corr: float
+            fit of the increasing trend of the normalized average conditional topological distance as a function of the logarithm of the delay
     """
+
+    
     # If distance_dict is not provided, compute it
     gen_dict = {}
     if distance_dict is None:
@@ -450,7 +466,7 @@ def topological_temporal_cond_distance(H, order, distance_dict=None, same_order=
     # Compute the topological temporal correlation as a fit of the increasing trend of the normalized conditioned topopoligical distance
     
     if fit_correlation:
-        avg_cond_top_dist_sr = pd.Series(gen_dict['avg_cond_top_dist'])/gen_dict['avg_top_dist']
+        avg_cond_top_dist_sr = pd.Series(gen_dict['avg_cond_top_dist'])
         min_val_idx = min(enumerate(avg_cond_top_dist_sr), key=lambda x: x[1])[0]
         avg_cond_top_dist_sr = avg_cond_top_dist_sr.iloc[min_val_idx:]
         if len(avg_cond_top_dist_sr)<3:
