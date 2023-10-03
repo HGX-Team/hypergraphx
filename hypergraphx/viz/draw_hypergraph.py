@@ -3,6 +3,7 @@ from typing import Optional, Union
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
+import random
 
 from hypergraphx import Hypergraph
 from hypergraphx.representations.projections import clique_projection
@@ -176,8 +177,15 @@ def draw_hypergraph(
             y1 = [j for i, j in Smoothed_obj]
 
             order = len(hye) - 1
+
             if order not in hyperedge_color_by_order.keys():
-                hyperedge_color_by_order[order] = "Black"
+                std_color = "#" + "%06x" % random.randint(0, 0xFFFFFF)
+                hyperedge_color_by_order[order] = std_color
+            
+            if order not in hyperedge_facecolor_by_order.keys():
+                std_face_color = "#" + "%06x" % random.randint(0, 0xFFFFFF)
+                hyperedge_facecolor_by_order[order] = std_face_color
+
             color = hyperedge_color_by_order[order]
             facecolor = hyperedge_facecolor_by_order[order]
             plt.fill(
