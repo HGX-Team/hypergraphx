@@ -269,17 +269,23 @@ def cross_order_correlation_functions_all_orders(
     as a dictionary {(d1, d2 : function)}
     """
     correlation_functions = {}
+    if normalized:
+        sigmas = intra_order_correlation_functions_all_orders(temporal_hypergraph, max_order, tau=0)
+
     for order1 in range(1, max_order + 1):
         for order2 in range(order1, max_order + 1):
             correlation_function = cross_order_correlation_function_two_orders(
-                temporal_hypergraph, order1, order2, tau, normalized
+                temporal_hypergraph, order1, order2, tau
             )
             correlation_functions[(order1, order2)] = correlation_function
             if not order1 == order2:
                 correlation_function = cross_order_correlation_function_two_orders(
-                    temporal_hypergraph, order1, order2, tau, normalized
+                    temporal_hypergraph, order1, order2, tau
                 )
                 correlation_functions[(order2, order1)] = correlation_function
+                if normalized:
+                    normalization = 2 * np.sqrt(sigmas[order1] * sigmas[order2])
+                    correlation_functions[(order2, order1)] = correlation_functions[(order2, order1)]/normalization
 
     return correlation_functions
 
