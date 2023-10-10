@@ -27,7 +27,7 @@ def intra_order_correlation_matrix_by_order(
     The intra-order correlation matrix of order d at time lag tau, as a sparse matrix.
     """
     T = max(temporal_hypergraph.keys())
-    temporal_adjacency_matrix = temporal_adjacency_matrix_by_order(
+    temporal_adjacency_matrix,  = temporal_adjacency_matrix_by_order(
         temporal_hypergraph, order
     )
     annealed_adjacency_mtx = annealed_adjacency_matrix(temporal_adjacency_matrix)
@@ -147,10 +147,10 @@ def cross_order_correlation_matrix_two_orders(
         return intra_order_correlation_matrix_by_order(temporal_hypergraph, order1, tau)
 
     T = max(temporal_hypergraph.keys())
-    temporal_adjacency_matrix_d1 = temporal_adjacency_matrix_by_order(
+    temporal_adjacency_matrix_d1, _ = temporal_adjacency_matrix_by_order(
         temporal_hypergraph, order1
     )
-    temporal_adjacency_matrix_d2 = temporal_adjacency_matrix_by_order(
+    temporal_adjacency_matrix_d2, _ = temporal_adjacency_matrix_by_order(
         temporal_hypergraph, order2
     )
     annealed_adjacency_matrix_d1 = annealed_adjacency_matrix(
