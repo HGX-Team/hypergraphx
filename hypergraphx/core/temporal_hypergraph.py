@@ -72,11 +72,15 @@ class TemporalHypergraph:
         if not isinstance(time_window, int):
             raise TypeError('Time window must be an integer')
         t = 0
+        node_list = list(self.get_nodes())
         while t < max(self.edges):
             aggregated[t] = set()
             for edge in self.get_edges((t, t + time_window)):
                 aggregated[t].add(edge[1])
-            aggregated[t] = Hypergraph(aggregated[t])
+            # I changed this line of code so that the hypergraph at each time stamp has the same size
+            Hypergraph_t = Hypergraph(aggregated[t])
+            Hypergraph_t.add_nodes(node_list)
+            aggregated[t] = Hypergraph_t
             t += time_window
         return aggregated
 
