@@ -45,7 +45,7 @@ def intra_order_correlation_matrix_by_order(
         )
 
         correlation_matrix = correlation_matrix + centered_adjacency_matrix_t.dot(
-            centered_adjacency_matrix_t_lagged.tranpose()
+            centered_adjacency_matrix_t_lagged.transpose()
         )
 
     correlation_matrix = correlation_matrix / (factorial(order) ** 2) / (T - tau)
@@ -175,7 +175,7 @@ def cross_order_correlation_matrix_two_orders(
         )
 
         correlation_matrix = correlation_matrix + centered_adjacency_matrix_d1_t.dot(
-            centered_adjacency_matrix_d2_t_lagged.tranpose()
+            centered_adjacency_matrix_d2_t_lagged.transpose()
         )
 
     correlation_matrix = (
