@@ -234,7 +234,9 @@ def adjacency_matrix_by_order(
     """
     incidence, mapping = incidence_matrix_by_order(hypergraph,order,keep_isolated_nodes=True,return_mapping=True)
     adj = incidence @ incidence.transpose()
-    adj.setdiag(0)
+    diagonal = adj.diagonal()
+    diagonal_matrix = sparse.diags(diagonal)
+    adj = adj - diagonal_matrix
     return adj, mapping
 
 def temporal_adjacency_matrix_by_order(

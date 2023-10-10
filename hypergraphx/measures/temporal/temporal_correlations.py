@@ -33,7 +33,7 @@ def intra_order_correlation_matrix_by_order(
     annealed_adjacency_mtx = annealed_adjacency_matrix(temporal_adjacency_matrix)
 
     correlation_matrix = sparse.csc_array(
-        annealed_adjacency_matrix.shape, dtype=np.int8
+        annealed_adjacency_mtx.shape, dtype=np.int8
     )
     for t in range(T - tau):
         adjacency_matrix_t = temporal_adjacency_matrix[t]
