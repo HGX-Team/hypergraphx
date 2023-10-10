@@ -93,11 +93,11 @@ def intra_order_correlation_matrices_all_orders(
     """
 
     correlation_matrices = {}
-    for order in range(max_order):
+    for order in range(1, max_order+1):
         correlation_matrix = intra_order_correlation_matrix_by_order(
             temporal_hypergraph, order, tau
         )
-        correlation_matrices[order + 1] = correlation_matrix
+        correlation_matrices[order] = correlation_matrix
 
     return correlation_matrices
 
@@ -118,11 +118,11 @@ def intra_order_correlation_functions_all_orders(
     The intra-order correlation functions for all orders at time lag tau, as a dictionary {order : function}.
     """
     correlation_functions = {}
-    for order in range(max_order):
+    for order in range(1, max_order+1):
         correlation_function = intra_order_correlation_function_by_order(
             temporal_hypergraph, order, tau
         )
-        correlation_functions[order + 1] = correlation_function
+        correlation_functions[order] = correlation_function
 
     return correlation_functions
 
@@ -227,17 +227,17 @@ def cross_order_correlation_matrices_all_orders(
     """
 
     correlation_matrices = {}
-    for order1 in range(max_order - 1):
-        for order2 in range(order1, max_order):
+    for order1 in range(1, max_order):
+        for order2 in range(order1, max_order+1):
             correlation_matrix = cross_order_correlation_matrix_two_orders(
                 temporal_hypergraph, order1, order2, tau
             )
-            correlation_matrices[(order1 + 1, order2 + 1)] = correlation_matrix
+            correlation_matrices[(order1, order2)] = correlation_matrix
             if not order1 == order2:
                 correlation_matrix = cross_order_correlation_matrix_two_orders(
                     temporal_hypergraph, order2, order1, tau
                 )
-                correlation_matrices[(order2 + 1, order1 + 1)] = correlation_matrix
+                correlation_matrices[(order2, order1)] = correlation_matrix
 
     return correlation_matrices
 
@@ -259,17 +259,17 @@ def cross_order_correlation_functions_all_orders(
     as a dictionary {(d1, d2 : function)}
     """
     correlation_functions = {}
-    for order1 in range(max_order - 1):
-        for order2 in range(order1, max_order):
+    for order1 in range(1, max_order):
+        for order2 in range(order1, max_order + 1):
             correlation_function = cross_order_correlation_function_two_orders(
                 temporal_hypergraph, order1, order2, tau
             )
-            correlation_functions[(order1 + 1, order2 + 1)] = correlation_function
+            correlation_functions[(order1, order2)] = correlation_function
             if not order1 == order2:
                 correlation_function = cross_order_correlation_function_two_orders(
                     temporal_hypergraph, order1, order2, tau
                 )
-                correlation_functions[(order2 + 1, order1 + 1)] = correlation_function
+                correlation_functions[(order2, order1)] = correlation_function
 
     return correlation_functions
 
@@ -331,16 +331,16 @@ def cross_order_gap_functions_all_orders(
     as a dictionary {(d1, d2 : function)}
     """
     gap_functions = {}
-    for order1 in range(max_order - 1):
-        for order2 in range(order1, max_order):
+    for order1 in range(1, max_order):
+        for order2 in range(order1, max_order + 1):
             gap_function = cross_order_gap_function_two_orders(
                 temporal_hypergraph, order1, order2, tau
             )
-            gap_functions[(order1 + 1, order2 + 1)] = gap_function
+            gap_functions[(order1, order2)] = gap_function
             if not order1 == order2:
                 correlation_function = cross_order_gap_function_two_orders(
                     temporal_hypergraph, order1, order2, tau
                 )
-                gap_functions[(order2 + 1, order1 + 1)] = gap_function
+                gap_functions[(order2, order1)] = gap_function
 
     return gap_functions
