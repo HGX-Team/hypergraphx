@@ -12,7 +12,7 @@ from hypergraphx.linalg import (
 
 
 def intra_order_correlation_matrix_by_order(
-    temporal_hypergraph: Dict[int, Hypergraph], order: int, tau: int
+    adjacency_matrices_all_orders: Dict[int, Hypergraph], order: int, tau: int
 ) -> sparse.csc_array:
     """Compute the intra-order correlation matrix for hyperedges of order d and time lag tau.
 
