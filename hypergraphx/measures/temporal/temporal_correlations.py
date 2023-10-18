@@ -12,13 +12,15 @@ from hypergraphx.linalg import (
 
 
 def intra_order_correlation_matrix_by_order(
-    adjacency_matrices_all_orders: Dict[int, Hypergraph], order: int, tau: int
+    adjacency_matrices_all_orders: Dict[int, Dict[int, sparse.csc_array]], annealed_adjacency_matrices_all_orders = None, 
+    order = 1, tau = 0
 ) -> sparse.csc_array:
     """Compute the intra-order correlation matrix for hyperedges of order d and time lag tau.
 
     Parameters
     ----------
-    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    adjacency_matrices_all_orders: a dictionary {order : {time : adjacency matrix}}.
+    annealed_adjacency_matrices_all_orders: a dictionary {order : annealed adjacency matrix}.
     order: the order.
     tau: the temporal lag.
 
@@ -26,11 +28,13 @@ def intra_order_correlation_matrix_by_order(
     -------
     The intra-order correlation matrix of order d at time lag tau, as a sparse matrix.
     """
-    T = max(temporal_hypergraph.keys())
-    temporal_adjacency_matrix, _ = temporal_adjacency_matrix_by_order(
-        temporal_hypergraph, order
-    )
-    annealed_adjacency_mtx = annealed_adjacency_matrix(temporal_adjacency_matrix)
+    temporal_adjacency_matrix = adjacency_matrices_all_orders[order]
+    T = len(temporal_adjacency_matrix.keys())
+    
+    if annealed_adjacency_matrices_all_orders == None:
+        annealed_adjacency_mtx = annealed_adjacency_matrix(temporal_adjacency_matrix)
+    else:
+        annealed_adjacency_mtx = annealed_adjacency_matrices_all_orders[order]
 
     correlation_matrix = sparse.csc_array(
         annealed_adjacency_mtx.shape, dtype=np.int8
@@ -54,13 +58,15 @@ def intra_order_correlation_matrix_by_order(
 
 
 def intra_order_correlation_function_by_order(
-    temporal_hypergraph: Dict[int, Hypergraph], order: int, tau: int
+    adjacency_matrices_all_orders: Dict[int, Dict[int, sparse.csc_array]], annealed_adjacency_matrices_all_orders = None, 
+    order = 1, tau = 0
 ) -> float:
     """Compute the intra-order correlation function for hyperedges of order d and time lag tau.
 
     Parameters
     ----------
-    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    adjacency_matrices_all_orders: a dictionary {order : {time : adjacency matrix}}.
+    annealed_adjacency_matrices_all_orders: a dictionary {order : annealed adjacency matrix}.
     order: the order.
     tau: the temporal lag.
 
@@ -69,7 +75,7 @@ def intra_order_correlation_function_by_order(
     The intra-order correlation function of order d at time lag tau.
     """
     correlation_matrix = intra_order_correlation_matrix_by_order(
-        temporal_hypergraph, order, tau
+        adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order, tau
     )
     correlation_function = correlation_matrix.trace()
 
@@ -77,13 +83,15 @@ def intra_order_correlation_function_by_order(
 
 
 def intra_order_correlation_matrices_all_orders(
-    temporal_hypergraph: Dict[int, Hypergraph], max_order: int, tau: int
+    adjacency_matrices_all_orders: Dict[int, Dict[int, sparse.csc_array]], annealed_adjacency_matrices_all_orders = None, 
+    max_order = None, tau = 0
 ):  # -> Tuple[sparse.csc_array]: ### to check
     """Compute the intra-order correlation matrices for hyperedges of all orders and time lag tau.
 
     Parameters
     ----------
-    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    adjacency_matrices_all_orders: a dictionary {order : {time : adjacency matrix}}.
+    annealed_adjacency_matrices_all_orders: a dictionary {order : annealed adjacency matrix}.
     max_order: the maximum order.
     tau: the temporal lag.
 
@@ -92,10 +100,12 @@ def intra_order_correlation_matrices_all_orders(
     The intra-order correlation matrices for all orders at time lag tau, as a dictionary {order : sparse matrix}.
     """
 
-    correlation_matrices = {}
+    correlation_matrices = dict()
+    if max_order == None:
+        max_order = max(adjacency_matrices_all_orders.keys())    
     for order in range(1, max_order+1):
         correlation_matrix = intra_order_correlation_matrix_by_order(
-            temporal_hypergraph, order, tau
+            adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order, tau
         )
         correlation_matrices[order] = correlation_matrix
 
@@ -103,13 +113,15 @@ def intra_order_correlation_matrices_all_orders(
 
 
 def intra_order_correlation_functions_all_orders(
-    temporal_hypergraph: Dict[int, Hypergraph], max_order: int, tau: int
+    adjacency_matrices_all_orders: Dict[int, Dict[int, sparse.csc_array]], annealed_adjacency_matrices_all_orders = None, 
+    max_order = None, tau = 0
 ):  # -> Tuple[float]: ### to check
     """Compute the intra-order correlation function for hyperedges of every order and time lag tau.
 
     Parameters
     ----------
-    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    adjacency_matrices_all_orders: a dictionary {order : {time : adjacency matrix}}.
+    annealed_adjacency_matrices_all_orders: a dictionary {order : annealed adjacency matrix}.
     max_order: the maximum order.
     tau: the temporal lag.
 
@@ -117,10 +129,12 @@ def intra_order_correlation_functions_all_orders(
     -------
     The intra-order correlation functions for all orders at time lag tau, as a dictionary {order : function}.
     """
-    correlation_functions = {}
+    correlation_functions = dict()
+    if max_order == None:
+        max_order = max(adjacency_matrices_all_orders.keys())
     for order in range(1, max_order+1):
         correlation_function = intra_order_correlation_function_by_order(
-            temporal_hypergraph, order, tau
+            adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order, tau
         )
         correlation_functions[order] = correlation_function
 
@@ -128,13 +142,15 @@ def intra_order_correlation_functions_all_orders(
 
 
 def cross_order_correlation_matrix_two_orders(
-    temporal_hypergraph: Dict[int, Hypergraph], order1: int, order2: int, tau: int
+    adjacency_matrices_all_orders: Dict[int, Dict[int, sparse.csc_array]], annealed_adjacency_matrices_all_orders = None, 
+    order1 = 1, order2 = 1, tau = 0
 ) -> sparse.csc_array:
     """Compute the cross-order correlation matrix between hyperedges of orders d1 and d2, and time lag tau.
 
     Parameters
     ----------
-    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    adjacency_matrices_all_orders: a dictionary {order : {time : adjacency matrix}}.
+    annealed_adjacency_matrices_all_orders: a dictionary {order : annealed adjacency matrix}.
     order1: the first order.
     order2: the second order.
     tau: the temporal lag.
@@ -144,21 +160,18 @@ def cross_order_correlation_matrix_two_orders(
     The cross-order correlation matrix between orders d1 and d2 at time lag tau, as a sparse matrix.
     """
     if order1 == order2:
-        return intra_order_correlation_matrix_by_order(temporal_hypergraph, order1, tau)
+        return intra_order_correlation_matrix_by_order(adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order1, tau)
 
-    T = max(temporal_hypergraph.keys())
-    temporal_adjacency_matrix_d1, _ = temporal_adjacency_matrix_by_order(
-        temporal_hypergraph, order1
-    )
-    temporal_adjacency_matrix_d2, _ = temporal_adjacency_matrix_by_order(
-        temporal_hypergraph, order2
-    )
-    annealed_adjacency_matrix_d1 = annealed_adjacency_matrix(
-        temporal_adjacency_matrix_d1
-    )
-    annealed_adjacency_matrix_d2 = annealed_adjacency_matrix(
-        temporal_adjacency_matrix_d2
-    )
+    temporal_adjacency_matrix_d1 = adjacency_matrices_all_orders[order1]
+    temporal_adjacency_matrix_d2 = adjacency_matrices_all_orders[order2]
+    T = len(temporal_adjacency_matrix_d1.keys())
+
+    if annealed_adjacency_matrices_all_orders == None:
+        annealed_adjacency_matrix_d1 = annealed_adjacency_matrix(temporal_adjacency_matrix_d1)
+        annealed_adjacency_matrix_d2 = annealed_adjacency_matrix(temporal_adjacency_matrix_d2)
+    else:
+        annealed_adjacency_matrix_d1 = annealed_adjacency_matrices_all_orders[order1]
+        annealed_adjacency_matrix_d2 = annealed_adjacency_matrices_all_orders[order2]
 
     correlation_matrix = sparse.csc_array(
         annealed_adjacency_matrix_d1.shape, dtype=np.int8
@@ -186,13 +199,15 @@ def cross_order_correlation_matrix_two_orders(
 
 
 def cross_order_correlation_function_two_orders(
-    temporal_hypergraph: Dict[int, Hypergraph], order1: int, order2: int, tau: int, normalized = False
+    adjacency_matrices_all_orders: Dict[int, Dict[int, sparse.csc_array]], annealed_adjacency_matrices_all_orders = None, 
+    order1 = 1, order2 = 1, tau = 0, normalized = False
 ) -> float:
     """Compute the cross-order correlation function between hyperedges of order d1 and d2, at time lag tau.
 
     Parameters
     ----------
-    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    adjacency_matrices_all_orders: a dictionary {order : {time : adjacency matrix}}.
+    annealed_adjacency_matrices_all_orders: a dictionary {order : annealed adjacency matrix}.
     order1: the first order.
     order2: the second order.
     tau: the temporal lag.
@@ -202,15 +217,15 @@ def cross_order_correlation_function_two_orders(
     The cross-order correlation function between orders d1 and d2, at time lag tau.
     """
     correlation_matrix = cross_order_correlation_matrix_two_orders(
-        temporal_hypergraph, order1, order2, tau
+        adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order1, order2, tau
     )
     correlation_function = correlation_matrix.trace()
     if normalized:
         sigma_d1 = intra_order_correlation_function_by_order(
-            temporal_hypergraph, order1, tau=0
+            adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order1, tau=0
             )
         sigma_d2 = intra_order_correlation_function_by_order(
-            temporal_hypergraph, order2, tau=0
+            adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order2, tau=0
         )
         normalization = 2 * np.sqrt(sigma_d1 * sigma_d2)
 
@@ -220,13 +235,15 @@ def cross_order_correlation_function_two_orders(
 
 
 def cross_order_correlation_matrices_all_orders(
-    temporal_hypergraph: Dict[int, Hypergraph], max_order: int, tau: int
+    adjacency_matrices_all_orders: Dict[int, Dict[int, sparse.csc_array]], annealed_adjacency_matrices_all_orders = None, 
+    max_order = None, tau = 0
 ):  # -> Tuple[sparse.csc_array]: ### to check
     """Compute the cross-order correlation matrices between each couple of hyperedge orders, time lag tau.
 
     Parameters
     ----------
-    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    adjacency_matrices_all_orders: a dictionary {order : {time : adjacency matrix}}.
+    annealed_adjacency_matrices_all_orders: a dictionary {order : annealed adjacency matrix}.
     max_order: the maximum order.
     tau: the temporal lag.
 
@@ -236,16 +253,18 @@ def cross_order_correlation_matrices_all_orders(
     as a dictionary {(d1, d2) : sparse matrix}.
     """
 
-    correlation_matrices = {}
-    for order1 in range(1, max_order):
-        for order2 in range(order1, max_order+1):
+    correlation_matrices = dict()
+    if max_order == None:
+        max_order = max(adjacency_matrices_all_orders.keys())
+    for order1 in range(1, max_order + 1):
+        for order2 in range(order1, max_order + 1):
             correlation_matrix = cross_order_correlation_matrix_two_orders(
-                temporal_hypergraph, order1, order2, tau
+                adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order1, order2, tau
             )
             correlation_matrices[(order1, order2)] = correlation_matrix
             if not order1 == order2:
                 correlation_matrix = cross_order_correlation_matrix_two_orders(
-                    temporal_hypergraph, order2, order1, tau
+                    adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order2, order1, tau
                 )
                 correlation_matrices[(order2, order1)] = correlation_matrix
 
@@ -253,13 +272,15 @@ def cross_order_correlation_matrices_all_orders(
 
 
 def cross_order_correlation_functions_all_orders(
-    temporal_hypergraph: Dict[int, Hypergraph], max_order: int, tau: int, normalized = False
+    adjacency_matrices_all_orders: Dict[int, Dict[int, sparse.csc_array]], annealed_adjacency_matrices_all_orders = None, 
+    max_order = None, tau = 0, normalized = False
 ) -> float:
     """Compute the cross-order correlation functions between each couple of orders, at time lag tau.
 
     Parameters
     ----------
-    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    adjacency_matrices_all_orders: a dictionary {order : {time : adjacency matrix}}.
+    annealed_adjacency_matrices_all_orders: a dictionary {order : annealed adjacency matrix}.
     max_order: the maximum order.
     tau: the temporal lag.
 
@@ -268,22 +289,26 @@ def cross_order_correlation_functions_all_orders(
     The cross-order correlation functions between each couple of orders, at time lag tau,
     as a dictionary {(d1, d2 : function)}
     """
-    correlation_functions = {}
+    correlation_functions = dict()
+    if max_order == None:
+        max_order = max(adjacency_matrices_all_orders.keys())
+
     if normalized:
-        sigmas = intra_order_correlation_functions_all_orders(temporal_hypergraph, max_order, tau=0)
+        sigmas = intra_order_correlation_functions_all_orders(adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, 
+                                                              max_order, tau=0)
 
     for order1 in range(1, max_order + 1):
         for order2 in range(order1, max_order + 1):
             # order1 before order2
             correlation_function = cross_order_correlation_function_two_orders(
-                temporal_hypergraph, order1, order2, tau
+                adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order1, order2, tau
             )
             correlation_functions[(order1, order2)] = correlation_function
 
             # order2 before order1
             if not order1 == order2:
                 correlation_function = cross_order_correlation_function_two_orders(
-                    temporal_hypergraph, order1, order2, tau
+                    adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order1, order2, tau
                 )
                 correlation_functions[(order2, order1)] = correlation_function
 
@@ -298,13 +323,15 @@ def cross_order_correlation_functions_all_orders(
 
 
 def cross_order_gap_function_two_orders(
-    temporal_hypergraph: Dict[int, Hypergraph], order1: int, order2: int, tau: int
+    adjacency_matrices_all_orders: Dict[int, Dict[int, sparse.csc_array]], annealed_adjacency_matrices_all_orders = None, 
+    order1 = 1, order2 = 1, tau = 0
 ) -> float:
     """Compute the cross-order gap function between hyperedges of order d1 and d2, at time lag tau.
 
     Parameters
     ----------
-    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    adjacency_matrices_all_orders: a dictionary {order : {time : adjacency matrix}}.
+    annealed_adjacency_matrices_all_orders: a dictionary {order : annealed adjacency matrix}.
     order1: the first order.
     order2: the second order.
     tau: the temporal lag.
@@ -313,21 +340,25 @@ def cross_order_gap_function_two_orders(
     -------
     The cross-order gap function between orders d1 and d2, at time lag tau.
     """
+    if order1 == order2: 
+        print("Warning: it is not meaningful to evaluate a cross-order gap within the same order")
+        return 0
+
     sigma_d1 = intra_order_correlation_function_by_order(
-        temporal_hypergraph, order1, tau=0
+        adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order1, tau=0
     )
     sigma_d2 = intra_order_correlation_function_by_order(
-        temporal_hypergraph, order2, tau=0
+        adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order2, tau=0
     )
     normalization = 2 * np.sqrt(sigma_d1 * sigma_d2)
     cross_order_correlation_function_d1_d2 = (
         cross_order_correlation_function_two_orders(
-            temporal_hypergraph, order1, order2, tau
+            adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order1, order2, tau
         )
     )
     cross_order_correlation_function_d2_d1 = (
         cross_order_correlation_function_two_orders(
-            temporal_hypergraph, order2, order1, tau
+            adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order2, order1, tau
         )
     )
 
@@ -338,13 +369,15 @@ def cross_order_gap_function_two_orders(
 
 
 def cross_order_gap_functions_all_orders(
-    temporal_hypergraph: Dict[int, Hypergraph], max_order: int, tau: int
+    adjacency_matrices_all_orders: Dict[int, Dict[int, sparse.csc_array]], annealed_adjacency_matrices_all_orders = None, 
+    max_order = None, tau = 0,
 ) -> float:
     """Compute the cross-order gap functions between each couple of orders, at time lag tau.
 
     Parameters
     ----------
-    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    adjacency_matrices_all_orders: a dictionary {order : {time : adjacency matrix}}.
+    annealed_adjacency_matrices_all_orders: a dictionary {order : annealed adjacency matrix}.
     max_order: the maximum order.
     tau: the temporal lag.
 
@@ -353,17 +386,18 @@ def cross_order_gap_functions_all_orders(
     The cross-order gap functions between each couple of orders, at time lag tau,
     as a dictionary {(d1, d2 : function)}
     """
-    gap_functions = {}
+    gap_functions = dict()
+    if max_order == None:
+        max_order = max(adjacency_matrices_all_orders.keys())
     for order1 in range(1, max_order + 1):
         for order2 in range(order1, max_order + 1):
-            gap_function = cross_order_gap_function_two_orders(
-                temporal_hypergraph, order1, order2, tau
-            )
-            gap_functions[(order1, order2)] = gap_function
-            if not order1 == order2:
-                correlation_function = cross_order_gap_function_two_orders(
-                    temporal_hypergraph, order1, order2, tau
+            if order1 == order2:
+                gap_functions[(order1, order2)] = 0
+            else: 
+                gap_function = cross_order_gap_function_two_orders(
+                    adjacency_matrices_all_orders, annealed_adjacency_matrices_all_orders, order1, order2, tau
                 )
-                gap_functions[(order2, order1)] = gap_function
-
+                gap_functions[(order1, order2)] = gap_function
+                gap_functions[(order2, order1)] = -1 * gap_function
+                
     return gap_functions
