@@ -321,7 +321,6 @@ def annealed_adjacency_matrices_all_orders(
     -------
     The annealed adjacency matrix for all orders, i.e., {order : annealed adjacency matrix}.
     """
-    temporal_adjacency_matrices_vals = temporal_adjacency_matrices.values()
     annealed_adjacency_matrices = dict()
     for order, temporal_adjacency_matrix in temporal_adjacency_matrices.items():
         annealed_adjacency_matrices[order] = annealed_adjacency_matrix(temporal_adjacency_matrix)
