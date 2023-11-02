@@ -135,7 +135,7 @@ def is_isolated(hg: Hypergraph, node, order=None, size=None):
     """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
-    return len(hg.get_neighbors(node, order=order, size=size)) == 0
+    return len(list(hg.get_neighbors(node, order=order, size=size))) == 0
 
 
 def is_connected(hg: Hypergraph, order=None, size=None):
