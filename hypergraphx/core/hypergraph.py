@@ -439,7 +439,10 @@ class Hypergraph:
             h.set_meta(node, self.get_meta(node))
         for edge in self._edge_list:
             if set(edge).issubset(set(nodes)):
-                h.add_edge(edge, weight=self._edge_list[edge], metadata=self.get_meta(edge))
+                if self._weighted:
+                    h.add_edge(edge, weight=self._edge_list[edge], metadata=self.get_meta(edge))
+                else:
+                    h.add_edge(edge, metadata=self.get_meta(edge))
         return h
 
     def subhypergraph_by_orders(
@@ -935,6 +938,25 @@ class Hypergraph:
         from hypergraphx.utils.cc import largest_component
 
         return largest_component(self, size=size, order=order)
+
+    def subhypergraph_largest_component(self, size=None, order=None):
+        """
+        Returns a subhypergraph induced by the nodes in the largest component of the hypergraph.
+
+        Parameters
+        ----------
+        size: int, optional
+            The size of the hyperedges to consider
+        order: int, optional
+            The order of the hyperedges to consider
+
+        Returns
+        -------
+        Hypergraph
+            Subhypergraph induced by the nodes in the largest component of the hypergraph.
+        """
+        nodes = self.largest_component(size=size, order=order)
+        return self.subhypergraph(nodes)
 
     def largest_component_size(self, size=None, order=None):
         from hypergraphx.utils.cc import largest_component_size
