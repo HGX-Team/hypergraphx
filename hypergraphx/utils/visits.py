@@ -1,4 +1,5 @@
 from hypergraphx import Hypergraph
+from collections import deque
 
 
 def _bfs(hg: Hypergraph, start, max_depth=None, order=None, size=None):
@@ -17,13 +18,19 @@ def _bfs(hg: Hypergraph, start, max_depth=None, order=None, size=None):
     set. The nodes visited during the search.
     """
     visited = set()
-    queue = [(start, 0)]
+    queue = deque([(start, 0)])
+
+    add_visited = visited.add
+    get_neighbors = hg.get_neighbors
+
     while queue:
-        node, depth = queue.pop(0)
+        node, depth = queue.popleft()
         if node not in visited:
-            visited.add(node)
+            add_visited(node)
             if max_depth is None or depth < max_depth:
-                queue.extend((n, depth + 1) for n in hg.get_neighbors(node, order=order, size=size))
+                neighbors = get_neighbors(node, order=order, size=size)
+                queue.extend((n, depth + 1) for n in neighbors if n not in visited)
+
     return visited
 
 
@@ -44,10 +51,18 @@ def _dfs(hg: Hypergraph, start, max_depth=None, order=None, size=None):
     """
     visited = set()
     stack = [(start, 0)]
+
+    add_visited = visited.add
+    get_neighbors = hg.get_neighbors
+
     while stack:
         node, depth = stack.pop()
         if node not in visited:
-            visited.add(node)
+            add_visited(node)
             if max_depth is None or depth < max_depth:
-                stack.extend((n, depth + 1) for n in hg.get_neighbors(node, order=order, size=size))
+                new_depth = depth + 1
+                neighbors = get_neighbors(node, order=order, size=size)
+                stack.extend((n, new_depth) for n in neighbors if n not in visited)
+
     return visited
+
