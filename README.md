@@ -8,7 +8,7 @@
 
 ## Temporary disclaimer
 * We are finalizing the process of uploading the datasets.
-* We welcome early feedbacks, discussions, ideas and contributions.
+* We welcome early feedback, discussions, ideas and contributions.
 
 ## News
    * 2023-03-28: HGX is now available!
@@ -59,8 +59,6 @@ Beyond experts in the field, we hope that our library will make higher-order net
 ## Quick start
 
 ### Installation
-Install R-base, then
-
 ```
 pip install hypergraphx
 ```
@@ -70,8 +68,6 @@ or, if you really want the latest updates
 ```
 pip install hypergraphx@git+https://github.com/HGX-Team/hypergraphx
 ```
-
-!! we are working on removing R-base from the dependancies of the library.
 
 ### First steps
 TODO: add basic tutorial
@@ -163,3 +159,9 @@ HGX contains copied or modified code from third sources. The licenses of such co
 
 #### R
 - [hyperG](https://cran.r-project.org/web/packages/HyperG/index.html)
+
+## Acknowledgments
+This project is supported by the Air Force Office of Scientific Research under award number FA8655-22-1-7025.
+
+
+

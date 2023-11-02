@@ -95,7 +95,7 @@ def incidence_matrix(
     hypergraph: Hypergraph,
     return_mapping: bool = False,
 ) -> sparse.csr_array | Tuple[sparse.csr_array, Dict[int, Any]]:
-    """Produce the binary incidence matrix representing a hypergraph.
+    """Produce the incidence matrix representing a hypergraph.
     For any node i and hyperedge e, the entry (i, e) of the binary incidence matrix is
     the weight of the hyperedge if the node belongs to it, 0 otherwise.
 
@@ -148,10 +148,12 @@ def incidence_matrix_by_order(
     If return_mapping is True, return the dictionary of node mappings.
     """
     binary_incidence, mapping = binary_incidence_matrix(
-        hypergraph.get_edges(order=order, subhypergraph=True, keep_isolated_nodes=keep_isolated_nodes), return_mapping
+        hypergraph.get_edges(order=order, subhypergraph=True, keep_isolated_nodes=keep_isolated_nodes), return_mapping=True
     )
     incidence = binary_incidence.multiply(hypergraph.get_weights(order=order)).tocsr()
-    return incidence, mapping
+    if return_mapping:
+        return incidence, mapping
+    return incidence
 
 
 def incidence_matrices_all_orders(
@@ -179,8 +181,10 @@ def incidence_matrices_all_orders(
     """
     incidence_matrices = {}
     for order in range(1, hypergraph.max_order() + 1):
-        # fix lista di mappings ad ogni ordine
-        incidence_matrices[order], _ = incidence_matrix_by_order(hypergraph, order, shape, keep_isolated_nodes, return_mapping)
+        if return_mapping:
+            incidence_matrices[order], _ = incidence_matrix_by_order(hypergraph, order, shape, keep_isolated_nodes, return_mapping)
+        else:
+            incidence_matrices[order] = incidence_matrix_by_order(hypergraph, order, shape, keep_isolated_nodes, return_mapping)
     return incidence_matrices
 
 
@@ -230,7 +234,9 @@ def adjacency_matrix_by_order(
     """
     incidence, mapping = incidence_matrix_by_order(hypergraph,order,keep_isolated_nodes=True,return_mapping=True)
     adj = incidence @ incidence.transpose()
-    adj.setdiag(0)
+    diagonal = adj.diagonal()
+    diagonal_matrix = sparse.diags(diagonal)
+    adj = adj - diagonal_matrix
     return adj, mapping
 
 def temporal_adjacency_matrix_by_order(
@@ -270,16 +276,12 @@ def temporal_adjacency_matrices_all_orders(
 
     Returns
     -------
-    A dictionary encoding the temporal adjacency matrices, i.e., {time : (adjacency matrices)}, and the dictionary of node mappings.
+    A dictionary encoding the temporal adjacency matrices, i.e., {order : {time : adjacency matrix}}, and the dictionary of node mappings.
     """
     temporal_adjacencies = {}
-    for t in temporal_hypergraph.keys():
-        hypergraph_t = temporal_hypergraph[t]
-        adjacency_list_t = []
-        for order in range(1,max_order + 1):
-            adj_t_order_d, mapping = adjacency_matrix_by_order(hypergraph_t, order)
-            adjacency_list_t.append(adj_t_order_d)
-        temporal_adjacencies[t] = tuple(adjacency_list_t)   
+    for order in range(1,max_order + 1):
+        adj_order_d, mapping = temporal_adjacency_matrix_by_order(temporal_hypergraph, order)
+        temporal_adjacencies[order] = adj_order_d  
     return temporal_adjacencies, mapping
 
 
@@ -298,13 +300,13 @@ def annealed_adjacency_matrix(
     -------
     The annealed adjacency matrix for a given order.
     """
-    T = max(temporal_adjacency_matrix.keys())
+    T = len(temporal_adjacency_matrix.keys())
     temporal_adjacency_matrix_lst = temporal_adjacency_matrix.values()
     annealed_adjacency_matrix = sum(temporal_adjacency_matrix_lst)/T
     return annealed_adjacency_matrix
 
 def annealed_adjacency_matrices_all_orders(
-    temporal_adjacency_matrices
+    temporal_adjacency_matrices: Dict[int, Dict[int, sparse.csc_array]]
 ): # -> Tuple[sparse.csc_array]: ###Fra, here as well I am not sure!
     """Compute the annealed adjacency matrices of the temporal hypergraph for all orders.
     For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix of order d
@@ -312,22 +314,17 @@ def annealed_adjacency_matrices_all_orders(
 
     Parameters
     ----------
-    temporal_adjacency_matrix: a dictionary {time : adjacency matrix}.
+    temporal_adjacency_matrix: a dictionary {order : {time : adjacency matrix}}.
     order: the order.
 
     Returns
     -------
-    The annealed adjacency matrix for all orders.
+    The annealed adjacency matrix for all orders, i.e., {order : annealed adjacency matrix}.
     """
-    temporal_adjacency_matrices_vals = temporal_adjacency_matrices.values()
-    max_order = len(temporal_adjacency_matrices_vals[0])
-    annealed_adjacency_matrices = []
-    for order in range(max_order):
-        temporal_adjacency_matrix_lst = [adjacencies_matrices_t[order] for adjacencies_matrices_t in temporal_adjacency_matrices_vals]
-        temporal_adjacency_matrix_dct = dict(zip(temporal_adjacency_matrices.keys(), temporal_adjacency_matrix_lst))
-        annealed_adjacency_matrix = annealed_adjacency_matrix(temporal_adjacency_matrix_dct)
-        annealed_adjacency_matrices.append(annealed_adjacency_matrix)
-    return tuple(annealed_adjacency_matrices)
+    annealed_adjacency_matrices = dict()
+    for order, temporal_adjacency_matrix in temporal_adjacency_matrices.items():
+        annealed_adjacency_matrices[order] = annealed_adjacency_matrix(temporal_adjacency_matrix)
+    return annealed_adjacency_matrices
 
 
 def dual_random_walk_adjacency(
