@@ -120,8 +120,6 @@ def core_periphery(hypergraph: Hypergraph, greedy_start=False, N_ITER=1000):
     d = list(w.keys())
 
     N_nodes, node2id, d, w = relabel_nodes(d, w)
-    print("N_nodes: {}".format(N_nodes))
-    print(node2id)
     deg_list = sort_by_degree(d)
 
     adj = get_adj(d)

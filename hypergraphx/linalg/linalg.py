@@ -42,10 +42,13 @@ def hye_list_to_binary_incidence(
         rows.extend(list(set_hye))
         columns.extend([j] * len(set_hye))
 
-    #inferred_N = max(rows) + 1
-    #inferred_E = len(hye_list)
-    inferred_N = shape[0]
-    inferred_E = shape[1]
+    if len(rows) > 0:
+        inferred_N = max(rows) + 1
+    else:
+        inferred_N = 0
+    inferred_E = len(hye_list)
+    #inferred_N = shape[0]
+    #inferred_E = shape[1]
 
     if shape is not None:
         if shape[0] < inferred_N or shape[1] < inferred_E:

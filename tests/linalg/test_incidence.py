@@ -61,6 +61,7 @@ def test_binary_incidence_from_dense(loaded_hypergraph: Hypergraph):
 
     assert np.all(inc.todense() == dense_incidence)
 
+
 def test_incidence(loaded_hypergraph: Hypergraph):
     def transform_hye_to_new_indices(hye, mapping_):
         return tuple(mapping_[node] for node in hye)
@@ -88,6 +89,7 @@ def test_incidence_by_order(loaded_hypergraph: Hypergraph):
     order_to_test = 2
 
     inc, mapping = hl.incidence_matrix_by_order(loaded_hypergraph, order = order_to_test, return_mapping=True)
+
     inverse_mapping = dict(zip(mapping.values(), mapping.keys()))
 
     subhypergraph_by_order = loaded_hypergraph.get_edges(order = order_to_test, subhypergraph=True, keep_isolated_nodes=False)
