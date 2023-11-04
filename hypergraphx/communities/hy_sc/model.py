@@ -117,18 +117,13 @@ class HySC:
         ]  # TODO: implement it as a core method
 
     def _extract_laplacian(self, weighted_L: bool = False) -> None:
-        """Extract the Laplacian matrix associated to the hypergraph.
+        # Check for division by zero and handle isolated nodes
+        invDE = np.diag(1.0 / np.where(self.hye_size == 0, 1, self.hye_size))
+        invDV2 = np.diag(np.sqrt(1.0 / np.where(self.node_degree == 0, 1, self.node_degree)))
 
-        Parameters
-        ----------
-        weighted_L: flag to use the weighted Laplacian.
-        """
-        # TODO: check whether this is already (or should be) implemented in other scripts
-        # TODO: and hopefully without making use of dense matrices
-        invDE = np.diag(1.0 / self.hye_size)
-        invDV2 = np.diag(np.sqrt(1.0 / self.node_degree))
-        # set to zero for isolated nodes
-        invDV2 = np.diag(np.where(invDV2, 0, invDV2))
+        # set to zero for isolated nodes - we check directly on self.node_degree
+        invDV2[self.node_degree == 0, self.node_degree == 0] = 0
+
         if weighted_L:
             dense_incidence = self.incidence.toarray()
             HT = dense_incidence.T
