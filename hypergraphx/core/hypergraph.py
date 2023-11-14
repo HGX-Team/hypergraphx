@@ -26,7 +26,6 @@ class Hypergraph:
         self._attr = MetaHandler()
         self._weighted = weighted
         self._edges_by_order = {}
-        self._neighbors = {}
         self._adj = {}
         self._max_order = 0
         self._edge_list = {}
@@ -82,7 +81,13 @@ class Hypergraph:
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
         if order is None and size is None:
-            return self._neighbors[node]
+            neigh = set()
+            edges = self.get_incident_edges(node)
+            for edge in edges:
+                neigh.update(edge)
+            if node in neigh:
+                neigh.remove(node)
+            return neigh
         else:
             if order is None:
                 order = size - 1
@@ -139,8 +144,7 @@ class Hypergraph:
         -------
         None
         """
-        if node not in self._neighbors:
-            self._neighbors[node] = set()
+        if node not in self._adj:
             self._adj[node] = set()
             self._attr.add_obj(node, obj_type="node")
 
@@ -228,11 +232,6 @@ class Hypergraph:
             self.add_node(node)
             self._adj[node].add(idx)
 
-        for i in range(len(edge)):
-            for j in range(i + 1, len(edge)):
-                self._neighbors[edge[i]].add(edge[j])
-                self._neighbors[edge[j]].add(edge[i])
-
     def add_edges(self, edge_list, weights=None, metadata=None):
         """Add a list of hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.
 
@@ -283,14 +282,6 @@ class Hypergraph:
                 )
                 i += 1
 
-    def _compute_neighbors(self, node):
-        neighbors = set()
-        for edge in self._adj[node]:
-            neighbors = neighbors.union(set(self._attr.get_obj(edge)))
-        if node in neighbors:
-            neighbors.remove(node)
-        return neighbors
-
     def _compute_max_order(self):
         self._max_order = 0
         for edge in self._edge_list:
@@ -322,8 +313,6 @@ class Hypergraph:
             idx = self._attr.get_id(edge)
             for node in edge:
                 self._adj[node].remove(idx)
-            for node in edge:
-                self._neighbors[node] = self._compute_neighbors(node)
             self._edges_by_order[order].remove(idx)
             self._attr.remove_obj(edge)
             if len(self._edges_by_order[order]) == 0:
@@ -390,7 +379,6 @@ class Hypergraph:
                     metadata=self.get_meta(edge),
                 )
                 self.remove_edge(edge)
-        del self._neighbors[node]
         del self._adj[node]
         self._attr.remove_obj(node)
 
@@ -532,9 +520,9 @@ class Hypergraph:
             List of nodes in the hypergraph. If metadata is True, it returns a list of tuples (node, metadata).
         """
         if not metadata:
-            return list(self._neighbors.keys())
+            return list(self._adj.keys())
         else:
-            return [(node, self.get_meta(node)) for node in self._neighbors.keys()]
+            return [(node, self.get_meta(node)) for node in self._adj.keys()]
 
     def num_nodes(self):
         """
@@ -819,7 +807,7 @@ class Hypergraph:
             True if the node is in the hypergraph, False otherwise.
 
         """
-        return node in self._neighbors
+        return node in self._adj
 
     def get_edges(
         self,
@@ -998,7 +986,6 @@ class Hypergraph:
 
     def clear(self):
         self._edge_list.clear()
-        self._neighbors.clear()
         self._edges_by_order.clear()
         self._max_order = 0
         self._attr.clear()

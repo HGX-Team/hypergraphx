@@ -6,13 +6,12 @@ class MetaHandler:
         self.attr = {}
 
     def add_obj(self, obj, obj_type=None):
-        if obj in self.obj2id:
-            raise KeyError("Object {} already exists.".format(obj))
-        self.id2obj[self.id] = obj
-        self.obj2id[obj] = self.id
-        self.attr[self.id] = {'type': obj_type, 'name': obj}
-        self.id += 1
-        return self.id - 1
+        if obj not in self.obj2id:
+            self.id2obj[self.id] = obj
+            self.obj2id[obj] = self.id
+            self.attr[self.id] = {'type': obj_type, 'name': obj}
+            self.id += 1
+        return self.get_id(obj)
 
     def get_id(self, obj):
         try:
