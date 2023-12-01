@@ -59,7 +59,7 @@ class TemporalHypergraph:
                     edges.append((t, edge))
         elif isinstance(time_window, tuple) and len(time_window) == 2:
             for t in sorted(self.edges):
-                if time_window[0] <= t <= time_window[1]:
+                if time_window[0] <= t < time_window[1]:
                     for edge in self.edges[t]:
                         edges.append((t, edge))
         else:
