@@ -39,7 +39,7 @@ def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
     
     numberInf = np.linspace(0, 0, T)
     #Infected = np.sum(I_0)
-    Infected = np.sum(I_0.values())
+    Infected = sum(I_0.values())
     numberInf[0] = Infected
     N = len(I_0)
     nodes = hypergraph.get_nodes()
@@ -82,7 +82,7 @@ def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
         #I_old = np.copy(I_new)
         I_old = I_new.copy()
         #Infected = np.sum(I_new)
-        Infected = np.sum(I_new.values())
+        Infected = sum(I_new.values()
         numberInf[t] = Infected
         t = t+1
     
