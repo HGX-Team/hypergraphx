@@ -16,7 +16,7 @@ def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
     hypergraph : hypergraphx.Hypergraph
         The hypergraph on which the contagion process is run.
 
-    I_0 : numpy.ndarray
+    I_0 : dictionary
         The initial condition of the contagion process.
 
     T : int
@@ -38,13 +38,11 @@ def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
     """
     
     numberInf = np.linspace(0, 0, T)
-    #Infected = np.sum(I_0)
     Infected = sum(I_0.values())
     numberInf[0] = Infected
     N = len(I_0)
     nodes = hypergraph.get_nodes()
     mapping = hypergraph.get_mapping()
-    #I_old = np.copy(I_0)
     I_old = I_0.copy()
     t = 1
 
@@ -54,13 +52,11 @@ def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
 
         # We run over the nodes
         for node in nodes:
-            #n = map_node(mapping, node)
             # if the node is susceptible, we run the infection process
             if I_old[node] == 0: 
                 # we first run the two-body infections
                 neighbors = hypergraph.get_neighbors(node, order=1)
                 for neigh in neighbors:
-                    #m = map_node(mapping, neigh)
                     if I_old[neigh] == 1 and np.random.random() < beta:
                         I_new[node] = 1
                         break # if the susceptile node gets infected, we stop iterating over its neighbors
@@ -71,7 +67,6 @@ def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
                     neighbors = list(triplet)
                     neighbors.remove(node)
                     neigh1, neigh2 = tuple(neighbors)
-                    #m1,m2 = tuple(map_nodes(mapping,neighbors))
                     if I_old[neigh1] == 1 and I_old[neigh2] == 1 and np.random.random() < beta_D:
                         I_new[node] = 1
                         break # if the susceptile node gets infected, we stop iterating over the triplets
@@ -79,9 +74,7 @@ def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
             elif np.random.random() < mu:
                 I_new[node] = 0
         
-        #I_old = np.copy(I_new)
         I_old = I_new.copy()
-        #Infected = np.sum(I_new)
         Infected = sum(I_new.values())
         numberInf[t] = Infected
         t = t+1
