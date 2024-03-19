@@ -74,6 +74,8 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
         with open(file_name, "r") as infile:
             data = json.load(infile)
             for obj in data:
+                obj = obj.replace('true', 'True')
+                obj = obj.replace('false', 'False')
                 obj = eval(obj)
                 if obj['type'] == 'node':
                     H.add_node(obj['name'])
