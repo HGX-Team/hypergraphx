@@ -1,6 +1,6 @@
 <img src="logo/logo.png" width="500" title="HGX logo">
 
-:page_facing_up: **[Paper](https://arxiv.org/pdf/2303.15356.pdf)** | :paperclip: **[Docs](https://hypergraphx.readthedocs.io/en/latest/#)** | :computer: **[Tutorials](https://github.com/HGX-Team/hypergraphx/tree/master/tutorials)** | :floppy_disk: **[Data]()** | :bug: **[Report bug]()** | :email: **[Reach us]()**
+:page_facing_up: **[Paper](https://arxiv.org/pdf/2303.15356.pdf)** | :paperclip: **[Docs](https://hypergraphx.readthedocs.io/en/latest/#)** | :computer: **[Tutorials](https://github.com/HGX-Team/hypergraphx/tree/master/tutorials)** | :floppy_disk: **[Data](https://github.com/HGX-Team/data)** | :bug: **[Report bug]()** | :email: **[Reach us]()**
 -----
 
 
@@ -73,10 +73,10 @@ pip install hypergraphx@git+https://github.com/HGX-Team/hypergraphx
 TODO: add basic tutorial
 
 ## Tutorials
-You can find tutorials covering a variety of use cases [here](https://github.com/HGX-Team/hypergraphx/tree/master/tutorials)
+You can find tutorials covering a variety of use cases [here](https://github.com/HGX-Team/hypergraphx/tree/master/tutorials).
 
 ## Data
-To appear soon
+Higher-order datasets are available in our [data repository](https://github.com/HGX-Team/data).
 
 ## Citing HGX
 If you use HGX or related data in your paper, please cite:
