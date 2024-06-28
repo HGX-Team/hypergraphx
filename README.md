@@ -24,6 +24,7 @@
 - [The HGX team](#the-hgx-team)
   * [Project coordinators](#project-coordinators)
   * [Core members](#core-members)
+  * [Collaborators](#collaborators)
 - [Contributing](#contributing)
 - [Citing HGX](#citing-hgx)
 - [License](#license)
