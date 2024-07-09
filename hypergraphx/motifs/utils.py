@@ -1,5 +1,6 @@
 import itertools
 import math
+from collections import deque
 
 
 def _motifs_ho_not_full(edges, N, visited):
@@ -167,8 +168,8 @@ def _motifs_standard(edges, N, visited):
             if u > v:
                 v_ext.add(u)
         k += 1
-        #if k % 5 == 0:
-            #print(k, len(z))
+        # if k % 5 == 0:
+        # print(k, len(z))
 
         graph_extend(set([v]), v_ext, v, set(graph[v]))
         c += 1
@@ -306,7 +307,7 @@ def norm_vector(a):
     """
     M = 0
     for i in a:
-        M += i ** 2
+        M += i**2
     M = math.sqrt(M)
     res = [i / M for i in a]
     return res
@@ -332,7 +333,7 @@ def sigma(motifs):
         for j in range(len(motifs)):
             s += (motifs[j][i][1] - u[i]) ** 2
         s /= len(motifs)
-        s = s ** 0.5
+        s = s**0.5
 
         result.append(s)
     return result
@@ -373,12 +374,11 @@ def power_set(A):
     A : list
         Set
 
-    Returns
-    -------
+    Yields
+    ------
     list
-        Power set of the set
+        Subsets of the set
     """
-    subsets = []
     N = len(A)
 
     for mask in range(1 << N):
@@ -388,49 +388,39 @@ def power_set(A):
             if ((mask >> n) & 1) == 1:
                 subset.append(A[n])
 
-        subsets.append(subset)
-
-    return subsets
+        yield subset
 
 
 def _is_connected(edges, N):
-    nodes = set()
-    for e in edges:
-        for n in e:
-            nodes.add(n)
-
+    nodes = set(itertools.chain(*edges))
+    if not edges:
+        return False
     if len(nodes) != N:
         return False
-
-    visited = {}
-    for i in nodes:
-        visited[i] = False
-    graph = {}
-    for i in nodes:
-        graph[i] = []
-
+    # Initialize graph as a dictionary of sets for efficient edge handling
+    graph = {i: set() for i in nodes}
     for edge in edges:
         for i in range(len(edge)):
-            for j in range(len(edge)):
-                if edge[i] != edge[j]:
-                    graph[edge[i]].append(edge[j])
-                    graph[edge[j]].append(edge[i])
+            for j in range(i + 1, len(edge)):
+                graph[edge[i]].add(edge[j])
+                graph[edge[j]].add(edge[i])
 
-    q = []
-    nodes = list(nodes)
-    q.append(nodes[0])
-    while len(q) != 0:
-        v = q.pop(len(q) - 1)
-        if not visited[v]:
-            visited[v] = True
-            for i in graph[v]:
-                q.append(i)
-    conn = True
-    for i in nodes:
-        if not visited[i]:
-            conn = False
-            break
-    return conn
+    # Early exit if any node is isolated
+    if any(len(neighbors) == 0 for neighbors in graph.values()):
+        return False
+
+    visited = set()
+    queue = deque([next(iter(graph))])  # Start from any node
+
+    # BFS to check connectivity
+    while queue:
+        node = queue.pop()
+        if node not in visited:
+            visited.add(node)
+            queue.extend(graph[node] - visited)
+
+    # Check if all nodes were visited
+    return len(visited) == N
 
 
 def relabel(edges: list, relabeling: dict):
@@ -479,6 +469,9 @@ def generate_motifs(N):
     n = N
     assert n >= 2
 
+    isom_classes = set()
+    relabeling_list = list(itertools.permutations([i for i in range(1, n + 1)]))
+
     h = [i for i in range(1, n + 1)]
     A = []
 
@@ -487,35 +480,28 @@ def generate_motifs(N):
 
     B = power_set(A)
 
-    C = []
-    for i in range(len(B)):
-        if _is_connected(B[i], N):
-            C.append(B[i])
-
-    isom_classes = {}
-
-    for i in C:
-        edges = sorted(i)
-        relabeling_list = list(itertools.permutations([j for j in range(1, n + 1)]))
-        found = False
-        for relabeling in relabeling_list:
-            relabeling_i = relabel(edges, relabeling)
-            # print(relabeling_i)
-            if tuple(relabeling_i) in isom_classes:
-                found = True
-                break
-        if not found:
-            isom_classes[tuple(edges)] = 1
+    for edges in B:
+        if _is_connected(edges, N):
+            edges = sorted(edges)
+            found = False
+            for relabeling in relabeling_list:
+                relabeling_i = relabel(edges, relabeling)
+                if tuple(relabeling_i) in isom_classes:
+                    found = True
+                    break
+            if not found:
+                isom_classes.add(tuple(edges))
+    isom_classes = {item: 1 for item in isom_classes}
 
     mapping = {}
     labeling = {}
 
     for k in isom_classes.keys():
         mapping[k] = set()
-        relabeling_list = list(itertools.permutations([j for j in range(1, n + 1)]))
         for relabeling in relabeling_list:
             relabeling_i = relabel(k, relabeling)
-            labeling[tuple(sorted(relabeling_i))] = 0
-            mapping[k].add(tuple(sorted(relabeling_i)))
+            relabeling_i = tuple(sorted(relabeling_i))
+            labeling[relabeling_i] = 0
+            mapping[k].add(relabeling_i)
 
     return mapping, labeling
