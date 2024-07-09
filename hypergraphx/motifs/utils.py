@@ -1,5 +1,6 @@
 import itertools
 import math
+from collections import deque
 
 
 def _motifs_ho_not_full(edges, N, visited):
@@ -391,43 +392,35 @@ def power_set(A):
 
 
 def _is_connected(edges, N):
-    nodes = set()
-    for e in edges:
-        for n in e:
-            nodes.add(n)
-
+    nodes = set(itertools.chain(*edges))
+    if not edges:
+        return False
     if len(nodes) != N:
         return False
-
-    visited = {}
-    for i in nodes:
-        visited[i] = False
-    graph = {}
-    for i in nodes:
-        graph[i] = []
-
+    # Initialize graph as a dictionary of sets for efficient edge handling
+    graph = {i: set() for i in nodes}
     for edge in edges:
         for i in range(len(edge)):
-            for j in range(len(edge)):
-                if edge[i] != edge[j]:
-                    graph[edge[i]].append(edge[j])
-                    graph[edge[j]].append(edge[i])
+            for j in range(i + 1, len(edge)):
+                graph[edge[i]].add(edge[j])
+                graph[edge[j]].add(edge[i])
 
-    q = []
-    nodes = list(nodes)
-    q.append(nodes[0])
-    while len(q) != 0:
-        v = q.pop(len(q) - 1)
-        if not visited[v]:
-            visited[v] = True
-            for i in graph[v]:
-                q.append(i)
-    conn = True
-    for i in nodes:
-        if not visited[i]:
-            conn = False
-            break
-    return conn
+    # Early exit if any node is isolated
+    if any(len(neighbors) == 0 for neighbors in graph.values()):
+        return False
+
+    visited = set()
+    queue = deque([next(iter(graph))])  # Start from any node
+
+    # BFS to check connectivity
+    while queue:
+        node = queue.pop()
+        if node not in visited:
+            visited.add(node)
+            queue.extend(graph[node] - visited)
+
+    # Check if all nodes were visited
+    return len(visited) == N
 
 
 def relabel(edges: list, relabeling: dict):
