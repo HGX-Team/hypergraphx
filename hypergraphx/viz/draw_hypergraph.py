@@ -188,11 +188,11 @@ def draw_hypergraph(
 
             color = hyperedge_color_by_order[order]
             facecolor = hyperedge_facecolor_by_order[order]
-            plt.fill(
+            ax.fill(
                 x1, y1, alpha=hyperedge_alpha, c=color, edgecolor=facecolor
             )
 
     nx.draw_networkx_edges(G, pos, width=edge_width, edge_color=edge_color, ax=ax)
 
     ax.axis("equal")
-    plt.axis("off")
+    plt.axis("equal")
