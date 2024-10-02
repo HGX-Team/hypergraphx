@@ -120,7 +120,8 @@ def expected_shape(hye_list, shape):
 class TestHyeListToBinaryIncidenceFromListCorrect:
     def test_incidence_type(self, hye_list, shape, expected_shape):
         sparse_incidence = hye_list_to_binary_incidence(hye_list, shape)
-        assert isinstance(sparse_incidence, sparse.coo_matrix)
+        print(type(sparse_incidence))
+        assert isinstance(sparse_incidence, sparse.coo_array)
 
     def test_incidence_shape(self, hye_list, shape, expected_shape):
         sparse_incidence = hye_list_to_binary_incidence(hye_list, shape)
