@@ -3,4 +3,4 @@ from hypergraphx.core.multiplex_hypergraph import MultiplexHypergraph
 from hypergraphx.core.temporal_hypergraph import TemporalHypergraph
 
 
-__version__ = "1.7.2"
+__version__ = "1.7.3"
