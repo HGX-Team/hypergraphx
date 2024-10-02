@@ -1,6 +1,16 @@
 import io
 import os
+import re
 from setuptools import find_packages, setup
+
+def read_version():
+    init_file = os.path.join(os.path.dirname(__file__), "hypergraphx", "__init__.py")
+    with open(init_file, "r") as f:
+        content = f.read()
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", content, re.M)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string.")
 
 
 def read(*paths, **kwargs):
@@ -15,7 +25,7 @@ def read(*paths, **kwargs):
 
 setup(
     name='hypergraphx',
-    version='1.7.2',
+    version=read_version(),
     license='BSD-3-Clause license',
     description='HGX is a multi-purpose, open-source Python library for higher-order network analysis',
     long_description=read("README.md"),

@@ -1,10 +1,6 @@
 import copy
 from typing import Optional, Tuple
-
 from sklearn.preprocessing import LabelEncoder
-
-from hypergraphx.core.meta_handler import MetaHandler
-
 
 class Hypergraph:
     """
@@ -23,6 +19,7 @@ class Hypergraph:
     """
 
     def __init__(self, edge_list=None, weighted=False, weights=None, metadata=None):
+        from hypergraphx.core.meta_handler import MetaHandler
         self._attr = MetaHandler()
         self._weighted = weighted
         self._edges_by_order = {}

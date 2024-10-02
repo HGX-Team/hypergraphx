@@ -10,11 +10,15 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 
+from hypergraphx import __version__ as release
 
 project = 'Hypergraphx'
-copyright = '2023, HGX-Team'
+
+import datetime
+year = datetime.datetime.now().year
+
+copyright = f'{year}, HGX-Team'
 author = 'HGX-Team'
-release = '1.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
