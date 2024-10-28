@@ -27,6 +27,23 @@ class Hypergraph:
         self._max_order = 0
         self._edge_list = {}
         self.add_edges(edge_list, weights=weights, metadata=metadata)
+        self.hypergraph_metadata = {}
+        self.incidences_metadata = {}
+        self.node_metadata = {}
+        self.edge_metadata = {}
+        self.empty_edges = {}
+
+    def add_empty_edge(self, name, metadata):
+        if name not in self.empty_edges:
+            self.empty_edges[name] = metadata
+        else:
+            raise("Edge {} already in hypergraph.".format(name))
+
+    def get_hypergraph_metadata(self):
+        return self.hypergraph_metadata
+
+    def add_hypergraph_metadata(self, metadata):
+        self.hypergraph_metadata = metadata
 
     def get_mapping(self):
         """
@@ -721,23 +738,46 @@ class Hypergraph:
         """
         return self._attr.get_attr(obj)
 
-    def set_meta(self, obj, attr):
-        """Sets the metadata of the specified object.
+    def set_node_metadata(self, node, metadata):
+        if node not in self._adj:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        self.node_metadata[node] = metadata
 
-        Parameters
-        ----------
-        obj : Object
-            The object to set the metadata of.
+    def get_node_metadata(self, node):
+        if node not in self._adj:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        return self.node_metadata[node]
 
-        attr : dict
-            The metadata to set.
+    def get_all_nodes_metadata(self):
+        return list(self.node_metadata.values())
 
-        Returns
-        -------
-        None
+    def set_edge_metadata(self, edge, metadata):
+        if edge not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        self.edge_metadata[edge] = metadata
 
-        """
-        self._attr.set_attr(obj, attr)
+    def get_edge_metadata(self, edge):
+        if edge not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        return self.edge_metadata[edge]
+
+    def get_all_edges_metadata(self):
+        a = list(self.edge_metadata.values())
+        b = list(self.empty_edges.values())
+        return a + b
+
+    def set_incidence_metadata(self, edge, node, metadata):
+        if tuple(sorted(edge)) not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        self.incidences_metadata[(edge, node)] = metadata
+
+    def get_incidence_metadata(self, edge, node):
+        if tuple(sorted(edge)) not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        return self.incidences_metadata[(edge, node)]
+
+    def get_all_incidences_metadata(self):
+        return list(self.incidences_metadata.values())
 
     def get_attr_meta(self, obj, attr):
         """Returns the value of the specified metadata attribute of the specified object.

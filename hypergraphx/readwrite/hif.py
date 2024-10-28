@@ -1,7 +1,7 @@
 import json
 import os
 
-from hypergraphx import Hypergraph, TemporalHypergraph, MultiplexHypergraph
+from hypergraphx import Hypergraph
 
 
 def load_hif(path: str) -> Hypergraph:
@@ -18,55 +18,76 @@ def load_hif(path: str) -> Hypergraph:
     Hypergraph
         The loaded hypergraph
     """
+    edge_name_to_uid = {}
+    node_name_to_uid = {}
+    eid = 0
+    nid = 0
 
     with open(path) as file:
         data = json.loads(file.read())
 
     if 'type' not in data:
-        raise ValueError("Absent hypergraph type")
+        print("No hypergraph type - assume undirected")
+        data['type'] = 'undirected'
 
-    if 'metadata' not in data:
-        raise ValueError("Metadata is required")
-
-    if 'nodes' not in data:
-        raise ValueError("Information about nodes in the hypergraph is required")
-
-    if 'edges' not in data:
-        raise ValueError("Information about edges in the hypergraph is required")
-
-    if 'incidences' not in data:
-        raise ValueError("Information about hypergraph incidences is required")
-
-    if data['type'] == 'undirected':
+    if data['type'] == 'undirected' or data['type'] == 'asc':
         H = Hypergraph()
     elif data['type'] == 'directed':
         H = Hypergraph(directed=True)
-    elif data['type'] == 'temporal':
-        H = TemporalHypergraph()
-    elif data['type'] == 'multiplex':
-        H = MultiplexHypergraph()
     else:
-        raise ValueError("Invalid hypergraph type")
+        raise ValueError(f"Unknown hypergraph type: {data['type']}")
 
-    H.add_hypergraph_metadata(data['metadata'])
-
-    for node in data['nodes']:
-        H.add_node(node['uid'])
-        H.set_meta(node['uid'], node['attrs'])
-
-    for edge in data['edges']:
-        H.add_empty_edge(edge['uid'])
-        H.set_meta(edge['uid'], edge['attrs'])
+    if 'metadata' in data:
+        H.add_hypergraph_metadata(data['metadata'])
 
     tmp_edges = {}
     for incidence in data['incidences']:
-        edge = incidence['edge']
+        if incidence['edge'] not in edge_name_to_uid:
+            edge_name_to_uid[incidence['edge']] = eid
+            eid += 1
+        edge = edge_name_to_uid[incidence['edge']]
+
+        if incidence['node'] not in node_name_to_uid:
+            node_name_to_uid[incidence['node']] = nid
+            nid += 1
+        node = node_name_to_uid[incidence['node']]
+
         if edge not in tmp_edges:
             tmp_edges[edge] = []
-        tmp_edges[edge].append(incidence['node'])
+        tmp_edges[edge].append(node)
 
-    for edge, nodes in tmp_edges.items():
-        H.add_edge(nodes, uid=edge)
+    for record in data['nodes']:
+        node_name = record['node']
+        if node_name not in node_name_to_uid:
+            node_name_to_uid[node_name] = nid
+            nid += 1
+        node = node_name_to_uid[node_name]
+        H.add_node(node)
+        H.set_node_metadata(node, record)
+
+    added = {}
+
+    for record in data['edges']:
+        edge_name = record['edge']
+        if edge_name not in edge_name_to_uid:
+            edge_name_to_uid[edge_name] = eid
+            eid += 1
+        edge = edge_name_to_uid[edge_name]
+        if edge in tmp_edges:
+            H.add_edge(tuple(sorted(tmp_edges[edge])))
+            added[tuple(sorted(tmp_edges[edge]))] = True
+            H.set_edge_metadata(tuple(sorted(tmp_edges[edge])), record)
+        else:
+            H.add_empty_edge(edge_name, record)
+
+
+    for incidence in data['incidences']:
+        edge = edge_name_to_uid[incidence['edge']]
+        node = node_name_to_uid[incidence['node']]
+        if tuple(sorted(tmp_edges[edge])) not in added:
+            H.add_edge(tuple(sorted(tmp_edges[edge])))
+            added[tuple(sorted(tmp_edges[edge]))] = True
+        H.set_incidence_metadata(tuple(sorted(tmp_edges[edge])), node, incidence)
 
     return H
 
@@ -82,31 +103,13 @@ def save_hif(H: Hypergraph, path: str):
     path: str
         The path to save the hypergraph to.
     """
-    data = {}
 
-    data['metadata'] = H.get_hypergraph_metadata()
-    if isinstance(H, TemporalHypergraph):
-        data['type'] = 'temporal'
-    elif isinstance(H, MultiplexHypergraph):
-        data['type'] = 'multiplex'
-    elif H.is_directed():
-        data['type'] = 'directed'
-    else:
-        data['type'] = 'undirected'
-
-    data['nodes'] = []
-    for node in H.get_nodes():
-        data['nodes'].append({'uid': node, 'attrs': H.get_meta(node)})
-
-    data['edges'] = []
-    for edge in H.get_edges():
-        data['edges'].append({'uid': edge, 'attrs': H.get_meta(edge)})
-
-    data['incidences'] = []
-    for edge in H.get_edges():
-        uid = H.get_edge_uid(edge)
-        for node in edge:
-            data['incidences'].append({'edge': uid, 'node': node})
+    data = {'type': 'undirected',
+            'metadata': H.get_hypergraph_metadata(),
+            'edges': H.get_all_edges_metadata(),
+            'nodes': H.get_all_nodes_metadata(),
+            'incidences': H.get_all_incidences_metadata()
+            }
 
     with open(path, 'w') as file:
         file.write(json.dumps(data))
