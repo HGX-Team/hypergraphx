@@ -3,7 +3,6 @@ import os
 
 from hypergraphx import Hypergraph
 
-
 def load_hif(path: str) -> Hypergraph:
     """
     Load a hypergraph from a HIF file.
@@ -38,7 +37,7 @@ def load_hif(path: str) -> Hypergraph:
         raise ValueError(f"Unknown hypergraph type: {data['type']}")
 
     if 'metadata' in data:
-        H.add_hypergraph_metadata(data['metadata'])
+        H.set_hypergraph_metadata(data['metadata'])
 
     tmp_edges = {}
     for incidence in data['incidences']:
