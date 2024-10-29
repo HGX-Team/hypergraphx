@@ -165,7 +165,7 @@ class Hypergraph:
         """
         if node not in self._adj:
             self._adj[node] = set()
-            self.node_metadata = {}
+            self.node_metadata[node] = {}
 
     def add_nodes(self, node_list: list):
         """
@@ -226,9 +226,7 @@ class Hypergraph:
 
         edge = tuple(sorted(edge))
         order = len(edge) - 1
-
-        if metadata is not None:
-            self.set_edge_metadata(edge, metadata)
+        self.edge_metadata[edge] = metadata
 
         if order > self._max_order:
             self._max_order = order
@@ -276,11 +274,11 @@ class Hypergraph:
             self._weighted = True
 
         if self._weighted and weights is not None:
-            if len(set(edge_list)) != len(edge_list):
+            if len(set(edge_list)) != len(list(edge_list)):
                 raise ValueError(
                     "If weights are provided, the edge list must not contain repeated edges."
                 )
-            if len(edge_list) != len(weights):
+            if len(list(edge_list)) != len(list(weights)):
                 raise ValueError("The number of edges and weights must be the same.")
 
         i = 0
