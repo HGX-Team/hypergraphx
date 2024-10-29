@@ -21,7 +21,6 @@ class Hypergraph:
     def __init__(self, edge_list=None, weighted=False, weights=None, metadata=None):
         self._weighted = weighted
         self._adj = {}
-        self._max_order = 0
         self._edge_list = {}
         self.hypergraph_metadata = {}
         self.incidences_metadata = {}
@@ -228,9 +227,6 @@ class Hypergraph:
         order = len(edge) - 1
         self.edge_metadata[edge] = metadata
 
-        if order > self._max_order:
-            self._max_order = order
-
         if weight is None:
             if edge in self._edge_list and self._weighted:
                 self._edge_list[edge] += 1
@@ -293,13 +289,6 @@ class Hypergraph:
                 )
                 i += 1
 
-    def _compute_max_order(self):
-        self._max_order = 0
-        for edge in self._edge_list:
-            order = len(edge) - 1
-            if order > self._max_order:
-                self._max_order = order
-
     def remove_edge(self, edge):
         """Remove an edge from the hypergraph.
 
@@ -323,8 +312,6 @@ class Hypergraph:
             order = len(edge) - 1
             for node in edge:
                 self._adj[node].remove(edge)
-            if order == self._max_order:
-                self._compute_max_order()
         except KeyError:
             print("Edge {} not in hypergraph.".format(edge))
 
@@ -464,9 +451,9 @@ class Hypergraph:
             raise ValueError("Order and size cannot be both specified.")
         h = Hypergraph(weighted=self.is_weighted())
         if keep_nodes:
-            h.add_nodes(node_list=self.get_nodes())
+            h.add_nodes(node_list=list(self.get_nodes()))
             for node in self.get_nodes():
-                h.set_node_metadata(self.get_node_metadata(node))
+                h.set_node_metadata(node, self.get_node_metadata(node))
 
         if sizes is None:
             sizes = []
@@ -492,7 +479,7 @@ class Hypergraph:
         int
             Maximum order of the hypergraph.
         """
-        return self._max_order
+        return self.max_size() - 1
 
     def max_size(self):
         """
@@ -503,7 +490,7 @@ class Hypergraph:
         int
             Maximum size of the hypergraph.
         """
-        return self._max_order + 1
+        return max(self.get_sizes())
 
     def get_nodes(self, metadata=False):
         """
@@ -913,7 +900,6 @@ class Hypergraph:
 
     def clear(self):
         self._edge_list.clear()
-        self._max_order = 0
 
     def copy(self):
         """
