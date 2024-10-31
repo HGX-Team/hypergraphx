@@ -303,14 +303,17 @@ def norm_vector(a):
     Returns
     -------
     list
-        Normalized vector
+        Normalized vector (unit vector) or the original vector if the norm is zero
     """
     M = 0
     for i in a:
         M += i**2
     M = math.sqrt(M)
-    res = [i / M for i in a]
-    return res
+    if M == 0:
+        # vector is unchanged
+        return a
+    else:
+        return [i / M for i in a]
 
 
 def avg(motifs):
