@@ -4,7 +4,6 @@ from hypergraphx.core.meta_handler import MetaHandler
 
 class TemporalHypergraph:
     def __init__(self, edges):
-        self.__attr = MetaHandler()
         self.edges = {}
         self._nodes = set()
         self.add_edges(edges)

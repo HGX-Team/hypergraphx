@@ -21,12 +21,9 @@ class DirectedHypergraph:
 
     def __init__(self, edge_list=None, weighted=False, weights=None, metadata=None):
         from hypergraphx.core.meta_handler import MetaHandler
-        self._attr = MetaHandler()
         self._weighted = weighted
-        self._edges_by_order = {}
         self._adj_out = {}
         self._adj_in = {}
-        self._max_order = 0
         self._edge_list = {}
 
         if edge_list is not None:
@@ -61,7 +58,6 @@ class DirectedHypergraph:
         if node not in self._adj_out:
             self._adj_out[node] = set()
             self._adj_in[node] = set()
-            self._attr.add_obj(node, obj_type="node")
 
     def add_nodes(self, node_list: list):
         """
@@ -118,20 +114,6 @@ class DirectedHypergraph:
         if not self._weighted and weight is not None:
             raise ValueError("If the hypergraph is not weighted, no weight must be provided.")
 
-        idx = self._attr.add_obj(edge, obj_type="edge")
-        order = len(source) + len(target) - 1
-
-        if metadata is not None:
-            self._attr.set_attr(edge, metadata)
-
-        if order > self._max_order:
-            self._max_order = order
-
-        if order not in self._edges_by_order:
-            self._edges_by_order[order] = [idx]
-        else:
-            self._edges_by_order[order].append(idx)
-
         if weight is None:
             if edge in self._edge_list and self._weighted:
                 self._edge_list[edge] += 1
@@ -177,6 +159,7 @@ class DirectedHypergraph:
             self.add_edge(edge, weight=weights[i] if weights else None,
                           metadata=metadata[i] if metadata else None)
 
+
     def remove_edge(self, edge: Tuple[Tuple, Tuple]):
         """Remove a directed edge from the hypergraph.
 
@@ -192,16 +175,14 @@ class DirectedHypergraph:
         try:
             del self._edge_list[edge]
             source, target = edge
-            idx = self._attr.get_id(edge)
 
             # Remove from adjacency
             for node in source:
-                self._adj_out[node].remove(idx)
+                self._adj_out[node].remove(edge)
 
             for node in target:
-                self._adj_in[node].remove(idx)
+                self._adj_in[node].remove(edge)
 
-            self._attr.remove_obj(edge)
         except KeyError:
             print(f"Edge {edge} not in hypergraph.")
 
@@ -214,12 +195,11 @@ class DirectedHypergraph:
         if not keep_edges:
             outgoing_edges = list(self._adj_out[node])
             incoming_edges = list(self._adj_in[node])
-            for edge_id in outgoing_edges + incoming_edges:
-                self.remove_edge(self._attr.get_obj(edge_id))
+            for edge in outgoing_edges + incoming_edges:
+                self.remove_edge(edge)
 
         del self._adj_out[node]
         del self._adj_in[node]
-        self._attr.remove_obj(node)
 
     def get_nodes(self):
         """Returns the list of nodes in the hypergraph."""
@@ -262,9 +242,6 @@ class DirectedHypergraph:
 
     def clear(self):
         self._edge_list.clear()
-        self._edges_by_order.clear()
-        self._max_order = 0
-        self._attr.clear()
         self._adj_out.clear()
         self._adj_in.clear()
 

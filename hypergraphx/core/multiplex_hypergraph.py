@@ -6,11 +6,14 @@ class MultiplexHypergraph:
 
     def __init__(self):
         self.layers = {}
-        self.__attr = MetaHandler()
+        self.layer_metadata = {}
 
     def add_layer(self, layer_name, hypergraph: Hypergraph, attr=None):
         self.layers[layer_name] = hypergraph
-        self.__attr.set_attr(layer_name, attr)
+        if attr is not None:
+            self.layer_metadata[layer_name] = attr
+        else:
+            self.layer_metadata[layer_name] = {}
 
     def get_layer(self, layer_name):
         return self.layers[layer_name]
@@ -20,12 +23,6 @@ class MultiplexHypergraph:
 
     def get_layers(self):
         return list(self.layers.keys())
-
-    def get_layer_attr(self, layer_name):
-        return self.__attr.get_attr(layer_name)
-
-    def set_layer_attr(self, layer_name, attr):
-        self.__attr.set_attr(layer_name, attr)
 
     def get_nodes(self):
         nodes = set()
