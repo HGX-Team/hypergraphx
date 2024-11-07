@@ -20,7 +20,6 @@ class DirectedHypergraph:
     """
 
     def __init__(self, edge_list=None, weighted=False, weights=None, metadata=None):
-        from hypergraphx.core.meta_handler import MetaHandler
         self._weighted = weighted
         self._adj_out = {}
         self._adj_in = {}

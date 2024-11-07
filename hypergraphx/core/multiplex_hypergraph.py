@@ -1,5 +1,4 @@
 from hypergraphx import Hypergraph
-from hypergraphx.core.meta_handler import MetaHandler
 
 
 class MultiplexHypergraph:
