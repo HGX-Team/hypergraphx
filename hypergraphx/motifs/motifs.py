@@ -52,7 +52,7 @@ def compute_motifs(hypergraph: Hypergraph, order=3, runs_config_model=10):
 
         return res
     
-    edges = hypergraph.get_edges(up_to=order)
+    edges = hypergraph.get_edges(size=order, up_to=True)
     output = {}
     print(hypergraph)
 
@@ -65,7 +65,7 @@ def compute_motifs(hypergraph: Hypergraph, order=3, runs_config_model=10):
     else:
         raise ValueError("Exact computation of motifs of order > 4 is not available.")
 
-    STEPS = hypergraph.num_edges(up_to=order) * 10
+    STEPS = hypergraph.num_edges(size=order, up_to=True) * 10
     ROUNDS = runs_config_model
 
     results = []
@@ -77,12 +77,14 @@ def compute_motifs(hypergraph: Hypergraph, order=3, runs_config_model=10):
             m1 = _motifs_order_3(e1.get_edges())
         elif order == 4:
             m1 = _motifs_order_4(e1.get_edges())
+        else:
+            raise ValueError("Exact computation of motifs of order > 4 is not available.")
         results.append(m1)
 
     output['config_model'] = results
 
-    delta = diff_sum(output['observed'], output['config_model'])
-    norm_delta = norm_vector(delta)
+    delta = list(diff_sum(output['observed'], output['config_model']))
+    norm_delta = list(norm_vector(delta))
     output['norm_delta'] = []
 
     for i in range(len(delta)):
