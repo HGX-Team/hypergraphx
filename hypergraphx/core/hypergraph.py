@@ -783,7 +783,7 @@ class Hypergraph:
                 
             for node in h.get_nodes():
                 h.set_node_metadata(node, self.get_node_metadata(node))
-            for edge in h.get_edges():
+            for edge in edges:
                 h.set_edge_metadata(edge, self.get_edge_metadata(edge))
             return h
 
@@ -795,7 +795,7 @@ class Hypergraph:
             else:
                 h.add_edges(edges)
 
-            for edge in h.get_edges():
+            for edge in edges:
                 h.set_edge_metadata(edge, self.get_edge_metadata(edge))
             return h
         else:

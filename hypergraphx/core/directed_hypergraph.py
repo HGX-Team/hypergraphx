@@ -41,6 +41,7 @@ class DirectedHypergraph:
         encoder.fit(self.get_nodes())
         return encoder
 
+
     def add_node(self, node):
         """
         Add a node to the hypergraph. If the node is already in the hypergraph, nothing happens.
@@ -157,6 +158,58 @@ class DirectedHypergraph:
         for i, edge in enumerate(edge_list):
             self.add_edge(edge, weight=weights[i] if weights else None,
                           metadata=metadata[i] if metadata else None)
+
+    def get_edges(
+            self,
+            order=None,
+            size=None,
+            up_to=False,
+            subhypergraph=False,
+            keep_isolated_nodes=False,
+    ):
+        if order is not None and size is not None:
+            raise ValueError("Order and size cannot be both specified.")
+        if not subhypergraph and keep_isolated_nodes:
+            raise ValueError("Cannot keep nodes if not returning subhypergraphs.")
+
+        if order is None and size is None:
+            edges = list(self._edge_list.keys())
+        else:
+            if size is not None:
+                order = size - 1
+            if not up_to:
+                edges = [edge for edge in list(self._edge_list.keys()) if len(edge) - 1 == order]
+            else:
+                edges = [edge for edge in list(self._edge_list.keys()) if len(edge) - 1 <= order]
+
+        if subhypergraph and keep_isolated_nodes:
+            h = DirectedHypergraph(weighted=self._weighted)
+            h.add_nodes(list(self.get_nodes()))
+            if self._weighted:
+                edge_weights = [self.get_weight(edge) for edge in edges]
+                h.add_edges(edges, edge_weights)
+            else:
+                h.add_edges(edges)
+
+            for node in h.get_nodes():
+                h.set_node_metadata(node, self.get_node_metadata(node))
+            for edge in edges:
+                h.set_edge_metadata(edge, self.get_edge_metadata(edge))
+            return h
+
+        elif subhypergraph:
+            h = DirectedHypergraph(weighted=self._weighted)
+            if self._weighted:
+                edge_weights = [self.get_weight(edge) for edge in edges]
+                h.add_edges(edges, edge_weights)
+            else:
+                h.add_edges(edges)
+
+            for edge in edges:
+                h.set_edge_metadata(edge, self.get_edge_metadata(edge))
+            return h
+        else:
+            return edges
 
 
     def remove_edge(self, edge: Tuple[Tuple, Tuple]):
