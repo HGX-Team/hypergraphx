@@ -25,20 +25,36 @@ def hyperedge_signature_vector(hypergraph: DirectedHypergraph, max_hyperedge_siz
     ------
     ValueError
         If the hypergraph is not a DirectedHypergraph.
+
+    Examples
+    --------
+    >>> from hypergraphx import DirectedHypergraph
+    >>> from hypergraphx.measures.directed import hyperedge_signature_vector
+    >>> edges = [
+    ...     ((1, 2), (3, 4)),  # Hyperedge with source size 2, target size 2
+    ...     ((5, ), (6, 7, 8)),  # Hyperedge with source size 1, target size 3
+    ... ]
+    >>> hypergraph = DirectedHypergraph(edges)
+    >>> result = hyperedge_signature_vector(hypergraph)
+    # output
+    array([0, 0, 1, 0, 1, 0, 0, 0, 0])
     """
 
     if not isinstance(hypergraph, DirectedHypergraph):
         raise ValueError("The hypergraph must be a DirectedHypergraph")
 
     if max_hyperedge_size is None:
-        max_hyperedge_size = hypergraph.max_size()
+        try:
+            max_hyperedge_size = max(hypergraph.get_sizes())
+        except ValueError:
+            return np.array([])
 
-    signature = np.zeros(max_hyperedge_size, max_hyperedge_size)
+    signature = np.zeros((max_hyperedge_size-1, max_hyperedge_size-1))
 
     for hyperedge in hypergraph.get_edges(size=max_hyperedge_size, up_to=True):
         source_size = len(hyperedge[0])
         target_size = len(hyperedge[1])
-        signature[source_size, target_size] += 1
+        signature[source_size-1, target_size-1] += 1
 
     signature = np.array(signature.flatten())
     return signature

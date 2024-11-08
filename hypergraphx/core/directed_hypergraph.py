@@ -24,9 +24,35 @@ class DirectedHypergraph:
         self._adj_out = {}
         self._adj_in = {}
         self._edge_list = {}
+        self.node_metadata = {}
+        self.edge_metadata = {}
+        self.hypergraph_metadata = metadata if metadata is not None else {}
 
         if edge_list is not None:
             self.add_edges(edge_list, weights=weights, metadata=metadata)
+
+    def set_node_metadata(self, node, metadata):
+        if node not in self._adj_out:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        self.node_metadata[node] = metadata
+
+    def get_node_metadata(self, node):
+        if node not in self._adj_out:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        return self.node_metadata[node]
+
+    def get_all_nodes_metadata(self):
+        return list(self.node_metadata.values())
+
+    def set_edge_metadata(self, edge, metadata):
+        if edge not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        self.edge_metadata[edge] = metadata
+
+    def get_edge_metadata(self, edge):
+        if edge not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        return self.edge_metadata[edge]
 
     def get_mapping(self):
         """
@@ -86,6 +112,50 @@ class DirectedHypergraph:
         """
         return self._weighted
 
+    def get_sizes(self):
+        """Returns the list of sizes of the hyperedges in the hypergraph.
+
+        Returns
+        -------
+        list
+            List of sizes of the hyperedges in the hypergraph.
+
+        """
+        return [len(edge[0]) + len(edge[1]) for edge in self._edge_list.keys()]
+
+    def get_orders(self):
+        """Returns the list of orders of the hyperedges in the hypergraph.
+
+        Returns
+        -------
+        list
+            List of orders of the hyperedges in the hypergraph.
+
+        """
+        return [len(edge[0]) + len(edge[1]) - 1 for edge in self._edge_list.keys()]
+
+    def get_sources(self):
+        """Returns the list of sources of the hyperedges in the hypergraph.
+
+        Returns
+        -------
+        list
+            List of sources of the hyperedges in the hypergraph.
+
+        """
+        return [edge[0] for edge in self._edge_list.keys()]
+
+    def get_targets(self):
+        """Returns the list of targets of the hyperedges in the hypergraph.
+
+        Returns
+        -------
+        list
+            List of targets of the hyperedges in the hypergraph.
+
+        """
+        return [edge[1] for edge in self._edge_list.keys()]
+
     def add_edge(self, edge: Tuple[Tuple, Tuple], weight=None, metadata=None):
         """Add a directed hyperedge to the hypergraph. If the hyperedge already exists, its weight is updated.
 
@@ -122,14 +192,13 @@ class DirectedHypergraph:
         else:
             self._edge_list[edge] = weight
 
-        # Add nodes if they don't exist, and update adjacencies
         for node in source:
             self.add_node(node)
-            self._adj_out[node].add(idx)
+            self._adj_out[node].add(edge)
 
         for node in target:
             self.add_node(node)
-            self._adj_in[node].add(idx)
+            self._adj_in[node].add(edge)
 
     def add_edges(self, edge_list: List[Tuple[Tuple, Tuple]], weights=None, metadata=None):
         """Add a list of directed hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.
@@ -159,6 +228,21 @@ class DirectedHypergraph:
             self.add_edge(edge, weight=weights[i] if weights else None,
                           metadata=metadata[i] if metadata else None)
 
+    def _get_edge_size(self, edge):
+        """
+        Get the size of a hyperedge.
+
+        Parameters
+        ----------
+        edge
+
+        Returns
+        -------
+        int
+            The size of the hyperedge.
+        """
+        return len(edge[0]) + len(edge[1])
+
     def get_edges(
             self,
             order=None,
@@ -178,9 +262,9 @@ class DirectedHypergraph:
             if size is not None:
                 order = size - 1
             if not up_to:
-                edges = [edge for edge in list(self._edge_list.keys()) if len(edge) - 1 == order]
+                edges = [edge for edge in list(self._edge_list.keys()) if self._get_edge_size(edge) - 1 == order]
             else:
-                edges = [edge for edge in list(self._edge_list.keys()) if len(edge) - 1 <= order]
+                edges = [edge for edge in list(self._edge_list.keys()) if self._get_edge_size(edge) - 1 <= order]
 
         if subhypergraph and keep_isolated_nodes:
             h = DirectedHypergraph(weighted=self._weighted)
@@ -312,3 +396,9 @@ class DirectedHypergraph:
 
         """
         return edge in self._edge_list
+
+    def get_hypergraph_metadata(self):
+        return self.hypergraph_metadata
+
+    def set_hypergraph_metadata(self, metadata):
+        self.hypergraph_metadata = metadata
