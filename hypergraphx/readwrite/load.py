@@ -3,6 +3,7 @@ import os
 import pickle
 
 from hypergraphx import Hypergraph
+from hypergraphx import DirectedHypergraph
 
 
 def _load_pickle(file_name: str) -> Hypergraph:
@@ -124,5 +125,51 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
                     raise f"File read to the end."
             H = Hypergraph(edge_list=edge_l,weighted=(mode % 10) == 1,weights=w_l if mode % 10 == 1 else None)
             return H
+    else:
+        raise ValueError("Invalid file type.")
+
+def load_directed_hypergraph(file_name: str, file_type: str) -> DirectedHypergraph:
+    """
+    Load a directed hypergraph from a file.
+
+    Parameters
+    ----------
+    file_name : str
+        The name of the file
+    file_type : str
+        The type of the file
+
+    Returns
+    -------
+    DirectedHypergraph
+        The loaded directed hypergraph
+
+    Raises
+    ------
+    ValueError
+        If the file type is not valid.
+    
+    Notes
+    -----
+    The file type can be "json".
+    """
+    if file_type == "json":
+        DH = DirectedHypergraph()
+        with open(file_name, "r") as infile:
+            data = json.load(infile)
+            for obj in data:
+                obj = eval(obj)
+                if obj['type'] == 'node':
+                    DH.add_node(obj['name'])
+                    #DH.set_meta(obj['name'], obj)
+                elif obj['type'] == 'edge':
+                    if DH.is_weighted() or 'weight' in obj:
+                        DH._weighted = True
+                    if not DH.is_weighted():
+                        DH.add_edge(tuple((tuple(sorted(tuple(obj['name'])[0])),tuple(sorted(tuple(obj['name'])[1])))))
+                    else:
+                        DH.add_edge(tuple((tuple(sorted(tuple(obj['name'])[0])),tuple(sorted(tuple(obj['name'])[1])))),obj['weight'])
+                    #DH.set_meta(tuple((tuple(sorted(tuple(obj['name'])[0])),tuple(sorted(tuple(obj['name'])[1])))), obj)
+        return DH
     else:
         raise ValueError("Invalid file type.")
