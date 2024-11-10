@@ -55,7 +55,7 @@ def compute_directed_motifs(hypergraph: DirectedHypergraph, order=3, runs_config
         return res
     
     
-    edges = hypergraph.get_edges(up_to=order)
+    edges = hypergraph.get_edges(size=order, up_to=True)
     output = {}
     print(hypergraph)
 
@@ -77,19 +77,21 @@ def compute_directed_motifs(hypergraph: DirectedHypergraph, order=3, runs_config
 
     for i in range(ROUNDS):
         print("Computing config model motifs of order {}. Step: {}".format(order, i+1))
-        e1 = directed_configuration_model(hypergraph.get_edges())
+        e1 = directed_configuration_model(hypergraph).get_edges()
         
         if order == 3:
             m1 = _motifs_order_3(e1)
         elif order == 4:
             m1 = _motifs_order_4(e1)
+        else:
+            raise ValueError("Exact computation of motifs of order > 5 is not available.")
         
         results.append(m1)
 
     output['config_model'] = results
     
-    delta = directed_diff_sum(output['observed'], output['config_model'])
-    norm_delta = norm_vector(delta)
+    delta = list(directed_diff_sum(output['observed'], output['config_model']))
+    norm_delta = list(norm_vector(delta))
     output['norm_delta'] = []
 
     for i in range(len(delta)):
