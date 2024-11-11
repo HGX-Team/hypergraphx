@@ -200,6 +200,9 @@ class DirectedHypergraph:
             self.add_node(node)
             self._adj_in[node].add(edge)
 
+        if metadata is not None:
+            self.set_edge_metadata(edge, metadata)
+
     def add_edges(self, edge_list: List[Tuple[Tuple, Tuple]], weights=None, metadata=None):
         """Add a list of directed hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.
 
@@ -227,6 +230,54 @@ class DirectedHypergraph:
         for i, edge in enumerate(edge_list):
             self.add_edge(edge, weight=weights[i] if weights else None,
                           metadata=metadata[i] if metadata else None)
+
+    def get_incident_in_edges(self, node, order=None, size=None):
+        """
+        Get the incident in-edges of a node.
+
+        Parameters
+        ----------
+        node
+        order
+        size
+
+        Returns
+        -------
+        list
+            The list of incident in-edges.
+        """
+        if order is not None and size is not None:
+            raise ValueError("Order and size cannot be both specified.")
+        if order is None and size is None:
+            return list(self._adj_in[node])
+        elif size is not None:
+            return [edge for edge in self._adj_in[node] if self._get_edge_size(edge) == size]
+        elif order is not None:
+            return [edge for edge in self._adj_in[node] if self._get_edge_size(edge) - 1 == order]
+
+    def get_incident_out_edges(self, node, order=None, size=None):
+        """
+        Get the incident out-edges of a node.
+
+        Parameters
+        ----------
+        node
+        order
+        size
+
+        Returns
+        -------
+        list
+            The list of incident out-edges.
+        """
+        if order is not None and size is not None:
+            raise ValueError("Order and size cannot be both specified.")
+        if order is None and size is None:
+            return list(self._adj_out[node])
+        elif size is not None:
+            return [edge for edge in self._adj_out[node] if self._get_edge_size(edge) == size]
+        elif order is not None:
+            return [edge for edge in self._adj_out[node] if self._get_edge_size(edge) - 1 == order]
 
     def _get_edge_size(self, edge):
         """

@@ -1,7 +1,8 @@
 import numpy as np
+from hypergraphx import Hypergraph
 
 
-def degree(hg: "Hypergraph", node, order=None, size=None):
+def degree(hg: Hypergraph, node, order=None, size=None):
     """
     Computes the degree of a node in the hypergraph.
 
@@ -31,7 +32,7 @@ def degree(hg: "Hypergraph", node, order=None, size=None):
         return len(hg.get_incident_edges(node, order=order))
 
 
-def degree_sequence(hg: "Hypergraph", order=None, size=None):
+def degree_sequence(hg: Hypergraph, order=None, size=None):
     """
     Computes the degree sequence of the hypergraph.
 

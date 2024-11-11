@@ -41,8 +41,7 @@ def compute_directed_motifs(hypergraph: DirectedHypergraph, order=3, runs_config
     def _motifs_order_4(edges):
         full, visited = _directed_motifs_ho_full(edges, 4)
         not_full, visited = _directed_motifs_ho_not_full(edges, 4, visited)
-        
-        print(f"Not full size: {len(not_full)}")
+
         mappa={}
         for i in range(len(full)):
             mappa[full[i][0]]=full[i][1]
@@ -57,7 +56,6 @@ def compute_directed_motifs(hypergraph: DirectedHypergraph, order=3, runs_config
     
     edges = hypergraph.get_edges(size=order, up_to=True)
     output = {}
-    print(hypergraph)
 
     print("Computing observed motifs of order {}...".format(order))
 

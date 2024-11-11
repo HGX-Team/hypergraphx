@@ -168,8 +168,6 @@ def _motifs_standard(edges, N, visited):
             if u > v:
                 v_ext.add(u)
         k += 1
-        # if k % 5 == 0:
-        # print(k, len(z))
 
         graph_extend(set([v]), v_ext, v, set(graph[v]))
         c += 1
@@ -235,7 +233,6 @@ def _motifs_ho_full(edges, N):
 
     for e in edges:
         if len(e) == N:
-            # print(e)
             visited[e] = 1
             nodes = list(e)
             count_motif(nodes)

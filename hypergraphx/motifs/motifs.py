@@ -54,7 +54,6 @@ def compute_motifs(hypergraph: Hypergraph, order=3, runs_config_model=10):
     
     edges = hypergraph.get_edges(size=order, up_to=True)
     output = {}
-    print(hypergraph)
 
     print("Computing observed motifs of order {}...".format(order))
 
