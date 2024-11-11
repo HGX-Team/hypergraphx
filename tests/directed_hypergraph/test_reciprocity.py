@@ -1,10 +1,10 @@
 import pytest
 
 from hypergraphx import DirectedHypergraph
-from hypergraphx.measures.directed.reciprocity import strong_reciprocity
+from hypergraphx.measures.directed.reciprocity import exact_reciprocity
 
 
-def test_basic_reciprocity():
+def test_basic_exact_reciprocity():
     # Test with simple reciprocated edges
     edges = [
         ((1,), (2,)),
@@ -13,14 +13,14 @@ def test_basic_reciprocity():
         ((4,), (3,))
     ]
     h = DirectedHypergraph(edge_list=edges)
-    result = strong_reciprocity(h, 3)
+    result = exact_reciprocity(h, 3)
 
     # Expect 100% reciprocity for edges of size 2
     assert result[2] == 1.0, "Expected 100% reciprocity for edges of size 2"
     assert result[3] == 0, f"Expected no reciprocity for edges of size 3"
 
 
-def test_no_reciprocity():
+def test_no_exact_reciprocity():
     # Test with no reciprocated edges
     edges = [
         ((1,), (2,)),
@@ -28,14 +28,14 @@ def test_no_reciprocity():
         ((5,), (6,))
     ]
     h = DirectedHypergraph(edge_list=edges)
-    result = strong_reciprocity(h, 3)
+    result = exact_reciprocity(h, 3)
 
     # Expect 0% reciprocity across all edge sizes
     for i in range(2, 3):
         assert result[i] == 0, f"Expected no reciprocity for edges of size {i}"
 
 
-def test_mixed_edge_sizes():
+def test_mixed_edge_sizes_exact_reciprocity():
     # Test with mixed edge sizes
     edges = [
         ((1,), (2,)),  # size 2, no reciprocation
@@ -46,7 +46,7 @@ def test_mixed_edge_sizes():
         ((9, 10), (11, 12, 13)),  # size 5, no reciprocation
     ]
     h = DirectedHypergraph(edge_list=edges)
-    result = strong_reciprocity(h, 6)
+    result = exact_reciprocity(h, 6)
 
     assert result[2] == 1.0, "Expected 100% reciprocity for edges of size 2"
     assert result[3] == 2/3, "Expected 50% reciprocity for edges of size 3"

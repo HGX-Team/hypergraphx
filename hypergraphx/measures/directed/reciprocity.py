@@ -1,21 +1,21 @@
 from hypergraphx import DirectedHypergraph
 
 
-def strong_reciprocity(hypergraph: DirectedHypergraph, max_hyperedge_size: int) -> dict:
+def exact_reciprocity(hypergraph: DirectedHypergraph, max_hyperedge_size: int) -> dict:
     """
-    Calculate the strong reciprocity ratio for each hyperedge size in the hypergraph.
+    Calculate the exact reciprocity ratio for each hyperedge size in the hypergraph.
 
     Parameters
     ----------
     hypergraph: DirectedHypergraph
-        The hypergraph to calculate the strong reciprocity ratio for.
+        The hypergraph to calculate the exact reciprocity ratio for.
     max_hyperedge_size: int
         The maximum hyperedge size to consider
 
     Returns
     -------
     dict
-        A dictionary containing the strong reciprocity ratio for each hyperedge size.
+        A dictionary containing the exact reciprocity ratio for each hyperedge size.
     """
 
     edges = hypergraph.get_edges()
