@@ -5,4 +5,4 @@ from hypergraphx.core.temporal_hypergraph import TemporalHypergraph
 
 from . import readwrite
 
-__version__ = "1.7.3"
+__version__ = "1.7.4"
