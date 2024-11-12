@@ -116,6 +116,7 @@ If you use HGX or related data in your paper, please cite:
 
 ### Collaborators
 * Alberto Ceria - alberto.ceria@outlook.com <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://twitter.com/cerialbo"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg"></a>
+* Alberto Vendramini - alberto.vendramini@unitn.it
 
 ## Contributing
 
