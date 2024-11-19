@@ -64,6 +64,9 @@ def compute_motifs(hypergraph: Hypergraph, order=3, runs_config_model=10):
     else:
         raise ValueError("Exact computation of motifs of order > 4 is not available.")
 
+    if runs_config_model == 0:
+        return output
+
     STEPS = hypergraph.num_edges(size=order, up_to=True) * 10
     ROUNDS = runs_config_model
 

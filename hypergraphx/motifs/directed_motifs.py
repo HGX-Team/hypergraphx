@@ -67,7 +67,8 @@ def compute_directed_motifs(hypergraph: DirectedHypergraph, order=3, runs_config
     else:
         raise ValueError("Exact computation of motifs of order > 5 is not available.")
     
-    
+    if runs_config_model == 0:
+        return output
             
     ROUNDS = runs_config_model
 
