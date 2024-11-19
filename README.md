@@ -6,8 +6,7 @@
 
 **HGX** is a Python library for the analysis of real-world complex systems with **group interactions** and provides a comprehensive suite of tools and algorithms for constructing, visualizing, and analyzing **hypergraphs**. <br> The library is designed to be user-friendly and accessible, with a wide range of functionalities that can be applied to a diverse set of applications and use cases.
 
-## Temporary disclaimer
-* We are finalizing the process of uploading the datasets.
+## Disclaimer
 * We welcome early feedback, discussions, ideas and contributions.
 
 ## News
@@ -70,9 +69,6 @@ or, if you really want the latest updates
 pip install hypergraphx@git+https://github.com/HGX-Team/hypergraphx
 ```
 
-### First steps
-TODO: add basic tutorial
-
 ## Tutorials
 You can find tutorials covering a variety of use cases [here](https://github.com/HGX-Team/hypergraphx/tree/master/tutorials).
 
@@ -115,7 +111,12 @@ If you use HGX or related data in your paper, please cite:
 * Nicolò Ruggeri - nicolo.ruggeri@tuebingen.mpg.de <a title="Icons8, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="https://nickruggeri.github.io/"><img width="16" alt="Icons8 flat link" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Icons8_flat_link.svg/512px-Icons8_flat_link.svg.png"></a> <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://twitter.com/NikRuggeri"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg"></a> <a title="GitHub, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="https://github.com/nickruggeri"><img width="16" alt="Octicons-mark-github" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/512px-Octicons-mark-github.svg.png"></a>
 
 ### Collaborators
-* Alberto Ceria - alberto.ceria@outlook.com <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://twitter.com/cerialbo"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg"></a>
+* Lorenzo Betti <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://x.com/LoreBetti"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg"></a> <a title="GitHub, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="https://github.com/Loreb92"><img width="16" alt="Octicons-mark-github" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/512px-Octicons-mark-github.svg.png"></a>
+* Alberto Ceria <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://twitter.com/cerialbo"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg"></a>
+* Helcio Felippe <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://x.com/juniorfelippe"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg"></a>
+* Alec Kirkley <a title="Icons8, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="https://aleckirkley.com/"><img width="16" alt="Icons8 flat link" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Icons8_flat_link.svg/512px-Icons8_flat_link.svg.png"></a> <a title="Twitter, Apache License 2.0 &lt;http://www.apache.org/licenses/LICENSE-2.0&gt;, via Wikimedia Commons" href="https://x.com/captainkirk1041"><img width="16" alt="Twitter-logo" src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg"></a> <a title="GitHub, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="https://github.com/aleckirkley"><img width="16" alt="Octicons-mark-github" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/512px-Octicons-mark-github.svg.png"></a>
+* Berné Nortier <a title="GitHub, MIT &lt;http://opensource.org/licenses/mit-license.php&gt;, via Wikimedia Commons" href="https://github.com/joanne-b-nortier"><img width="16" alt="Octicons-mark-github" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/512px-Octicons-mark-github.svg.png"></a>
+* Alberto Vendramini
 
 ## Contributing
 
