@@ -19,17 +19,21 @@ class DirectedHypergraph:
         A list of weights for the hyperedges.
     """
 
-    def __init__(self, edge_list=None, weighted=False, weights=None, metadata=None):
+    def __init__(self, edge_list=None, hypergraph_metadata=None, weighted=False, weights=None, edge_metadata=None):
         self._weighted = weighted
         self._adj_out = {}
         self._adj_in = {}
         self._edge_list = {}
+        if hypergraph_metadata is None:
+            self.hypergraph_metadata = {}
+        else:
+            self.hypergraph_metadata = hypergraph_metadata
+        self.hypergraph_metadata['weighted'] = weighted
         self.node_metadata = {}
         self.edge_metadata = {}
-        self.hypergraph_metadata = metadata if metadata is not None else {}
 
         if edge_list is not None:
-            self.add_edges(edge_list, weights=weights, metadata=metadata)
+            self.add_edges(edge_list, weights=weights, metadata=edge_metadata)
 
     def set_node_metadata(self, node, metadata):
         if node not in self._adj_out:
@@ -68,7 +72,7 @@ class DirectedHypergraph:
         return encoder
 
 
-    def add_node(self, node):
+    def add_node(self, node, metadata=None):
         """
         Add a node to the hypergraph. If the node is already in the hypergraph, nothing happens.
 
@@ -84,6 +88,10 @@ class DirectedHypergraph:
         if node not in self._adj_out:
             self._adj_out[node] = set()
             self._adj_in[node] = set()
+            if metadata is None:
+                self.node_metadata[node] = {}
+            else:
+                self.node_metadata[node] = metadata
 
     def add_nodes(self, node_list: list):
         """
@@ -178,6 +186,9 @@ class DirectedHypergraph:
             If the hypergraph is weighted and no weight is provided or if the hypergraph is not weighted and a weight is provided.
         """
         source, target = edge
+        source = tuple(sorted(source))
+        target = tuple(sorted(target))
+        edge = (source, target)
 
         if self._weighted and weight is None:
             raise ValueError("If the hypergraph is weighted, a weight must be provided.")
@@ -202,6 +213,8 @@ class DirectedHypergraph:
 
         if metadata is not None:
             self.set_edge_metadata(edge, metadata)
+        else:
+            self.set_edge_metadata(edge, {})
 
     def add_edges(self, edge_list: List[Tuple[Tuple, Tuple]], weights=None, metadata=None):
         """Add a list of directed hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.

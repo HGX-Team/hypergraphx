@@ -77,6 +77,7 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
             hypergraph_metadata = {}
             nodes = []
             edges = []
+            hypergraph_type = None
             for line in lines:
                 # convert true in True and false in False
                 line = line.replace('true', 'True')
@@ -84,6 +85,8 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
                 data = eval(line)
                 if 'hypergraph_metadata' in data:
                     hypergraph_metadata = data['hypergraph_metadata']
+                elif 'hypergraph_type' in data:
+                    hypergraph_type = data['hypergraph_type']
                 elif data['type'] == 'node':
                     nodes.append(data)
                 elif data['type'] == 'edge':
@@ -92,14 +95,16 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
                     raise ValueError("Invalid data type.")
 
             weighted = hypergraph_metadata['weighted']
-            H = Hypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
+            if hypergraph_type == 'Hypergraph':
+                H = Hypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
+            elif hypergraph_type == 'DirectedHypergraph':
+                H = DirectedHypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
             for node in nodes:
                 H.add_node(node['idx'], node['metadata'])
             for edge in edges:
-                if weighted:
-                    H.add_edge(edge['interaction'], metadata=edge['metadata'], weight=edge['weight'])
-                else:
-                    H.add_edge(edge['interaction'], metadata=edge['metadata'])     
+                interaction = edge['interaction']
+                weight = edge['weight'] if 'weight' in edge else None
+                H.add_edge(interaction, weight, metadata=edge['metadata'], )    
         return H
     elif file_type == "hgr":
         with open(file_name) as file:

@@ -24,7 +24,7 @@ def _save_pickle(obj, file_name: str):
         pickle.dump(obj, f)
 
 
-def save_hypergraph(hypergraph: Hypergraph, file_name: str, file_type = 'json'):
+def save_hypergraph(hypergraph, file_name: str, file_type = 'json'):
     """
     Save a hypergraph to a file.
 
@@ -55,8 +55,12 @@ def save_hypergraph(hypergraph: Hypergraph, file_name: str, file_type = 'json'):
         _save_pickle(hypergraph, file_name)
     elif file_type == "json":
         with open(file_name + '.' + file_type, "w+") as outfile:
+            hypergraph_type = str(type(hypergraph)).split('.')[-1][:-2]
             out = []
             d = {}
+            d['hypergraph_type'] = hypergraph_type
+            json_object = json.dumps(d)
+            out.append(json_object)
             d['hypergraph_metadata'] = hypergraph.get_hypergraph_metadata()
             json_object = json.dumps(d)
             out.append(json_object)
