@@ -71,24 +71,35 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
     if file_type == "pickle":
         return _load_pickle(file_name)
     elif file_type == "json":
-        H = Hypergraph(weighted=False)
         with open(file_name, "r") as infile:
-            data = json.load(infile)
-            for obj in data:
-                obj = obj.replace('true', 'True')
-                obj = obj.replace('false', 'False')
-                obj = eval(obj)
-                if obj['type'] == 'node':
-                    H.add_node(obj['name'])
-                    H.set_meta(obj['name'], obj)
-                elif obj['type'] == 'edge':
-                    if H.is_weighted() or 'weight' in obj:
-                        H._weighted = True
-                    if not H.is_weighted():
-                        H.add_edge(tuple(sorted(obj['name'])))
-                    else:
-                        H.add_edge(tuple(sorted(obj['name'])), obj['weight'])
-                    H.set_meta(tuple(sorted(obj['name'])), obj)
+            lines = json.load(infile)
+            weighted = False
+            hypergraph_metadata = {}
+            nodes = []
+            edges = []
+            for line in lines:
+                # convert true in True and false in False
+                line = line.replace('true', 'True')
+                line = line.replace('false', 'False')
+                data = eval(line)
+                if 'hypergraph_metadata' in data:
+                    hypergraph_metadata = data['hypergraph_metadata']
+                elif data['type'] == 'node':
+                    nodes.append(data)
+                elif data['type'] == 'edge':
+                    edges.append(data)
+                else:
+                    raise ValueError("Invalid data type.")
+
+            weighted = hypergraph_metadata['weighted']
+            H = Hypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
+            for node in nodes:
+                H.add_node(node['idx'], node['metadata'])
+            for edge in edges:
+                if weighted:
+                    H.add_edge(edge['interaction'], metadata=edge['metadata'], weight=edge['weight'])
+                else:
+                    H.add_edge(edge['interaction'], metadata=edge['metadata'])     
         return H
     elif file_type == "hgr":
         with open(file_name) as file:

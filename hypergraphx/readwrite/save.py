@@ -24,7 +24,7 @@ def _save_pickle(obj, file_name: str):
         pickle.dump(obj, f)
 
 
-def save_hypergraph(hypergraph: Hypergraph, file_name: str, file_type: str):
+def save_hypergraph(hypergraph: Hypergraph, file_name: str, file_type = 'json'):
     """
     Save a hypergraph to a file.
 
@@ -54,17 +54,29 @@ def save_hypergraph(hypergraph: Hypergraph, file_name: str, file_type: str):
     if file_type == "pickle":
         _save_pickle(hypergraph, file_name)
     elif file_type == "json":
-        with open(file_name, "w+") as outfile:
+        with open(file_name + '.' + file_type, "w+") as outfile:
             out = []
+            d = {}
+            d['hypergraph_metadata'] = hypergraph.get_hypergraph_metadata()
+            json_object = json.dumps(d)
+            out.append(json_object)
+            
             for node in hypergraph.get_nodes():
-                json_object = json.dumps(hypergraph.get_meta(node))
+                d = {}
+                d['type'] = 'node'
+                d['idx'] = node
+                d['metadata'] = hypergraph.get_node_metadata(node)
+                json_object = json.dumps(d)
                 out.append(json_object)
 
             for edge in hypergraph.get_edges():
-                meta = hypergraph.get_meta(edge)
+                d = {}
+                d['type'] = 'edge'
+                d['interaction'] = edge
+                d['metadata'] = hypergraph.get_edge_metadata(edge)
                 if hypergraph.is_weighted():
-                    meta["weight"] = hypergraph.get_weight(edge)
-                json_object = json.dumps(meta)
+                    d["weight"] = hypergraph.get_weight(edge)
+                json_object = json.dumps(d)
                 out.append(json_object)
             json.dump(out, outfile)
 

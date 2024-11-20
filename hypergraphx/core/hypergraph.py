@@ -18,18 +18,22 @@ class Hypergraph:
         A list of weights for the hyperedges. If the hypergraph is weighted, this must be provided.
     """
 
-    def __init__(self, edge_list=None, weighted=False, weights=None, metadata=None):
+    def __init__(self, edge_list=None, hypergraph_metadata=None, weighted=False, weights=None, edge_metadata=None):
         self._weighted = weighted
         self._adj = {}
         self._edge_list = {}
-        self.hypergraph_metadata = {}
+        if hypergraph_metadata is None:
+            self.hypergraph_metadata = {}
+        else:
+            self.hypergraph_metadata = hypergraph_metadata
+        self.hypergraph_metadata['weighted'] = weighted
         self.incidences_metadata = {}
         self.node_metadata = {}
         self.edge_metadata = {}
         self.empty_edges = {}
 
         if edge_list is not None:
-            self.add_edges(edge_list, weights=weights, metadata=metadata)
+            self.add_edges(edge_list, weights=weights, metadata=edge_metadata)
 
     def add_empty_edge(self, name, metadata):
         if name not in self.empty_edges:
@@ -149,7 +153,7 @@ class Hypergraph:
                 order = size - 1
             return list([edge for edge in self._adj[node] if len(edge) - 1 == order])
 
-    def add_node(self, node):
+    def add_node(self, node, metadata=None):
         """
         Add a node to the hypergraph. If the node is already in the hypergraph, nothing happens.
 
@@ -164,9 +168,12 @@ class Hypergraph:
         """
         if node not in self._adj:
             self._adj[node] = set()
-            self.node_metadata[node] = {}
+            if metadata is not None:
+                self.node_metadata[node] = metadata
+            else:
+                self.node_metadata[node] = {}
 
-    def add_nodes(self, node_list: list):
+    def add_nodes(self, node_list: list, node_metadata=None):
         """
         Add a list of nodes to the hypergraph.
 
@@ -180,7 +187,7 @@ class Hypergraph:
         None
         """
         for node in node_list:
-            self.add_node(node)
+            self.add_node(node, node_metadata[node] if node_metadata is not None else None)
 
     def is_weighted(self):
         """
@@ -225,6 +232,8 @@ class Hypergraph:
 
         edge = tuple(sorted(edge))
         order = len(edge) - 1
+        if metadata is None:
+            metadata = {}
         self.edge_metadata[edge] = metadata
 
         if weight is None:
@@ -715,7 +724,41 @@ class Hypergraph:
         return self.incidences_metadata[(edge, node)]
 
     def get_all_incidences_metadata(self):
-        return list(self.incidences_metadata.values())
+        return { k: v for k, v in self.incidences_metadata.items() }
+    
+    def get_hypergraph_metadata(self):
+        return self.hypergraph_metadata
+    
+    def set_hypergraph_metadata(self, metadata):
+        self.hypergraph_metadata = metadata
+
+    def get_node_metadata(self, node):
+        if node not in self._adj:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        return self.node_metadata[node]
+    
+    def set_node_metadata(self, node, metadata):
+        if node not in self._adj:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        self.node_metadata[node] = metadata
+
+    def get_all_nodes_metadata(self):
+        return { k: v for k, v in self.node_metadata.items() }
+    
+    def get_edge_metadata(self, edge):
+        edge = tuple(sorted(edge))
+        if edge not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        return self.edge_metadata[edge]
+    
+    def set_edge_metadata(self, edge, metadata):
+        edge = tuple(sorted(edge))
+        if edge not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        self.edge_metadata[edge] = metadata
+
+    def get_all_edges_metadata(self):
+        return { k: v for k, v in self.edge_metadata.items() }
 
     def check_edge(self, edge):
         """Checks if the specified edge is in the hypergraph.
