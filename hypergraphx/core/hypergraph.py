@@ -643,7 +643,7 @@ class Hypergraph:
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
         if order is None and size is None:
-            return list(self._edge_list.values())
+            return {edge: self._edge_list[edge] for edge in self.get_edges()}
 
         if size is not None:
             order = size - 1
