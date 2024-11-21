@@ -86,14 +86,12 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
             for data in data_list:
                 if 'hypergraph_metadata' in data:
                     hypergraph_metadata = data['hypergraph_metadata']
-                elif 'hypergraph_type' in data:
+                if 'hypergraph_type' in data:
                     hypergraph_type = data['hypergraph_type']
-                elif data['type'] == 'node':
+                if 'type' in data and data['type'] == 'node':
                     nodes.append(data)
-                elif data['type'] == 'edge':
+                if 'type' in data and data['type'] == 'edge':
                     edges.append(data)
-                else:
-                    raise ValueError("Invalid data type.")
 
             # Create the appropriate hypergraph object
             if hypergraph_type in ['Hypergraph', 'DirectedHypergraph']:
@@ -110,23 +108,30 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
                     interaction = edge['interaction']
                     weight = edge.get('weight', None) if weighted else None
                     H.add_edge(interaction, weight, metadata=edge['metadata'])
-            """
+                return H
+
             elif hypergraph_type == 'MultiplexHypergraph':
-                H = {}
+                weighted = hypergraph_metadata.get('weighted', False)
 
-                for layer in hypergraph_metadata:
-                    H[layer] = Hypergraph(hypergraph_metadata=hypergraph_metadata[layer], weighted=hypergraph_metadata[layer]['weighted'])
-                
+                # Initialize the MultiplexHypergraph object
+                H = MultiplexHypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
+
+                # Add nodes to the hypergraph
                 for node in nodes:
-                    
+                    H.add_node(node['idx'], node['metadata'])
 
+                # Add edges to the hypergraph
                 for edge in edges:
                     interaction = edge['interaction']
-                    weight = edge['weight'] if 'weight' in edge else None
-                    H.add_edge(interaction, weight, metadata=edge['metadata'])
-            """
-            
-        return H
+                    weight = edge.get('weight', None) if weighted else None
+                    layer = edge.get('layer')  # Retrieve the layer for the edge
+                    metadata = edge['metadata']
+
+                    # Add the edge to the specified layer
+                    H.add_edge(interaction, layer, weight=weight, metadata=metadata, )
+
+                return H
+
     elif file_type == "hgr":
         with open(file_name) as file:
             edges = 0

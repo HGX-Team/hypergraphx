@@ -170,6 +170,19 @@ class MultiplexHypergraph:
 
         for node in edge:
             self.add_node(node)
+
+    def get_edges(self, metadata=False):
+        if metadata:
+            return self.edge_metadata
+        else:
+            return list(self.edge_metadata.keys())
+
+    def get_weight(self, edge, layer):
+        k = (tuple(sorted(edge)), layer)
+        try:
+            return self._edge_list[k]
+        except KeyError:
+            raise ValueError("The edge is not in the hypergraph.")
         
 
     def set_dataset_metadata(self, metadata):

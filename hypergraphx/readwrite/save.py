@@ -89,12 +89,13 @@ def save_hypergraph(hypergraph, file_name: str, file_type='json'):
                     out.append(d)
             elif hypergraph_type == 'MultiplexHypergraph':
                 for edge, metadata in hypergraph.get_edges(metadata=True).items():
+                    edge, layer = edge
                     d = {
                         'type': 'edge',
                         'interaction': edge,
                         'metadata': metadata,
-                        'weight': hypergraph.get_weight(edge),
-                        'layer': hypergraph.get_layer(edge)
+                        'weight': hypergraph.get_weight(edge, layer),
+                        'layer': layer
                     }
                     out.append(d)
 
