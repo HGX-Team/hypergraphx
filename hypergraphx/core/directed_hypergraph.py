@@ -314,6 +314,7 @@ class DirectedHypergraph:
             up_to=False,
             subhypergraph=False,
             keep_isolated_nodes=False,
+            metadata=False
     ):
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
@@ -357,7 +358,7 @@ class DirectedHypergraph:
                 h.set_edge_metadata(edge, self.get_edge_metadata(edge))
             return h
         else:
-            return edges
+            return edges if not metadata else {edge: self.get_edge_metadata(edge) for edge in edges}
 
 
     def remove_edge(self, edge: Tuple[Tuple, Tuple]):
@@ -401,9 +402,12 @@ class DirectedHypergraph:
         del self._adj_out[node]
         del self._adj_in[node]
 
-    def get_nodes(self):
+    def get_nodes(self, metadata=False):
         """Returns the list of nodes in the hypergraph."""
-        return list(self._adj_out.keys())
+        if not metadata:
+            list(self._adj_out.keys())
+        else:
+            return {node: self.node_metadata[node] for node in self._adj_out.keys()}
 
     def num_nodes(self):
         """Returns the number of nodes in the hypergraph."""

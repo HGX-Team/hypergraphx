@@ -517,7 +517,7 @@ class Hypergraph:
         if not metadata:
             return list(self._adj.keys())
         else:
-            return list([(node, self.get_node_metadata(node)) for node in self._adj.keys()])
+            return {node: self.get_node_metadata(node) for node in self._adj.keys()}
 
     def num_nodes(self):
         """
@@ -647,8 +647,7 @@ class Hypergraph:
 
         if size is not None:
             order = size - 1
-
-        return list([self._edge_list[edge] for edge in self.get_edges(order=order, up_to=up_to)])
+        return {edge: self._edge_list[edge] for edge in self.get_edges(order=order, up_to=up_to)}
 
     def get_sizes(self):
         """Returns the list of sizes of the hyperedges in the hypergraph.
@@ -707,11 +706,6 @@ class Hypergraph:
         if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         return self.edge_metadata[edge]
-
-    def get_all_edges_metadata(self):
-        a = list(self.edge_metadata.values())
-        b = list(self.empty_edges.values())
-        return a + b
 
     def set_incidence_metadata(self, edge, node, metadata):
         if tuple(sorted(edge)) not in self._edge_list:
@@ -799,6 +793,7 @@ class Hypergraph:
         up_to=False,
         subhypergraph=False,
         keep_isolated_nodes=False,
+        metadata=False
     ):
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
@@ -842,7 +837,7 @@ class Hypergraph:
                 h.set_edge_metadata(edge, self.get_edge_metadata(edge))
             return h
         else:
-            return edges
+            return edges if not metadata else {edge: self.get_edge_metadata(edge) for edge in edges}
 
     def degree(self, node, order=None, size=None):
         from hypergraphx.measures.degree import degree

@@ -5,14 +5,15 @@ class MultiplexHypergraph:
 
     def __init__(self):
         self.layers = {}
-        self.layer_metadata = {}
 
-    def add_layer(self, layer_name, hypergraph: Hypergraph, attr=None):
+    def get_hypergraph_metadata(self):
+        metadata = {}
+        for layer_name in self.layers:
+            metadata[layer_name] = self.layers[layer_name].get_hypergraph_metadata()
+        return metadata
+
+    def add_layer(self, layer_name, hypergraph: Hypergraph):
         self.layers[layer_name] = hypergraph
-        if attr is not None:
-            self.layer_metadata[layer_name] = attr
-        else:
-            self.layer_metadata[layer_name] = {}
 
     def get_layer(self, layer_name):
         return self.layers[layer_name]
@@ -24,10 +25,29 @@ class MultiplexHypergraph:
         return list(self.layers.keys())
 
     def get_nodes(self):
-        nodes = set()
+        nodes = {}
+        in_layers = {}
         for layer in self.layers.values():
-            nodes.update(layer.get_nodes())
+            layer_nodes = layer.get_nodes(metadata=True)
+            for node in layer_nodes:
+                if node not in nodes:
+                    nodes[node] = layer_nodes[node]
+                if node not in in_layers:
+                    in_layers[node] = []
+                in_layers[node].append(layer)
+        for node in nodes:
+            nodes[node]['in_layers'] = in_layers[node]
         return list(nodes)
+    
+    def get_edges(self):
+        edges = {}
+        for layer in self.layers.values():
+            layer_edges = layer.get_edges(metadata=True)
+            for edge in layer_edges:
+                if edge not in edges:
+                    edges[edge] = layer_edges[edge]
+                    edges[edge]['layer'] = layer
+        return list(edges)
 
     def num_layers(self):
         return len(self.layers)

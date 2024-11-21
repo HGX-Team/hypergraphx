@@ -65,21 +65,20 @@ def save_hypergraph(hypergraph, file_name: str, file_type = 'json'):
             json_object = json.dumps(d)
             out.append(json_object)
             
-            for node in hypergraph.get_nodes():
+            for node, metadata in hypergraph.get_nodes(metadata=True).items():
                 d = {}
                 d['type'] = 'node'
                 d['idx'] = node
-                d['metadata'] = hypergraph.get_node_metadata(node)
+                d['metadata'] = metadata
                 json_object = json.dumps(d)
                 out.append(json_object)
 
-            for edge in hypergraph.get_edges():
+            for edge, metadata in hypergraph.get_edges(metadata=True).items():
                 d = {}
                 d['type'] = 'edge'
                 d['interaction'] = edge
-                d['metadata'] = hypergraph.get_edge_metadata(edge)
-                if hypergraph.is_weighted():
-                    d["weight"] = hypergraph.get_weight(edge)
+                d['metadata'] = metadata
+                d["weight"] = hypergraph.get_weight(edge)
                 json_object = json.dumps(d)
                 out.append(json_object)
             json.dump(out, outfile)

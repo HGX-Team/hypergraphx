@@ -4,6 +4,7 @@ import pickle
 
 from hypergraphx import Hypergraph
 from hypergraphx import DirectedHypergraph
+from hypergraphx import MultiplexHypergraph
 
 
 def _load_pickle(file_name: str) -> Hypergraph:
@@ -94,17 +95,32 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
                 else:
                     raise ValueError("Invalid data type.")
 
-            weighted = hypergraph_metadata['weighted']
-            if hypergraph_type == 'Hypergraph':
-                H = Hypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
-            elif hypergraph_type == 'DirectedHypergraph':
-                H = DirectedHypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
-            for node in nodes:
-                H.add_node(node['idx'], node['metadata'])
-            for edge in edges:
-                interaction = edge['interaction']
-                weight = edge['weight'] if 'weight' in edge else None
-                H.add_edge(interaction, weight, metadata=edge['metadata'], )    
+            if hypergraph_type == 'Hypergraph' or hypergraph_type == 'DirectedHypergraph':
+                weighted = hypergraph_metadata['weighted']
+                if hypergraph_type == 'Hypergraph':
+                    H = Hypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
+                elif hypergraph_type == 'DirectedHypergraph':
+                    H = DirectedHypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
+                for node in nodes:
+                    H.add_node(node['idx'], node['metadata'])
+                for edge in edges:
+                    interaction = edge['interaction']
+                    weight = edge['weight'] if weighted else None
+                    H.add_edge(interaction, weight, metadata=edge['metadata'])
+            """
+            elif hypergraph_type == 'MultiplexHypergraph':
+                H = {}
+
+                for layer in hypergraph_metadata:
+                    H[layer] = Hypergraph(hypergraph_metadata=hypergraph_metadata[layer], weighted=hypergraph_metadata[layer]['weighted'])
+                for node in nodes:
+                    for layer in node['metadata']:
+
+                for edge in edges:
+                    interaction = edge['interaction']
+                    weight = edge['weight'] if 'weight' in edge else None
+                    H.add_edge(interaction, weight, metadata=edge['metadata'])
+            """
         return H
     elif file_type == "hgr":
         with open(file_name) as file:
@@ -141,51 +157,5 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
                     raise f"File read to the end."
             H = Hypergraph(edge_list=edge_l,weighted=(mode % 10) == 1,weights=w_l if mode % 10 == 1 else None)
             return H
-    else:
-        raise ValueError("Invalid file type.")
-
-def load_directed_hypergraph(file_name: str, file_type: str) -> DirectedHypergraph:
-    """
-    Load a directed hypergraph from a file.
-
-    Parameters
-    ----------
-    file_name : str
-        The name of the file
-    file_type : str
-        The type of the file
-
-    Returns
-    -------
-    DirectedHypergraph
-        The loaded directed hypergraph
-
-    Raises
-    ------
-    ValueError
-        If the file type is not valid.
-    
-    Notes
-    -----
-    The file type can be "json".
-    """
-    if file_type == "json":
-        DH = DirectedHypergraph()
-        with open(file_name, "r") as infile:
-            data = json.load(infile)
-            for obj in data:
-                obj = eval(obj)
-                if obj['type'] == 'node':
-                    DH.add_node(obj['name'])
-                    #DH.set_meta(obj['name'], obj)
-                elif obj['type'] == 'edge':
-                    if DH.is_weighted() or 'weight' in obj:
-                        DH._weighted = True
-                    if not DH.is_weighted():
-                        DH.add_edge(tuple((tuple(sorted(tuple(obj['name'])[0])),tuple(sorted(tuple(obj['name'])[1])))))
-                    else:
-                        DH.add_edge(tuple((tuple(sorted(tuple(obj['name'])[0])),tuple(sorted(tuple(obj['name'])[1])))),obj['weight'])
-                    #DH.set_meta(tuple((tuple(sorted(tuple(obj['name'])[0])),tuple(sorted(tuple(obj['name'])[1])))), obj)
-        return DH
     else:
         raise ValueError("Invalid file type.")
