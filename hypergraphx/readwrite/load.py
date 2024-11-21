@@ -73,17 +73,17 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
         return _load_pickle(file_name)
     elif file_type == "json":
         with open(file_name, "r") as infile:
-            lines = json.load(infile)
+            # Load the entire JSON array of objects
+            data_list = json.load(infile)
+
             weighted = False
             hypergraph_metadata = {}
             nodes = []
             edges = []
             hypergraph_type = None
-            for line in lines:
-                # convert true in True and false in False
-                line = line.replace('true', 'True')
-                line = line.replace('false', 'False')
-                data = eval(line)
+
+            # Process each JSON object
+            for data in data_list:
                 if 'hypergraph_metadata' in data:
                     hypergraph_metadata = data['hypergraph_metadata']
                 elif 'hypergraph_type' in data:
@@ -95,17 +95,20 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
                 else:
                     raise ValueError("Invalid data type.")
 
-            if hypergraph_type == 'Hypergraph' or hypergraph_type == 'DirectedHypergraph':
-                weighted = hypergraph_metadata['weighted']
+            # Create the appropriate hypergraph object
+            if hypergraph_type in ['Hypergraph', 'DirectedHypergraph']:
+                weighted = hypergraph_metadata.get('weighted', False)
                 if hypergraph_type == 'Hypergraph':
                     H = Hypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
                 elif hypergraph_type == 'DirectedHypergraph':
                     H = DirectedHypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
+
+                # Add nodes and edges to the hypergraph
                 for node in nodes:
                     H.add_node(node['idx'], node['metadata'])
                 for edge in edges:
                     interaction = edge['interaction']
-                    weight = edge['weight'] if weighted else None
+                    weight = edge.get('weight', None) if weighted else None
                     H.add_edge(interaction, weight, metadata=edge['metadata'])
             """
             elif hypergraph_type == 'MultiplexHypergraph':
@@ -113,14 +116,16 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
 
                 for layer in hypergraph_metadata:
                     H[layer] = Hypergraph(hypergraph_metadata=hypergraph_metadata[layer], weighted=hypergraph_metadata[layer]['weighted'])
+                
                 for node in nodes:
-                    for layer in node['metadata']:
+                    
 
                 for edge in edges:
                     interaction = edge['interaction']
                     weight = edge['weight'] if 'weight' in edge else None
                     H.add_edge(interaction, weight, metadata=edge['metadata'])
             """
+            
         return H
     elif file_type == "hgr":
         with open(file_name) as file:

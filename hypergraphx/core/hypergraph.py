@@ -187,7 +187,10 @@ class Hypergraph:
         None
         """
         for node in node_list:
-            self.add_node(node, node_metadata[node] if node_metadata is not None else None)
+            try:
+                self.add_node(node, node_metadata[node] if node_metadata is not None else None)
+            except KeyError:
+                raise ValueError("The metadata dictionary must contain an entry for each node in the node list.")
 
     def is_weighted(self):
         """
