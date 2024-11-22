@@ -24,8 +24,6 @@ def _save_pickle(obj, file_name: str):
         pickle.dump(obj, f)
 
 
-import json
-
 def save_hypergraph(hypergraph, file_name: str, file_type='json'):
     """
     Save a hypergraph to a file.

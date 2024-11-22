@@ -173,7 +173,7 @@ class Hypergraph:
             else:
                 self.node_metadata[node] = {}
 
-    def add_nodes(self, node_list: list, node_metadata=None):
+    def add_nodes(self, node_list: list, metadata=None):
         """
         Add a list of nodes to the hypergraph.
 
@@ -188,7 +188,7 @@ class Hypergraph:
         """
         for node in node_list:
             try:
-                self.add_node(node, node_metadata[node] if node_metadata is not None else None)
+                self.add_node(node, metadata[node] if metadata is not None else None)
             except KeyError:
                 raise ValueError("The metadata dictionary must contain an entry for each node in the node list.")
 
