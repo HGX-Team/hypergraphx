@@ -17,9 +17,10 @@ def get_all_subsets(s):
     return chain(*map(lambda x: combinations(s, x), range(0, len(s)+1)))
 
 
-def simplicial(h: Hypergraph):
+def simplicial_complex(h: Hypergraph):
     """
     Returns a simplicial complex representation of the hypergraph.
+
     Parameters
     ----------
     h : Hypergraph. The hypergraph to be projected.
