@@ -16,6 +16,38 @@ class TemporalHypergraph:
         if edge_list is not None:
             self.add_edges(edge_list)
 
+    def get_hypergraph_metadata(self):
+        return self.hypergraph_metadata
+
+    def set_hypergraph_metadata(self, metadata):
+        self.hypergraph_metadata = metadata
+
+    def set_node_metadata(self, node, metadata):
+        if node not in self.node_metadata:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        self.node_metadata[node] = metadata
+
+    def get_node_metadata(self, node):
+        if node not in self.node_metadata:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        return self.node_metadata[node]
+
+    def get_all_nodes_metadata(self):
+        return self.node_metadata
+
+    def set_edge_metadata(self, edge, metadata):
+        if edge not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        self.edge_metadata[edge] = metadata
+
+    def get_edge_metadata(self, edge):
+        if edge not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        return self.edge_metadata[edge]
+
+    def get_all_edges_metadata(self):
+        return self.edge_metadata
+
     def add_node(self, node, metadata=None):
         if node not in self.node_metadata:
             if metadata is not None:
