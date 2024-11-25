@@ -108,8 +108,8 @@ class DirectedHypergraph:
         None
         """
         if node not in self._adj_out:
-            self._adj_out[node] = set()
-            self._adj_in[node] = set()
+            self._adj_out[node] = []
+            self._adj_in[node] = []
             if metadata is None:
                 self.node_metadata[node] = {}
             else:
@@ -427,7 +427,7 @@ class DirectedHypergraph:
     def get_nodes(self, metadata=False):
         """Returns the list of nodes in the hypergraph."""
         if not metadata:
-            list(self._adj_out.keys())
+            return list(self._adj_out.keys())
         else:
             return {node: self.node_metadata[node] for node in self._adj_out.keys()}
 
