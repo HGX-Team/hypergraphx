@@ -35,6 +35,19 @@ class Hypergraph:
         if edge_list is not None:
             self.add_edges(edge_list, weights=weights, metadata=edge_metadata)
 
+
+    def get_adj_dict(self):
+        return self._adj
+
+    def get_edge_list(self):
+        return self._edge_list
+
+    def set_adj_dict(self, adj):
+        self._adj = adj
+
+    def set_edge_list(self, edge_list):
+        self._edge_list = edge_list
+
     def add_empty_edge(self, name, metadata):
         if name not in self.empty_edges:
             self.empty_edges[name] = metadata

@@ -18,6 +18,20 @@ class MultiplexHypergraph:
         if edge_list is not None:
                 self.add_edges(edge_list, edge_layer=edge_layer, weights=weights, metadata=edge_metadata)
 
+    def is_weighted(self):
+        return self._weighted
+
+    def get_edge_list(self):
+        return self._edge_list
+
+    def set_edge_list(self, edge_list):
+        self._edge_list = edge_list
+
+    def get_existing_layers(self):
+        return self.existing_layers
+
+    def set_existing_layers(self, existing_layers):
+        self.existing_layers = existing_layers
     
     def get_nodes(self, metadata=False):
         if metadata:
@@ -202,12 +216,16 @@ class MultiplexHypergraph:
     def get_hypergraph_metadata(self):
         return self.hypergraph_metadata
 
+    def set_hypergraph_metadata(self, metadata):
+        self.hypergraph_metadata = metadata
+
     def aggregated_hypergraph(self):
         h = Hypergraph(weighted=self._weighted, hypergraph_metadata=self.hypergraph_metadata)
         for node in self.get_nodes():
             h.add_node(node, metadata=self.node_metadata[node])
         for edge in self.get_edges():
-            h.add_edge(edge, weight=self.edge_weight(edge), metadata=self.edge_metadata[edge])
+            _edge, layer = edge
+            h.add_edge(_edge, weight=self.get_weight(_edge, layer), metadata=self.edge_metadata[edge])
         return h
 
 

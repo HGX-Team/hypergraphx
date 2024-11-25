@@ -16,6 +16,12 @@ class TemporalHypergraph:
         if edge_list is not None:
             self.add_edges(edge_list)
 
+    def get_edge_list(self):
+        return self._edge_list
+
+    def set_edge_list(self, edge_list):
+        self._edge_list = edge_list
+
     def get_hypergraph_metadata(self):
         return self.hypergraph_metadata
 
@@ -73,17 +79,20 @@ class TemporalHypergraph:
         """
         return self._weighted
 
+    def get_weight(self, edge, time):
+        if not self._weighted:
+            raise ValueError("The hypergraph is not weighted.")
+        if (time, edge) not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        return self._edge_list[(time, edge)]
+
     def get_nodes(self, metadata=False):
         if metadata:
             return self.node_metadata
         return list(self.node_metadata.keys())
 
-    def add_edge(self, edge, weight=None, metadata=None):
-        if not isinstance(edge, tuple):
-            raise TypeError('Edge must be a tuple')
-        if len(edge) != 2:
-            raise ValueError('Edge must be a tuple of length 2')
-        if not isinstance(edge[0], int):
+    def add_edge(self, edge, time, weight=None, metadata=None):
+        if not isinstance(time, int):
             raise TypeError('Time must be an integer')
         if self._weighted and weight is None:
             raise ValueError(
@@ -94,12 +103,13 @@ class TemporalHypergraph:
                 "If the hypergraph is not weighted, no weight must be provided."
             )
 
-        t = edge[0]
+        t = time
 
         if t < 0:
             raise ValueError('Time must be a positive integer')
 
-        _edge = tuple(sorted(edge[1]))
+        _edge = tuple(sorted(edge))
+        edge = (t, _edge)
 
         if metadata is None:
             metadata = {}
@@ -113,7 +123,7 @@ class TemporalHypergraph:
         else:
             self._edge_list[edge] = weight
 
-        for node in edge:
+        for node in _edge:
             self.add_node(node)
 
     def add_edges(self, edge_list, weights=None, metadata=None):

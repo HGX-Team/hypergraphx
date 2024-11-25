@@ -35,6 +35,28 @@ class DirectedHypergraph:
         if edge_list is not None:
             self.add_edges(edge_list, weights=weights, metadata=edge_metadata)
 
+    def get_edge_list(self):
+        return self._edge_list
+
+    def set_edge_list(self, edge_list):
+        self._edge_list = edge_list
+
+    def get_adj_dict(self, in_out):
+        if in_out == 'out':
+            return self._adj_out
+        elif in_out == 'in':
+            return self._adj_in
+        else:
+            raise ValueError("Invalid value for in_out. Must be 'in' or 'out'.")
+
+    def set_adj_dict(self, adj_dict, in_out):
+        if in_out == 'out':
+            self._adj_out = adj_dict
+        elif in_out == 'in':
+            self._adj_in = adj_dict
+        else:
+            raise ValueError("Invalid value for in_out. Must be 'in' or 'out'.")
+
     def set_node_metadata(self, node, metadata):
         if node not in self._adj_out:
             raise ValueError("Node {} not in hypergraph.".format(node))

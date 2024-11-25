@@ -2,12 +2,12 @@ import json
 import os
 import pickle
 
-from hypergraphx import Hypergraph
+from hypergraphx import Hypergraph, TemporalHypergraph
 from hypergraphx import DirectedHypergraph
 from hypergraphx import MultiplexHypergraph
 
 
-def _load_pickle(file_name: str) -> Hypergraph:
+def _load_pickle(file_name: str):
     """
     Load a pickle file.
 
@@ -22,7 +22,42 @@ def _load_pickle(file_name: str) -> Hypergraph:
         The loaded hypergraph
     """
     with open("{}".format(file_name), "rb") as f:
-        return pickle.load(f)
+        data = pickle.load(f)
+        h_type = data['type']
+        if h_type == 'Hypergraph':
+            H = Hypergraph(weighted=data['weighted'])
+            H.set_hypergraph_metadata(data['hypergraph_metadata'])
+            H.node_metadata = data['nodes']
+            H.edge_metadata = data['edges']
+            H.set_edge_list(data['edge_list'])
+            H.set_adj_dict(data['adj'])
+            return H
+        elif h_type == 'TemporalHypergraph':
+            H = TemporalHypergraph(weighted=data['weighted'])
+            H.set_hypergraph_metadata(data['hypergraph_metadata'])
+            H.node_metadata = data['nodes']
+            H.edge_metadata = data['edges']
+            H.set_edge_list(data['edge_list'])
+            return H
+        elif h_type == 'DirectedHypergraph':
+            H = DirectedHypergraph(weighted=data['weighted'])
+            H.set_hypergraph_metadata(data['hypergraph_metadata'])
+            H.node_metadata = data['nodes']
+            H.edge_metadata = data['edges']
+            H.set_edge_list(data['edge_list'])
+            H.set_adj_dict(data['adj_in'], in_out='in')
+            H.set_adj_dict(data['adj_out'], in_out='out')
+            return H
+        elif h_type == 'MultiplexHypergraph':
+            H = MultiplexHypergraph(weighted=data['weighted'])
+            H.set_hypergraph_metadata(data['hypergraph_metadata'])
+            H.node_metadata = data['nodes']
+            H.edge_metadata = data['edges']
+            H.set_edge_list(data['edge_list'])
+            H.set_existing_layers(data['existing_layers'])
+            return H
+        else:
+            raise ValueError("Invalid object type.")
 
 
 def _check_existence(file_name: str, file_type: str):
@@ -44,7 +79,7 @@ def _check_existence(file_name: str, file_type: str):
     return os.path.isfile(file_name)
 
 
-def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
+def load_hypergraph(file_name: str) -> Hypergraph:
     """
     Load a hypergraph from a file.
 
@@ -69,14 +104,14 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
     -----
     The file type can be either "pickle", "json" or "hgr" (hmetis).
     """
-    if file_type == "pickle":
+    file_type = file_name.split('.')[-1]
+    if file_type == "hgx":
         return _load_pickle(file_name)
     elif file_type == "json":
         with open(file_name, "r") as infile:
             # Load the entire JSON array of objects
             data_list = json.load(infile)
 
-            weighted = False
             hypergraph_metadata = {}
             nodes = []
             edges = []
@@ -131,7 +166,27 @@ def load_hypergraph(file_name: str, file_type: str) -> Hypergraph:
                     H.add_edge(interaction, layer, weight=weight, metadata=metadata, )
 
                 return H
+            elif hypergraph_type == 'TemporalHypergraph':
+                weighted = hypergraph_metadata.get('weighted', False)
 
+                # Initialize the TemporalHypergraph object
+                H = TemporalHypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
+
+                # Add nodes to the hypergraph
+                for node in nodes:
+                    try:
+                        H.add_node(node['idx'], node['metadata'])
+                    except:
+                        print(node)
+
+                # Add edges to the hypergraph
+                for edge in edges:
+                    interaction = edge['interaction']
+                    weight = edge.get('weight', None) if weighted else None
+                    time = edge.get('time')
+                    metadata = edge['metadata']
+                    H.add_edge(interaction, time, weight=weight, metadata=metadata)
+                return H
     elif file_type == "hgr":
         with open(file_name) as file:
             edges = 0
