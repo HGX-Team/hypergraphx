@@ -1,3 +1,5 @@
+from os import times
+
 import pytest
 from hypergraphx import Hypergraph
 from hypergraphx import TemporalHypergraph
@@ -29,14 +31,14 @@ def test_add_multiple_nodes():
 
 def test_add_edge_unweighted():
     h = TemporalHypergraph()
-    h.add_edge((1, ("A", "B")))
+    h.add_edge(("A", "B"), time=1)
     assert (1, ("A", "B")) in h.get_edges()
     assert h.edge_metadata[(1, ("A", "B"))] == {}
 
 
 def test_add_edge_weighted():
     h = TemporalHypergraph(weighted=True)
-    h.add_edge((1, ("A", "B")), weight=2.0, metadata={"relationship": "friendship"})
+    h.add_edge(("A", "B"), time=1, weight=2.0, metadata={"relationship": "friendship"})
     assert (1, ("A", "B")) in h.get_edges()
     assert h._edge_list[(1, ("A", "B"))] == 2.0
     assert h.edge_metadata[(1, ("A", "B"))] == {"relationship": "friendship"}
@@ -45,43 +47,45 @@ def test_add_edge_weighted():
 def test_add_edge_invalid_time():
     h = TemporalHypergraph()
     with pytest.raises(ValueError):
-        h.add_edge((-1, ("A", "B")))
+        h.add_edge(("A", "B"), time=-1)
 
 
 def test_add_edge_invalid_type():
     h = TemporalHypergraph()
     with pytest.raises(TypeError):
-        h.add_edge(("not_a_time", ("A", "B")))
+        h.add_edge(("A", "B"), time="not_a_time")
 
-
-def test_add_edge_invalid_weight():
-    h = TemporalHypergraph(weighted=True)
+def test_add_edge_invalid_type2():
+    h = TemporalHypergraph()
     with pytest.raises(ValueError):
-        h.add_edge((1, ("A", "B")))
+        h.add_edge(("A", "B"), time=-1)
 
 
 def test_add_edges():
     h = TemporalHypergraph()
-    edges = [(1, ("A", "B")), (2, ("B", "C"))]
-    h.add_edges(edges)
-    assert set(h.get_edges()) == set(edges)
+    edges = [("A", "B"), ("B", "C")]
+    times = [1, 2]
+    h.add_edges(edges, times)
+    assert set(h.get_edges()) == {(1, ("A", "B")), (2, ("B", "C"))}
 
 
 def test_add_edges_weighted():
     h = TemporalHypergraph(weighted=True)
-    edges = [(1, ("A", "B")), (2, ("B", "C"))]
+    edges = [("A", "B"), ("B", "C")]
     weights = [0.5, 1.5]
-    h.add_edges(edges, weights=weights)
+    times = [1, 2]
+    h.add_edges(edges, times, weights=weights)
     for i, edge in enumerate(edges):
-        assert h._edge_list[edge] == weights[i]
+        assert h.get_weight(edges[i], times[i]) == weights[i]
 
 
 def test_get_edges_in_time_window():
     h = TemporalHypergraph()
-    edges = [(1, ("A", "B")), (3, ("B", "C")), (5, ("C", "D"))]
-    h.add_edges(edges)
+    edges = [("A", "B"), ("B", "C"), ("C", "D")]
+    times = [1, 2, 3]
+    h.add_edges(edges, times)
     result = h.get_edges(time_window=(2, 4))
-    assert result == [(3, ("B", "C"))]
+    assert set(result) == {(2, ("B", "C")), (3, ("C", "D"))}
 
 
 def test_get_edges_invalid_time_window():
@@ -99,13 +103,14 @@ def test_is_weighted():
 
 def test_aggregate():
     h = TemporalHypergraph()
-    edges = [(1, ("A", "B")), (2, ("B", "C")), (3, ("C", "D"))]
-    h.add_edges(edges)
+    edges = [("A", "B"), ("B", "C"), ("C", "D")]
+    times = [0, 1, 2]
+    h.add_edges(edges, times)
     aggregated = h.aggregate(time_window=2)
     assert isinstance(aggregated, dict)
     assert all(isinstance(v, Hypergraph) for v in aggregated.values())
-    assert aggregated[0].get_edges() == [("A", "B")]
-    assert aggregated[1].get_edges() == [("B", "C"), ("C", "D")]
+    assert aggregated[0].get_edges() == [("A", "B"), ("B", "C")]
+    assert aggregated[1].get_edges() == [("C", "D")]
 
 
 def test_aggregate_invalid_window():
@@ -116,7 +121,8 @@ def test_aggregate_invalid_window():
 
 def test_edge_metadata():
     h = TemporalHypergraph()
-    edge = (1, ("A", "B"))
+    edge = ("A", "B")
+    time = 1
     metadata = {"relationship": "friendship"}
-    h.add_edge(edge, metadata=metadata)
-    assert h.edge_metadata[edge] == metadata
+    h.add_edge(edge, time, metadata=metadata)
+    assert h.get_edge_metadata(edge, time) == metadata

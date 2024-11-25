@@ -46,10 +46,10 @@ class TemporalHypergraph:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         self.edge_metadata[edge] = metadata
 
-    def get_edge_metadata(self, edge):
+    def get_edge_metadata(self, edge, time):
         if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        return self.edge_metadata[edge]
+        return self.edge_metadata[(time, edge)]
 
     def get_all_edges_metadata(self):
         return self.edge_metadata
@@ -126,7 +126,7 @@ class TemporalHypergraph:
         for node in _edge:
             self.add_node(node)
 
-    def add_edges(self, edge_list, weights=None, metadata=None):
+    def add_edges(self, edge_list, time_list, weights=None, metadata=None):
         if weights is not None and not self._weighted:
             print(
                 "Warning: weights are provided but the hypergraph is not weighted. The hypergraph will be weighted."
@@ -146,6 +146,7 @@ class TemporalHypergraph:
             for edge in edge_list:
                 self.add_edge(
                     edge,
+                    time_list[i],
                     weight=weights[i]
                     if self._weighted and weights is not None
                     else None,

@@ -73,8 +73,16 @@ def test_layer_metadata():
 def test_aggregated_hypergraph():
     h = MultiplexHypergraph(weighted=True)
     h.add_node("A", metadata={"color": "red"})
-    h.add_edges([("A", "B")], edge_layer=["layer1"], weights=[0.5])
+    h.add_node("B", metadata={"color": "red"})
+    h.add_node("C", metadata={"color": "red"})
+    h.add_edge(("A", "B"), layer="layer1", weight=0.5)
+    h.add_edge(("B", "C"), layer="layer2", weight=0.5)
     aggregated = h.aggregated_hypergraph()
     assert isinstance(aggregated, Hypergraph)
     assert "A" in aggregated.get_nodes()
-    assert aggregated.edge_weight(("A", "B")) == 0.5
+    assert "B" in aggregated.get_nodes()
+    assert "C" in aggregated.get_nodes()
+    assert ("A", "B") in aggregated.get_edges()
+    assert ("B", "C") in aggregated.get_edges()
+    assert aggregated.get_weight(("A", "B")) == 0.5
+    assert aggregated.get_weight(("B", "C")) == 0.5

@@ -153,6 +153,7 @@ def incidence_matrix_by_order(
     binary_incidence, mapping = binary_incidence_matrix(
         hypergraph.get_edges(order=order, subhypergraph=True, keep_isolated_nodes=keep_isolated_nodes), return_mapping=True
     )
+
     incidence = binary_incidence.multiply(hypergraph.get_weights(order=order)).tocsr()
     if return_mapping:
         return incidence, mapping

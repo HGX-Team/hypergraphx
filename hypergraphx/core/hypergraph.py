@@ -285,7 +285,7 @@ class Hypergraph:
             else:
                 self._weights[self._edge_list[edge]] = weight
         else:
-            self._weights[self._edge_list[edge]] = None
+            self._weights[self._edge_list[edge]] = 1
 
         for node in edge:
             self.add_node(node)
@@ -669,7 +669,7 @@ class Hypergraph:
         except KeyError:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
 
-    def get_weights(self, order=None, size=None, up_to=False):
+    def get_weights(self, order=None, size=None, up_to=False, asdict=False):
         """Returns the list of weights of the edges in the hypergraph. If order is specified, it returns the list of weights of the edges of the specified order.
         If size is specified, it returns the list of weights of the edges of the specified size. If both order and size are specified, it raises a ValueError.
         If up_to is True, it returns the list of weights of the edges of order smaller or equal to the specified order.
@@ -696,14 +696,22 @@ class Hypergraph:
             If both order and size are specified.
 
         """
+        w = None
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
         if order is None and size is None:
-            return {edge: self._edge_list[edge] for edge in self.get_edges()}
+            w = {edge: self._weights[self._edge_list[edge]] for edge in self.get_edges()}
 
         if size is not None:
             order = size - 1
-        return {edge: self._edge_list[edge] for edge in self.get_edges(order=order, up_to=up_to)}
+
+        if w is None:
+            w = {edge: self._weights[self._edge_list[edge]] for edge in self.get_edges(order=order, up_to=up_to)}
+
+        if asdict:
+            return w
+        else:
+            return list(w.values())
 
     def get_sizes(self):
         """Returns the list of sizes of the hyperedges in the hypergraph.

@@ -227,11 +227,11 @@ class DirectedHypergraph:
 
         for node in source:
             self.add_node(node)
-            self._adj_out[node].add(edge)
+            self._adj_out[node].append(edge)
 
         for node in target:
             self.add_node(node)
-            self._adj_in[node].add(edge)
+            self._adj_in[node].append(edge)
 
         if metadata is not None:
             self.set_edge_metadata(edge, metadata)
