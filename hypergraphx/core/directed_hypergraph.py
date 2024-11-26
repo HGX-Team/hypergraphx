@@ -36,6 +36,7 @@ class DirectedHypergraph:
         else:
             self.hypergraph_metadata = hypergraph_metadata
         self.hypergraph_metadata["weighted"] = weighted
+        self.hypergraph_metadata["type"] = "DirectedHypergraph"
         self.node_metadata = {}
         self.edge_metadata = {}
         self.reverse_edge_list = {}
@@ -595,3 +596,46 @@ class DirectedHypergraph:
         if edge not in self.edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         del self.edge_metadata[self._edge_list[edge]][field]
+
+    def _expose_data_structures(self):
+        """
+        Expose the internal data structures of the directed hypergraph for serialization.
+
+        Returns
+        -------
+        dict
+            A dictionary containing all internal attributes of the directed hypergraph.
+        """
+        return {
+            "type": "DirectedHypergraph",
+            "_weighted": self._weighted,
+            "_adj_source": self._adj_source,
+            "_adj_target": self._adj_target,
+            "_edge_list": self._edge_list,
+            "_weights": self._weights,
+            "hypergraph_metadata": self.hypergraph_metadata,
+            "node_metadata": self.node_metadata,
+            "edge_metadata": self.edge_metadata,
+            "reverse_edge_list": self.reverse_edge_list,
+            "next_edge_id": self.next_edge_id,
+        }
+
+    def _populate_from_dict(self, data):
+        """
+        Populate the attributes of the directed hypergraph from a dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            A dictionary containing the attributes to populate the hypergraph.
+        """
+        self._weighted = data.get("_weighted", False)
+        self._adj_source = data.get("_adj_source", {})
+        self._adj_target = data.get("_adj_target", {})
+        self._edge_list = data.get("_edge_list", {})
+        self._weights = data.get("_weights", {})
+        self.hypergraph_metadata = data.get("hypergraph_metadata", {})
+        self.node_metadata = data.get("node_metadata", {})
+        self.edge_metadata = data.get("edge_metadata", {})
+        self.reverse_edge_list = data.get("reverse_edge_list", {})
+        self.next_edge_id = data.get("next_edge_id", 0)

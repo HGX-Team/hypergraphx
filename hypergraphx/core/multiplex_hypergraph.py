@@ -21,6 +21,7 @@ class MultiplexHypergraph:
         self._weighted = weighted
         self._weights = {}
         self.hypergraph_metadata["weighted"] = weighted
+        self.hypergraph_metadata["type"] = "MultiplexHypergraph"
         self._edge_list = {}
         self._adj = {}
         self.reverse_edge_list = {}
@@ -322,3 +323,46 @@ class MultiplexHypergraph:
         if edge not in self.edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         del self.edge_metadata[self._edge_list[(edge, layer)]][field]
+
+    def _expose_data_structures(self):
+        """
+        Expose the internal data structures of the multiplex hypergraph for serialization.
+
+        Returns
+        -------
+        dict
+            A dictionary containing all internal attributes of the multiplex hypergraph.
+        """
+        return {
+            "type": "MultiplexHypergraph",
+            "hypergraph_metadata": self.hypergraph_metadata,
+            "node_metadata": self.node_metadata,
+            "edge_metadata": self.edge_metadata,
+            "_weighted": self._weighted,
+            "_weights": self._weights,
+            "_edge_list": self._edge_list,
+            "_adj": self._adj,
+            "reverse_edge_list": self.reverse_edge_list,
+            "next_edge_id": self.next_edge_id,
+            "existing_layers": self.existing_layers,
+        }
+
+    def _populate_from_dict(self, data):
+        """
+        Populate the attributes of the multiplex hypergraph from a dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            A dictionary containing the attributes to populate the hypergraph.
+        """
+        self.hypergraph_metadata = data.get("hypergraph_metadata", {})
+        self.node_metadata = data.get("node_metadata", {})
+        self.edge_metadata = data.get("edge_metadata", {})
+        self._weighted = data.get("_weighted", False)
+        self._weights = data.get("_weights", {})
+        self._edge_list = data.get("_edge_list", {})
+        self._adj = data.get("_adj", {})
+        self.reverse_edge_list = data.get("reverse_edge_list", {})
+        self.next_edge_id = data.get("next_edge_id", 0)
+        self.existing_layers = data.get("existing_layers", set())
