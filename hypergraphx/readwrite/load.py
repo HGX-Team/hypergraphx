@@ -7,57 +7,54 @@ from hypergraphx import Hypergraph, TemporalHypergraph
 from hypergraphx import MultiplexHypergraph
 
 
+import pickle
+
+
 def _load_pickle(file_name: str):
     """
-    Load a pickle file.
+    Load a pickle file and reconstruct the appropriate hypergraph.
 
     Parameters
     ----------
     file_name: str
-        Name of the file
+        Name of the file to load.
 
     Returns
     -------
-    Hypergraph
-        The loaded hypergraph
+    object
+        An instance of the appropriate hypergraph type.
+
+    Raises
+    ------
+    RuntimeError
+        If the file cannot be loaded or the data is invalid.
     """
-    with open("{}".format(file_name), "rb") as f:
-        data = pickle.load(f)
+    try:
+        with open(file_name, "rb") as f:
+            data = pickle.load(f)
+
+        if not isinstance(data, dict):
+            raise ValueError("Pickle data is not a dictionary.")
+        if "type" not in data or "weighted" not in data:
+            raise KeyError("The data is missing require key: 'type'.")
+
         h_type = data["type"]
         if h_type == "Hypergraph":
             H = Hypergraph(weighted=data["weighted"])
-            H.set_hypergraph_metadata(data["hypergraph_metadata"])
-            H.node_metadata = data["nodes"]
-            H.edge_metadata = data["edges"]
-            H.set_edge_list(data["edge_list"])
-            H.set_adj_dict(data["adj"])
-            return H
         elif h_type == "TemporalHypergraph":
             H = TemporalHypergraph(weighted=data["weighted"])
-            H.set_hypergraph_metadata(data["hypergraph_metadata"])
-            H.node_metadata = data["nodes"]
-            H.edge_metadata = data["edges"]
-            H.set_edge_list(data["edge_list"])
-            return H
         elif h_type == "DirectedHypergraph":
             H = DirectedHypergraph(weighted=data["weighted"])
-            H.set_hypergraph_metadata(data["hypergraph_metadata"])
-            H.node_metadata = data["nodes"]
-            H.edge_metadata = data["edges"]
-            H.set_edge_list(data["edge_list"])
-            H.set_adj_dict(data["adj_in"], in_out="in")
-            H.set_adj_dict(data["adj_out"], in_out="out")
-            return H
         elif h_type == "MultiplexHypergraph":
             H = MultiplexHypergraph(weighted=data["weighted"])
-            H.set_hypergraph_metadata(data["hypergraph_metadata"])
-            H.node_metadata = data["nodes"]
-            H.edge_metadata = data["edges"]
-            H.set_edge_list(data["edge_list"])
-            H.set_existing_layers(data["existing_layers"])
-            return H
         else:
-            raise ValueError("Invalid object type.")
+            raise ValueError(f"Unknown hypergraph type: {h_type}")
+
+        H._populate_from_dict(data)
+        return H
+
+    except Exception as e:
+        raise RuntimeError(f"Failed to load hypergraph from {file_name}: {e}")
 
 
 def _check_existence(file_name: str, file_type: str):

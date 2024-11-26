@@ -8,61 +8,36 @@ from hypergraphx import (
     MultiplexHypergraph,
 )
 
+import pickle
+
 
 def _save_pickle(obj, file_name: str):
     """
-    Save a pickle file.
+    Save an object as a pickle file.
 
     Parameters
     ----------
     obj : object
-        The object to save
+        The object to save. Must implement `_expose_data_structures`.
     file_name : str
-        The name of the file
+        The name of the file to save the object to.
 
     Returns
     -------
     None
-        the object is saved to a file
+        The object is saved to a file.
     """
-    data = {}
-    if isinstance(obj, Hypergraph):
-        data["type"] = "Hypergraph"
-        data["hypergraph_metadata"] = obj.get_hypergraph_metadata()
-        data["weighted"] = obj.is_weighted()
-        data["nodes"] = obj.get_nodes(metadata=True)
-        data["edges"] = obj.get_edges(metadata=True)
-        data["adj"] = obj.get_adj_dict()
-        data["edge_list"] = obj.get_edge_list()
-    elif isinstance(obj, TemporalHypergraph):
-        data["type"] = "TemporalHypergraph"
-        data["hypergraph_metadata"] = obj.get_hypergraph_metadata()
-        data["weighted"] = obj.is_weighted()
-        data["nodes"] = obj.get_nodes(metadata=True)
-        data["edges"] = obj.get_edges(metadata=True)
-        data["edge_list"] = obj.get_edge_list()
-    elif isinstance(obj, DirectedHypergraph):
-        data["type"] = "DirectedHypergraph"
-        data["hypergraph_metadata"] = obj.get_hypergraph_metadata()
-        data["weighted"] = obj.is_weighted()
-        data["nodes"] = obj.get_nodes(metadata=True)
-        data["edges"] = obj.get_edges(metadata=True)
-        data["edge_list"] = obj.get_edge_list()
-        data["adj_in"] = obj.get_adj_dict(in_out="in")
-        data["adj_out"] = obj.get_adj_dict(in_out="out")
-    elif isinstance(obj, MultiplexHypergraph):
-        data["type"] = "MultiplexHypergraph"
-        data["hypergraph_metadata"] = obj.get_hypergraph_metadata()
-        data["weighted"] = obj.is_weighted()
-        data["nodes"] = obj.get_nodes(metadata=True)
-        data["edges"] = obj.get_edges(metadata=True)
-        data["edge_list"] = obj.get_edge_list()
-        data["existing_layers"] = obj.get_existing_layers()
-    else:
-        raise ValueError("Invalid object type.")
+    try:
+        if not hasattr(obj, "_expose_data_structures"):
+            raise AttributeError(
+                "Object must implement '_expose_data_structures' method."
+            )
 
-    with open("{}".format(file_name), "wb") as f:
-        pickle.dump(data, f)
+        data = obj._expose_data_structures()
+        with open(file_name, "wb") as f:
+            pickle.dump(data, f)
+    except Exception as e:
+        raise RuntimeError(f"Failed to save object to {file_name}: {e}")
 
 
 def save_hypergraph(hypergraph, file_name: str, binary=False):
