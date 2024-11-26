@@ -51,21 +51,25 @@ class DirectedHypergraph:
     def set_edge_list(self, edge_list):
         self._edge_list = edge_list
 
-    def get_adj_dict(self, in_out):
-        if in_out == "out":
+    def get_adj_dict(self, source_target):
+        if source_target == "source":
             return self._adj_source
-        elif in_out == "in":
+        elif source_target == "target":
             return self._adj_target
         else:
-            raise ValueError("Invalid value for in_out. Must be 'in' or 'out'.")
+            raise ValueError(
+                "Invalid value for source_target. Must be 'source' or 'target'."
+            )
 
-    def set_adj_dict(self, adj_dict, in_out):
-        if in_out == "out":
+    def set_adj_dict(self, adj_dict, source_target):
+        if source_target == "source":
             self._adj_source = adj_dict
-        elif in_out == "in":
+        elif source_target == "target":
             self._adj_target = adj_dict
         else:
-            raise ValueError("Invalid value for in_out. Must be 'in' or 'out'.")
+            raise ValueError(
+                "Invalid value for source_target. Must be 'source' or 'target'."
+            )
 
     def set_node_metadata(self, node, metadata):
         if node not in self._adj_source:
@@ -81,12 +85,14 @@ class DirectedHypergraph:
         return list(self.node_metadata.values())
 
     def set_edge_metadata(self, edge, metadata):
+        edge = (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
         if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         idx = self._edge_list[edge]
         self.edge_metadata[idx] = metadata
 
     def get_edge_metadata(self, edge):
+        edge = (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
         if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         idx = self._edge_list[edge]
@@ -445,7 +451,8 @@ class DirectedHypergraph:
         -------
         None
         """
-        try:
+        edge = (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
+        if edge in self._edge_list:
             e_idx = self._edge_list[edge]
             source, target = edge
 
@@ -461,8 +468,8 @@ class DirectedHypergraph:
             del self.edge_metadata[e_idx]
             del self._edge_list[edge]
 
-        except KeyError:
-            print(f"Edge {edge} not in hypergraph.")
+        else:
+            raise ValueError(f"Edge {edge} not in hypergraph.")
 
     def remove_node(self, node, keep_edges=False):
         """Remove a node from the hypergraph, with an option to keep or remove edges incident to it."""
@@ -498,6 +505,7 @@ class DirectedHypergraph:
 
     def get_weight(self, edge: Tuple[Tuple, Tuple]):
         """Returns the weight of the specified directed edge."""
+        edge = (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
         if edge in self._edge_list:
             idx = self._edge_list[edge]
             return self._weights[idx]
@@ -510,7 +518,7 @@ class DirectedHypergraph:
             raise ValueError(
                 "If the hypergraph is not weighted, weight can be 1 or None."
             )
-
+        edge = (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
         if edge in self._edge_list:
             idx = self._edge_list[edge]
             self._weights[idx] = weight
@@ -552,6 +560,7 @@ class DirectedHypergraph:
             True if the edge is in the hypergraph, False otherwise.
 
         """
+        edge = (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
         return edge in self._edge_list
 
     def get_hypergraph_metadata(self):
@@ -559,3 +568,25 @@ class DirectedHypergraph:
 
     def set_hypergraph_metadata(self, metadata):
         self.hypergraph_metadata = metadata
+
+    def add_attr_to_node_metadata(self, node, field, value):
+        if node not in self.node_metadata:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        self.node_metadata[node][field] = value
+
+    def add_attr_to_edge_metadata(self, edge, field, value):
+        edge = (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
+        if edge not in self.edge_metadata:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        self.edge_metadata[self._edge_list[edge]][field] = value
+
+    def remove_attr_from_node_metadata(self, node, field):
+        if node not in self.node_metadata:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        del self.node_metadata[node][field]
+
+    def remove_attr_from_edge_metadata(self, edge, field):
+        edge = (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
+        if edge not in self.edge_metadata:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        del self.edge_metadata[self._edge_list[edge]][field]

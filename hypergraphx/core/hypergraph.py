@@ -792,11 +792,13 @@ class Hypergraph:
         return self.node_metadata
 
     def set_edge_metadata(self, edge, metadata):
+        edge = tuple(sorted(edge))
         if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         self.edge_metadata[self._edge_list[edge]] = metadata
 
     def get_edge_metadata(self, edge):
+        edge = tuple(sorted(edge))
         if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         return self.edge_metadata[self._edge_list[edge]]
@@ -816,6 +818,28 @@ class Hypergraph:
 
     def get_all_edges_metadata(self):
         return self.edge_metadata
+
+    def add_attr_to_node_metadata(self, node, field, value):
+        if node not in self.node_metadata:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        self.node_metadata[node][field] = value
+
+    def add_attr_to_edge_metadata(self, edge, field, value):
+        edge = tuple(sorted(edge))
+        if edge not in self.edge_metadata:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        self.edge_metadata[self._edge_list[edge]][field] = value
+
+    def remove_attr_from_node_metadata(self, node, field):
+        if node not in self.node_metadata:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        del self.node_metadata[node][field]
+
+    def remove_attr_from_edge_metadata(self, edge, field):
+        edge = tuple(sorted(edge))
+        if edge not in self.edge_metadata:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        del self.edge_metadata[self._edge_list[edge]][field]
 
     def check_edge(self, edge):
         """Checks if the specified edge is in the hypergraph.

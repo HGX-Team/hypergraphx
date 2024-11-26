@@ -35,7 +35,8 @@ class MultiplexHypergraph:
             )
 
     def get_edge_metadata(self, edge, layer):
-        k = (tuple(sorted(edge)), layer)
+        edge = tuple(sorted(edge))
+        k = (edge, layer)
         if k not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         return self.edge_metadata[self._edge_list[k]]
@@ -275,3 +276,25 @@ class MultiplexHypergraph:
                 metadata=self.get_edge_metadata(_edge, layer),
             )
         return h
+
+    def add_attr_to_node_metadata(self, node, field, value):
+        if node not in self.node_metadata:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        self.node_metadata[node][field] = value
+
+    def add_attr_to_edge_metadata(self, edge, layer, field, value):
+        edge = tuple(sorted(edge))
+        if edge not in self.edge_metadata:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        self.edge_metadata[self._edge_list[(edge, layer)]][field] = value
+
+    def remove_attr_from_node_metadata(self, node, field):
+        if node not in self.node_metadata:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        del self.node_metadata[node][field]
+
+    def remove_attr_from_edge_metadata(self, edge, layer, field):
+        edge = tuple(sorted(edge))
+        if edge not in self.edge_metadata:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        del self.edge_metadata[self._edge_list[(edge, layer)]][field]
