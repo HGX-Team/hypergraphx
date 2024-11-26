@@ -2,6 +2,11 @@ from hypergraphx import Hypergraph
 
 
 class MultiplexHypergraph:
+    """
+    A Multiplex Hypergraph is a hypergraph where hyperedges are organized into multiple layers.
+    Each layer share the same node-set and represents a specific context or relationship between nodes, and hyperedges can
+    have weights and metadata specific to their layer.
+    """
 
     def __init__(
         self,

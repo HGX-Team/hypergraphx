@@ -2,6 +2,12 @@ from hypergraphx import Hypergraph
 
 
 class TemporalHypergraph:
+    """
+    A Temporal Hypergraph is a hypergraph where each hyperedge is associated with a specific timestamp.
+    Temporal hypergraphs are useful for modeling systems where interactions between nodes change over time, such as social networks,
+    communication networks, and transportation systems.
+    """
+
     def __init__(
         self,
         edge_list=None,

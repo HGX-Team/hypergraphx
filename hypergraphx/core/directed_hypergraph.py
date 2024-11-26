@@ -4,6 +4,10 @@ from sklearn.preprocessing import LabelEncoder
 
 
 class DirectedHypergraph:
+    """
+    A Directed Hypergraph is a generalization of a graph in which hyperedges have a direction.
+    Each hyperedge connects a set of source nodes to a set of target nodes.
+    """
 
     def __init__(
         self,

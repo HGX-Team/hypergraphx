@@ -5,6 +5,11 @@ from sklearn.preprocessing import LabelEncoder
 
 
 class Hypergraph:
+    """
+    A Hypergraph is a generalization of a graph where an edge (hyperedge) can connect
+    any number of nodes. It is represented as a set of nodes and a set of hyperedges,
+    where each hyperedge is a subset of nodes.
+    """
 
     def __init__(
         self,
