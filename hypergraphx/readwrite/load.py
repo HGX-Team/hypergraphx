@@ -35,18 +35,18 @@ def _load_pickle(file_name: str):
 
         if not isinstance(data, dict):
             raise ValueError("Pickle data is not a dictionary.")
-        if "type" not in data or "weighted" not in data:
+        if "type" not in data:
             raise KeyError("The data is missing require key: 'type'.")
 
         h_type = data["type"]
         if h_type == "Hypergraph":
-            H = Hypergraph(weighted=data["weighted"])
+            H = Hypergraph(weighted=data["_weighted"])
         elif h_type == "TemporalHypergraph":
-            H = TemporalHypergraph(weighted=data["weighted"])
+            H = TemporalHypergraph(weighted=data["_weighted"])
         elif h_type == "DirectedHypergraph":
-            H = DirectedHypergraph(weighted=data["weighted"])
+            H = DirectedHypergraph(weighted=data["_weighted"])
         elif h_type == "MultiplexHypergraph":
-            H = MultiplexHypergraph(weighted=data["weighted"])
+            H = MultiplexHypergraph(weighted=data["_weighted"])
         else:
             raise ValueError(f"Unknown hypergraph type: {h_type}")
 
