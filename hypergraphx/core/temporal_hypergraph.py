@@ -332,6 +332,7 @@ class TemporalHypergraph:
             A dictionary containing all internal attributes of the temporal hypergraph.
         """
         return {
+            "type" : "TemporalHypergraph",
             "hypergraph_metadata": self.hypergraph_metadata,
             "_weighted": self._weighted,
             "_weights": self._weights,
