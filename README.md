@@ -53,11 +53,7 @@ arbitrary size.
 <img src="images/hypergraph.png" width="350" title="Hypergraph example">
 
 ## What is hypergraphx?
-
-The library is conceived by researchers with several years of experience and direct contributions to the field of
-higher-order interactions.
-Developed by a diverse multidisciplinary team with complementary skills and expertise, HGX aims to provide, as a single
-source, a comprehensive suite of tools and algorithms for constructing, storing, analysing and visualizing systems with
+HGX aims to provide, as a single source, a comprehensive suite of tools and algorithms for constructing, storing, analysing and visualizing systems with
 higher-order interactions.
 These include different ways to convert data across distinct higher-order representations, a large variety of measures
 of higher-order organization at the local and the mesoscale, statistical filters to sparsify higher-order data, a wide
