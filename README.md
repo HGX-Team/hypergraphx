@@ -1,10 +1,10 @@
 <img src="logo/logo.png" width="500" title="HGX logo">
 
-:page_facing_up: **[Paper](https://arxiv.org/pdf/2303.15356.pdf)** | :paperclip: *
-*[Docs](https://hypergraphx.readthedocs.io/en/latest/#)** | :computer: *
-*[Tutorials](https://github.com/HGX-Team/hypergraphx/tree/master/tutorials)** | :floppy_disk: *
-*[Data](https://github.com/HGX-Team/data)** | :bug: **[Report bug](https://github.com/HGX-Team/hypergraphx/issues)
-** | :email: **[Reach us](mailto:quintino.lotito@unitn.it)**
+:page_facing_up: **[Paper](https://arxiv.org/pdf/2303.15356.pdf)** | :paperclip:
+*[Docs](https://hypergraphx.readthedocs.io/en/latest/#)* | :computer: 
+*[Tutorials](https://github.com/HGX-Team/hypergraphx/tree/master/tutorials)* | :floppy_disk: 
+*[Data](https://github.com/HGX-Team/data)* | :bug: [Report bug](https://github.com/HGX-Team/hypergraphx/issues)
+| :email: **[Reach us](mailto:quintino.lotito@unitn.it)**
 -----
 
 
