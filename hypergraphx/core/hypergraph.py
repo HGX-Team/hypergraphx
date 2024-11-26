@@ -213,12 +213,13 @@ class Hypergraph:
         -------
         None
         """
+        if metadata is None:
+            metadata = {}
         if node not in self._adj:
-            self._adj[node] = set()
-            if metadata is not None:
-                self.node_metadata[node] = metadata
-            else:
-                self.node_metadata[node] = {}
+            self._adj[node] = []
+            self.node_metadata[node] = {}
+        if self.node_metadata[node] == {}:
+            self.node_metadata[node] = metadata
 
     def add_nodes(self, node_list: list, metadata=None):
         """
@@ -301,7 +302,7 @@ class Hypergraph:
 
         for node in edge:
             self.add_node(node)
-            self._adj[node].add(self._edge_list[edge])
+            self._adj[node].append(self._edge_list[edge])
 
     def add_edges(self, edge_list, weights=None, metadata=None):
         """Add a list of hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.

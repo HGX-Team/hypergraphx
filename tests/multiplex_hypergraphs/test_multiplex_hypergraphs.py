@@ -227,3 +227,77 @@ def test_aggregated_hypergraph_with_metadata_and_weights():
     assert aggregated.get_edge_metadata(("B", "C")) == {
         "type": "work"
     }, "Metadata of ('B', 'C') should be preserved."
+
+
+def test_get_incident_edges_no_edges():
+    """
+    Test retrieving incident edges for a node with no incident edges.
+    """
+    mhg = MultiplexHypergraph()
+    mhg.add_node("A")
+    incident_edges = mhg.get_incident_edges("A")
+    assert incident_edges == [], "Node A should have no incident edges."
+
+
+def test_get_incident_edges_single_edge():
+    """
+    Test retrieving incident edges for a node with a single incident edge.
+    """
+    mhg = MultiplexHypergraph()
+    mhg.add_edge(("A", "B"), layer="layer1")
+    incident_edges = mhg.get_incident_edges("A")
+    assert len(incident_edges) == 1, "Node A should have 1 incident edge."
+    assert ((("A", "B"), "layer1")) in incident_edges
+
+
+def test_get_incident_edges_multiple_edges():
+    """
+    Test retrieving incident edges for a node with multiple incident edges.
+    """
+    mhg = MultiplexHypergraph()
+    mhg.add_edge(("A", "B"), layer="layer1")
+    mhg.add_edge(("A", "C"), layer="layer2")
+    mhg.add_edge(("D", "A"), layer="layer3")
+    incident_edges = mhg.get_incident_edges("A")
+    assert len(incident_edges) == 3, "Node A should have 3 incident edges."
+    assert ((("A", "B"), "layer1")) in incident_edges
+    assert ((("A", "C"), "layer2")) in incident_edges
+    assert ((("A", "D"), "layer3")) in incident_edges
+
+
+def test_get_incident_edges_node_not_in_hypergraph():
+    """
+    Test retrieving incident edges for a node not in the hypergraph.
+    """
+    mhg = MultiplexHypergraph()
+    mhg.add_edge(("A", "B"), layer="layer1")
+    with pytest.raises(ValueError):
+        mhg.get_incident_edges("Z")
+
+
+def test_get_incident_edges_isolated_node():
+    """
+    Test retrieving incident edges for an isolated node (node exists but has no edges).
+    """
+    mhg = MultiplexHypergraph()
+    mhg.add_node("A")
+    mhg.add_edge(("B", "C"), layer="layer1")
+    incident_edges = mhg.get_incident_edges("A")
+    assert (
+        incident_edges == []
+    ), "Node A should have no incident edges as it is isolated."
+
+
+def test_get_incident_edges_across_layers():
+    """
+    Test retrieving incident edges for a node with edges across multiple layers.
+    """
+    mhg = MultiplexHypergraph()
+    mhg.add_edge(("A", "B"), layer="layer1")
+    mhg.add_edge(("A", "C"), layer="layer2")
+    incident_edges = mhg.get_incident_edges("A")
+    assert (
+        len(incident_edges) == 2
+    ), "Node A should have 2 incident edges across layers."
+    assert (("A", "B"), "layer1") in incident_edges
+    assert (("A", "C"), "layer2") in incident_edges

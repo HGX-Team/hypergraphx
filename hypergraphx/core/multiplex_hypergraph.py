@@ -22,9 +22,17 @@ class MultiplexHypergraph:
         self._weights = {}
         self.hypergraph_metadata["weighted"] = weighted
         self._edge_list = {}
+        self._adj = {}
         self.reverse_edge_list = {}
         self.next_edge_id = 0
         self.existing_layers = set()
+
+        if edge_list is not None and edge_layer is None:
+            if all(isinstance(edge, tuple) and len(edge) == 2 for edge in edge_list):
+                edge_layer = [edge[1] for edge in edge_list]
+                edge_list = [edge[0] for edge in edge_list]
+            else:
+                raise ValueError("Provide layer for each edge.")
 
         if edge_list is not None:
             self.add_edges(
@@ -33,6 +41,17 @@ class MultiplexHypergraph:
                 weights=weights,
                 metadata=edge_metadata,
             )
+
+    def get_adj_dict(self):
+        return self._adj
+
+    def set_adj_dict(self, adj_dict):
+        self._adj = adj_dict
+
+    def get_incident_edges(self, node):
+        if node not in self._adj:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        return [self.reverse_edge_list[e_id] for e_id in self._adj[node]]
 
     def get_edge_metadata(self, edge, layer):
         edge = tuple(sorted(edge))
@@ -75,11 +94,13 @@ class MultiplexHypergraph:
         -------
         None
         """
-        if node not in self.node_metadata:
-            if metadata is not None:
-                self.node_metadata[node] = metadata
-            else:
-                self.node_metadata[node] = {}
+        if metadata is None:
+            metadata = {}
+        if node not in self._adj:
+            self._adj[node] = []
+            self.node_metadata[node] = {}
+        if self.node_metadata[node] == {}:
+            self.node_metadata[node] = metadata
 
     def add_nodes(self, node_list: list, node_metadata=None):
         """
@@ -213,6 +234,9 @@ class MultiplexHypergraph:
 
         for node in edge:
             self.add_node(node)
+
+        for node in edge:
+            self._adj[node].append(e_id)
 
     def get_edges(self, metadata=False):
         if metadata:

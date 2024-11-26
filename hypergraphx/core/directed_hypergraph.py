@@ -124,13 +124,14 @@ class DirectedHypergraph:
         -------
         None
         """
+        if metadata is None:
+            self.node_metadata[node] = {}
         if node not in self._adj_source:
             self._adj_source[node] = []
             self._adj_target[node] = []
-            if metadata is None:
-                self.node_metadata[node] = {}
-            else:
-                self.node_metadata[node] = metadata
+            self.node_metadata[node] = {}
+        if self.node_metadata[node] == {}:
+            self.node_metadata[node] = metadata
 
     def add_nodes(self, node_list: list):
         """
@@ -310,6 +311,8 @@ class DirectedHypergraph:
         list
             The list of incident in-edges.
         """
+        if node not in self._adj_source:
+            raise ValueError(f"Node {node} not in hypergraph.")
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
         if order is None and size is None:
@@ -342,6 +345,8 @@ class DirectedHypergraph:
         list
             The list of incident out-edges.
         """
+        if node not in self._adj_target:
+            raise ValueError(f"Node {node} not in hypergraph.")
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
         if order is None and size is None:
