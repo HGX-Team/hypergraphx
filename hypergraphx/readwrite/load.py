@@ -2,8 +2,8 @@ import json
 import os
 import pickle
 
-from hypergraphx import Hypergraph, TemporalHypergraph
 from hypergraphx import DirectedHypergraph
+from hypergraphx import Hypergraph, TemporalHypergraph
 from hypergraphx import MultiplexHypergraph
 
 
@@ -23,38 +23,38 @@ def _load_pickle(file_name: str):
     """
     with open("{}".format(file_name), "rb") as f:
         data = pickle.load(f)
-        h_type = data['type']
-        if h_type == 'Hypergraph':
-            H = Hypergraph(weighted=data['weighted'])
-            H.set_hypergraph_metadata(data['hypergraph_metadata'])
-            H.node_metadata = data['nodes']
-            H.edge_metadata = data['edges']
-            H.set_edge_list(data['edge_list'])
-            H.set_adj_dict(data['adj'])
+        h_type = data["type"]
+        if h_type == "Hypergraph":
+            H = Hypergraph(weighted=data["weighted"])
+            H.set_hypergraph_metadata(data["hypergraph_metadata"])
+            H.node_metadata = data["nodes"]
+            H.edge_metadata = data["edges"]
+            H.set_edge_list(data["edge_list"])
+            H.set_adj_dict(data["adj"])
             return H
-        elif h_type == 'TemporalHypergraph':
-            H = TemporalHypergraph(weighted=data['weighted'])
-            H.set_hypergraph_metadata(data['hypergraph_metadata'])
-            H.node_metadata = data['nodes']
-            H.edge_metadata = data['edges']
-            H.set_edge_list(data['edge_list'])
+        elif h_type == "TemporalHypergraph":
+            H = TemporalHypergraph(weighted=data["weighted"])
+            H.set_hypergraph_metadata(data["hypergraph_metadata"])
+            H.node_metadata = data["nodes"]
+            H.edge_metadata = data["edges"]
+            H.set_edge_list(data["edge_list"])
             return H
-        elif h_type == 'DirectedHypergraph':
-            H = DirectedHypergraph(weighted=data['weighted'])
-            H.set_hypergraph_metadata(data['hypergraph_metadata'])
-            H.node_metadata = data['nodes']
-            H.edge_metadata = data['edges']
-            H.set_edge_list(data['edge_list'])
-            H.set_adj_dict(data['adj_in'], in_out='in')
-            H.set_adj_dict(data['adj_out'], in_out='out')
+        elif h_type == "DirectedHypergraph":
+            H = DirectedHypergraph(weighted=data["weighted"])
+            H.set_hypergraph_metadata(data["hypergraph_metadata"])
+            H.node_metadata = data["nodes"]
+            H.edge_metadata = data["edges"]
+            H.set_edge_list(data["edge_list"])
+            H.set_adj_dict(data["adj_in"], in_out="in")
+            H.set_adj_dict(data["adj_out"], in_out="out")
             return H
-        elif h_type == 'MultiplexHypergraph':
-            H = MultiplexHypergraph(weighted=data['weighted'])
-            H.set_hypergraph_metadata(data['hypergraph_metadata'])
-            H.node_metadata = data['nodes']
-            H.edge_metadata = data['edges']
-            H.set_edge_list(data['edge_list'])
-            H.set_existing_layers(data['existing_layers'])
+        elif h_type == "MultiplexHypergraph":
+            H = MultiplexHypergraph(weighted=data["weighted"])
+            H.set_hypergraph_metadata(data["hypergraph_metadata"])
+            H.node_metadata = data["nodes"]
+            H.edge_metadata = data["edges"]
+            H.set_edge_list(data["edge_list"])
+            H.set_existing_layers(data["existing_layers"])
             return H
         else:
             raise ValueError("Invalid object type.")
@@ -99,12 +99,12 @@ def load_hypergraph(file_name: str) -> Hypergraph:
     ------
     ValueError
         If the file type is not valid.
-    
+
     Notes
     -----
     The file type can be either "pickle", "json" or "hgr" (hmetis).
     """
-    file_type = file_name.split('.')[-1]
+    file_type = file_name.split(".")[-1]
     if file_type == "hgx":
         return _load_pickle(file_name)
     elif file_type == "json":
@@ -119,72 +119,85 @@ def load_hypergraph(file_name: str) -> Hypergraph:
 
             # Process each JSON object
             for data in data_list:
-                if 'hypergraph_metadata' in data:
-                    hypergraph_metadata = data['hypergraph_metadata']
-                if 'hypergraph_type' in data:
-                    hypergraph_type = data['hypergraph_type']
-                if 'type' in data and data['type'] == 'node':
+                if "hypergraph_metadata" in data:
+                    hypergraph_metadata = data["hypergraph_metadata"]
+                if "hypergraph_type" in data:
+                    hypergraph_type = data["hypergraph_type"]
+                if "type" in data and data["type"] == "node":
                     nodes.append(data)
-                if 'type' in data and data['type'] == 'edge':
+                if "type" in data and data["type"] == "edge":
                     edges.append(data)
 
             # Create the appropriate hypergraph object
-            if hypergraph_type in ['Hypergraph', 'DirectedHypergraph']:
-                weighted = hypergraph_metadata.get('weighted', False)
-                if hypergraph_type == 'Hypergraph':
-                    H = Hypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
-                elif hypergraph_type == 'DirectedHypergraph':
-                    H = DirectedHypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
+            if hypergraph_type in ["Hypergraph", "DirectedHypergraph"]:
+                weighted = hypergraph_metadata.get("weighted", False)
+                if hypergraph_type == "Hypergraph":
+                    H = Hypergraph(
+                        hypergraph_metadata=hypergraph_metadata, weighted=weighted
+                    )
+                elif hypergraph_type == "DirectedHypergraph":
+                    H = DirectedHypergraph(
+                        hypergraph_metadata=hypergraph_metadata, weighted=weighted
+                    )
 
                 # Add nodes and edges to the hypergraph
                 for node in nodes:
-                    H.add_node(node['idx'], node['metadata'])
+                    H.add_node(node["idx"], node["metadata"])
                 for edge in edges:
-                    interaction = edge['interaction']
-                    weight = edge.get('weight', None) if weighted else None
-                    H.add_edge(interaction, weight, metadata=edge['metadata'])
+                    interaction = edge["interaction"]
+                    weight = edge.get("weight", None) if weighted else None
+                    H.add_edge(interaction, weight, metadata=edge["metadata"])
                 return H
 
-            elif hypergraph_type == 'MultiplexHypergraph':
-                weighted = hypergraph_metadata.get('weighted', False)
+            elif hypergraph_type == "MultiplexHypergraph":
+                weighted = hypergraph_metadata.get("weighted", False)
 
                 # Initialize the MultiplexHypergraph object
-                H = MultiplexHypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
+                H = MultiplexHypergraph(
+                    hypergraph_metadata=hypergraph_metadata, weighted=weighted
+                )
 
                 # Add nodes to the hypergraph
                 for node in nodes:
-                    H.add_node(node['idx'], node['metadata'])
+                    H.add_node(node["idx"], node["metadata"])
 
                 # Add edges to the hypergraph
                 for edge in edges:
-                    interaction = edge['interaction']
-                    weight = edge.get('weight', None) if weighted else None
-                    layer = edge.get('layer')  # Retrieve the layer for the edge
-                    metadata = edge['metadata']
+                    interaction = edge["interaction"]
+                    weight = edge.get("weight", None) if weighted else None
+                    layer = edge.get("layer")  # Retrieve the layer for the edge
+                    metadata = edge["metadata"]
 
                     # Add the edge to the specified layer
-                    H.add_edge(interaction, layer, weight=weight, metadata=metadata, )
+                    H.add_edge(
+                        interaction,
+                        layer,
+                        weight=weight,
+                        metadata=metadata,
+                    )
 
                 return H
-            elif hypergraph_type == 'TemporalHypergraph':
-                weighted = hypergraph_metadata.get('weighted', False)
+            elif hypergraph_type == "TemporalHypergraph":
+                weighted = hypergraph_metadata.get("weighted", False)
 
                 # Initialize the TemporalHypergraph object
-                H = TemporalHypergraph(hypergraph_metadata=hypergraph_metadata, weighted=weighted)
+                H = TemporalHypergraph(
+                    hypergraph_metadata=hypergraph_metadata, weighted=weighted
+                )
 
                 # Add nodes to the hypergraph
                 for node in nodes:
                     try:
-                        H.add_node(node['idx'], node['metadata'])
+                        H.add_node(node["idx"], node["metadata"])
                     except:
                         print(node)
 
                 # Add edges to the hypergraph
                 for edge in edges:
-                    interaction = edge['interaction']
-                    weight = edge.get('weight', None) if weighted else None
-                    time = edge.get('time')
-                    metadata = edge['metadata']
+                    interaction = edge["interaction"]
+                    weight = edge.get("weight", None) if weighted else None
+                    time = edge.get("time")
+                    metadata = edge["metadata"]
                     H.add_edge(interaction, time, weight=weight, metadata=metadata)
                 return H
     elif file_type == "hgr":
@@ -195,32 +208,36 @@ def load_hypergraph(file_name: str) -> Hypergraph:
             w_l = []
             edge_l = []
             read_count = 0
-            read_node=0
-            for line  in file:
+            read_node = 0
+            for line in file:
                 this_l = line.strip()
-                if len(this_l)== 0 or this_l[0]=='%':
-                    pass # do nothing for comments
-                elif nodes ==0:
-                    head = this_l.split(' ')
+                if len(this_l) == 0 or this_l[0] == "%":
+                    pass  # do nothing for comments
+                elif nodes == 0:
+                    head = this_l.split(" ")
                     edges = int(head[0])
-                    nodes  = int(head[1])
-                    if len(head)==3:
+                    nodes = int(head[1])
+                    if len(head) == 3:
                         mode = int(head[2])
-                elif read_count<edges:
+                elif read_count < edges:
                     read_count += 1
-                    entries = [int(r) for r in this_l.split(' ') if r != '']
-                    if mode % 10 == 1 and len(entries)>1: # read weight
+                    entries = [int(r) for r in this_l.split(" ") if r != ""]
+                    if mode % 10 == 1 and len(entries) > 1:  # read weight
                         w_l += [int(entries[0])]
                         edge_l += [tuple(entries[1:])]
-                    elif mode % 10 != 1 and len(entries)>0:
+                    elif mode % 10 != 1 and len(entries) > 0:
                         edge_l += [tuple(entries)]
                     else:
                         raise f"Empty edge in file. {read_count} edges read."
-                elif read_node<nodes:
+                elif read_node < nodes:
                     read_node += 1
                 else:
                     raise f"File read to the end."
-            H = Hypergraph(edge_list=edge_l,weighted=(mode % 10) == 1,weights=w_l if mode % 10 == 1 else None)
+            H = Hypergraph(
+                edge_list=edge_l,
+                weighted=(mode % 10) == 1,
+                weights=w_l if mode % 10 == 1 else None,
+            )
             return H
     else:
         raise ValueError("Invalid file type.")

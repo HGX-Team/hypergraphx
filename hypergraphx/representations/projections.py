@@ -25,8 +25,8 @@ def bipartite_projection(h: Hypergraph):
     idx = 0
 
     for node in h.get_nodes():
-        id_to_obj['N'+str(idx)] = node
-        obj_to_id[node] = 'N'+str(idx)
+        id_to_obj["N" + str(idx)] = node
+        obj_to_id[node] = "N" + str(idx)
         idx += 1
         g.add_node(obj_to_id[node], bipartite=0)
 
@@ -34,8 +34,8 @@ def bipartite_projection(h: Hypergraph):
 
     for edge in h.get_edges():
         edge = tuple(sorted(edge))
-        obj_to_id[edge] = 'E'+str(idx)
-        id_to_obj['E'+str(idx)] = edge
+        obj_to_id[edge] = "E" + str(idx)
+        id_to_obj["E" + str(idx)] = edge
         idx += 1
         g.add_node(obj_to_id[edge], bipartite=1)
 
@@ -85,14 +85,14 @@ def clique_projection(h: Hypergraph, keep_isolated=False):
             g.add_node(node)
 
     for edge in h.get_edges():
-        for i in range(len(edge)-1):
-            for j in range(i+1, len(edge)):
+        for i in range(len(edge) - 1):
+            for j in range(i + 1, len(edge)):
                 g.add_edge(edge[i], edge[j])
 
     return g
 
 
-def line_graph(h: Hypergraph, distance='intersection', s=1, weighted=False):
+def line_graph(h: Hypergraph, distance="intersection", s=1, weighted=False):
     """
     Returns a line graph of the hypergraph.
 
@@ -131,9 +131,9 @@ def line_graph(h: Hypergraph, distance='intersection', s=1, weighted=False):
     """
 
     def _distance(a, b):
-        if distance == 'intersection':
+        if distance == "intersection":
             return intersection(a, b)
-        if distance == 'jaccard':
+        if distance == "jaccard":
             return jaccard_similarity(a, b)
 
     edges = h.get_edges()
@@ -167,8 +167,12 @@ def line_graph(h: Hypergraph, distance='intersection', s=1, weighted=False):
                     w = _distance(e_i, e_j)
                     if w >= s:
                         if weighted:
-                            g.add_edge(edge_to_id[adj[n][i]], edge_to_id[adj[n][j]], weight=w)
+                            g.add_edge(
+                                edge_to_id[adj[n][i]], edge_to_id[adj[n][j]], weight=w
+                            )
                         else:
-                            g.add_edge(edge_to_id[adj[n][i]], edge_to_id[adj[n][j]], weight=1)
+                            g.add_edge(
+                                edge_to_id[adj[n][i]], edge_to_id[adj[n][j]], weight=1
+                            )
                     vis[k] = True
     return g, id_to_edge

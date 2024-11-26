@@ -1,7 +1,8 @@
-import pytest, numpy as np
+import numpy as np
 
 from hypergraphx import DirectedHypergraph
 from hypergraphx.measures.directed import hyperedge_signature_vector
+
 
 def test_hyperedge_signature_vector_basic():
     """Test basic functionality of hyperedge signature vector calculation."""

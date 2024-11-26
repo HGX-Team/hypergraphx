@@ -3,6 +3,7 @@ import math
 from collections import deque
 from itertools import combinations, permutations
 
+
 def _motifs_ho_not_full(edges, N, visited):
     mapping, labeling = generate_motifs(N)
 
@@ -506,24 +507,25 @@ def generate_motifs(N):
 
     return mapping, labeling
 
+
 def _directed_motifs_ho_full(edges, N):
 
-    mapping={}
+    mapping = {}
     T = {}
     for e in edges:
-        T[tuple((tuple(sorted(e[0])),tuple(sorted(e[1]))))] = 1
+        T[tuple((tuple(sorted(e[0])), tuple(sorted(e[1]))))] = 1
 
     visited = {}
+
     def count_motif(nodes):
         nodes = tuple(sorted(tuple(nodes)))
         p_nodes = _all_directed_hyperedges(nodes)
-        
-        
+
         motif = []
         for edge in p_nodes:
             if edge in T:
                 motif.append(edge)
-        
+
         m = {}
         idx = 1
         for i in nodes:
@@ -535,59 +537,58 @@ def _directed_motifs_ho_full(edges, N):
             new_e0 = []
             for node in e[0]:
                 new_e0.append(m[node])
-            new_e1=[]
+            new_e1 = []
             for node in e[1]:
                 new_e1.append(m[node])
-            
-            new_e = tuple((tuple(sorted(new_e0)),tuple(sorted(new_e1))))
+
+            new_e = tuple((tuple(sorted(new_e0)), tuple(sorted(new_e1))))
             labeled_motif.append(new_e)
         labeled_motif = tuple(sorted(labeled_motif))
-        
-        
-        
-        vettore = list(range(1,N+1))
+
+        vettore = list(range(1, N + 1))
         permutazioni_vettore = permutations(vettore)
-        m={}
-        l_perm=[]
+        m = {}
+        l_perm = []
         for permutazione in permutazioni_vettore:
-            i=1
+            i = 1
             for x in permutazione:
-                m[i]=x
-                i+=1
-            
-            new_comb=[]
+                m[i] = x
+                i += 1
+
+            new_comb = []
             for x in labeled_motif:
-                arco=[]
+                arco = []
                 for y in x:
-                    parte_arco=[]
+                    parte_arco = []
                     for j in y:
                         parte_arco.append(m[j])
                     arco.append(tuple(sorted(parte_arco)))
-                
-                arco=tuple(arco)
+
+                arco = tuple(arco)
                 new_comb.append(arco)
-            new_comb=tuple(sorted(new_comb))
+            new_comb = tuple(sorted(new_comb))
             l_perm.append(new_comb)
-        
-        l_perm=sorted(l_perm)
-        rappr=l_perm[0]
+
+        l_perm = sorted(l_perm)
+        rappr = l_perm[0]
         if rappr in mapping:
-            mapping[rappr]+=1
+            mapping[rappr] += 1
         else:
-            mapping[rappr]=1
-        
-        
+            mapping[rappr] = 1
+
     for e in edges:
 
-        if len(set(list(e[0])+list(e[1]))) == N and not tuple(sorted(set(list(e[0])+list(e[1])))) in visited:
-            nodes = set(list(e[0])+list(e[1]))
-            visited[tuple(sorted(nodes))]=1
+        if (
+            len(set(list(e[0]) + list(e[1]))) == N
+            and not tuple(sorted(set(list(e[0]) + list(e[1])))) in visited
+        ):
+            nodes = set(list(e[0]) + list(e[1]))
+            visited[tuple(sorted(nodes))] = 1
             count_motif(nodes)
-            
 
     out = []
 
-    for motif,count in mapping.items():
+    for motif, count in mapping.items():
         out.append((motif, count))
 
     out = list(sorted(out))
@@ -598,12 +599,13 @@ def _directed_motifs_ho_full(edges, N):
 
     return out, visited
 
+
 def _directed_motifs_ho_not_full(edges, N, visited):
-    mapping={}
+    mapping = {}
     T = {}
-    graph={}
+    graph = {}
     for e in edges:
-        T[tuple((tuple(sorted(e[0])),tuple(sorted(e[1]))))] = 1
+        T[tuple((tuple(sorted(e[0])), tuple(sorted(e[1]))))] = 1
         for e_i in e[0]:
             if e_i in graph:
                 graph[e_i].append(e)
@@ -614,17 +616,16 @@ def _directed_motifs_ho_not_full(edges, N, visited):
                 graph[e_i].append(e)
             else:
                 graph[e_i] = [e]
-            
+
     def count_motif(nodes):
         nodes = tuple(sorted(tuple(nodes)))
         p_nodes = _all_directed_hyperedges(nodes)
-        
-        
+
         motif = []
         for edge in p_nodes:
             if edge in T:
                 motif.append(edge)
-        
+
         m = {}
         idx = 1
         for i in nodes:
@@ -636,51 +637,52 @@ def _directed_motifs_ho_not_full(edges, N, visited):
             new_e0 = []
             for node in e[0]:
                 new_e0.append(m[node])
-            new_e1=[]
+            new_e1 = []
             for node in e[1]:
                 new_e1.append(m[node])
-            
-            new_e = tuple((tuple(sorted(new_e0)),tuple(sorted(new_e1))))
+
+            new_e = tuple((tuple(sorted(new_e0)), tuple(sorted(new_e1))))
             labeled_motif.append(new_e)
         labeled_motif = tuple(sorted(labeled_motif))
-    
-        l_perm=[]
-        vettore = list(range(1,N+1))
+
+        l_perm = []
+        vettore = list(range(1, N + 1))
         permutazioni_vettore = permutations(vettore)
-        m={}
+        m = {}
         for permutazione in permutazioni_vettore:
-            i=1
+            i = 1
             for x in permutazione:
-                m[i]=x
-                i+=1
-            
-            new_comb=[]
+                m[i] = x
+                i += 1
+
+            new_comb = []
             for x in labeled_motif:
-                arco=[]
+                arco = []
                 for y in x:
-                    parte_arco=[]
+                    parte_arco = []
                     for j in y:
                         parte_arco.append(m[j])
                     arco.append(tuple(sorted(parte_arco)))
-                
-                arco=tuple(arco)
+
+                arco = tuple(arco)
                 new_comb.append(arco)
-            new_comb=tuple(sorted(new_comb))
+            new_comb = tuple(sorted(new_comb))
             l_perm.append(new_comb)
-            
-        l_perm=sorted(l_perm)
-        rappr=l_perm[0]
+
+        l_perm = sorted(l_perm)
+        rappr = l_perm[0]
         if rappr in mapping:
-            mapping[rappr]+=1
+            mapping[rappr] += 1
         else:
-            mapping[rappr]=1
-
-
+            mapping[rappr] = 1
 
     for e in edges:
-        
-        if len(set(list(e[0])+list(e[1]))) == N - 1 and len(list(e[0])+list(e[1]))==N-1: 
-            nodes = list(set(list(e[0])+list(e[1])))
+
+        if (
+            len(set(list(e[0]) + list(e[1]))) == N - 1
+            and len(list(e[0]) + list(e[1])) == N - 1
+        ):
+            nodes = list(set(list(e[0]) + list(e[1])))
 
             for n in nodes:
                 for e_i in graph[n]:
@@ -688,16 +690,18 @@ def _directed_motifs_ho_not_full(edges, N, visited):
                     tmp.extend(e_i[0])
                     tmp.extend(e_i[1])
                     tmp = set(tmp)
-                    if len(set(list(e_i[0])+list(e_i[1])))==len(list(e_i[0])+list(e_i[1])) and len(tmp) == N and not (tuple(sorted(tmp)) in visited):
+                    if (
+                        len(set(list(e_i[0]) + list(e_i[1])))
+                        == len(list(e_i[0]) + list(e_i[1]))
+                        and len(tmp) == N
+                        and not (tuple(sorted(tmp)) in visited)
+                    ):
                         visited[tuple(sorted(tmp))] = 1
                         count_motif(tmp)
-                                    
-            
-     
 
     out = []
 
-    for motif,count in mapping.items():
+    for motif, count in mapping.items():
         out.append((motif, count))
 
     out = list(sorted(out))
@@ -706,12 +710,12 @@ def _directed_motifs_ho_not_full(edges, N, visited):
     for i in range(len(out)):
         D[i] = out[i][0]
 
-
     return out, visited
+
 
 def _all_directed_hyperedges(nodi):
     """
-    Compute all directed hyperedges 
+    Compute all directed hyperedges
 
     Parameters
     ----------
@@ -729,8 +733,13 @@ def _all_directed_hyperedges(nodi):
     for lunghezza_partenza in range(1, len(nodi)):
         for nodi_partenza in combinations(nodi, lunghezza_partenza):
             for lunghezza_arrivo in range(1, len(nodi) - lunghezza_partenza + 1):
-                for nodi_arrivo in combinations(set(nodi) - set(nodi_partenza), lunghezza_arrivo):
-                    iperarco = (tuple(sorted(nodi_partenza)), tuple(sorted(nodi_arrivo)))
+                for nodi_arrivo in combinations(
+                    set(nodi) - set(nodi_partenza), lunghezza_arrivo
+                ):
+                    iperarco = (
+                        tuple(sorted(nodi_partenza)),
+                        tuple(sorted(nodi_arrivo)),
+                    )
                     iperarchi.add(iperarco)
 
     return iperarchi
@@ -738,7 +747,7 @@ def _all_directed_hyperedges(nodi):
 
 def directed_diff_sum(observed: list, null_models: list):
     """
-    Compute the relative abundance between the observed frequencies and the null models 
+    Compute the relative abundance between the observed frequencies and the null models
     for directed hypergraphs.
 
     Parameters
@@ -762,7 +771,10 @@ def directed_diff_sum(observed: list, null_models: list):
     res = []
     for i in range(len(observed)):
         if observed[i][0] in u_null:
-            res.append((observed[i][1]-u_null[observed[i][0]])/(observed[i][1]+u_null[observed[i][0]]+4))
+            res.append(
+                (observed[i][1] - u_null[observed[i][0]])
+                / (observed[i][1] + u_null[observed[i][0]] + 4)
+            )
         else:
             res.append((observed[i][1]) / (observed[i][1] + 4))
 
@@ -770,16 +782,16 @@ def directed_diff_sum(observed: list, null_models: list):
 
 
 def directed_avg(motifs):
-    
-    m={}
+
+    m = {}
     for i in range(len(motifs)):
         for j in range(len(motifs[i])):
             if motifs[i][j][0] in m:
-                m[motifs[i][j][0]]+=motifs[i][j][1]
+                m[motifs[i][j][0]] += motifs[i][j][1]
             else:
-                m[motifs[i][j][0]]=motifs[i][j][1]
-    result={}
+                m[motifs[i][j][0]] = motifs[i][j][1]
+    result = {}
     for key in m.keys():
-        result[key]=m[key]/len(motifs)
-        
+        result[key] = m[key] / len(motifs)
+
     return result

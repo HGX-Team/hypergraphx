@@ -1,4 +1,5 @@
 import numpy as np
+
 from hypergraphx import Hypergraph
 
 
@@ -77,14 +78,16 @@ def degree_correlation(hg: "Hypergraph") -> np.ndarray:
         and the degree sequence at size j + 2.
     """
     from scipy.stats import pearsonr
+
     seqs = [hg.degree_sequence(size=size) for size in range(2, hg.max_size() + 1)]
     matrix_degree_corr = np.zeros((len(seqs), len(seqs)))
     for i in range(len(seqs)):
         for j in range(len(seqs)):
-            matrix_degree_corr[i, j] = pearsonr(list(seqs[i].values()), list(seqs[j].values()))[0]
+            matrix_degree_corr[i, j] = pearsonr(
+                list(seqs[i].values()), list(seqs[j].values())
+            )[0]
 
     return matrix_degree_corr
-
 
 
 def degree_distribution(hg: "Hypergraph", order=None, size=None):

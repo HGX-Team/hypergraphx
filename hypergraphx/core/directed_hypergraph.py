@@ -1,5 +1,5 @@
-import copy
-from typing import Optional, Tuple, List
+from typing import Tuple, List
+
 from sklearn.preprocessing import LabelEncoder
 
 
@@ -19,7 +19,14 @@ class DirectedHypergraph:
         A list of weights for the hyperedges.
     """
 
-    def __init__(self, edge_list=None, hypergraph_metadata=None, weighted=False, weights=None, edge_metadata=None):
+    def __init__(
+        self,
+        edge_list=None,
+        hypergraph_metadata=None,
+        weighted=False,
+        weights=None,
+        edge_metadata=None,
+    ):
         self._weighted = weighted
         self._adj_source = {}
         self._adj_target = {}
@@ -28,7 +35,7 @@ class DirectedHypergraph:
             self.hypergraph_metadata = {}
         else:
             self.hypergraph_metadata = hypergraph_metadata
-        self.hypergraph_metadata['weighted'] = weighted
+        self.hypergraph_metadata["weighted"] = weighted
         self.node_metadata = {}
         self.edge_metadata = {}
         self.reverse_edge_list = {}
@@ -45,17 +52,17 @@ class DirectedHypergraph:
         self._edge_list = edge_list
 
     def get_adj_dict(self, in_out):
-        if in_out == 'out':
+        if in_out == "out":
             return self._adj_source
-        elif in_out == 'in':
+        elif in_out == "in":
             return self._adj_target
         else:
             raise ValueError("Invalid value for in_out. Must be 'in' or 'out'.")
 
     def set_adj_dict(self, adj_dict, in_out):
-        if in_out == 'out':
+        if in_out == "out":
             self._adj_source = adj_dict
-        elif in_out == 'in':
+        elif in_out == "in":
             self._adj_target = adj_dict
         else:
             raise ValueError("Invalid value for in_out. Must be 'in' or 'out'.")
@@ -97,7 +104,6 @@ class DirectedHypergraph:
         encoder = LabelEncoder()
         encoder.fit(self.get_nodes())
         return encoder
-
 
     def add_node(self, node, metadata=None):
         """
@@ -218,7 +224,9 @@ class DirectedHypergraph:
         edge = (source, target)
 
         if not self._weighted and weight is not None and weight != 1:
-            raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
+            raise ValueError(
+                "If the hypergraph is not weighted, weight can be 1 or None."
+            )
 
         if weight is None:
             weight = 1
@@ -246,7 +254,9 @@ class DirectedHypergraph:
         else:
             self.set_edge_metadata(edge, {})
 
-    def add_edges(self, edge_list: List[Tuple[Tuple, Tuple]], weights=None, metadata=None):
+    def add_edges(
+        self, edge_list: List[Tuple[Tuple, Tuple]], weights=None, metadata=None
+    ):
         """Add a list of directed hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.
 
         Parameters
@@ -263,7 +273,9 @@ class DirectedHypergraph:
         None
         """
         if weights is not None and not self._weighted:
-            print("Warning: weights are provided but the hypergraph is not weighted. The hypergraph will be weighted.")
+            print(
+                "Warning: weights are provided but the hypergraph is not weighted. The hypergraph will be weighted."
+            )
             self._weighted = True
 
         if self._weighted and weights is not None:
@@ -271,8 +283,11 @@ class DirectedHypergraph:
                 raise ValueError("The number of edges and weights must be the same.")
 
         for i, edge in enumerate(edge_list):
-            self.add_edge(edge, weight=weights[i] if weights else None,
-                          metadata=metadata[i] if metadata else None)
+            self.add_edge(
+                edge,
+                weight=weights[i] if weights else None,
+                metadata=metadata[i] if metadata else None,
+            )
 
     def get_source_edges(self, node, order=None, size=None):
         """
@@ -294,9 +309,17 @@ class DirectedHypergraph:
         if order is None and size is None:
             return [self.reverse_edge_list[e_idx] for e_idx in self._adj_source[node]]
         elif size is not None:
-            return [self.reverse_edge_list[e_idx] for e_idx in self._adj_source[node] if self._get_edge_size(self.reverse_edge_list[e_idx]) == size]
+            return [
+                self.reverse_edge_list[e_idx]
+                for e_idx in self._adj_source[node]
+                if self._get_edge_size(self.reverse_edge_list[e_idx]) == size
+            ]
         elif order is not None:
-            return [self.reverse_edge_list[e_idx] for e_idx in self._adj_source[node] if self._get_edge_size(self.reverse_edge_list[e_idx]) - 1 == order]
+            return [
+                self.reverse_edge_list[e_idx]
+                for e_idx in self._adj_source[node]
+                if self._get_edge_size(self.reverse_edge_list[e_idx]) - 1 == order
+            ]
 
     def get_target_edges(self, node, order=None, size=None):
         """
@@ -318,9 +341,17 @@ class DirectedHypergraph:
         if order is None and size is None:
             return [self.reverse_edge_list[e_idx] for e_idx in self._adj_target[node]]
         elif size is not None:
-            return [self.reverse_edge_list[e_idx] for e_idx in self._adj_target[node] if self._get_edge_size(self.reverse_edge_list[e_idx]) == size]
+            return [
+                self.reverse_edge_list[e_idx]
+                for e_idx in self._adj_target[node]
+                if self._get_edge_size(self.reverse_edge_list[e_idx]) == size
+            ]
         elif order is not None:
-            return [self.reverse_edge_list[e_idx] for e_idx in self._adj_target[node] if self._get_edge_size(self.reverse_edge_list[e_idx]) - 1 == order]
+            return [
+                self.reverse_edge_list[e_idx]
+                for e_idx in self._adj_target[node]
+                if self._get_edge_size(self.reverse_edge_list[e_idx]) - 1 == order
+            ]
 
     def _get_edge_size(self, edge):
         """
@@ -338,13 +369,13 @@ class DirectedHypergraph:
         return len(edge[0]) + len(edge[1])
 
     def get_edges(
-            self,
-            order=None,
-            size=None,
-            up_to=False,
-            subhypergraph=False,
-            keep_isolated_nodes=False,
-            metadata=False
+        self,
+        order=None,
+        size=None,
+        up_to=False,
+        subhypergraph=False,
+        keep_isolated_nodes=False,
+        metadata=False,
     ):
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
@@ -357,9 +388,17 @@ class DirectedHypergraph:
             if size is not None:
                 order = size - 1
             if not up_to:
-                edges = [edge for edge in list(self._edge_list.keys()) if self._get_edge_size(edge) - 1 == order]
+                edges = [
+                    edge
+                    for edge in list(self._edge_list.keys())
+                    if self._get_edge_size(edge) - 1 == order
+                ]
             else:
-                edges = [edge for edge in list(self._edge_list.keys()) if self._get_edge_size(edge) - 1 <= order]
+                edges = [
+                    edge
+                    for edge in list(self._edge_list.keys())
+                    if self._get_edge_size(edge) - 1 <= order
+                ]
 
         if subhypergraph and keep_isolated_nodes:
             h = DirectedHypergraph(weighted=self._weighted)
@@ -388,8 +427,11 @@ class DirectedHypergraph:
                 h.set_edge_metadata(edge, self.get_edge_metadata(edge))
             return h
         else:
-            return edges if not metadata else {edge: self.get_edge_metadata(edge) for edge in edges}
-
+            return (
+                edges
+                if not metadata
+                else {edge: self.get_edge_metadata(edge) for edge in edges}
+            )
 
     def remove_edge(self, edge: Tuple[Tuple, Tuple]):
         """Remove a directed edge from the hypergraph.
@@ -465,7 +507,9 @@ class DirectedHypergraph:
     def set_weight(self, edge: Tuple[Tuple, Tuple], weight: float):
         """Sets the weight of the specified directed edge."""
         if not self._weighted and weight != 1:
-            raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
+            raise ValueError(
+                "If the hypergraph is not weighted, weight can be 1 or None."
+            )
 
         if edge in self._edge_list:
             idx = self._edge_list[edge]

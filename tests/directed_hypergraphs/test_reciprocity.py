@@ -1,7 +1,5 @@
-import pytest
-
 from hypergraphx import DirectedHypergraph
-from hypergraphx.measures.directed.reciprocity import exact_reciprocity, strong_reciprocity, weak_reciprocity
+from hypergraphx.measures.directed.reciprocity import exact_reciprocity, weak_reciprocity
 
 # STRONG RECIPROCITY
 

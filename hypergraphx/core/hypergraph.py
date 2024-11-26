@@ -1,6 +1,8 @@
-import copy, warnings
-from typing import Optional, Tuple
+import copy
+import warnings
+
 from sklearn.preprocessing import LabelEncoder
+
 
 class Hypergraph:
     """
@@ -26,7 +28,15 @@ class Hypergraph:
         The keys are the nodes and the values are the metadata.
     """
 
-    def __init__(self, edge_list=None, weighted=False, weights=None, hypergraph_metadata=None, edge_metadata=None, node_metadata=None):
+    def __init__(
+        self,
+        edge_list=None,
+        weighted=False,
+        weights=None,
+        hypergraph_metadata=None,
+        edge_metadata=None,
+        node_metadata=None,
+    ):
         self._weighted = weighted
         self._adj = {}
         self._edge_list = {}
@@ -35,7 +45,7 @@ class Hypergraph:
             self.hypergraph_metadata = {}
         else:
             self.hypergraph_metadata = hypergraph_metadata
-        self.hypergraph_metadata['weighted'] = weighted
+        self.hypergraph_metadata["weighted"] = weighted
         self.incidences_metadata = {}
         self.node_metadata = {}
         self.edge_metadata = {}
@@ -49,7 +59,6 @@ class Hypergraph:
 
         if edge_list is not None:
             self.add_edges(edge_list, weights=weights, metadata=edge_metadata)
-
 
     def get_adj_dict(self):
         return self._adj
@@ -67,7 +76,7 @@ class Hypergraph:
         if name not in self.empty_edges:
             self.empty_edges[name] = metadata
         else:
-            raise("Edge {} already in hypergraph.".format(name))
+            raise ("Edge {} already in hypergraph.".format(name))
 
     def get_hypergraph_metadata(self):
         return self.hypergraph_metadata
@@ -107,8 +116,6 @@ class Hypergraph:
                     uniform = False
                     break
         return uniform
-
-
 
     def get_neighbors(self, node, order: int = None, size: int = None):
         """
@@ -179,11 +186,19 @@ class Hypergraph:
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
         if order is None and size is None:
-            return list([self.reverse_edge_list[edge_id] for edge_id in self._adj[node]])
+            return list(
+                [self.reverse_edge_list[edge_id] for edge_id in self._adj[node]]
+            )
         else:
             if order is None:
                 order = size - 1
-            return list([self.reverse_edge_list[edge_id] for edge_id in self._adj[node] if len(self.reverse_edge_list[edge_id]) - 1 == order])
+            return list(
+                [
+                    self.reverse_edge_list[edge_id]
+                    for edge_id in self._adj[node]
+                    if len(self.reverse_edge_list[edge_id]) - 1 == order
+                ]
+            )
 
     def add_node(self, node, metadata=None):
         """
@@ -222,7 +237,9 @@ class Hypergraph:
             try:
                 self.add_node(node, metadata[node] if metadata is not None else None)
             except KeyError:
-                raise ValueError("The metadata dictionary must contain an entry for each node in the node list.")
+                raise ValueError(
+                    "The metadata dictionary must contain an entry for each node in the node list."
+                )
 
     def is_weighted(self):
         """
@@ -257,7 +274,9 @@ class Hypergraph:
             If the hypergraph is weighted and no weight is provided or if the hypergraph is not weighted and a weight is provided.
         """
         if not self._weighted and weight is not None and weight != 1:
-            raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
+            raise ValueError(
+                "If the hypergraph is not weighted, weight can be 1 or None."
+            )
 
         if weight is None:
             weight = 1
@@ -283,7 +302,6 @@ class Hypergraph:
         for node in edge:
             self.add_node(node)
             self._adj[node].add(self._edge_list[edge])
-
 
     def add_edges(self, edge_list, weights=None, metadata=None):
         """Add a list of hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.
@@ -329,9 +347,9 @@ class Hypergraph:
             for edge in edge_list:
                 self.add_edge(
                     edge,
-                    weight=weights[i]
-                    if self._weighted and weights is not None
-                    else None,
+                    weight=(
+                        weights[i] if self._weighted and weights is not None else None
+                    ),
                     metadata=metadata[i] if metadata is not None else None,
                 )
                 i += 1
@@ -410,7 +428,9 @@ class Hypergraph:
         if node not in self._adj:
             raise KeyError("Node {} not in hypergraph.".format(node))
         if not keep_edges:
-            self.remove_edges([self.reverse_edge_list[edge_id] for edge_id in self._adj[node]])
+            self.remove_edges(
+                [self.reverse_edge_list[edge_id] for edge_id in self._adj[node]]
+            )
         else:
             to_remove = []
             for edge_id in self._adj[node]:
@@ -470,7 +490,11 @@ class Hypergraph:
         for edge in self._edge_list:
             if set(edge).issubset(set(nodes)):
                 if self._weighted:
-                    h.add_edge(edge, weight=self._edge_list[edge], metadata=self.get_edge_metadata(edge))
+                    h.add_edge(
+                        edge,
+                        weight=self._edge_list[edge],
+                        metadata=self.get_edge_metadata(edge),
+                    )
                 else:
                     h.add_edge(edge, metadata=self.get_edge_metadata(edge))
         return h
@@ -520,7 +544,9 @@ class Hypergraph:
             edges = self.get_edges(size=size)
             for edge in edges:
                 if h.is_weighted():
-                    h.add_edge(edge, self.get_weight(edge), self.get_edge_metadata(edge))
+                    h.add_edge(
+                        edge, self.get_weight(edge), self.get_edge_metadata(edge)
+                    )
                 else:
                     h.add_edge(edge, metadata=self.get_edge_metadata(edge))
 
@@ -637,7 +663,6 @@ class Hypergraph:
         else:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
 
-
     def set_weight(self, edge, weight):
         """Sets the weight of the specified edge.
 
@@ -659,14 +684,15 @@ class Hypergraph:
             If the edge is not in the hypergraph.
         """
         if not self._weighted and weight != 1:
-            raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
+            raise ValueError(
+                "If the hypergraph is not weighted, weight can be 1 or None."
+            )
 
         edge = tuple(sorted(edge))
         if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         edge_id = self._edge_list[edge]
         self._weights[edge_id] = weight
-
 
     def get_weights(self, order=None, size=None, up_to=False, asdict=False):
         """Returns the list of weights of the edges in the hypergraph. If order is specified, it returns the list of weights of the edges of the specified order.
@@ -699,13 +725,18 @@ class Hypergraph:
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
         if order is None and size is None:
-            w = {edge: self._weights[self._edge_list[edge]] for edge in self.get_edges()}
+            w = {
+                edge: self._weights[self._edge_list[edge]] for edge in self.get_edges()
+            }
 
         if size is not None:
             order = size - 1
 
         if w is None:
-            w = {edge: self._weights[self._edge_list[edge]] for edge in self.get_edges(order=order, up_to=up_to)}
+            w = {
+                edge: self._weights[self._edge_list[edge]]
+                for edge in self.get_edges(order=order, up_to=up_to)
+            }
 
         if asdict:
             return w
@@ -781,7 +812,7 @@ class Hypergraph:
         return self.incidences_metadata[(edge, node)]
 
     def get_all_incidences_metadata(self):
-        return { k: v for k, v in self.incidences_metadata.items() }
+        return {k: v for k, v in self.incidences_metadata.items()}
 
     def get_all_edges_metadata(self):
         return self.edge_metadata
@@ -825,7 +856,7 @@ class Hypergraph:
         up_to=False,
         subhypergraph=False,
         keep_isolated_nodes=False,
-        metadata=False
+        metadata=False,
     ):
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
@@ -838,9 +869,17 @@ class Hypergraph:
             if size is not None:
                 order = size - 1
             if not up_to:
-                edges = [edge for edge in list(self._edge_list.keys()) if len(edge) - 1 == order]
+                edges = [
+                    edge
+                    for edge in list(self._edge_list.keys())
+                    if len(edge) - 1 == order
+                ]
             else:
-                edges = [edge for edge in list(self._edge_list.keys()) if len(edge) - 1 <= order]
+                edges = [
+                    edge
+                    for edge in list(self._edge_list.keys())
+                    if len(edge) - 1 <= order
+                ]
 
         if subhypergraph and keep_isolated_nodes:
             h = Hypergraph(weighted=self._weighted)
@@ -850,7 +889,7 @@ class Hypergraph:
                 h.add_edges(edges, edge_weights)
             else:
                 h.add_edges(edges)
-                
+
             for node in h.get_nodes():
                 h.set_node_metadata(node, self.get_node_metadata(node))
             for edge in edges:
@@ -869,7 +908,11 @@ class Hypergraph:
                 h.set_edge_metadata(edge, self.get_edge_metadata(edge))
             return h
         else:
-            return edges if not metadata else {edge: self.get_edge_metadata(edge) for edge in edges}
+            return (
+                edges
+                if not metadata
+                else {edge: self.get_edge_metadata(edge) for edge in edges}
+            )
 
     def degree(self, node, order=None, size=None):
         from hypergraphx.measures.degree import degree
@@ -945,15 +988,12 @@ class Hypergraph:
 
         return is_isolated(self, node, size=size, order=order)
 
-    def binary_incidence_matrix(
-        self, return_mapping: bool = False
-    ):
+    def binary_incidence_matrix(self, return_mapping: bool = False):
         from hypergraphx.linalg import binary_incidence_matrix
+
         return binary_incidence_matrix(self, return_mapping)
 
-    def incidence_matrix(
-        self, return_mapping: bool = False
-    ):
+    def incidence_matrix(self, return_mapping: bool = False):
         from hypergraphx.linalg import incidence_matrix
 
         return incidence_matrix(self, return_mapping)

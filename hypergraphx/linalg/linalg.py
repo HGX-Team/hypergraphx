@@ -47,8 +47,8 @@ def hye_list_to_binary_incidence(
     else:
         inferred_N = 0
     inferred_E = len(hye_list)
-    #inferred_N = shape[0]
-    #inferred_E = shape[1]
+    # inferred_N = shape[0]
+    # inferred_E = shape[1]
 
     if shape is not None:
         if shape[0] < inferred_N or shape[1] < inferred_E:
@@ -116,9 +116,7 @@ def incidence_matrix(
     The binary adjacency matrix representing the hyperedges.
     If return_mapping is True, return the dictionary of node mappings.
     """
-    binary_incidence, mapping = binary_incidence_matrix(
-        hypergraph, return_mapping=True
-    )
+    binary_incidence, mapping = binary_incidence_matrix(hypergraph, return_mapping=True)
     incidence = binary_incidence.multiply(hypergraph.get_weights()).tocsr()
     if return_mapping:
         return incidence, mapping
@@ -126,9 +124,13 @@ def incidence_matrix(
 
 
 def incidence_matrix_by_order(
-    hypergraph: Hypergraph, order: int, shape: Optional[Tuple[int]] = None, keep_isolated_nodes:bool=False, return_mapping: bool = False,
+    hypergraph: Hypergraph,
+    order: int,
+    shape: Optional[Tuple[int]] = None,
+    keep_isolated_nodes: bool = False,
+    return_mapping: bool = False,
 ) -> sparse.spmatrix:
-    """ Produce the incidence matrix of a hypergraph at a given order.
+    """Produce the incidence matrix of a hypergraph at a given order.
     For any node i and hyperedge e, the entry (i, e) of the incidence matrix is the
     weight of the hyperedge if the node belongs to it, 0 otherwise.
 
@@ -151,7 +153,10 @@ def incidence_matrix_by_order(
     If return_mapping is True, return the dictionary of node mappings.
     """
     binary_incidence, mapping = binary_incidence_matrix(
-        hypergraph.get_edges(order=order, subhypergraph=True, keep_isolated_nodes=keep_isolated_nodes), return_mapping=True
+        hypergraph.get_edges(
+            order=order, subhypergraph=True, keep_isolated_nodes=keep_isolated_nodes
+        ),
+        return_mapping=True,
     )
 
     incidence = binary_incidence.multiply(hypergraph.get_weights(order=order)).tocsr()
@@ -161,9 +166,12 @@ def incidence_matrix_by_order(
 
 
 def incidence_matrices_all_orders(
-    hypergraph: Hypergraph, shape: Optional[Tuple[int]] = None, keep_isolated_nodes:bool=False, return_mapping: bool = False,
+    hypergraph: Hypergraph,
+    shape: Optional[Tuple[int]] = None,
+    keep_isolated_nodes: bool = False,
+    return_mapping: bool = False,
 ) -> List[sparse.spmatrix]:
-    """ Produce the incidence matrices of a hypergraph at all orders.
+    """Produce the incidence matrices of a hypergraph at all orders.
     For any node i and hyperedge e, the entry (i, e) of the incidence matrix is the
     weight of the hyperedge if the node belongs to it, 0 otherwise.
 
@@ -186,9 +194,13 @@ def incidence_matrices_all_orders(
     incidence_matrices = {}
     for order in range(1, hypergraph.max_order() + 1):
         if return_mapping:
-            incidence_matrices[order], _ = incidence_matrix_by_order(hypergraph, order, shape, keep_isolated_nodes, return_mapping)
+            incidence_matrices[order], _ = incidence_matrix_by_order(
+                hypergraph, order, shape, keep_isolated_nodes, return_mapping
+            )
         else:
-            incidence_matrices[order] = incidence_matrix_by_order(hypergraph, order, shape, keep_isolated_nodes, return_mapping)
+            incidence_matrices[order] = incidence_matrix_by_order(
+                hypergraph, order, shape, keep_isolated_nodes, return_mapping
+            )
     return incidence_matrices
 
 
@@ -236,12 +248,15 @@ def adjacency_matrix_by_order(
     -------
     The adjacency matrix of the hypergraph for a given order and the dictionary of node mappings.
     """
-    incidence, mapping = incidence_matrix_by_order(hypergraph,order,keep_isolated_nodes=True,return_mapping=True)
+    incidence, mapping = incidence_matrix_by_order(
+        hypergraph, order, keep_isolated_nodes=True, return_mapping=True
+    )
     adj = incidence @ incidence.transpose()
     diagonal = adj.diagonal()
     diagonal_matrix = sparse.diags(diagonal)
     adj = adj - diagonal_matrix
     return adj, mapping
+
 
 def temporal_adjacency_matrix_by_order(
     temporal_hypergraph: Dict[int, Hypergraph], order: int
@@ -263,12 +278,13 @@ def temporal_adjacency_matrix_by_order(
     for t in temporal_hypergraph.keys():
         hypergraph_t = temporal_hypergraph[t]
         adj_t, mapping = adjacency_matrix_by_order(hypergraph_t, order)
-        temporal_adjacency[t] = adj_t   
+        temporal_adjacency[t] = adj_t
     return temporal_adjacency, mapping
+
 
 def temporal_adjacency_matrices_all_orders(
     temporal_hypergraph: Dict[int, Hypergraph], max_order: int
-): # -> Dict[int, Tuple[sparse.csc_array]] ### Fra, I am not sure how to declare the output type
+):  # -> Dict[int, Tuple[sparse.csc_array]] ### Fra, I am not sure how to declare the output type
     """Compute the temporal adjacency matrices of the temporal hypergraph for all orders.
     For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix of order d at time t
     counts the number of hyperedges of order d, existing at time t, where both i and j are contained.
@@ -283,9 +299,11 @@ def temporal_adjacency_matrices_all_orders(
     A dictionary encoding the temporal adjacency matrices, i.e., {order : {time : adjacency matrix}}, and the dictionary of node mappings.
     """
     temporal_adjacencies = {}
-    for order in range(1,max_order + 1):
-        adj_order_d, mapping = temporal_adjacency_matrix_by_order(temporal_hypergraph, order)
-        temporal_adjacencies[order] = adj_order_d  
+    for order in range(1, max_order + 1):
+        adj_order_d, mapping = temporal_adjacency_matrix_by_order(
+            temporal_hypergraph, order
+        )
+        temporal_adjacencies[order] = adj_order_d
     return temporal_adjacencies, mapping
 
 
@@ -306,12 +324,13 @@ def annealed_adjacency_matrix(
     """
     T = len(temporal_adjacency_matrix.keys())
     temporal_adjacency_matrix_lst = temporal_adjacency_matrix.values()
-    annealed_adjacency_matrix = sum(temporal_adjacency_matrix_lst)/T
+    annealed_adjacency_matrix = sum(temporal_adjacency_matrix_lst) / T
     return annealed_adjacency_matrix
+
 
 def annealed_adjacency_matrices_all_orders(
     temporal_adjacency_matrices: Dict[int, Dict[int, sparse.csc_array]]
-): # -> Tuple[sparse.csc_array]: ###Fra, here as well I am not sure!
+):  # -> Tuple[sparse.csc_array]: ###Fra, here as well I am not sure!
     """Compute the annealed adjacency matrices of the temporal hypergraph for all orders.
     For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix of order d
     counts the average number of hyperedges of order d where both i and j are contained over time.
@@ -327,7 +346,9 @@ def annealed_adjacency_matrices_all_orders(
     """
     annealed_adjacency_matrices = dict()
     for order, temporal_adjacency_matrix in temporal_adjacency_matrices.items():
-        annealed_adjacency_matrices[order] = annealed_adjacency_matrix(temporal_adjacency_matrix)
+        annealed_adjacency_matrices[order] = annealed_adjacency_matrix(
+            temporal_adjacency_matrix
+        )
     return annealed_adjacency_matrices
 
 
@@ -360,7 +381,7 @@ def dual_random_walk_adjacency(
     return adj
 
 
-def degree_matrix(hypergraph, order, mapping = None):
+def degree_matrix(hypergraph, order, mapping=None):
     """
     Compute the degree matrix of the hypergraph for a given order.
     For any node i in the hypergraph, the entry (i, i) of the degree matrix of order d is the degree of i in the hypergraph of order d.
@@ -380,13 +401,15 @@ def degree_matrix(hypergraph, order, mapping = None):
     """
     degree_dct = hypergraph.degree_sequence(order)
     inverse_mapping = {}
-    if not mapping==None:
+    if not mapping == None:
         for name in mapping.keys():
             inverse_mapping[mapping[name]] = name
     else:
         # calcolare il mapping dall'ipergrafo
         pass
-    degree_lst = [degree_dct[inverse_mapping[n]] for n in sorted(inverse_mapping.keys())]
+    degree_lst = [
+        degree_dct[inverse_mapping[n]] for n in sorted(inverse_mapping.keys())
+    ]
 
     return sparse.diags(degree_lst)
 
@@ -397,9 +420,11 @@ def laplacian_matrix_by_order(
     weighted=False,
     shape: Optional[Tuple[int]] = None,
 ) -> sparse.spmatrix:
-    incidence, mapping = incidence_matrix_by_order(hypergraph,order,shape,keep_isolated_nodes=True,return_mapping=True)
+    incidence, mapping = incidence_matrix_by_order(
+        hypergraph, order, shape, keep_isolated_nodes=True, return_mapping=True
+    )
 
-    #maybe wrong mapping of nodes? binary incidence returns the mapping of the nodes in the hypergraph
+    # maybe wrong mapping of nodes? binary incidence returns the mapping of the nodes in the hypergraph
     degree_mtx = degree_matrix(hypergraph, order, mapping)
     laplacian = degree_mtx.multiply(order + 1) - incidence.dot(incidence.transpose())
 
@@ -479,10 +504,10 @@ def adjacency_tensor(hypergraph: Hypergraph) -> np.ndarray:
 
     Parameters
     ----------
-    
+
     hypergraph : Hypergraph
         The uniform hypergraph on which the tensor is computed.
-    
+
     Returns
     -------
     T : np.ndarray
@@ -491,13 +516,13 @@ def adjacency_tensor(hypergraph: Hypergraph) -> np.ndarray:
 
     if not hypergraph.is_uniform():
         raise Exception("The hypergraph is not uniform.")
-    
+
     order = len(hypergraph.get_edges()[0]) - 1
     T = np.zeros((hypergraph.num_nodes(),) * (order + 1))
     for edge in hypergraph.get_edges():
         from itertools import permutations
+
         for perm in permutations(edge):
             T[tuple(perm)] = 1
-            
-    return T
 
+    return T

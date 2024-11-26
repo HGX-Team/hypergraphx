@@ -14,7 +14,7 @@ def get_all_subsets(s):
     -------
     subsets : list. All subsets of the set.
     """
-    return chain(*map(lambda x: combinations(s, x), range(0, len(s)+1)))
+    return chain(*map(lambda x: combinations(s, x), range(0, len(s) + 1)))
 
 
 def simplicial_complex(h: Hypergraph):
@@ -38,4 +38,3 @@ def simplicial_complex(h: Hypergraph):
             s_edges.add(subset)
     S = Hypergraph(s_edges)
     return S
-

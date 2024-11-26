@@ -1,5 +1,6 @@
-from hypergraphx import Hypergraph
 from collections import deque
+
+from hypergraphx import Hypergraph
 
 
 def _bfs(hg: Hypergraph, start, max_depth=None, order=None, size=None):
@@ -77,4 +78,3 @@ def _dfs(hg: Hypergraph, start, max_depth=None, order=None, size=None):
                 stack.extend((n, new_depth) for n in neighbors if n not in visited)
 
     return visited
-

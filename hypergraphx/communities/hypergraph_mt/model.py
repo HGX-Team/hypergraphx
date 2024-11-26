@@ -122,7 +122,9 @@ class HypergraphMT:
             # around the input values chosen with "initialize_u0".
             # In the end, we choose the realization with the best likelihood.
             if r == 0:
-                self._initialize_u_w(hyperEdges=self.hyperEdges, baseline_HySC=self.baseline_r0)
+                self._initialize_u_w(
+                    hyperEdges=self.hyperEdges, baseline_HySC=self.baseline_r0
+                )
             else:
                 self._initialize_u_w(hyperEdges=self.hyperEdges, baseline_HySC=False)
 

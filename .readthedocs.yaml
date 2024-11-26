@@ -8,7 +8,7 @@ build:
     - r-base
 
 sphinx:
-   configuration: docs/conf.py
+  configuration: docs/conf.py
 
 python:
   install:

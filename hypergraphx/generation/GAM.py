@@ -1,8 +1,10 @@
-import numpy as np
-from scipy.spatial.distance import squareform, pdist
-from numpy.linalg import norm
-from math import prod
 from itertools import combinations
+from math import prod
+
+import numpy as np
+from numpy.linalg import norm
+from scipy.spatial.distance import squareform, pdist
+
 
 class GroupAttractivenessModel:
     def __init__(self, n=200, balance=1, h_1_ii=1, h_2_iii=1, d=1.0, v=1.0, L=100):

@@ -1,4 +1,5 @@
 import pytest
+
 from hypergraphx import Hypergraph
 
 

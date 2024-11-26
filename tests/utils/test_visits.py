@@ -1,7 +1,8 @@
 import pytest
-from collections import deque
+
 from hypergraphx import Hypergraph
 from hypergraphx.utils.visits import _bfs, _dfs
+
 
 def test_bfs_basic():
     """Test BFS on a simple hypergraph with no max depth, order, or size constraints."""

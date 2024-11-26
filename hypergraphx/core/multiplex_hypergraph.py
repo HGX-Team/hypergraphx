@@ -3,7 +3,15 @@ from hypergraphx import Hypergraph
 
 class MultiplexHypergraph:
 
-    def __init__(self, edge_list=None, edge_layer=None, hypergraph_metadata=None, weighted=False, weights=None, edge_metadata=None):
+    def __init__(
+        self,
+        edge_list=None,
+        edge_layer=None,
+        hypergraph_metadata=None,
+        weighted=False,
+        weights=None,
+        edge_metadata=None,
+    ):
         if hypergraph_metadata is None:
             self.hypergraph_metadata = {}
         else:
@@ -12,14 +20,19 @@ class MultiplexHypergraph:
         self.edge_metadata = {}
         self._weighted = weighted
         self._weights = {}
-        self.hypergraph_metadata['weighted'] = weighted
+        self.hypergraph_metadata["weighted"] = weighted
         self._edge_list = {}
         self.reverse_edge_list = {}
         self.next_edge_id = 0
         self.existing_layers = set()
 
         if edge_list is not None:
-                self.add_edges(edge_list, edge_layer=edge_layer, weights=weights, metadata=edge_metadata)
+            self.add_edges(
+                edge_list,
+                edge_layer=edge_layer,
+                weights=weights,
+                metadata=edge_metadata,
+            )
 
     def get_edge_metadata(self, edge, layer):
         k = (tuple(sorted(edge)), layer)
@@ -41,13 +54,12 @@ class MultiplexHypergraph:
 
     def set_existing_layers(self, existing_layers):
         self.existing_layers = existing_layers
-    
+
     def get_nodes(self, metadata=False):
         if metadata:
             return self.node_metadata
         else:
             return list(self.node_metadata.keys())
-
 
     def add_node(self, node, metadata=None):
         """
@@ -83,10 +95,13 @@ class MultiplexHypergraph:
         """
         for node in node_list:
             try:
-                self.add_node(node, node_metadata[node] if node_metadata is not None else None)
+                self.add_node(
+                    node, node_metadata[node] if node_metadata is not None else None
+                )
             except KeyError:
-                raise ValueError("The metadata dictionary must contain an entry for each node in the node list.")
-
+                raise ValueError(
+                    "The metadata dictionary must contain an entry for each node in the node list."
+                )
 
     def add_edges(self, edge_list, edge_layer, weights=None, metadata=None):
         """Add a list of hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.
@@ -135,9 +150,9 @@ class MultiplexHypergraph:
                 self.add_edge(
                     edge,
                     edge_layer[i],
-                    weight=weights[i]
-                    if self._weighted and weights is not None
-                    else None,
+                    weight=(
+                        weights[i] if self._weighted and weights is not None else None
+                    ),
                     metadata=metadata[i] if metadata is not None else None,
                 )
                 i += 1
@@ -169,8 +184,10 @@ class MultiplexHypergraph:
             weight = 1
 
         if not self._weighted and weight is not None and weight != 1:
-            raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
-        
+            raise ValueError(
+                "If the hypergraph is not weighted, weight can be 1 or None."
+            )
+
         self.existing_layers.add(layer)
 
         edge = tuple(sorted(edge))
@@ -198,7 +215,10 @@ class MultiplexHypergraph:
 
     def get_edges(self, metadata=False):
         if metadata:
-            return {self.reverse_edge_list[k]: self.edge_metadata[k] for k in self.edge_metadata.keys() }
+            return {
+                self.reverse_edge_list[k]: self.edge_metadata[k]
+                for k in self.edge_metadata.keys()
+            }
         else:
             return list(self._edge_list.keys())
 
@@ -208,10 +228,12 @@ class MultiplexHypergraph:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         else:
             return self._weights[self._edge_list[k]]
-        
+
     def set_weight(self, edge, layer, weight):
         if not self._weighted and weight != 1:
-            raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
+            raise ValueError(
+                "If the hypergraph is not weighted, weight can be 1 or None."
+            )
 
         k = (tuple(sorted(edge)), layer)
         if k not in self._edge_list:
@@ -220,10 +242,10 @@ class MultiplexHypergraph:
             self._weights[self._edge_list[k]] = weight
 
     def set_dataset_metadata(self, metadata):
-        self.hypergraph_metadata['multiplex_metadata'] = metadata
+        self.hypergraph_metadata["multiplex_metadata"] = metadata
 
     def get_dataset_metadata(self):
-        return self.hypergraph_metadata['multiplex_metadata']
+        return self.hypergraph_metadata["multiplex_metadata"]
 
     def set_layer_metadata(self, layer_name, metadata):
         if layer_name not in self.hypergraph_metadata:
@@ -240,12 +262,16 @@ class MultiplexHypergraph:
         self.hypergraph_metadata = metadata
 
     def aggregated_hypergraph(self):
-        h = Hypergraph(weighted=self._weighted, hypergraph_metadata=self.hypergraph_metadata)
+        h = Hypergraph(
+            weighted=self._weighted, hypergraph_metadata=self.hypergraph_metadata
+        )
         for node in self.get_nodes():
             h.add_node(node, metadata=self.node_metadata[node])
         for edge in self.get_edges():
             _edge, layer = edge
-            h.add_edge(_edge, weight=self.get_weight(_edge, layer), metadata=self.get_edge_metadata(_edge, layer))
+            h.add_edge(
+                _edge,
+                weight=self.get_weight(_edge, layer),
+                metadata=self.get_edge_metadata(_edge, layer),
+            )
         return h
-
-

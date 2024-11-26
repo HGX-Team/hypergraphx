@@ -1,10 +1,13 @@
 from hypergraphx import DirectedHypergraph
 
+
 def in_degree(hypergraph: DirectedHypergraph, node: int, order=None, size=None) -> int:
     return len(list(hypergraph.get_source_edges(node, order=order, size=size)))
 
+
 def out_degree(hypergraph: DirectedHypergraph, node: int, order=None, size=None) -> int:
     return len(list(hypergraph.get_target_edges(node, order=order, size=size)))
+
 
 def in_degree_sequence(hg: DirectedHypergraph, order=None, size=None):
     """
@@ -24,7 +27,10 @@ def in_degree_sequence(hg: DirectedHypergraph, order=None, size=None):
     dict
         The in-degree sequence of the hypergraph. The keys are the nodes and the values are the degrees.
     """
-    return {node: in_degree(hg, node, order=order, size=size) for node in hg.get_nodes()}
+    return {
+        node: in_degree(hg, node, order=order, size=size) for node in hg.get_nodes()
+    }
+
 
 def out_degree_sequence(hg: DirectedHypergraph, order=None, size=None):
     """
@@ -44,5 +50,6 @@ def out_degree_sequence(hg: DirectedHypergraph, order=None, size=None):
     dict
         The out-degree sequence of the hypergraph. The keys are the nodes and the values are the degrees.
     """
-    return {node: out_degree(hg, node, order=order, size=size) for node in hg.get_nodes()}
-
+    return {
+        node: out_degree(hg, node, order=order, size=size) for node in hg.get_nodes()
+    }

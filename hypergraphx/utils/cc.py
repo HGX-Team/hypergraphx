@@ -116,7 +116,11 @@ def isolated_nodes(hg: Hypergraph, order=None, size=None):
     """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
-    return [node for node in hg.get_nodes() if len(hg.get_neighbors(node, order=order, size=size)) == 0]
+    return [
+        node
+        for node in hg.get_nodes()
+        if len(hg.get_neighbors(node, order=order, size=size)) == 0
+    ]
 
 
 def is_isolated(hg: Hypergraph, node, order=None, size=None):

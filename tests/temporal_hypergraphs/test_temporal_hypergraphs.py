@@ -1,8 +1,4 @@
-from os import times
-
-import pytest
 from hypergraphx import Hypergraph
-from hypergraphx import TemporalHypergraph
 
 
 def test_initialization():

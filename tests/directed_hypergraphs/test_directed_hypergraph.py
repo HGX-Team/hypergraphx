@@ -2,6 +2,7 @@ import pytest
 
 from hypergraphx import DirectedHypergraph
 
+
 @pytest.fixture
 def directed_hypergraph():
     """

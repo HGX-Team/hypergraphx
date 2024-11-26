@@ -119,7 +119,9 @@ class HySC:
     def _extract_laplacian(self, weighted_L: bool = False) -> None:
         # Check for division by zero and handle isolated nodes
         invDE = np.diag(1.0 / np.where(self.hye_size == 0, 1, self.hye_size))
-        invDV2 = np.diag(np.sqrt(1.0 / np.where(self.node_degree == 0, 1, self.node_degree)))
+        invDV2 = np.diag(
+            np.sqrt(1.0 / np.where(self.node_degree == 0, 1, self.node_degree))
+        )
 
         # set to zero for isolated nodes - we check directly on self.node_degree
         invDV2[self.node_degree == 0, self.node_degree == 0] = 0
@@ -131,13 +133,15 @@ class HySC:
         else:
             dense_binary_incidence = self.binary_incidence.toarray()
             HT = dense_binary_incidence.T
-            self.L = np.eye(self.N) - invDV2 @ dense_binary_incidence @ invDE @ HT @ invDV2
+            self.L = (
+                np.eye(self.N) - invDV2 @ dense_binary_incidence @ invDE @ HT @ invDV2
+            )
 
     def extract_eigenvectors(self) -> Tuple[np.array, np.array]:
         """Extract eigenvalues and eigenvectors of the Laplacian matrix."""
         e_vals, e_vecs = np.linalg.eig(self.L[self.non_isolates][:, self.non_isolates])
         sorted_indices = np.argsort(e_vals)
-        return e_vals[sorted_indices[:self.K]], e_vecs[:, sorted_indices[1:self.K]]
+        return e_vals[sorted_indices[: self.K]], e_vecs[:, sorted_indices[1 : self.K]]
 
     def apply_kmeans(self, X: np.array, seed: int = 10) -> np.array:
         """Apply K-means algorithm to the eigenvectors of the Laplacian matrix.

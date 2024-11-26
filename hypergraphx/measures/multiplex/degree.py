@@ -1,5 +1,3 @@
-from hypergraphx import MultiplexHypergraph    
-
 """
 def degree(h: MultiplexHypergraph, node, size=None):
     degree = {}

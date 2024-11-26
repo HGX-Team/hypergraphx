@@ -73,14 +73,13 @@ def test_incidence(loaded_hypergraph: Hypergraph):
         transform_hye_to_new_indices(hye, inverse_mapping)
         for hye in loaded_hypergraph.get_edges()
     ]
-    incidence = np.zeros(
-        (loaded_hypergraph.num_nodes(), loaded_hypergraph.num_edges())
-    )
+    incidence = np.zeros((loaded_hypergraph.num_nodes(), loaded_hypergraph.num_edges()))
     weights_arr = loaded_hypergraph.get_weights()
     for i, hye in enumerate(hye_list):
         incidence[hye, i] = weights_arr[i]
 
     assert np.all(inc.todense() == incidence)
+
 
 def test_incidence_by_order(loaded_hypergraph: Hypergraph):
     def transform_hye_to_new_indices(hye, mapping_):
@@ -88,11 +87,15 @@ def test_incidence_by_order(loaded_hypergraph: Hypergraph):
 
     order_to_test = 2
 
-    inc, mapping = hl.incidence_matrix_by_order(loaded_hypergraph, order = order_to_test, return_mapping=True)
+    inc, mapping = hl.incidence_matrix_by_order(
+        loaded_hypergraph, order=order_to_test, return_mapping=True
+    )
 
     inverse_mapping = dict(zip(mapping.values(), mapping.keys()))
 
-    subhypergraph_by_order = loaded_hypergraph.get_edges(order = order_to_test, subhypergraph=True, keep_isolated_nodes=False)
+    subhypergraph_by_order = loaded_hypergraph.get_edges(
+        order=order_to_test, subhypergraph=True, keep_isolated_nodes=False
+    )
     hye_list = [
         transform_hye_to_new_indices(hye, inverse_mapping)
         for hye in subhypergraph_by_order.get_edges()
@@ -106,19 +109,23 @@ def test_incidence_by_order(loaded_hypergraph: Hypergraph):
 
     assert np.all(inc.todense() == incidence)
 
- 
+
 def test_incidence_all_orders(loaded_hypergraph: Hypergraph):
     def transform_hye_to_new_indices(hye, mapping_):
         return tuple(mapping_[node] for node in hye)
-    
+
     inc_arr = hl.incidence_matrices_all_orders(loaded_hypergraph)
 
     for order_to_test in range(1, loaded_hypergraph.max_order() + 1):
 
-        inc, mapping = hl.incidence_matrix_by_order(loaded_hypergraph, order = order_to_test, return_mapping=True)
+        inc, mapping = hl.incidence_matrix_by_order(
+            loaded_hypergraph, order=order_to_test, return_mapping=True
+        )
         inverse_mapping = dict(zip(mapping.values(), mapping.keys()))
 
-        subhypergraph_by_order = loaded_hypergraph.get_edges(order = order_to_test, subhypergraph=True, keep_isolated_nodes=False)
+        subhypergraph_by_order = loaded_hypergraph.get_edges(
+            order=order_to_test, subhypergraph=True, keep_isolated_nodes=False
+        )
         hye_list = [
             transform_hye_to_new_indices(hye, inverse_mapping)
             for hye in subhypergraph_by_order.get_edges()
@@ -131,4 +138,3 @@ def test_incidence_all_orders(loaded_hypergraph: Hypergraph):
             incidence[hye, i] = weights_arr[i]
 
         assert np.all(inc_arr[order_to_test].todense() == incidence)
-     

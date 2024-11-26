@@ -1,7 +1,5 @@
 import numpy as np
 
-from hypergraphx.utils.labeling import map_node, map_nodes
-
 
 def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
     """
@@ -36,7 +34,7 @@ def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
     numpy.ndarray
         The fraction of infected nodes at each time step.
     """
-    
+
     numberInf = np.linspace(0, 0, T)
     Infected = sum(I_0.values())
     numberInf[0] = Infected
@@ -46,37 +44,42 @@ def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
     I_old = I_0.copy()
     t = 1
 
-    while Infected>0 and t<T:
-        #I_new = np.copy(I_old)
+    while Infected > 0 and t < T:
+        # I_new = np.copy(I_old)
         I_new = I_old.copy()
 
         # We run over the nodes
         for node in nodes:
             # if the node is susceptible, we run the infection process
-            if I_old[node] == 0: 
+            if I_old[node] == 0:
                 # we first run the two-body infections
                 neighbors = hypergraph.get_neighbors(node, order=1)
                 for neigh in neighbors:
                     if I_old[neigh] == 1 and np.random.random() < beta:
                         I_new[node] = 1
-                        break # if the susceptile node gets infected, we stop iterating over its neighbors
-                if I_new[node] == 1: continue # if the susceptile node is already infected, we don't run the three-body processes
+                        break  # if the susceptile node gets infected, we stop iterating over its neighbors
+                if I_new[node] == 1:
+                    continue  # if the susceptile node is already infected, we don't run the three-body processes
                 # we run the three-body infections
                 triplets = hypergraph.get_incident_edges(node, order=2)
                 for triplet in triplets:
                     neighbors = list(triplet)
                     neighbors.remove(node)
                     neigh1, neigh2 = tuple(neighbors)
-                    if I_old[neigh1] == 1 and I_old[neigh2] == 1 and np.random.random() < beta_D:
+                    if (
+                        I_old[neigh1] == 1
+                        and I_old[neigh2] == 1
+                        and np.random.random() < beta_D
+                    ):
                         I_new[node] = 1
-                        break # if the susceptile node gets infected, we stop iterating over the triplets
+                        break  # if the susceptile node gets infected, we stop iterating over the triplets
             # if the node is infected, we run the recovery process
             elif np.random.random() < mu:
                 I_new[node] = 0
-        
+
         I_old = I_new.copy()
         Infected = sum(I_new.values())
         numberInf[t] = Infected
-        t = t+1
-    
+        t = t + 1
+
     return numberInf / N

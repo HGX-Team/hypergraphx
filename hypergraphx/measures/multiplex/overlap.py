@@ -1,5 +1,6 @@
 from hypergraphx import MultiplexHypergraph
 
+
 def edge_overlap(h: MultiplexHypergraph, edge):
     edge = tuple(sorted(edge))
     overlap = 0

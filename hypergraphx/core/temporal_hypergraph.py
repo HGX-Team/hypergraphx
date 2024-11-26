@@ -1,12 +1,20 @@
 from hypergraphx import Hypergraph
 
+
 class TemporalHypergraph:
-    def __init__(self, edge_list=None, hypergraph_metadata=None, weighted=False, weights=None, edge_metadata=None):
+    def __init__(
+        self,
+        edge_list=None,
+        hypergraph_metadata=None,
+        weighted=False,
+        weights=None,
+        edge_metadata=None,
+    ):
         if hypergraph_metadata is None:
             self.hypergraph_metadata = {}
         else:
             self.hypergraph_metadata = hypergraph_metadata
-        self.hypergraph_metadata['weighted'] = weighted
+        self.hypergraph_metadata["weighted"] = weighted
         self._weighted = weighted
         self._weights = {}
         self._edge_list = {}
@@ -71,7 +79,9 @@ class TemporalHypergraph:
             try:
                 self.add_node(node, metadata[node] if metadata is not None else None)
             except KeyError:
-                raise ValueError("The metadata dictionary must contain an entry for each node in the node list.")
+                raise ValueError(
+                    "The metadata dictionary must contain an entry for each node in the node list."
+                )
 
     def is_weighted(self):
         """
@@ -92,7 +102,9 @@ class TemporalHypergraph:
 
     def set_weight(self, edge, time, weight):
         if not self._weighted and weight != 1:
-            raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
+            raise ValueError(
+                "If the hypergraph is not weighted, weight can be 1 or None."
+            )
         if (time, edge) not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         e_id = self._edge_list[(time, edge)]
@@ -105,17 +117,19 @@ class TemporalHypergraph:
 
     def add_edge(self, edge, time, weight=None, metadata=None):
         if not isinstance(time, int):
-            raise TypeError('Time must be an integer')
+            raise TypeError("Time must be an integer")
 
         if not self._weighted and weight is not None and weight != 1:
-            raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
+            raise ValueError(
+                "If the hypergraph is not weighted, weight can be 1 or None."
+            )
         if weight is None:
             weight = 1
 
         t = time
 
         if t < 0:
-            raise ValueError('Time must be a positive integer')
+            raise ValueError("Time must be a positive integer")
 
         _edge = tuple(sorted(edge))
         edge = (t, _edge)
@@ -159,9 +173,9 @@ class TemporalHypergraph:
                 self.add_edge(
                     edge,
                     time_list[i],
-                    weight=weights[i]
-                    if self._weighted and weights is not None
-                    else None,
+                    weight=(
+                        weights[i] if self._weighted and weights is not None else None
+                    ),
                     metadata=metadata[i] if metadata is not None else None,
                 )
                 i += 1
@@ -169,24 +183,28 @@ class TemporalHypergraph:
     def get_edges(self, time_window=None, metadata=False):
         edges = []
         if time_window is None:
-           if metadata:
-                return {edge: self.edge_metadata[edge] for edge in self._edge_list.keys()}
-           else:
+            if metadata:
+                return {
+                    edge: self.edge_metadata[edge] for edge in self._edge_list.keys()
+                }
+            else:
                 return list(self._edge_list.keys())
         elif isinstance(time_window, tuple) and len(time_window) == 2:
             for _t, _edge in list(sorted(self._edge_list.keys())):
                 if time_window[0] <= _t < time_window[1]:
                     edges.append((_t, _edge))
             if metadata:
-                return {edge: self.get_edge_metadata(edge[0], edge[1]) for edge in edges}
+                return {
+                    edge: self.get_edge_metadata(edge[0], edge[1]) for edge in edges
+                }
             else:
                 return edges
         else:
-            raise ValueError('Time window must be a tuple of length 2')
+            raise ValueError("Time window must be a tuple of length 2")
 
     def aggregate(self, time_window):
         if not isinstance(time_window, int) or time_window <= 0:
-            raise TypeError('Time window must be a positive integer')
+            raise TypeError("Time window must be a positive integer")
 
         aggregated = {}
         node_list = self.get_nodes()
@@ -208,7 +226,10 @@ class TemporalHypergraph:
 
         while t_start <= max_time:
             # Collect edges for the current window
-            while edge_index < len(sorted_edges) and t_start <= sorted_edges[edge_index][0] < t_end:
+            while (
+                edge_index < len(sorted_edges)
+                and t_start <= sorted_edges[edge_index][0] < t_end
+            ):
                 edges_in_window.append(sorted_edges[edge_index])
                 edge_index += 1
 
@@ -217,8 +238,11 @@ class TemporalHypergraph:
 
             # Add edges to the hypergraph
             for time, edge_nodes in edges_in_window:
-                Hypergraph_t.add_edge(edge_nodes, metadata=self.get_edge_metadata(edge_nodes, time),
-                                      weight=self.get_weight(edge_nodes, time))
+                Hypergraph_t.add_edge(
+                    edge_nodes,
+                    metadata=self.get_edge_metadata(edge_nodes, time),
+                    weight=self.get_weight(edge_nodes, time),
+                )
 
             # Add all nodes to ensure node consistency
             for node in node_list:
@@ -234,7 +258,3 @@ class TemporalHypergraph:
             edges_in_window = []  # Reset for the next window
 
         return aggregated
-
-
-
-

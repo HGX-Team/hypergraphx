@@ -49,12 +49,12 @@ def hyperedge_signature_vector(hypergraph: DirectedHypergraph, max_hyperedge_siz
         except ValueError:
             return np.array([])
 
-    signature = np.zeros((max_hyperedge_size-1, max_hyperedge_size-1))
+    signature = np.zeros((max_hyperedge_size - 1, max_hyperedge_size - 1))
 
     for hyperedge in hypergraph.get_edges(size=max_hyperedge_size, up_to=True):
         source_size = len(hyperedge[0])
         target_size = len(hyperedge[1])
-        signature[source_size-1, target_size-1] += 1
+        signature[source_size - 1, target_size - 1] += 1
 
     signature = np.array(signature.flatten())
     return signature

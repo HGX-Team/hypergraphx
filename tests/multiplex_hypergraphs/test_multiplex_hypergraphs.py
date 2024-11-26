@@ -1,12 +1,15 @@
 import pytest
+
 from hypergraphx import Hypergraph
-from hypergraphx import MultiplexHypergraph  # Replace 'your_module' with the module name containing your class
+from hypergraphx import (
+    MultiplexHypergraph,
+)  # Replace 'your_module' with the module name containing your class
 
 
 def test_initialization():
     h = MultiplexHypergraph()
     assert isinstance(h.hypergraph_metadata, dict)
-    assert h.hypergraph_metadata['weighted'] is False
+    assert h.hypergraph_metadata["weighted"] is False
     assert h.get_nodes() == []
 
 
@@ -87,13 +90,16 @@ def test_aggregated_hypergraph():
     assert aggregated.get_weight(("A", "B")) == 0.5
     assert aggregated.get_weight(("B", "C")) == 0.5
 
+
 def test_add_edge_without_weight_in_weighted_hypergraph():
     """
     Test adding an edge without specifying a weight in a weighted hypergraph.
     """
     h = MultiplexHypergraph(weighted=True)
     h.add_edge(("A", "B"), layer="layer1")
-    assert h.get_weight(("A", "B"), "layer1") == 1.0, "Default weight should be 1.0 in a weighted hypergraph."
+    assert (
+        h.get_weight(("A", "B"), "layer1") == 1.0
+    ), "Default weight should be 1.0 in a weighted hypergraph."
 
 
 def test_update_edge_weight():
@@ -103,7 +109,9 @@ def test_update_edge_weight():
     h = MultiplexHypergraph(weighted=True)
     h.add_edge(("A", "B"), layer="layer1", weight=0.5)
     h.set_weight(("A", "B"), "layer1", 1.5)
-    assert h.get_weight(("A", "B"), "layer1") == 1.5, "Edge weight should be updated to the latest value."
+    assert (
+        h.get_weight(("A", "B"), "layer1") == 1.5
+    ), "Edge weight should be updated to the latest value."
 
 
 def test_aggregate_weights_of_duplicate_edges():
@@ -113,7 +121,9 @@ def test_aggregate_weights_of_duplicate_edges():
     h = MultiplexHypergraph(weighted=True)
     h.add_edge(("A", "B"), layer="layer1", weight=1.0)
     h.add_edge(("A", "B"), layer="layer1", weight=2.0)
-    assert h.get_weight(("A", "B"), "layer1") == 3.0, "Weights should be aggregated for duplicate edges."
+    assert (
+        h.get_weight(("A", "B"), "layer1") == 3.0
+    ), "Weights should be aggregated for duplicate edges."
 
 
 def test_add_edge_metadata_in_unweighted_hypergraph():
@@ -122,7 +132,9 @@ def test_add_edge_metadata_in_unweighted_hypergraph():
     """
     h = MultiplexHypergraph(weighted=False)
     h.add_edge(("A", "B"), layer="layer1", metadata={"type": "friendship"})
-    assert h.get_edge_metadata(("A", "B"), "layer1") == {"type": "friendship"}, "Edge metadata should match the provided metadata."
+    assert h.get_edge_metadata(("A", "B"), "layer1") == {
+        "type": "friendship"
+    }, "Edge metadata should match the provided metadata."
 
 
 def test_add_edge_metadata_in_weighted_hypergraph():
@@ -130,8 +142,12 @@ def test_add_edge_metadata_in_weighted_hypergraph():
     Test adding metadata to an edge in a weighted hypergraph.
     """
     h = MultiplexHypergraph(weighted=True)
-    h.add_edge(("A", "B"), layer="layer1", weight=0.5, metadata={"type": "collaboration"})
-    assert h.get_edge_metadata(("A", "B"), "layer1") == {"type": "collaboration"}, "Edge metadata should match the provided metadata."
+    h.add_edge(
+        ("A", "B"), layer="layer1", weight=0.5, metadata={"type": "collaboration"}
+    )
+    assert h.get_edge_metadata(("A", "B"), "layer1") == {
+        "type": "collaboration"
+    }, "Edge metadata should match the provided metadata."
 
 
 def test_add_edges_with_mixed_metadata_and_weights():
@@ -145,8 +161,12 @@ def test_add_edges_with_mixed_metadata_and_weights():
     metadata = [{"type": "friendship"}, {"type": "work"}]
     h.add_edges(edges, edge_layer=layers, weights=weights, metadata=metadata)
     for i, edge in enumerate(edges):
-        assert h.get_weight(edge, layers[i]) == weights[i], f"Weight of edge {edge} should be {weights[i]}."
-        assert h.get_edge_metadata(edge, layers[i]) == metadata[i], f"Metadata of edge {edge} should be {metadata[i]}."
+        assert (
+            h.get_weight(edge, layers[i]) == weights[i]
+        ), f"Weight of edge {edge} should be {weights[i]}."
+        assert (
+            h.get_edge_metadata(edge, layers[i]) == metadata[i]
+        ), f"Metadata of edge {edge} should be {metadata[i]}."
 
 
 def test_get_nonexistent_edge_weight():
@@ -180,10 +200,30 @@ def test_aggregated_hypergraph_with_metadata_and_weights():
 
     aggregated = h.aggregated_hypergraph()
 
-    assert isinstance(aggregated, Hypergraph), "Aggregated object should be of type Hypergraph."
-    assert ("A", "B") in aggregated.get_edges(), "Edge ('A', 'B') should be in the aggregated hypergraph."
-    assert ("B", "C") in aggregated.get_edges(), "Edge ('B', 'C') should be in the aggregated hypergraph."
-    assert aggregated.get_weight(("A", "B")) == 0.5, "Weight of ('A', 'B') should be preserved in the aggregated hypergraph."
-    assert aggregated.get_weight(("B", "C")) == 1.0, "Weight of ('B', 'C') should be preserved in the aggregated hypergraph."
-    assert aggregated.get_edge_metadata(("A", "B")) == {"type": "friendship"}, "Metadata of ('A', 'B') should be preserved."
-    assert aggregated.get_edge_metadata(("B", "C")) == {"type": "work"}, "Metadata of ('B', 'C') should be preserved."
+    assert isinstance(
+        aggregated, Hypergraph
+    ), "Aggregated object should be of type Hypergraph."
+    assert (
+        "A",
+        "B",
+    ) in aggregated.get_edges(), (
+        "Edge ('A', 'B') should be in the aggregated hypergraph."
+    )
+    assert (
+        "B",
+        "C",
+    ) in aggregated.get_edges(), (
+        "Edge ('B', 'C') should be in the aggregated hypergraph."
+    )
+    assert (
+        aggregated.get_weight(("A", "B")) == 0.5
+    ), "Weight of ('A', 'B') should be preserved in the aggregated hypergraph."
+    assert (
+        aggregated.get_weight(("B", "C")) == 1.0
+    ), "Weight of ('B', 'C') should be preserved in the aggregated hypergraph."
+    assert aggregated.get_edge_metadata(("A", "B")) == {
+        "type": "friendship"
+    }, "Metadata of ('A', 'B') should be preserved."
+    assert aggregated.get_edge_metadata(("B", "C")) == {
+        "type": "work"
+    }, "Metadata of ('B', 'C') should be preserved."

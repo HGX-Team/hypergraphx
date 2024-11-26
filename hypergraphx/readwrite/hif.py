@@ -1,7 +1,7 @@
 import json
-import os
 
 from hypergraphx import Hypergraph
+
 
 def load_hif(path: str) -> Hypergraph:
     """
@@ -25,38 +25,38 @@ def load_hif(path: str) -> Hypergraph:
     with open(path) as file:
         data = json.loads(file.read())
 
-    if 'type' not in data:
+    if "type" not in data:
         print("No hypergraph type - assume undirected")
-        data['type'] = 'undirected'
+        data["type"] = "undirected"
 
-    if data['type'] == 'undirected' or data['type'] == 'asc':
+    if data["type"] == "undirected" or data["type"] == "asc":
         H = Hypergraph()
-    elif data['type'] == 'directed':
+    elif data["type"] == "directed":
         H = Hypergraph(directed=True)
     else:
         raise ValueError(f"Unknown hypergraph type: {data['type']}")
 
-    if 'metadata' in data:
-        H.set_hypergraph_metadata(data['metadata'])
+    if "metadata" in data:
+        H.set_hypergraph_metadata(data["metadata"])
 
     tmp_edges = {}
-    for incidence in data['incidences']:
-        if incidence['edge'] not in edge_name_to_uid:
-            edge_name_to_uid[incidence['edge']] = eid
+    for incidence in data["incidences"]:
+        if incidence["edge"] not in edge_name_to_uid:
+            edge_name_to_uid[incidence["edge"]] = eid
             eid += 1
-        edge = edge_name_to_uid[incidence['edge']]
+        edge = edge_name_to_uid[incidence["edge"]]
 
-        if incidence['node'] not in node_name_to_uid:
-            node_name_to_uid[incidence['node']] = nid
+        if incidence["node"] not in node_name_to_uid:
+            node_name_to_uid[incidence["node"]] = nid
             nid += 1
-        node = node_name_to_uid[incidence['node']]
+        node = node_name_to_uid[incidence["node"]]
 
         if edge not in tmp_edges:
             tmp_edges[edge] = []
         tmp_edges[edge].append(node)
 
-    for record in data['nodes']:
-        node_name = record['node']
+    for record in data["nodes"]:
+        node_name = record["node"]
         if node_name not in node_name_to_uid:
             node_name_to_uid[node_name] = nid
             nid += 1
@@ -66,8 +66,8 @@ def load_hif(path: str) -> Hypergraph:
 
     added = {}
 
-    for record in data['edges']:
-        edge_name = record['edge']
+    for record in data["edges"]:
+        edge_name = record["edge"]
         if edge_name not in edge_name_to_uid:
             edge_name_to_uid[edge_name] = eid
             eid += 1
@@ -79,10 +79,9 @@ def load_hif(path: str) -> Hypergraph:
         else:
             H.add_empty_edge(edge_name, record)
 
-
-    for incidence in data['incidences']:
-        edge = edge_name_to_uid[incidence['edge']]
-        node = node_name_to_uid[incidence['node']]
+    for incidence in data["incidences"]:
+        edge = edge_name_to_uid[incidence["edge"]]
+        node = node_name_to_uid[incidence["node"]]
         if tuple(sorted(tmp_edges[edge])) not in added:
             H.add_edge(tuple(sorted(tmp_edges[edge])))
             added[tuple(sorted(tmp_edges[edge]))] = True
@@ -103,15 +102,13 @@ def save_hif(H: Hypergraph, path: str):
         The path to save the hypergraph to.
     """
 
-    data = {'type': 'undirected',
-            'metadata': H.get_hypergraph_metadata(),
-            'edges': H.get_all_edges_metadata(),
-            'nodes': H.get_all_nodes_metadata(),
-            'incidences': H.get_all_incidences_metadata()
-            }
+    data = {
+        "type": "undirected",
+        "metadata": H.get_hypergraph_metadata(),
+        "edges": H.get_all_edges_metadata(),
+        "nodes": H.get_all_nodes_metadata(),
+        "incidences": H.get_all_incidences_metadata(),
+    }
 
-    with open(path, 'w') as file:
+    with open(path, "w") as file:
         file.write(json.dumps(data))
-
-
-

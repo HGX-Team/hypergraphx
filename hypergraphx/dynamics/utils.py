@@ -4,41 +4,59 @@ from scipy.special import comb, factorial
 
 
 def lin_system(t, X, F, JF, JH, alpha, *params):
-    dim = len(X)//2
+    dim = len(X) // 2
     X_s = X[:dim]
     Eta = X[dim:]
 
     JF_X_s = JF(X_s, *params)
     JH_X_s = JH(X_s)
-    J_alpha = JF_X_s - alpha*JH_X_s
+    J_alpha = JF_X_s - alpha * JH_X_s
 
     new_X_s = F(0, X_s, *params)
     new_Eta = J_alpha.dot(Eta)
 
-    return np.concatenate((new_X_s,new_Eta))
+    return np.concatenate((new_X_s, new_Eta))
+
 
 def lin_system_a2a(t, X, F, JF, sigmas, N, JHs, alpha, *params):
-    dim = len(X)//2
+    dim = len(X) // 2
     X_s = X[:dim]
     Eta = X[dim:]
 
     JF_X_s = JF(X_s, *params)
 
-    if not type(sigmas) == np.ndarray: sigmas = np.array(sigmas)
-    rescaled_sigmas = sigmas/sigmas[0]
-    all2all_weights = [factorial(N-2)/factorial(N-2-d) for d in range(len(sigmas))]
-    weighted_JH_X_s = [sigma*w*JH(X_s) for sigma, w, JH in zip(rescaled_sigmas,all2all_weights,JHs)]
+    if not type(sigmas) == np.ndarray:
+        sigmas = np.array(sigmas)
+    rescaled_sigmas = sigmas / sigmas[0]
+    all2all_weights = [
+        factorial(N - 2) / factorial(N - 2 - d) for d in range(len(sigmas))
+    ]
+    weighted_JH_X_s = [
+        sigma * w * JH(X_s)
+        for sigma, w, JH in zip(rescaled_sigmas, all2all_weights, JHs)
+    ]
     JH_X_s = sum(weighted_JH_X_s)
 
-    J_alpha = JF_X_s - alpha*JH_X_s
+    J_alpha = JF_X_s - alpha * JH_X_s
 
     new_X_s = F(0, X_s, *params)
     new_Eta = J_alpha.dot(Eta)
 
-    return np.concatenate((new_X_s,new_Eta))
+    return np.concatenate((new_X_s, new_Eta))
 
 
-def sprott_algorithm(alpha, C, F, JF, JH, Y0, params, integration_time = 400.0, integration_step = 0.01, verbose = True):
+def sprott_algorithm(
+    alpha,
+    C,
+    F,
+    JF,
+    JH,
+    Y0,
+    params,
+    integration_time=400.0,
+    integration_step=0.01,
+    verbose=True,
+):
     """
     Evaluates the Master Stability Function as the maximum Lyapunov exponent using the Sprott's algorithm [1]
 
@@ -70,28 +88,50 @@ def sprott_algorithm(alpha, C, F, JF, JH, Y0, params, integration_time = 400.0, 
     ---------
     [1] J.C. Sprott, Chaos and Time-Series Analysis, Oxford University Press vol.69, pp.116-117 (2003).
     """
-    dim = len(Y0)//2
+    dim = len(Y0) // 2
     Eta0 = Y0[dim:]
     Eta0_norm = np.linalg.norm(Eta0)
 
     lyap = np.zeros((C,))
     for iter in range(C):
-        if verbose: print("Integrating over cycle "+str(iter+1)+" of "+str(C))
-        sol = solve_ivp(fun=lin_system, t_span=[0.0,integration_time], t_eval=np.arange(0.0,integration_time,integration_step), 
-                        y0=Y0, args=(F, JF, JH, alpha, *params), method='LSODA')
-        
-        EtaT = sol.y[dim:,-1]
+        if verbose:
+            print("Integrating over cycle " + str(iter + 1) + " of " + str(C))
+        sol = solve_ivp(
+            fun=lin_system,
+            t_span=[0.0, integration_time],
+            t_eval=np.arange(0.0, integration_time, integration_step),
+            y0=Y0,
+            args=(F, JF, JH, alpha, *params),
+            method="LSODA",
+        )
+
+        EtaT = sol.y[dim:, -1]
         EtaT_norm = np.linalg.norm(EtaT)
 
-        lyap[iter] = np.log(EtaT_norm/Eta0_norm)/integration_time
+        lyap[iter] = np.log(EtaT_norm / Eta0_norm) / integration_time
 
-        Eta0 = EtaT*Eta0_norm/EtaT_norm
+        Eta0 = EtaT * Eta0_norm / EtaT_norm
 
         Y0[dim:] = Eta0
 
     return np.mean(lyap)
 
-def sprott_algorithm_multi(alpha, C, F, JF, sigmas, N, JHs, Y0, params, all2all = True, integration_time = 400.0, integration_step = 0.01, verbose = True):
+
+def sprott_algorithm_multi(
+    alpha,
+    C,
+    F,
+    JF,
+    sigmas,
+    N,
+    JHs,
+    Y0,
+    params,
+    all2all=True,
+    integration_time=400.0,
+    integration_step=0.01,
+    verbose=True,
+):
     """
     Evaluates the Master Stability Function as the maximum Lyapunov exponent using the Sprott's algorithm [1]
 
@@ -121,59 +161,71 @@ def sprott_algorithm_multi(alpha, C, F, JF, sigmas, N, JHs, Y0, params, all2all 
     ---------
     [1] J.C. Sprott, Chaos and Time-Series Analysis, Oxford University Press vol.69, pp.116-117 (2003).
     """
-    dim = len(Y0)//2
+    dim = len(Y0) // 2
     Eta0 = Y0[dim:]
     Eta0_norm = np.linalg.norm(Eta0)
 
     lyap = np.zeros((C,))
     for iter in range(C):
-        if verbose: print("Integrating over cycle "+str(iter+1)+" of "+str(C))
+        if verbose:
+            print("Integrating over cycle " + str(iter + 1) + " of " + str(C))
 
         if all2all:
-            sol = solve_ivp(fun=lin_system_a2a, t_span=[0.0,integration_time], t_eval=np.arange(0.0,integration_time,integration_step), 
-                        y0=Y0, args=(F, JF, sigmas, N, JHs, alpha, *params), method='LSODA')
-        
-        EtaT = sol.y[dim:,-1]
+            sol = solve_ivp(
+                fun=lin_system_a2a,
+                t_span=[0.0, integration_time],
+                t_eval=np.arange(0.0, integration_time, integration_step),
+                y0=Y0,
+                args=(F, JF, sigmas, N, JHs, alpha, *params),
+                method="LSODA",
+            )
+
+        EtaT = sol.y[dim:, -1]
         EtaT_norm = np.linalg.norm(EtaT)
 
-        lyap[iter] = np.log(EtaT_norm/Eta0_norm)/integration_time
+        lyap[iter] = np.log(EtaT_norm / Eta0_norm) / integration_time
 
-        Eta0 = EtaT*Eta0_norm/EtaT_norm
-        Eta0_norm = np.linalg.norm(Eta0) 
+        Eta0 = EtaT * Eta0_norm / EtaT_norm
+        Eta0_norm = np.linalg.norm(Eta0)
 
         Y0[dim:] = Eta0
 
     return np.mean(lyap)
 
-def is_natural_coupling(JHs, dim, verbose = True):
+
+def is_natural_coupling(JHs, dim, verbose=True):
     orders = len(JHs)
 
     X = np.random.random(size=(dim,))
-    for d in range(orders-1):
+    for d in range(orders - 1):
         JH1 = JHs[d]
-        JH2 = JHs[d+1]
+        JH2 = JHs[d + 1]
 
         if (JH1(X) - JH2(X)).any():
-            if verbose: print("The coupling is not natural")
-            return False 
+            if verbose:
+                print("The coupling is not natural")
+            return False
 
-    if verbose: print("The coupling is natural")
+    if verbose:
+        print("The coupling is natural")
     return True
 
 
-def is_all_to_all(hypergraph, verbose = True):
+def is_all_to_all(hypergraph, verbose=True):
     if hypergraph.is_weighted():
-        print("The higher-order network is weighted. Only unweighted higher-order networks are considered")
+        print(
+            "The higher-order network is weighted. Only unweighted higher-order networks are considered"
+        )
         return False
     else:
         N = hypergraph.num_nodes()
         for order in range(1, hypergraph.max_order() + 1):
             num_edges = hypergraph.num_edges(order=order)
-            if not comb(N,order+1) == num_edges:
-                if verbose: print("The higher-order network is not all-to-all")
+            if not comb(N, order + 1) == num_edges:
+                if verbose:
+                    print("The higher-order network is not all-to-all")
                 return False
 
-        if verbose: print("The higher-order network is all-to-all")
+        if verbose:
+            print("The higher-order network is all-to-all")
         return True
-
-
