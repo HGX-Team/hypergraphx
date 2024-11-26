@@ -218,9 +218,9 @@ class DirectedHypergraph:
         edge = (source, target)
 
         if self._weighted and weight is None:
-            raise ValueError("If the hypergraph is weighted, a weight must be provided.")
-        if not self._weighted and weight is not None:
-            raise ValueError("If the hypergraph is not weighted, no weight must be provided.")
+            weight = 1
+        if not self._weighted and (weight is not None or weight != 1):
+            raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
 
         if edge in self._edge_list:
             idx = self._edge_list[edge]

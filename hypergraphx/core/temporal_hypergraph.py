@@ -95,13 +95,9 @@ class TemporalHypergraph:
         if not isinstance(time, int):
             raise TypeError('Time must be an integer')
         if self._weighted and weight is None:
-            raise ValueError(
-                "If the hypergraph is weighted, a weight must be provided."
-            )
-        if not self._weighted and weight is not None:
-            raise ValueError(
-                "If the hypergraph is not weighted, no weight must be provided."
-            )
+            weight = 1
+        if not self._weighted and (weight is not None or weight != 1):
+            raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
 
         t = time
 

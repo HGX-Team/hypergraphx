@@ -32,8 +32,8 @@ def test_add_edges_unweighted():
     edges = [("A", "B"), ("B", "C")]
     layers = ["layer1", "layer2"]
     h.add_edges(edges, edge_layer=layers)
-    assert ("A", "B") in [edge[0] for edge in h._edge_list.keys()]
-    assert ("B", "C") in [edge[0] for edge in h._edge_list.keys()]
+    assert ("A", "B") in [edge[0] for edge in h.get_edges()]
+    assert ("B", "C") in [edge[0] for edge in h.get_edges()]
     assert "layer1" in h.existing_layers
     assert "layer2" in h.existing_layers
 
@@ -44,9 +44,9 @@ def test_add_edges_weighted():
     layers = ["layer1", "layer2"]
     weights = [0.5, 1.0]
     h.add_edges(edges, edge_layer=layers, weights=weights)
-    assert h._weighted is True
+    assert h.is_weighted()
     for i, edge in enumerate(edges):
-        assert h._edge_list[(tuple(sorted(edge)), layers[i])] == weights[i]
+        assert h.get_weight(edges[i], layers[i]) == weights[i]
 
 
 def test_add_edges_metadata():
@@ -55,7 +55,7 @@ def test_add_edges_metadata():
     layers = ["layer1"]
     metadata = [{"type": "friendship"}]
     h.add_edges(edges, edge_layer=layers, metadata=metadata)
-    assert h.edge_metadata[(tuple(sorted(("A", "B"))), "layer1")] == {"type": "friendship"}
+    assert h.get_edge_metadata(edges[0], layers[0]) == {"type": "friendship"}
 
 
 def test_hypergraph_metadata():
