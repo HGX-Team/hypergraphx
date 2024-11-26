@@ -11,12 +11,41 @@ class TemporalHypergraph:
         hypergraph_metadata=None,
         edge_metadata=None,
     ):
-        if hypergraph_metadata is None:
-            self.hypergraph_metadata = {}
-        else:
-            self.hypergraph_metadata = hypergraph_metadata
-        self.hypergraph_metadata["weighted"] = weighted
-        self.hypergraph_metadata["type"] = "TemporalHypergraph"
+        """
+        Initialize a Temporal Hypergraph with optional edges, times, weights, and metadata.
+
+        Parameters
+        ----------
+        edge_list : list of tuples, optional
+            A list of edges where each edge is represented as a tuple of nodes.
+            If `time_list` is not provided, each tuple in `edge_list` should
+            have the format `(time, edge)`, where `edge` is itself a tuple of nodes.
+        time_list : list of int, optional
+            A list of times corresponding to each edge in `edge_list`.
+            Must be provided if `edge_list` does not include time information.
+        weighted : bool, optional
+            Indicates whether the hypergraph is weighted. Default is False.
+        weights : list of float, optional
+            A list of weights for each edge in `edge_list`. Must be provided if `weighted` is True.
+        hypergraph_metadata : dict, optional
+            Metadata for the hypergraph as a whole. Default is an empty dictionary.
+        edge_metadata : list of dict, optional
+            A list of metadata dictionaries for each edge in `edge_list`.
+
+        Raises
+        ------
+        ValueError
+            If `edge_list` and `time_list` have mismatched lengths.
+            If `edge_list` contains improperly formatted edges when `time_list` is None.
+            If `time_list` is provided without `edge_list`.
+        """
+        # Initialize hypergraph metadata
+        self.hypergraph_metadata = hypergraph_metadata or {}
+        self.hypergraph_metadata.update(
+            {"weighted": weighted, "type": "TemporalHypergraph"}
+        )
+
+        # Initialize core attributes
         self._weighted = weighted
         self._weights = {}
         self._adj = {}
@@ -26,21 +55,24 @@ class TemporalHypergraph:
         self.reverse_edge_list = {}
         self.next_edge_id = 0
 
+        # Handle edge and time list consistency
         if edge_list is not None and time_list is None:
+            # Extract times from the edge list if time information is embedded
             if not all(
                 isinstance(edge, tuple) and len(edge) == 2 for edge in edge_list
             ):
                 raise ValueError(
-                    "Edge list must be a list of tuples of two elements if time list is not provided"
+                    "If time_list is not provided, edge_list must contain tuples of the form (time, edge)."
                 )
             time_list = [edge[0] for edge in edge_list]
             edge_list = [edge[1] for edge in edge_list]
-            self.add_edges(
-                edge_list, time_list, weights=weights, metadata=edge_metadata
-            )
+
         if edge_list is None and time_list is not None:
-            raise ValueError("Edge list must be provided if time list is provided")
+            raise ValueError("Edge list must be provided if time list is provided.")
+
         if edge_list is not None and time_list is not None:
+            if len(edge_list) != len(time_list):
+                raise ValueError("Edge list and time list must have the same length.")
             self.add_edges(
                 edge_list, time_list, weights=weights, metadata=edge_metadata
             )
@@ -332,7 +364,7 @@ class TemporalHypergraph:
             A dictionary containing all internal attributes of the temporal hypergraph.
         """
         return {
-            "type" : "TemporalHypergraph",
+            "type": "TemporalHypergraph",
             "hypergraph_metadata": self.hypergraph_metadata,
             "_weighted": self._weighted,
             "_weights": self._weights,

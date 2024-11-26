@@ -7,35 +7,68 @@ class MultiplexHypergraph:
         self,
         edge_list=None,
         edge_layer=None,
-        hypergraph_metadata=None,
         weighted=False,
         weights=None,
+        hypergraph_metadata=None,
         edge_metadata=None,
     ):
-        if hypergraph_metadata is None:
-            self.hypergraph_metadata = {}
-        else:
-            self.hypergraph_metadata = hypergraph_metadata
+        """
+        Initialize a Multiplex Hypergraph with optional edges, layers, weights, and metadata.
+
+        Parameters
+        ----------
+        edge_list : list of tuples, optional
+            A list of edges where each edge is represented as a tuple of nodes.
+            If `edge_layer` is not provided, each tuple in `edge_list` should have
+            the format `(edge, layer)`, where `edge` is itself a tuple of nodes.
+        edge_layer : list of str, optional
+            A list of layer names corresponding to each edge in `edge_list`.
+        weighted : bool, optional
+            Indicates whether the hypergraph is weighted. Default is False.
+        weights : list of float, optional
+            A list of weights for each edge in `edge_list`. Must be provided if `weighted` is True.
+        hypergraph_metadata : dict, optional
+            Metadata for the hypergraph as a whole. Default is an empty dictionary.
+        edge_metadata : list of dict, optional
+            A list of metadata dictionaries for each edge in `edge_list`.
+
+        Raises
+        ------
+        ValueError
+            If `edge_list` and `edge_layer` have mismatched lengths.
+            If `edge_list` contains improperly formatted edges when `edge_layer` is None.
+        """
+        # Initialize hypergraph metadata
+        self.hypergraph_metadata = hypergraph_metadata or {}
+        self.hypergraph_metadata.update(
+            {"weighted": weighted, "type": "MultiplexHypergraph"}
+        )
+
+        # Initialize core attributes
         self.node_metadata = {}
         self.edge_metadata = {}
         self._weighted = weighted
         self._weights = {}
-        self.hypergraph_metadata["weighted"] = weighted
-        self.hypergraph_metadata["type"] = "MultiplexHypergraph"
         self._edge_list = {}
         self._adj = {}
         self.reverse_edge_list = {}
         self.next_edge_id = 0
         self.existing_layers = set()
 
+        # Handle edge and layer consistency
         if edge_list is not None and edge_layer is None:
+            # Extract layers from edge_list if layer information is embedded
             if all(isinstance(edge, tuple) and len(edge) == 2 for edge in edge_list):
                 edge_layer = [edge[1] for edge in edge_list]
                 edge_list = [edge[0] for edge in edge_list]
             else:
-                raise ValueError("Provide layer for each edge.")
+                raise ValueError(
+                    "If edge_layer is not provided, edge_list must contain tuples of the form (edge, layer)."
+                )
 
         if edge_list is not None:
+            if edge_layer is not None and len(edge_list) != len(edge_layer):
+                raise ValueError("Edge list and edge layer must have the same length.")
             self.add_edges(
                 edge_list,
                 edge_layer=edge_layer,

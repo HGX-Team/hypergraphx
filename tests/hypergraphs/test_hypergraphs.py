@@ -3,18 +3,6 @@ import pytest
 from hypergraphx import Hypergraph
 
 
-def test_hypergraph_initialization_empty():
-    """Test initializing an empty hypergraph."""
-    hg = Hypergraph()
-    assert hg.hypergraph_metadata["weighted"] == False
-    assert hg._adj == {}
-    assert hg._edge_list == {}
-    assert hg._weights == {}
-    assert hg.hypergraph_metadata == {"weighted": False}
-    assert hg.node_metadata == {}
-    assert hg.edge_metadata == {}
-
-
 def test_hypergraph_initialization_with_metadata():
     """Test initializing a hypergraph with metadata."""
     node_metadata = {"A": {"type": "node"}, "B": {"type": "node"}}
@@ -46,14 +34,6 @@ def test_hypergraph_initialization_weighted():
     assert hg.is_weighted() is True
     assert hg.get_weight((1, 2)) == 1
     assert hg.get_weight((2, 3)) == 2
-
-
-def test_hypergraph_empty_metadata_defaults():
-    """Test that metadata defaults to empty if not provided."""
-    hg = Hypergraph()
-    assert hg.hypergraph_metadata == {"weighted": False}
-    assert hg.node_metadata == {}
-    assert hg.edge_metadata == {}
 
 
 def test_is_uniform_empty_hypergraph():

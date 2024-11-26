@@ -5,28 +5,6 @@ from sklearn.preprocessing import LabelEncoder
 
 
 class Hypergraph:
-    """
-    A hypergraph is a set of nodes and a set of hyperedges, where each hyperedge is a subset of the nodes.
-    Hypergraphs are represented as a dictionary with keys being tuples of nodes (hyperedges) and values being the weights
-    of the hyperedges (if the hypergraph is weighted).
-
-    Parameters
-    ----------
-    edge_list : list of tuples, optional
-        A list of tuples representing the hyperedges of the hypergraph.
-    weighted : bool
-        Whether the hypergraph is weighted.
-    weights : list of floats, optional
-        A list of weights for the hyperedges. If the hypergraph is weighted, this must be provided.
-    hypergraph_metadata : dict, optional
-        Metadata of the hypergraph. Default is None. If None, an empty dictionary is created.
-    edge_metadata : dict, optional
-        Metadata of the hyperedges. Default is None. If None, an empty dictionary is created.
-        The keys are the hyperedges and the values are the metadata.
-    node_metadata : dict, optional
-        Metadata of the nodes. Default is None. If None, an empty dictionary is created.
-        The keys are the nodes and the values are the metadata.
-    """
 
     def __init__(
         self,
@@ -37,16 +15,38 @@ class Hypergraph:
         edge_metadata=None,
         node_metadata=None,
     ):
+        """
+        Initialize a Hypergraph.
+
+        Parameters
+        ----------
+        edge_list : list of tuples, optional
+            A list of hyperedges, where each hyperedge is represented as a tuple of nodes.
+        weighted : bool, optional
+            Indicates whether the hypergraph is weighted. Default is False.
+        weights : list of floats, optional
+            A list of weights corresponding to each edge in `edge_list`. Required if `weighted` is True.
+        hypergraph_metadata : dict, optional
+            Metadata for the hypergraph. Default is an empty dictionary.
+        edge_metadata : list of dicts, optional
+            A list of metadata dictionaries corresponding to the edges in `edge_list`.
+        node_metadata : dict, optional
+            A dictionary of metadata for nodes, where keys are node identifiers and values are metadata dictionaries.
+
+        Raises
+        ------
+        ValueError
+            If `edge_list` and `weights` have mismatched lengths when `weighted` is True.
+        """
+        # Initialize hypergraph metadata
+        self.hypergraph_metadata = hypergraph_metadata or {}
+        self.hypergraph_metadata.update({"weighted": weighted, "type": "Hypergraph"})
+
+        # Initialize core attributes
         self._weighted = weighted
         self._adj = {}
         self._edge_list = {}
         self._weights = {}
-        if hypergraph_metadata is None:
-            self.hypergraph_metadata = {}
-        else:
-            self.hypergraph_metadata = hypergraph_metadata
-        self.hypergraph_metadata["weighted"] = weighted
-        self.hypergraph_metadata["type"] = "Hypergraph"
         self.incidences_metadata = {}
         self.node_metadata = {}
         self.edge_metadata = {}
@@ -54,11 +54,15 @@ class Hypergraph:
         self.reverse_edge_list = {}
         self.next_edge_id = 0
 
-        if node_metadata is not None:
-            for node in node_metadata:
-                self.add_node(node, metadata=node_metadata[node])
+        # Add node metadata if provided
+        if node_metadata:
+            for node, metadata in node_metadata.items():
+                self.add_node(node, metadata=metadata)
 
-        if edge_list is not None:
+        # Add edges if provided
+        if edge_list:
+            if weighted and weights is not None and len(edge_list) != len(weights):
+                raise ValueError("Edge list and weights must have the same length.")
             self.add_edges(edge_list, weights=weights, metadata=edge_metadata)
 
     def get_adj_dict(self):

@@ -4,46 +4,59 @@ from sklearn.preprocessing import LabelEncoder
 
 
 class DirectedHypergraph:
-    """
-    A directed hypergraph is a set of nodes and a set of hyperedges, where each hyperedge is a directed relation between
-    two sets of nodes (source nodes and target nodes). Hyperedges are represented as a tuple of (source_nodes, target_nodes),
-    and each hyperedge can optionally have a weight.
-
-    Parameters
-    ----------
-    edge_list : list of tuples of tuples
-        A list of tuples representing the directed hyperedges of the form (source_nodes, target_nodes).
-    weighted : bool
-        Whether the hypergraph is weighted.
-    weights : list of floats, optional
-        A list of weights for the hyperedges.
-    """
 
     def __init__(
         self,
         edge_list=None,
-        hypergraph_metadata=None,
         weighted=False,
         weights=None,
+        hypergraph_metadata=None,
         edge_metadata=None,
     ):
+        """
+        Initialize a Directed Hypergraph.
+
+        Parameters
+        ----------
+        edge_list : list of tuples of tuples, optional
+            A list of directed hyperedges represented as (source_nodes, target_nodes),
+            where source_nodes and target_nodes are tuples of nodes.
+        weighted : bool, optional
+            Indicates whether the hypergraph is weighted. Default is False.
+        weights : list of floats, optional
+            A list of weights corresponding to the edges in `edge_list`. Required if `weighted` is True.
+        hypergraph_metadata : dict, optional
+            Metadata for the hypergraph. Default is an empty dictionary.
+        edge_metadata : list of dicts, optional
+            A list of metadata dictionaries corresponding to the edges in `edge_list`.
+
+        Raises
+        ------
+        ValueError
+            If `edge_list` and `weights` have mismatched lengths when `weighted` is True.
+            If `edge_list` contains improperly formatted edges.
+        """
+        # Initialize hypergraph metadata
+        self.hypergraph_metadata = hypergraph_metadata or {}
+        self.hypergraph_metadata.update(
+            {"weighted": weighted, "type": "DirectedHypergraph"}
+        )
+
+        # Initialize core attributes
         self._weighted = weighted
         self._adj_source = {}
         self._adj_target = {}
         self._edge_list = {}
-        if hypergraph_metadata is None:
-            self.hypergraph_metadata = {}
-        else:
-            self.hypergraph_metadata = hypergraph_metadata
-        self.hypergraph_metadata["weighted"] = weighted
-        self.hypergraph_metadata["type"] = "DirectedHypergraph"
         self.node_metadata = {}
         self.edge_metadata = {}
         self.reverse_edge_list = {}
         self._weights = {}
         self.next_edge_id = 0
 
+        # Validate and add edges
         if edge_list is not None:
+            if weighted and weights is not None and len(edge_list) != len(weights):
+                raise ValueError("Edge list and weights must have the same length.")
             self.add_edges(edge_list, weights=weights, metadata=edge_metadata)
 
     def get_edge_list(self):
