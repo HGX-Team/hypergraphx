@@ -165,8 +165,9 @@ class MultiplexHypergraph:
         ValueError
             If the hypergraph is weighted and no weight is provided or if the hypergraph is not weighted and a weight is provided.
         """
-        if self._weighted and weight is None:
+        if weight is None:
             weight = 1
+
         if not self._weighted and weight is not None and weight != 1:
             raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
         
@@ -181,6 +182,9 @@ class MultiplexHypergraph:
             self.reverse_edge_list[e_id] = k
             self._edge_list[k] = e_id
             self.next_edge_id += 1
+            self._weights[e_id] = weight
+        elif k in self._edge_list and self._weighted:
+            self._weights[self._edge_list[k]] += weight
 
         e_id = self._edge_list[k]
 
@@ -188,14 +192,6 @@ class MultiplexHypergraph:
             metadata = {}
 
         self.edge_metadata[e_id] = metadata
-
-        if weight is None:
-            if edge in self._edge_list and self._weighted:
-                self._weights[e_id] += 1
-            else:
-                self._weights[e_id] = 1
-        else:
-            self._weights[e_id] = weight
 
         for node in edge:
             self.add_node(node)
@@ -208,11 +204,20 @@ class MultiplexHypergraph:
 
     def get_weight(self, edge, layer):
         k = (tuple(sorted(edge)), layer)
-        try:
+        if k not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        else:
             return self._weights[self._edge_list[k]]
-        except KeyError:
-            raise ValueError("The edge is not in the hypergraph.")
         
+    def set_weight(self, edge, layer, weight):
+        if not self._weighted and weight != 1:
+            raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
+
+        k = (tuple(sorted(edge)), layer)
+        if k not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        else:
+            self._weights[self._edge_list[k]] = weight
 
     def set_dataset_metadata(self, metadata):
         self.hypergraph_metadata['multiplex_metadata'] = metadata

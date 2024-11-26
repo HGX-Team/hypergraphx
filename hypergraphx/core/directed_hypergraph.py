@@ -217,27 +217,22 @@ class DirectedHypergraph:
         target = tuple(sorted(target))
         edge = (source, target)
 
-        if self._weighted and weight is None:
-            weight = 1
-        if not self._weighted and (weight is not None or weight != 1):
+        if not self._weighted and weight is not None and weight != 1:
             raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
 
-        if edge in self._edge_list:
-            idx = self._edge_list[edge]
-        else:
+        if weight is None:
+            weight = 1
+
+        if edge not in self._edge_list:
             idx = self.next_edge_id
             self.next_edge_id += 1
             self._edge_list[edge] = idx
             self.reverse_edge_list[idx] = edge
+            self._weights[idx] = 1 if not self._weighted else weight
+        elif edge in self._edge_list and self._weighted:
+            self._weights[self._edge_list[edge]] += weight
 
-        if weight is None:
-            if edge in self._edge_list and self._weighted:
-                self._weights[idx] += 1
-            else:
-                self._weights[idx] = 1
-        else:
-            self._weights[idx] = weight
-
+        idx = self._edge_list[edge]
         for node in source:
             self.add_node(node)
             self._adj_source[node].append(idx)
@@ -410,7 +405,6 @@ class DirectedHypergraph:
         """
         try:
             e_idx = self._edge_list[edge]
-            del self._edge_list[edge]
             source, target = edge
 
             # Remove from adjacency
@@ -419,6 +413,11 @@ class DirectedHypergraph:
 
             for node in target:
                 self._adj_target[node].remove(e_idx)
+
+            del self.reverse_edge_list[e_idx]
+            del self._weights[e_idx]
+            del self.edge_metadata[e_idx]
+            del self._edge_list[edge]
 
         except KeyError:
             print(f"Edge {edge} not in hypergraph.")
@@ -465,6 +464,9 @@ class DirectedHypergraph:
 
     def set_weight(self, edge: Tuple[Tuple, Tuple], weight: float):
         """Sets the weight of the specified directed edge."""
+        if not self._weighted and weight != 1:
+            raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
+
         if edge in self._edge_list:
             idx = self._edge_list[edge]
             self._weights[idx] = weight

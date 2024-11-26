@@ -1,6 +1,5 @@
 from hypergraphx import Hypergraph
 
-
 class TemporalHypergraph:
     def __init__(self, edge_list=None, hypergraph_metadata=None, weighted=False, weights=None, edge_metadata=None):
         if hypergraph_metadata is None:
@@ -9,12 +8,15 @@ class TemporalHypergraph:
             self.hypergraph_metadata = hypergraph_metadata
         self.hypergraph_metadata['weighted'] = weighted
         self._weighted = weighted
+        self._weights = {}
         self._edge_list = {}
         self.node_metadata = {}
         self.edge_metadata = {}
+        self.reverse_edge_list = {}
+        self.next_edge_id = 0
 
         if edge_list is not None:
-            self.add_edges(edge_list)
+            self.add_edges(edge_list, weights=weights, metadata=edge_metadata)
 
     def get_edge_list(self):
         return self._edge_list
@@ -44,12 +46,15 @@ class TemporalHypergraph:
     def set_edge_metadata(self, edge, metadata):
         if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        self.edge_metadata[edge] = metadata
+        e_id = self._edge_list[edge]
+        self.edge_metadata[e_id] = metadata
 
     def get_edge_metadata(self, edge, time):
-        if edge not in self._edge_list:
+        k = (time, edge)
+        if k not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        return self.edge_metadata[(time, edge)]
+        e_id = self._edge_list[k]
+        return self.edge_metadata[e_id]
 
     def get_all_edges_metadata(self):
         return self.edge_metadata
@@ -80,11 +85,18 @@ class TemporalHypergraph:
         return self._weighted
 
     def get_weight(self, edge, time):
-        if not self._weighted:
-            raise ValueError("The hypergraph is not weighted.")
         if (time, edge) not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        return self._edge_list[(time, edge)]
+        e_id = self._edge_list[(time, edge)]
+        return self._weights[e_id]
+
+    def set_weight(self, edge, time, weight):
+        if not self._weighted and weight != 1:
+            raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
+        if (time, edge) not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        e_id = self._edge_list[(time, edge)]
+        self._weights[e_id] = weight
 
     def get_nodes(self, metadata=False):
         if metadata:
@@ -94,10 +106,11 @@ class TemporalHypergraph:
     def add_edge(self, edge, time, weight=None, metadata=None):
         if not isinstance(time, int):
             raise TypeError('Time must be an integer')
-        if self._weighted and weight is None:
-            weight = 1
-        if not self._weighted and (weight is not None or weight != 1):
+
+        if not self._weighted and weight is not None and weight != 1:
             raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
+        if weight is None:
+            weight = 1
 
         t = time
 
@@ -107,17 +120,20 @@ class TemporalHypergraph:
         _edge = tuple(sorted(edge))
         edge = (t, _edge)
 
+        if edge not in self._edge_list:
+            e_id = self.next_edge_id
+            self.reverse_edge_list[e_id] = edge
+            self._edge_list[edge] = e_id
+            self.next_edge_id += 1
+            self._weights[e_id] = weight
+        elif edge in self._edge_list and self._weighted:
+            self._weights[self._edge_list[edge]] += weight
+
+        e_id = self._edge_list[edge]
+
         if metadata is None:
             metadata = {}
-        self.edge_metadata[edge] = metadata
-
-        if weight is None:
-            if edge in self._edge_list and self._weighted:
-                self._edge_list[edge] += 1
-            else:
-                self._edge_list[edge] = 1
-        else:
-            self._edge_list[edge] = weight
+        self.edge_metadata[e_id] = metadata
 
         for node in _edge:
             self.add_node(node)
@@ -154,7 +170,7 @@ class TemporalHypergraph:
         edges = []
         if time_window is None:
            if metadata:
-                return self.edge_metadata
+                return {edge: self.edge_metadata[edge] for edge in self._edge_list.keys()}
            else:
                 return list(self._edge_list.keys())
         elif isinstance(time_window, tuple) and len(time_window) == 2:
@@ -162,7 +178,7 @@ class TemporalHypergraph:
                 if time_window[0] <= _t < time_window[1]:
                     edges.append((_t, _edge))
             if metadata:
-                return {edge: self.edge_metadata[edge] for edge in edges}
+                return {edge: self.get_edge_metadata(edge[0], edge[1]) for edge in edges}
             else:
                 return edges
         else:
@@ -175,8 +191,12 @@ class TemporalHypergraph:
         aggregated = {}
         node_list = self.get_nodes()
 
-        # Sort edges by time
+        # Get all edges and determine the max time
         sorted_edges = sorted(self.get_edges())
+        if not sorted_edges:
+            return aggregated  # Return empty if no edges exist
+
+        max_time = max(edge[0] for edge in sorted_edges)  # Maximum time of all edges
 
         # Initialize time window boundaries
         t_start = 0
@@ -184,43 +204,37 @@ class TemporalHypergraph:
         edges_in_window = []
         num_windows_created = 0
 
-        for edge in sorted_edges:
-            time, edge_nodes = edge
+        edge_index = 0  # Pointer to the current edge in sorted_edges
 
-            # If the current edge falls outside the current window, finalize this window
-            if time >= t_end:
-                # Finalize the current window
-                Hypergraph_t = Hypergraph()
+        while t_start <= max_time:
+            # Collect edges for the current window
+            while edge_index < len(sorted_edges) and t_start <= sorted_edges[edge_index][0] < t_end:
+                edges_in_window.append(sorted_edges[edge_index])
+                edge_index += 1
 
-                # Add edges in this window to the hypergraph
-                for _, e in edges_in_window:
-                    Hypergraph_t.add_edge(e)
+            # Create the hypergraph for this time window
+            Hypergraph_t = Hypergraph(weighted=self._weighted)
 
-                # Add all nodes to ensure node consistency
-                for node in node_list:
-                    Hypergraph_t.add_node(node)
+            # Add edges to the hypergraph
+            for time, edge_nodes in edges_in_window:
+                Hypergraph_t.add_edge(edge_nodes, metadata=self.get_edge_metadata(edge_nodes, time),
+                                      weight=self.get_weight(edge_nodes, time))
 
-                # Store the finalized hypergraph and move to the next window
-                aggregated[num_windows_created] = Hypergraph_t
-                num_windows_created += 1
-
-                # Advance to the next time window
-                t_start = t_end
-                t_end += time_window
-                edges_in_window = []
-
-            # Add the current edge to the active window
-            edges_in_window.append((time, edge_nodes))
-
-        # Finalize the last window if any edges remain
-        if edges_in_window:
-            Hypergraph_t = Hypergraph()
-            for _, e in edges_in_window:
-                Hypergraph_t.add_edge(e)
+            # Add all nodes to ensure node consistency
             for node in node_list:
-                Hypergraph_t.add_node(node)
+                Hypergraph_t.add_node(node, metadata=self.node_metadata[node])
+
+            # Store the finalized hypergraph for this window
             aggregated[num_windows_created] = Hypergraph_t
             num_windows_created += 1
+
+            # Advance to the next time window
+            t_start = t_end
+            t_end += time_window
+            edges_in_window = []  # Reset for the next window
+
         return aggregated
+
+
 
 

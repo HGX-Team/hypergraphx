@@ -33,15 +33,15 @@ def test_add_edge_unweighted():
     h = TemporalHypergraph()
     h.add_edge(("A", "B"), time=1)
     assert (1, ("A", "B")) in h.get_edges()
-    assert h.edge_metadata[(1, ("A", "B"))] == {}
+    assert h.get_edge_metadata(("A", "B"), 1) == {}
 
 
 def test_add_edge_weighted():
     h = TemporalHypergraph(weighted=True)
     h.add_edge(("A", "B"), time=1, weight=2.0, metadata={"relationship": "friendship"})
     assert (1, ("A", "B")) in h.get_edges()
-    assert h._edge_list[(1, ("A", "B"))] == 2.0
-    assert h.edge_metadata[(1, ("A", "B"))] == {"relationship": "friendship"}
+    assert h.get_weight(("A", "B"), 1) == 2.0
+    assert h.get_edge_metadata(("A", "B"), 1) == {"relationship": "friendship"}
 
 
 def test_add_edge_invalid_time():
@@ -126,3 +126,196 @@ def test_edge_metadata():
     metadata = {"relationship": "friendship"}
     h.add_edge(edge, time, metadata=metadata)
     assert h.get_edge_metadata(edge, time) == metadata
+
+def test_aggregate_multiple_windows():
+    """Test aggregation of edges across multiple windows."""
+    thg = TemporalHypergraph(weighted=True)
+    thg.add_edge((1, 2), time=1, weight=1.0, metadata={"type": "A"})
+    thg.add_edge((3, 4), time=4, weight=2.0, metadata={"type": "B"})
+    thg.add_edge((1, 3), time=8, weight=3.0, metadata={"type": "C"})
+    thg.add_edge((2, 4), time=11, weight=4.0, metadata={"type": "D"})
+
+    aggregated = thg.aggregate(time_window=5)
+    assert len(aggregated) == 3
+
+    # First window (0-5)
+    window_0 = aggregated[0]
+    assert set(window_0.get_edges()) == {(1, 2), (3, 4)}
+    assert window_0.get_edge_metadata((1, 2)) == {"type": "A"}
+    assert window_0.get_edge_metadata((3, 4)) == {"type": "B"}
+
+    # Second window (5-10)
+    window_1 = aggregated[1]
+    assert set(window_1.get_edges()) == {(1, 3)}
+    assert window_1.get_edge_metadata((1, 3)) == {"type": "C"}
+
+    # Third window (10-15)
+    window_2 = aggregated[2]
+    assert set(window_2.get_edges()) == {(2, 4)}
+    assert window_2.get_edge_metadata((2, 4)) == {"type": "D"}
+
+
+def test_aggregate_empty():
+    """Test aggregation when no edges exist."""
+    thg = TemporalHypergraph()
+    aggregated = thg.aggregate(time_window=5)
+    assert len(aggregated) == 0
+
+
+def test_aggregate_single_window():
+    """Test aggregation of all edges into a single window."""
+    thg = TemporalHypergraph(weighted=True)
+    thg.add_edge((1, 2), time=1, weight=1.0, metadata={"type": "A"})
+    thg.add_edge((3, 4), time=3, weight=2.0, metadata={"type": "B"})
+
+    aggregated = thg.aggregate(time_window=10)
+    assert len(aggregated) == 1
+
+    # Only one window (0-10)
+    window_0 = aggregated[0]
+    assert set(window_0.get_edges()) == {(1, 2), (3, 4)}
+    assert window_0.get_edge_metadata((1, 2)) == {"type": "A"}
+    assert window_0.get_edge_metadata((3, 4)) == {"type": "B"}
+
+
+def test_aggregate_with_isolated_nodes():
+    """Test aggregation ensures isolated nodes are preserved."""
+    thg = TemporalHypergraph(weighted=True)
+    thg.add_edge((1, 2), time=1, weight=1.0)
+    thg.add_node(3)  # Isolated node
+    aggregated = thg.aggregate(time_window=5)
+    assert len(aggregated) == 1
+
+    # Ensure isolated nodes are preserved in the window
+    window_0 = aggregated[0]
+    assert 3 in window_0.get_nodes()
+    assert (1, 2) in window_0.get_edges()
+
+
+def test_aggregate_no_edges_in_window():
+    """Test aggregation where no edges fall into the time window."""
+    thg = TemporalHypergraph(weighted=True)
+    thg.add_edge((1, 2), time=10, weight=1.0)
+    thg.add_edge((3, 4), time=20, weight=2.0)
+
+    aggregated = thg.aggregate(time_window=5)
+    assert len(aggregated) == 5  # Empty windows between edges
+
+    # Check the windows
+    window_0 = aggregated[0]
+    assert len(window_0.get_edges()) == 0  # No edges in this window
+
+    window_1 = aggregated[1]
+    assert len(window_1.get_edges()) == 0  # No edges in this window
+
+    window_2 = aggregated[2]
+    assert (1, 2) in window_2.get_edges()
+
+    window_3 = aggregated[3]
+    assert len(window_3.get_edges()) == 0  # No edges in this window
+
+    window_4 = aggregated[4]
+    assert (3, 4) in window_4.get_edges()
+
+import pytest
+from hypergraphx import TemporalHypergraph  # Replace with the correct module name
+
+
+def test_add_edge_without_weight_in_weighted_temporal_hypergraph():
+    """
+    Test adding an edge without specifying a weight in a weighted temporal hypergraph.
+    """
+    thg = TemporalHypergraph(weighted=True)
+    thg.add_edge(("A", "B"), time=10)
+    assert thg.get_weight(("A", "B"), 10) == 1.0, "Default weight should be 1.0 for an edge added without a weight."
+
+
+def test_update_edge_weight_in_temporal_hypergraph():
+    """
+    Test updating the weight of an existing edge in a weighted temporal hypergraph.
+    """
+    thg = TemporalHypergraph(weighted=True)
+    thg.add_edge(("A", "B"), time=10, weight=0.5)
+    thg.add_edge(("A", "B"), time=10, weight=1.5)  # Update weight
+    assert thg.get_weight(("A", "B"), 10) == 2.0, "Edge weight should be updated to the latest value."
+
+
+def test_aggregate_weights_for_duplicate_edges_in_temporal_hypergraph():
+    """
+    Test aggregating weights for duplicate edges in a weighted temporal hypergraph.
+    """
+    thg = TemporalHypergraph(weighted=True)
+    thg.add_edge(("A", "B"), time=10, weight=2.0)
+    thg.add_edge(("A", "B"), time=10, weight=3.0)  # Aggregate weight
+    assert thg.get_weight(("A", "B"), 10) == 5.0, "Weights should be aggregated for duplicate edges."
+
+
+def test_add_edge_metadata_in_temporal_hypergraph():
+    """
+    Test adding metadata to an edge in a temporal hypergraph.
+    """
+    thg = TemporalHypergraph()
+    thg.add_edge(("A", "B"), time=10, metadata={"type": "interaction"})
+    assert thg.get_edge_metadata(("A", "B"), 10)
+
+def test_set_weight_overwrite_existing_weight():
+    """
+    Test overwriting the weight of an existing edge in a weighted temporal hypergraph.
+    """
+    thg = TemporalHypergraph(weighted=True)
+    thg.add_edge(("A", "B"), time=10, weight=2.0)  # Initial weight
+    thg.set_weight(("A", "B"), 10, weight=5.0)  # Overwrite weight
+    assert thg.get_weight(("A", "B"), 10) == 5.0, "Weight should be overwritten to the new value."
+
+
+def test_set_weight_on_nonexistent_edge():
+    """
+    Test setting a weight on a nonexistent edge in a weighted temporal hypergraph.
+    """
+    thg = TemporalHypergraph(weighted=True)
+    with pytest.raises(ValueError, match="Edge .* not in hypergraph."):
+        thg.set_weight(("A", "B"), 10, weight=3.0)
+
+
+def test_set_weight_in_unweighted_temporal_hypergraph():
+    """
+    Test attempting to set a weight in an unweighted temporal hypergraph.
+    """
+    thg = TemporalHypergraph(weighted=False)
+    thg.add_edge(("A", "B"), time=10)  # Edge with no weight
+    with pytest.raises(ValueError):
+        thg.set_weight(("A", "B"), 10, weight=3.0)
+
+
+def test_set_weight_with_metadata():
+    """
+    Test overwriting the weight of an edge and verifying metadata remains unchanged.
+    """
+    thg = TemporalHypergraph(weighted=True)
+    thg.add_edge(("A", "B"), time=10, weight=2.0, metadata={"type": "interaction"})
+    thg.set_weight(("A", "B"), 10, weight=4.0)  # Overwrite weight
+    assert thg.get_weight(("A", "B"), 10) == 4.0, "Weight should be updated to the new value."
+    assert thg.get_edge_metadata(("A", "B"), 10) == {"type": "interaction"}, "Metadata should remain unchanged."
+
+
+def test_set_weight_multiple_edges():
+    """
+    Test overwriting weights of multiple edges in a temporal hypergraph.
+    """
+    thg = TemporalHypergraph(weighted=True)
+    edges = [("A", "B"), ("B", "C")]
+    times = [10, 15]
+    weights = [1.0, 2.0]
+    new_weights = [3.0, 4.0]
+
+    # Add edges with initial weights
+    for edge, time, weight in zip(edges, times, weights):
+        thg.add_edge(edge, time, weight=weight)
+
+    # Overwrite weights
+    for edge, time, new_weight in zip(edges, times, new_weights):
+        thg.set_weight(edge, time, weight=new_weight)
+
+    # Check updated weights
+    for edge, time, new_weight in zip(edges, times, new_weights):
+        assert thg.get_weight(edge, time) == new_weight, f"Weight of edge {edge} at time {time} should be updated to {new_weight}."

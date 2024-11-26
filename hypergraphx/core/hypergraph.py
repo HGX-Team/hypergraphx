@@ -256,34 +256,29 @@ class Hypergraph:
         ValueError
             If the hypergraph is weighted and no weight is provided or if the hypergraph is not weighted and a weight is provided.
         """
-        if self._weighted and weight is None:
-            weight = 1
-        if not self._weighted and (weight is not None or weight != 1):
+        if not self._weighted and weight is not None and weight != 1:
             raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
+
+        if weight is None:
+            weight = 1
 
         edge = tuple(sorted(edge))
         order = len(edge) - 1
         if metadata is None:
             metadata = {}
 
-
         if edge not in self._edge_list:
             self._edge_list[edge] = self.next_edge_id
             self.reverse_edge_list[self.next_edge_id] = edge
+            self._weights[self.next_edge_id] = 1 if not self._weighted else weight
             self.next_edge_id += 1
+        elif edge in self._edge_list and self._weighted:
+            self._weights[self._edge_list[edge]] += weight
 
-        self.edge_metadata[self._edge_list[edge]] = metadata
-
-        if self._weighted:
-            if weight is None:
-                if edge in self._edge_list and self._edge_list[edge] in self._weights:
-                    self._weights[self._edge_list[edge]] += 1
-                else:
-                    self._weights[self._edge_list[edge]] = 1
-            else:
-                self._weights[self._edge_list[edge]] = weight
+        if metadata is not None:
+            self.edge_metadata[self._edge_list[edge]] = metadata
         else:
-            self._weights[self._edge_list[edge]] = 1
+            self.edge_metadata[self._edge_list[edge]] = {}
 
         for node in edge:
             self.add_node(node)
@@ -362,13 +357,15 @@ class Hypergraph:
         if edge not in self._edge_list:
             raise KeyError("Edge {} not in hypergraph.".format(edge))
 
-        del self.reverse_edge_list[self._edge_list[edge]]
-        del self._weights[self._edge_list[edge]]
         for node in edge:
             try:
                 self._adj[node].remove(self._edge_list[edge])
             except KeyError:
                 pass
+
+        del self.reverse_edge_list[self._edge_list[edge]]
+        del self.edge_metadata[self._edge_list[edge]]
+        del self._weights[self._edge_list[edge]]
         del self._edge_list[edge]
 
     def remove_edges(self, edge_list):
@@ -633,12 +630,13 @@ class Hypergraph:
         float
             Weight of the specified edge.
         """
-        try:
-            edge = tuple(sorted(edge))
+        edge = tuple(sorted(edge))
+        if edge in self._edge_list:
             edge_id = self._edge_list[edge]
             return self._weights[edge_id]
-        except KeyError:
+        else:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
+
 
     def set_weight(self, edge, weight):
         """Sets the weight of the specified edge.
@@ -660,12 +658,15 @@ class Hypergraph:
         ValueError
             If the edge is not in the hypergraph.
         """
-        try:
-            edge = tuple(sorted(edge))
-            edge_id = self._edge_list[edge]
-            self._weights[edge_id] = weight
-        except KeyError:
+        if not self._weighted and weight != 1:
+            raise ValueError("If the hypergraph is not weighted, weight can be 1 or None.")
+
+        edge = tuple(sorted(edge))
+        if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
+        edge_id = self._edge_list[edge]
+        self._weights[edge_id] = weight
+
 
     def get_weights(self, order=None, size=None, up_to=False, asdict=False):
         """Returns the list of weights of the edges in the hypergraph. If order is specified, it returns the list of weights of the edges of the specified order.

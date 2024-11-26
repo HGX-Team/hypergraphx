@@ -92,5 +92,123 @@ def test_unweighted_hypergraph():
     hg = DirectedHypergraph(weighted=False)
     assert not hg.is_weighted(), "The hypergraph should be unweighted."
 
+def test_add_duplicate_edge_unweighted(directed_hypergraph):
+    """
+    Test adding a duplicate edge in an unweighted hypergraph.
+    """
+    source = ('A', 'B')
+    target = ('C',)
+    edge = (source, target)
+    directed_hypergraph.add_edge(edge)
+    directed_hypergraph.add_edge(edge)  # Adding the same edge again
+    edges = list(directed_hypergraph._edge_list.keys())
+    assert edges.count(edge) == 1, "Duplicate edges should not be added in an unweighted hypergraph."
 
+def test_add_duplicate_edge_weighted():
+    """
+    Test adding a duplicate edge in a weighted hypergraph.
+    """
+    hg = DirectedHypergraph(weighted=True)
+    source = ('A', 'B')
+    target = ('C',)
+    edge = (source, target)
+    hg.add_edge(edge, weight=2.0)
+    hg.add_edge(edge, weight=3.0)  # Adding the same edge with a new weight
+    assert hg.get_weight(edge) == 5.0, "The weight of the duplicate edge should be updated to the latest value."
+
+def test_add_edge_without_weight_in_weighted_hypergraph():
+    """
+    Test adding an edge without specifying a weight in a weighted hypergraph.
+    """
+    hg = DirectedHypergraph(weighted=True)
+    source = ('A', 'B')
+    target = ('C',)
+    edge = (source, target)
+    hg.add_edge(edge)  # No weight specified
+    assert hg.get_weight(edge) == 1.0, "Default weight should be set to 1.0 in a weighted hypergraph."
+
+def test_remove_edge_weighted_hypergraph():
+    """
+    Test removing an edge from a weighted hypergraph and its weight.
+    """
+    hg = DirectedHypergraph(weighted=True)
+    source = ('A', 'B')
+    target = ('C',)
+    edge = (source, target)
+    weight = 2.0
+    hg.add_edge(edge, weight=weight)
+    hg.remove_edge(edge)
+    assert edge not in hg._edge_list, "The edge should be removed from the hypergraph."
+    with pytest.raises(ValueError):
+        hg.get_weight(edge)  # Accessing weight of a removed edge should raise an error
+
+def test_edge_metadata_with_weights():
+    """
+    Test adding metadata to a weighted edge and verifying it.
+    """
+    hg = DirectedHypergraph(weighted=True)
+    source = ('A', 'B')
+    target = ('C',)
+    edge = (source, target)
+    metadata = {"type": "interaction", "priority": 5}
+    hg.add_edge(edge, weight=2.5, metadata=metadata)
+    assert hg.get_edge_metadata(edge) == metadata, "The edge metadata should match the provided metadata."
+
+def test_add_edge_with_different_weights():
+    """
+    Test adding the same edge with different weights in a weighted hypergraph.
+    """
+    hg = DirectedHypergraph(weighted=True)
+    source = ('A', 'B')
+    target = ('C',)
+    edge = (source, target)
+    hg.add_edge(edge, weight=1.5)
+    hg.add_edge(edge, weight=3.0)  # Update weight
+    assert hg.get_weight(edge) == 4.5, "The edge weight should be updated to the latest value."
+
+def test_remove_node_weighted_edges(directed_hypergraph):
+    """
+    Test removing a node from a weighted hypergraph and ensuring its edges and weights are removed.
+    """
+    directed_hypergraph = DirectedHypergraph(weighted=True)
+    source = ('A', 'B')
+    target = ('C',)
+    edge = (source, target)
+    directed_hypergraph.add_edge(edge, weight=2.5)
+    directed_hypergraph.remove_node('A')
+    assert edge not in directed_hypergraph._edge_list, "Edges associated with the removed node should be deleted."
+    with pytest.raises(ValueError):
+        directed_hypergraph.get_weight(edge)  # Accessing weight of a removed edge should raise an error
+
+def test_add_edges_with_different_weights():
+    """
+    Test adding multiple edges with different weights to a weighted hypergraph.
+    """
+    hg = DirectedHypergraph(weighted=True)
+    edge_list = [(('A',), ('B',)), (('B', 'C'), ('D',))]
+    weights = [1.0, 2.5]
+    hg.add_edges(edge_list, weights=weights)
+    for edge, weight in zip(edge_list, weights):
+        assert hg.get_weight(edge) == weight, f"The weight of {edge} should be {weight}."
+
+def test_duplicate_edges_different_weights():
+    """
+    Test adding duplicate edges with different weights in a weighted hypergraph.
+    """
+    hg = DirectedHypergraph(weighted=True)
+    edge = (('A', 'B'), ('C',))
+    hg.add_edge(edge, weight=2.0)
+    hg.add_edge(edge, weight=5.0)  # Add duplicate edge with a different weight
+    assert hg.get_weight(edge) == 7.0, "The weight should be updated to the latest value for duplicate edges."
+
+def test_default_weight_is_one_in_weighted_hypergraph():
+    """
+    Test that the weight defaults to 1 when adding an edge with no weight in a weighted hypergraph.
+    """
+    hg = DirectedHypergraph(weighted=True)
+    source = ('A',)
+    target = ('B',)
+    edge = (source, target)
+    hg.add_edge(edge)  # No weight specified
+    assert hg.get_weight(edge) == 1.0, "The default weight should be 1.0 for an edge added without a weight."
 

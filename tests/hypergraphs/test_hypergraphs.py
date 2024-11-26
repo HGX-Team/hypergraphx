@@ -184,13 +184,13 @@ def test_add_edge_weighted():
 def test_add_edge_weighted_without_weight():
     """Test adding a weighted edge without providing a weight."""
     hg = Hypergraph(weighted=True)
-    with pytest.raises(ValueError, match="If the hypergraph is weighted, a weight must be provided."):
-        hg.add_edge((1, 2, 3))
+    hg.add_edge((1, 2, 3))
+    assert hg.get_weight((1, 2, 3)) == 1  # Default weight is 1
 
 def test_add_edge_unweighted_with_weight():
     """Test adding an unweighted edge with a weight."""
     hg = Hypergraph()
-    with pytest.raises(ValueError, match="If the hypergraph is not weighted, no weight must be provided."):
+    with pytest.raises(ValueError, match="If the hypergraph is not weighted, weight can be 1 or None."):
         hg.add_edge((1, 2, 3), weight=2.5)
 
 def test_add_edge_duplicate_edge_unweighted():
@@ -206,7 +206,7 @@ def test_add_edge_duplicate_edge_weighted():
     hg = Hypergraph(weighted=True)
     hg.add_edge((1, 2, 3), weight=1.5)
     hg.add_edge((1, 2, 3), weight=2.5)
-    assert hg.get_weight((1,2,3)) == 2.5  # Weight is updated to the latest value
+    assert hg.get_weight((1,2,3)) == 4.0  # Weight is updated to the sum
 
 def test_add_edge_with_metadata():
     """Test adding an edge with metadata."""
@@ -305,7 +305,8 @@ def test_remove_edge_existing_edge():
     assert (1, 2, 3) in hg._edge_list
     hg.remove_edge((1, 2, 3))
     assert (1, 2, 3) not in hg._edge_list
-    assert hg._weights == {}
+    with pytest.raises(ValueError):
+        hg.get_weight((1, 2, 3))
 
 def test_remove_edge_nonexistent_edge():
     """Test attempting to remove a non-existent edge."""
@@ -369,8 +370,8 @@ def test_remove_node_keep_edges():
     assert 1 in hg.get_nodes()
     hg.remove_node(1, keep_edges=True)
     assert 1 not in hg.get_nodes()
-    assert hg.check_edge((2, 3)) is False
-    assert hg.check_edge((4,))  # Incident edge reduced to (4,)
+    assert hg.check_edge((2, 3)) is True
+    assert hg.check_edge((4,)) is True  # Incident edge reduced to (4,)
 
 def test_remove_node_not_in_hypergraph():
     """Test removing a node that does not exist in the hypergraph."""
