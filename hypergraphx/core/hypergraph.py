@@ -269,12 +269,14 @@ class Hypergraph:
         order = len(edge) - 1
         if metadata is None:
             metadata = {}
-        self.edge_metadata[edge] = metadata
+
 
         if edge not in self._edge_list:
             self._edge_list[edge] = self.next_edge_id
             self.reverse_edge_list[self.next_edge_id] = edge
             self.next_edge_id += 1
+
+        self.edge_metadata[self._edge_list[edge]] = metadata
 
         if self._weighted:
             if weight is None:
@@ -764,12 +766,12 @@ class Hypergraph:
     def set_edge_metadata(self, edge, metadata):
         if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        self.edge_metadata[edge] = metadata
+        self.edge_metadata[self._edge_list[edge]] = metadata
 
     def get_edge_metadata(self, edge):
         if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        return self.edge_metadata[edge]
+        return self.edge_metadata[self._edge_list[edge]]
 
     def set_incidence_metadata(self, edge, node, metadata):
         if tuple(sorted(edge)) not in self._edge_list:

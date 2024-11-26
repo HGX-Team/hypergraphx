@@ -1,10 +1,10 @@
 from hypergraphx import DirectedHypergraph
 
 def in_degree(hypergraph: DirectedHypergraph, node: int, order=None, size=None) -> int:
-    return len(list(hypergraph.get_incident_in_edges(node, order=order, size=size)))
+    return len(list(hypergraph.get_source_edges(node, order=order, size=size)))
 
 def out_degree(hypergraph: DirectedHypergraph, node: int, order=None, size=None) -> int:
-    return len(list(hypergraph.get_incident_out_edges(node, order=order, size=size)))
+    return len(list(hypergraph.get_target_edges(node, order=order, size=size)))
 
 def in_degree_sequence(hg: DirectedHypergraph, order=None, size=None):
     """

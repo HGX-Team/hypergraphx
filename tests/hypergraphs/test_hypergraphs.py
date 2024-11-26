@@ -171,15 +171,15 @@ def test_add_edge_unweighted():
     """Test adding an unweighted edge to the hypergraph."""
     hg = Hypergraph()
     hg.add_edge((1, 2, 3))
-    assert (1, 2, 3) in hg._edge_list
-    assert hg._weights[hg._edge_list[(1, 2, 3)]] is None
+    assert hg.check_edge((1, 2, 3))
+    assert hg.get_weight((1, 2, 3)) == 1
 
 def test_add_edge_weighted():
     """Test adding a weighted edge to the hypergraph."""
     hg = Hypergraph(weighted=True)
     hg.add_edge((1, 2, 3), weight=2.5)
-    assert (1, 2, 3) in hg._edge_list
-    assert hg._weights[hg._edge_list[(1, 2, 3)]] == 2.5
+    assert hg.check_edge((1, 2, 3))
+    assert hg.get_weight((1, 2, 3)) == 2.5
 
 def test_add_edge_weighted_without_weight():
     """Test adding a weighted edge without providing a weight."""
@@ -198,22 +198,22 @@ def test_add_edge_duplicate_edge_unweighted():
     hg = Hypergraph()
     hg.add_edge((1, 2, 3))
     hg.add_edge((1, 2, 3))
-    assert (1, 2, 3) in hg._edge_list
-    assert hg._weights[hg._edge_list[(1, 2, 3)]] is None
+    assert hg.check_edge((1,2,3))
+    assert hg.get_weight((1, 2, 3)) == 1
 
 def test_add_edge_duplicate_edge_weighted():
     """Test adding the same weighted edge multiple times."""
     hg = Hypergraph(weighted=True)
     hg.add_edge((1, 2, 3), weight=1.5)
     hg.add_edge((1, 2, 3), weight=2.5)
-    assert hg._weights[hg._edge_list[(1, 2, 3)]] == 2.5  # Weight is updated to the latest value
+    assert hg.get_weight((1,2,3)) == 2.5  # Weight is updated to the latest value
 
 def test_add_edge_with_metadata():
     """Test adding an edge with metadata."""
     hg = Hypergraph()
     metadata = {"type": "test_edge"}
     hg.add_edge((1, 2, 3), metadata=metadata)
-    assert hg.edge_metadata[(1, 2, 3)] == metadata
+    assert hg.get_edge_metadata((1, 2, 3)) == metadata
 
 def test_add_edge_unsorted():
     """Test that the edge is stored in sorted order."""
@@ -245,8 +245,8 @@ def test_add_edges_unweighted():
     edges = [(1, 2), (2, 3, 4), (4, 5)]
     hg.add_edges(edges)
     for edge in edges:
-        assert edge in hg._edge_list
-    assert all(hg._weights[hg._edge_list[edge]] is None for edge in edges)
+        assert hg.check_edge(edge)
+    assert all(hg.get_weight(edge) == 1 for edge in edges)
 
 def test_add_edges_weighted():
     """Test adding multiple weighted edges."""
@@ -255,8 +255,8 @@ def test_add_edges_weighted():
     weights = [0.5, 1.2, 2.3]
     hg.add_edges(edges, weights=weights)
     for edge, weight in zip(edges, weights):
-        assert edge in hg._edge_list
-        assert hg._weights[hg._edge_list[edge]] == weight
+        assert hg.check_edge(edge)
+        assert hg.get_weight(edge) == weight
 
 def test_add_edges_metadata():
     """Test adding multiple edges with metadata."""
@@ -265,7 +265,7 @@ def test_add_edges_metadata():
     metadata = [{"type": "edge1"}, {"type": "edge2"}]
     hg.add_edges(edges, metadata=metadata)
     for edge, meta in zip(edges, metadata):
-        assert hg.edge_metadata[edge] == meta
+        assert hg.get_edge_metadata(edge) == meta
 
 def test_add_edges_repeated_edges_with_weights():
     """Test adding repeated edges with weights in a weighted hypergraph."""
@@ -366,11 +366,11 @@ def test_remove_node_keep_edges():
     hg = Hypergraph()
     hg.add_edge((1, 2, 3))
     hg.add_edge((1, 4))
-    assert 1 in hg._adj
+    assert 1 in hg.get_nodes()
     hg.remove_node(1, keep_edges=True)
-    assert 1 not in hg._adj
-    assert (2, 3) in hg._edge_list
-    assert (4,) in hg._edge_list  # Incident edge reduced to (4,)
+    assert 1 not in hg.get_nodes()
+    assert hg.check_edge((2, 3)) is False
+    assert hg.check_edge((4,))  # Incident edge reduced to (4,)
 
 def test_remove_node_not_in_hypergraph():
     """Test removing a node that does not exist in the hypergraph."""
