@@ -1,5 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite the following paper (BibTex available in the README):"
+preferred-citation:
+  type: article
 title: "Hypergraphx: a library for higher-order network analysis"
 authors:
   - family-names: "Lotito"
