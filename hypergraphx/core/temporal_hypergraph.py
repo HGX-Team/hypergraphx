@@ -272,7 +272,8 @@ class TemporalHypergraph:
         if time_window is None:
             if metadata:
                 return {
-                    edge: self._edge_metadata[edge] for edge in self._edge_list.keys()
+                    edge: self._edge_metadata[self._edge_list[edge]]
+                    for edge in self._edge_list.keys()
                 }
             else:
                 return list(self._edge_list.keys())
