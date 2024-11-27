@@ -36,6 +36,7 @@ class HyMMSBMSampler:
         exact_dyadic_sampling: bool = True,
         burn_in_steps: int = 1000,
         intermediate_steps: int = 1000,
+        seed: Optional[int] = 42,
     ) -> None:
         """Initialize the sampler instance.
 

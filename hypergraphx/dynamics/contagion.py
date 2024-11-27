@@ -5,7 +5,7 @@ def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
     """
     Simulates the contagion process on a simplicial hypergraph.
     The process is run for T time steps.
-    The initial condition is given by I_0, which is a vector of length equal to the number of nodes in the hypergraph.
+    The initial condition is given by I_0, which is a dictionary where the keys are the nodes and the values are 1 if the node is infected and 0 otherwise.
     The infection rate is beta, the three-body infection rate is beta_D, and the recovery rate is mu.
     The output is a vector of length T, where the i-th entry is the fraction of infected nodes at time i.
 
