@@ -285,6 +285,82 @@ class MultiplexHypergraph:
         for node in edge:
             self._adj[node].append(e_id)
 
+    def remove_edge(self, edge):
+        """
+        Remove an edge from the multiplex hypergraph.
+
+        Parameters
+        ----------
+        edge : tuple
+            The edge to remove. Should be of the form ((nodes...), layer).
+
+        Raises
+        ------
+        ValueError
+            If the edge is not in the hypergraph.
+        """
+        if edge not in self._edge_list:
+            raise ValueError(f"Edge {edge} not in hypergraph.")
+
+        edge_id = self._edge_list[edge]
+
+        del self._reverse_edge_list[edge_id]
+        if edge_id in self._weights:
+            del self._weights[edge_id]
+        if edge_id in self._edge_metadata:
+            del self._edge_metadata[edge_id]
+
+        nodes, layer = edge
+        for node in nodes:
+            if edge_id in self._adj[node]:
+                self._adj[node].remove(edge_id)
+
+        del self._edge_list[edge]
+
+    def remove_node(self, node, keep_edges=False):
+        """
+        Remove a node from the multiplex hypergraph.
+
+        Parameters
+        ----------
+        node : object
+            The node to remove.
+        keep_edges : bool, optional
+            If True, edges incident to the node are kept but updated to exclude the node.
+            If False, edges incident to the node are removed entirely. Default is False.
+
+        Raises
+        ------
+        ValueError
+            If the node is not in the hypergraph.
+        """
+        if node not in self._adj:
+            raise ValueError(f"Node {node} not in hypergraph.")
+
+        edges_to_process = list(self._adj[node])
+
+        if keep_edges:
+            for edge_id in edges_to_process:
+                edge, layer = self._reverse_edge_list[edge_id]
+                updated_edge = tuple(n for n in edge if n != node)
+
+                self.remove_edge((edge, layer))
+                if updated_edge:
+                    self.add_edge(
+                        updated_edge,
+                        layer,
+                        weight=self._weights.get(edge_id, 1),
+                        metadata=self._edge_metadata.get(edge_id, {}),
+                    )
+        else:
+            for edge_id in edges_to_process:
+                edge, layer = self._reverse_edge_list[edge_id]
+                self.remove_edge((edge, layer))
+
+        del self._adj[node]
+        if node in self._node_metadata:
+            del self._node_metadata[node]
+
     def get_edges(self, metadata=False):
         if metadata:
             return {

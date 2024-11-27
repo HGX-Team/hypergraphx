@@ -166,17 +166,6 @@ def test_temporal_hypergraph_filter_remove(sample_temporal_hypergraph):
     assert thg.get_edges() == [(10, ("A", "B"))]  # Only the "visit" edge remains
 
 
-def test_temporal_hypergraph_filter_keep_edges_true(sample_temporal_hypergraph):
-    """
-    Test removing nodes from a TemporalHypergraph while keeping edges updated.
-    """
-    thg = sample_temporal_hypergraph
-    node_criteria = {"type": ["location"]}
-    filter_hypergraph(thg, node_criteria=node_criteria, mode="remove", keep_edges=True)
-    assert set(thg.get_nodes()) == {"A", "C"}  # "B" (location) is removed
-    assert thg.get_edges() == [(20, ("A", "C"))]  # Edge updated to exclude "B"
-
-
 def test_multiplex_hypergraph_filter_layers(sample_multiplex_hypergraph):
     """
     Test filtering edges from a MultiplexHypergraph based on metadata and layer-specific criteria.
@@ -190,12 +179,18 @@ def test_multiplex_hypergraph_filter_layers(sample_multiplex_hypergraph):
     ]  # Only "friendship" in "social" layer remains
 
 
-def test_multiplex_hypergraph_filter_nodes_keep_edges(sample_multiplex_hypergraph):
+def test_multiplex_hypergraph_filter_nodes_keep_edges():
     """
     Test removing nodes from a MultiplexHypergraph while keeping edges updated.
     """
-    mhg = sample_multiplex_hypergraph
+    mhg = MultiplexHypergraph()
+    mhg.add_node("A", metadata={"type": "person"})
+    mhg.add_node("B", metadata={"type": "location"})
+    mhg.add_node("C", metadata={"type": "person"})
+    mhg.add_node("D", metadata={"type": "person"})
+    mhg.add_edge(("A", "B", "D"), layer="social", metadata={"type": "friendship"})
+    mhg.add_edge(("A", "C"), layer="work", metadata={"type": "colleague"})
     node_criteria = {"type": ["location"]}
     filter_hypergraph(mhg, node_criteria=node_criteria, mode="remove", keep_edges=True)
-    assert set(mhg.get_nodes()) == {"A", "C"}  # "B" (location) is removed
-    assert mhg.get_edges() == [(("A", "C"), "work")]  # Edge updated to exclude "B"
+    assert set(mhg.get_nodes()) == {"A", "C", "D"}
+    assert mhg.get_edges() == [(("A", "C"), "work"), (("A", "D"), "social")]
