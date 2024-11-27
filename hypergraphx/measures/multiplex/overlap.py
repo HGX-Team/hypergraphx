@@ -5,8 +5,10 @@ def edge_overlap(h: MultiplexHypergraph, edge):
     edge = tuple(sorted(edge))
     overlap = 0
 
-    for layer in h._existing_layers:
-        k = (edge, layer)
-        if k in h._edge_list:
-            overlap += h._edge_list[k]
+    for layer in h.get_existing_layers():
+        try:
+            w = h.get_weight(edge, layer)
+            overlap += w
+        except ValueError:
+            pass
     return overlap

@@ -297,7 +297,7 @@ class MultiplexHypergraph:
     def get_weight(self, edge, layer):
         k = (tuple(sorted(edge)), layer)
         if k not in self._edge_list:
-            raise ValueError("Edge {} not in hypergraph.".format(edge))
+            raise ValueError("Edge {} not in hypergraph.".format(k))
         else:
             return self._weights[self._edge_list[k]]
 
