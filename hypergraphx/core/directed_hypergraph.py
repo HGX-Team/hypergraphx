@@ -15,6 +15,7 @@ class DirectedHypergraph:
         weighted=False,
         weights=None,
         hypergraph_metadata=None,
+        node_metadata=None,
         edge_metadata=None,
     ):
         """
@@ -31,6 +32,8 @@ class DirectedHypergraph:
             A list of weights corresponding to the edges in `edge_list`. Required if `weighted` is True.
         hypergraph_metadata : dict, optional
             Metadata for the hypergraph. Default is an empty dictionary.
+        node_metadata : dict, optional
+            A dictionary of metadata for nodes, where keys are node identifiers and values are metadata dictionaries.
         edge_metadata : list of dicts, optional
             A list of metadata dictionaries corresponding to the edges in `edge_list`.
 
@@ -56,6 +59,11 @@ class DirectedHypergraph:
         self.reverse_edge_list = {}
         self._weights = {}
         self.next_edge_id = 0
+
+        # Add node metadata if provided
+        if node_metadata:
+            for node, metadata in node_metadata.items():
+                self.add_node(node, metadata=metadata)
 
         # Validate and add edges
         if edge_list is not None:

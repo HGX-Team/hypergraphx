@@ -15,6 +15,7 @@ class MultiplexHypergraph:
         weighted=False,
         weights=None,
         hypergraph_metadata=None,
+        node_metadata=None,
         edge_metadata=None,
     ):
         """
@@ -34,6 +35,8 @@ class MultiplexHypergraph:
             A list of weights for each edge in `edge_list`. Must be provided if `weighted` is True.
         hypergraph_metadata : dict, optional
             Metadata for the hypergraph as a whole. Default is an empty dictionary.
+        node_metadata : dict, optional
+            A dictionary of metadata for nodes, where keys are node identifiers and values are metadata dictionaries.
         edge_metadata : list of dict, optional
             A list of metadata dictionaries for each edge in `edge_list`.
 
@@ -59,6 +62,11 @@ class MultiplexHypergraph:
         self.reverse_edge_list = {}
         self.next_edge_id = 0
         self.existing_layers = set()
+
+        # Add node metadata if provided
+        if node_metadata:
+            for node, metadata in node_metadata.items():
+                self.add_node(node, metadata=metadata)
 
         # Handle edge and layer consistency
         if edge_list is not None and edge_layer is None:

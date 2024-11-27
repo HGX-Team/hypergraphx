@@ -17,8 +17,8 @@ class Hypergraph:
         weighted=False,
         weights=None,
         hypergraph_metadata=None,
-        edge_metadata=None,
         node_metadata=None,
+        edge_metadata=None,
     ):
         """
         Initialize a Hypergraph.
@@ -33,10 +33,10 @@ class Hypergraph:
             A list of weights corresponding to each edge in `edge_list`. Required if `weighted` is True.
         hypergraph_metadata : dict, optional
             Metadata for the hypergraph. Default is an empty dictionary.
-        edge_metadata : list of dicts, optional
-            A list of metadata dictionaries corresponding to the edges in `edge_list`.
         node_metadata : dict, optional
             A dictionary of metadata for nodes, where keys are node identifiers and values are metadata dictionaries.
+        edge_metadata : list of dicts, optional
+            A list of metadata dictionaries corresponding to the edges in `edge_list`.
 
         Raises
         ------
