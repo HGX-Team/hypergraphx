@@ -12,7 +12,7 @@ def test_add_single_node():
     h = TemporalHypergraph()
     h.add_node("A", metadata={"type": "person"})
     assert "A" in h.get_nodes()
-    assert h.node_metadata["A"] == {"type": "person"}
+    assert h._node_metadata["A"] == {"type": "person"}
 
 
 def test_add_multiple_nodes():
@@ -26,7 +26,7 @@ def test_add_multiple_nodes():
     h.add_nodes(nodes, metadata)
     assert set(h.get_nodes()) == set(nodes)
     for node in nodes:
-        assert h.node_metadata[node] == metadata[node]
+        assert h._node_metadata[node] == metadata[node]
 
 
 def test_add_edge_unweighted():

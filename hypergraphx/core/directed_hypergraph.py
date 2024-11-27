@@ -44,8 +44,8 @@ class DirectedHypergraph:
             If `edge_list` contains improperly formatted edges.
         """
         # Initialize hypergraph metadata
-        self.hypergraph_metadata = hypergraph_metadata or {}
-        self.hypergraph_metadata.update(
+        self._hypergraph_metadata = hypergraph_metadata or {}
+        self._hypergraph_metadata.update(
             {"weighted": weighted, "type": "DirectedHypergraph"}
         )
 
@@ -54,11 +54,11 @@ class DirectedHypergraph:
         self._adj_source = {}
         self._adj_target = {}
         self._edge_list = {}
-        self.node_metadata = {}
-        self.edge_metadata = {}
-        self.reverse_edge_list = {}
+        self._node_metadata = {}
+        self._edge_metadata = {}
+        self._reverse_edge_list = {}
         self._weights = {}
-        self.next_edge_id = 0
+        self._next_edge_id = 0
 
         # Add node metadata if provided
         if node_metadata:
@@ -100,29 +100,29 @@ class DirectedHypergraph:
     def set_node_metadata(self, node, metadata):
         if node not in self._adj_source:
             raise ValueError("Node {} not in hypergraph.".format(node))
-        self.node_metadata[node] = metadata
+        self._node_metadata[node] = metadata
 
     def get_node_metadata(self, node):
         if node not in self._adj_source:
             raise ValueError("Node {} not in hypergraph.".format(node))
-        return self.node_metadata[node]
+        return self._node_metadata[node]
 
     def get_all_nodes_metadata(self):
-        return list(self.node_metadata.values())
+        return list(self._node_metadata.values())
 
     def set_edge_metadata(self, edge, metadata):
         edge = (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
         if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         idx = self._edge_list[edge]
-        self.edge_metadata[idx] = metadata
+        self._edge_metadata[idx] = metadata
 
     def get_edge_metadata(self, edge):
         edge = (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
         if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         idx = self._edge_list[edge]
-        return self.edge_metadata[idx]
+        return self._edge_metadata[idx]
 
     def get_mapping(self):
         """
@@ -151,13 +151,13 @@ class DirectedHypergraph:
         None
         """
         if metadata is None:
-            self.node_metadata[node] = {}
+            self._node_metadata[node] = {}
         if node not in self._adj_source:
             self._adj_source[node] = []
             self._adj_target[node] = []
-            self.node_metadata[node] = {}
-        if self.node_metadata[node] == {}:
-            self.node_metadata[node] = metadata
+            self._node_metadata[node] = {}
+        if self._node_metadata[node] == {}:
+            self._node_metadata[node] = metadata
 
     def add_nodes(self, node_list: list):
         """
@@ -265,10 +265,10 @@ class DirectedHypergraph:
             weight = 1
 
         if edge not in self._edge_list:
-            idx = self.next_edge_id
-            self.next_edge_id += 1
+            idx = self._next_edge_id
+            self._next_edge_id += 1
             self._edge_list[edge] = idx
-            self.reverse_edge_list[idx] = edge
+            self._reverse_edge_list[idx] = edge
             self._weights[idx] = 1 if not self._weighted else weight
         elif edge in self._edge_list and self._weighted:
             self._weights[self._edge_list[edge]] += weight
@@ -342,18 +342,18 @@ class DirectedHypergraph:
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
         if order is None and size is None:
-            return [self.reverse_edge_list[e_idx] for e_idx in self._adj_source[node]]
+            return [self._reverse_edge_list[e_idx] for e_idx in self._adj_source[node]]
         elif size is not None:
             return [
-                self.reverse_edge_list[e_idx]
+                self._reverse_edge_list[e_idx]
                 for e_idx in self._adj_source[node]
-                if self._get_edge_size(self.reverse_edge_list[e_idx]) == size
+                if self._get_edge_size(self._reverse_edge_list[e_idx]) == size
             ]
         elif order is not None:
             return [
-                self.reverse_edge_list[e_idx]
+                self._reverse_edge_list[e_idx]
                 for e_idx in self._adj_source[node]
-                if self._get_edge_size(self.reverse_edge_list[e_idx]) - 1 == order
+                if self._get_edge_size(self._reverse_edge_list[e_idx]) - 1 == order
             ]
 
     def get_target_edges(self, node, order=None, size=None):
@@ -376,18 +376,18 @@ class DirectedHypergraph:
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
         if order is None and size is None:
-            return [self.reverse_edge_list[e_idx] for e_idx in self._adj_target[node]]
+            return [self._reverse_edge_list[e_idx] for e_idx in self._adj_target[node]]
         elif size is not None:
             return [
-                self.reverse_edge_list[e_idx]
+                self._reverse_edge_list[e_idx]
                 for e_idx in self._adj_target[node]
-                if self._get_edge_size(self.reverse_edge_list[e_idx]) == size
+                if self._get_edge_size(self._reverse_edge_list[e_idx]) == size
             ]
         elif order is not None:
             return [
-                self.reverse_edge_list[e_idx]
+                self._reverse_edge_list[e_idx]
                 for e_idx in self._adj_target[node]
-                if self._get_edge_size(self.reverse_edge_list[e_idx]) - 1 == order
+                if self._get_edge_size(self._reverse_edge_list[e_idx]) - 1 == order
             ]
 
     def _get_edge_size(self, edge):
@@ -494,9 +494,9 @@ class DirectedHypergraph:
             for node in target:
                 self._adj_target[node].remove(e_idx)
 
-            del self.reverse_edge_list[e_idx]
+            del self._reverse_edge_list[e_idx]
             del self._weights[e_idx]
-            del self.edge_metadata[e_idx]
+            del self._edge_metadata[e_idx]
             del self._edge_list[edge]
 
         else:
@@ -524,7 +524,7 @@ class DirectedHypergraph:
         if not metadata:
             return list(self._adj_source.keys())
         else:
-            return {node: self.node_metadata[node] for node in self._adj_source.keys()}
+            return {node: self._node_metadata[node] for node in self._adj_source.keys()}
 
     def num_nodes(self):
         """Returns the number of nodes in the hypergraph."""
@@ -595,32 +595,32 @@ class DirectedHypergraph:
         return edge in self._edge_list
 
     def get_hypergraph_metadata(self):
-        return self.hypergraph_metadata
+        return self._hypergraph_metadata
 
     def set_hypergraph_metadata(self, metadata):
-        self.hypergraph_metadata = metadata
+        self._hypergraph_metadata = metadata
 
     def add_attr_to_node_metadata(self, node, field, value):
-        if node not in self.node_metadata:
+        if node not in self._node_metadata:
             raise ValueError("Node {} not in hypergraph.".format(node))
-        self.node_metadata[node][field] = value
+        self._node_metadata[node][field] = value
 
     def add_attr_to_edge_metadata(self, edge, field, value):
         edge = (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
-        if edge not in self.edge_metadata:
+        if edge not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        self.edge_metadata[self._edge_list[edge]][field] = value
+        self._edge_metadata[self._edge_list[edge]][field] = value
 
     def remove_attr_from_node_metadata(self, node, field):
-        if node not in self.node_metadata:
+        if node not in self._node_metadata:
             raise ValueError("Node {} not in hypergraph.".format(node))
-        del self.node_metadata[node][field]
+        del self._node_metadata[node][field]
 
     def remove_attr_from_edge_metadata(self, edge, field):
         edge = (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
-        if edge not in self.edge_metadata:
+        if edge not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        del self.edge_metadata[self._edge_list[edge]][field]
+        del self._edge_metadata[self._edge_list[edge]][field]
 
     def _expose_data_structures(self):
         """
@@ -638,11 +638,11 @@ class DirectedHypergraph:
             "_adj_target": self._adj_target,
             "_edge_list": self._edge_list,
             "_weights": self._weights,
-            "hypergraph_metadata": self.hypergraph_metadata,
-            "node_metadata": self.node_metadata,
-            "edge_metadata": self.edge_metadata,
-            "reverse_edge_list": self.reverse_edge_list,
-            "next_edge_id": self.next_edge_id,
+            "hypergraph_metadata": self._hypergraph_metadata,
+            "node_metadata": self._node_metadata,
+            "edge_metadata": self._edge_metadata,
+            "reverse_edge_list": self._reverse_edge_list,
+            "next_edge_id": self._next_edge_id,
         }
 
     def _populate_from_dict(self, data):
@@ -659,8 +659,8 @@ class DirectedHypergraph:
         self._adj_target = data.get("_adj_target", {})
         self._edge_list = data.get("_edge_list", {})
         self._weights = data.get("_weights", {})
-        self.hypergraph_metadata = data.get("hypergraph_metadata", {})
-        self.node_metadata = data.get("node_metadata", {})
-        self.edge_metadata = data.get("edge_metadata", {})
-        self.reverse_edge_list = data.get("reverse_edge_list", {})
-        self.next_edge_id = data.get("next_edge_id", 0)
+        self._hypergraph_metadata = data.get("hypergraph_metadata", {})
+        self._node_metadata = data.get("node_metadata", {})
+        self._edge_metadata = data.get("edge_metadata", {})
+        self._reverse_edge_list = data.get("reverse_edge_list", {})
+        self._next_edge_id = data.get("next_edge_id", 0)

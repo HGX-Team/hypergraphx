@@ -8,8 +8,8 @@ from hypergraphx import (
 
 def test_initialization():
     h = MultiplexHypergraph()
-    assert isinstance(h.hypergraph_metadata, dict)
-    assert h.hypergraph_metadata["weighted"] is False
+    assert isinstance(h._hypergraph_metadata, dict)
+    assert h._hypergraph_metadata["weighted"] is False
     assert h.get_nodes() == []
 
 
@@ -17,7 +17,7 @@ def test_add_single_node():
     h = MultiplexHypergraph()
     h.add_node("A", metadata={"color": "red"})
     assert "A" in h.get_nodes()
-    assert h.node_metadata["A"] == {"color": "red"}
+    assert h._node_metadata["A"] == {"color": "red"}
 
 
 def test_add_multiple_nodes():
@@ -27,7 +27,7 @@ def test_add_multiple_nodes():
     h.add_nodes(nodes, metadata)
     assert set(h.get_nodes()) == set(nodes)
     for node in nodes:
-        assert h.node_metadata[node] == metadata[node]
+        assert h._node_metadata[node] == metadata[node]
 
 
 def test_add_edges_unweighted():
@@ -37,8 +37,8 @@ def test_add_edges_unweighted():
     h.add_edges(edges, edge_layer=layers)
     assert ("A", "B") in [edge[0] for edge in h.get_edges()]
     assert ("B", "C") in [edge[0] for edge in h.get_edges()]
-    assert "layer1" in h.existing_layers
-    assert "layer2" in h.existing_layers
+    assert "layer1" in h._existing_layers
+    assert "layer2" in h._existing_layers
 
 
 def test_add_edges_weighted():

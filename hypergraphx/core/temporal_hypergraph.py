@@ -59,10 +59,10 @@ class TemporalHypergraph:
         self._weights = {}
         self._adj = {}
         self._edge_list = {}
-        self.node_metadata = {}
-        self.edge_metadata = {}
-        self.reverse_edge_list = {}
-        self.next_edge_id = 0
+        self._node_metadata = {}
+        self._edge_metadata = {}
+        self._reverse_edge_list = {}
+        self._next_edge_id = 0
 
         # Add node metadata if provided
         if node_metadata:
@@ -100,7 +100,7 @@ class TemporalHypergraph:
     def get_incident_edges(self, node):
         if node not in self._adj:
             raise ValueError("Node {} not in hypergraph.".format(node))
-        return [self.reverse_edge_list[e_id] for e_id in self._adj[node]]
+        return [self._reverse_edge_list[e_id] for e_id in self._adj[node]]
 
     def get_edge_list(self):
         return self._edge_list
@@ -115,42 +115,42 @@ class TemporalHypergraph:
         self.hypergraph_metadata = metadata
 
     def set_node_metadata(self, node, metadata):
-        if node not in self.node_metadata:
+        if node not in self._node_metadata:
             raise ValueError("Node {} not in hypergraph.".format(node))
-        self.node_metadata[node] = metadata
+        self._node_metadata[node] = metadata
 
     def get_node_metadata(self, node):
-        if node not in self.node_metadata:
+        if node not in self._node_metadata:
             raise ValueError("Node {} not in hypergraph.".format(node))
-        return self.node_metadata[node]
+        return self._node_metadata[node]
 
     def get_all_nodes_metadata(self):
-        return self.node_metadata
+        return self._node_metadata
 
     def set_edge_metadata(self, edge, metadata):
         if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         e_id = self._edge_list[edge]
-        self.edge_metadata[e_id] = metadata
+        self._edge_metadata[e_id] = metadata
 
     def get_edge_metadata(self, edge, time):
         k = (time, edge)
         if k not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         e_id = self._edge_list[k]
-        return self.edge_metadata[e_id]
+        return self._edge_metadata[e_id]
 
     def get_all_edges_metadata(self):
-        return self.edge_metadata
+        return self._edge_metadata
 
     def add_node(self, node, metadata=None):
         if metadata is None:
             metadata = {}
-        if node not in self.node_metadata:
+        if node not in self._node_metadata:
             self._adj[node] = []
-            self.node_metadata[node] = {}
-        if self.node_metadata[node] == {}:
-            self.node_metadata[node] = metadata
+            self._node_metadata[node] = {}
+        if self._node_metadata[node] == {}:
+            self._node_metadata[node] = metadata
 
     def add_nodes(self, node_list: list, metadata=None):
         for node in node_list:
@@ -190,8 +190,8 @@ class TemporalHypergraph:
 
     def get_nodes(self, metadata=False):
         if metadata:
-            return self.node_metadata
-        return list(self.node_metadata.keys())
+            return self._node_metadata
+        return list(self._node_metadata.keys())
 
     def add_edge(self, edge, time, weight=None, metadata=None):
         if not isinstance(time, int):
@@ -213,10 +213,10 @@ class TemporalHypergraph:
         edge = (t, _edge)
 
         if edge not in self._edge_list:
-            e_id = self.next_edge_id
-            self.reverse_edge_list[e_id] = edge
+            e_id = self._next_edge_id
+            self._reverse_edge_list[e_id] = edge
             self._edge_list[edge] = e_id
-            self.next_edge_id += 1
+            self._next_edge_id += 1
             self._weights[e_id] = weight
         elif edge in self._edge_list and self._weighted:
             self._weights[self._edge_list[edge]] += weight
@@ -225,7 +225,7 @@ class TemporalHypergraph:
 
         if metadata is None:
             metadata = {}
-        self.edge_metadata[e_id] = metadata
+        self._edge_metadata[e_id] = metadata
 
         for node in _edge:
             self.add_node(node)
@@ -272,7 +272,7 @@ class TemporalHypergraph:
         if time_window is None:
             if metadata:
                 return {
-                    edge: self.edge_metadata[edge] for edge in self._edge_list.keys()
+                    edge: self._edge_metadata[edge] for edge in self._edge_list.keys()
                 }
             else:
                 return list(self._edge_list.keys())
@@ -333,7 +333,7 @@ class TemporalHypergraph:
 
             # Add all nodes to ensure node consistency
             for node in node_list:
-                Hypergraph_t.add_node(node, metadata=self.node_metadata[node])
+                Hypergraph_t.add_node(node, metadata=self._node_metadata[node])
 
             # Store the finalized hypergraph for this window
             aggregated[num_windows_created] = Hypergraph_t
@@ -347,26 +347,26 @@ class TemporalHypergraph:
         return aggregated
 
     def add_attr_to_node_metadata(self, node, field, value):
-        if node not in self.node_metadata:
+        if node not in self._node_metadata:
             raise ValueError("Node {} not in hypergraph.".format(node))
-        self.node_metadata[node][field] = value
+        self._node_metadata[node][field] = value
 
     def add_attr_to_edge_metadata(self, edge, time, field, value):
         edge = tuple(sorted(edge))
-        if edge not in self.edge_metadata:
+        if edge not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        self.edge_metadata[self._edge_list[(time, edge)]][field] = value
+        self._edge_metadata[self._edge_list[(time, edge)]][field] = value
 
     def remove_attr_from_node_metadata(self, node, field):
-        if node not in self.node_metadata:
+        if node not in self._node_metadata:
             raise ValueError("Node {} not in hypergraph.".format(node))
-        del self.node_metadata[node][field]
+        del self._node_metadata[node][field]
 
     def remove_attr_from_edge_metadata(self, edge, time, field):
         edge = tuple(sorted(edge))
-        if edge not in self.edge_metadata:
+        if edge not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        del self.edge_metadata[self._edge_list[(time, edge)]][field]
+        del self._edge_metadata[self._edge_list[(time, edge)]][field]
 
     def _expose_data_structures(self):
         """
@@ -384,10 +384,10 @@ class TemporalHypergraph:
             "_weights": self._weights,
             "_adj": self._adj,
             "_edge_list": self._edge_list,
-            "node_metadata": self.node_metadata,
-            "edge_metadata": self.edge_metadata,
-            "reverse_edge_list": self.reverse_edge_list,
-            "next_edge_id": self.next_edge_id,
+            "node_metadata": self._node_metadata,
+            "edge_metadata": self._edge_metadata,
+            "reverse_edge_list": self._reverse_edge_list,
+            "next_edge_id": self._next_edge_id,
         }
 
     def _populate_from_dict(self, data):
@@ -404,7 +404,7 @@ class TemporalHypergraph:
         self._weights = data.get("_weights", {})
         self._adj = data.get("_adj", {})
         self._edge_list = data.get("_edge_list", {})
-        self.node_metadata = data.get("node_metadata", {})
-        self.edge_metadata = data.get("edge_metadata", {})
-        self.reverse_edge_list = data.get("reverse_edge_list", {})
-        self.next_edge_id = data.get("next_edge_id", 0)
+        self._node_metadata = data.get("node_metadata", {})
+        self._edge_metadata = data.get("edge_metadata", {})
+        self._reverse_edge_list = data.get("reverse_edge_list", {})
+        self._next_edge_id = data.get("next_edge_id", 0)

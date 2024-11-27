@@ -11,9 +11,9 @@ def test_hypergraph_initialization_with_metadata():
         node_metadata=node_metadata, hypergraph_metadata=hypergraph_metadata
     )
 
-    assert hg.node_metadata == node_metadata
-    assert hg.hypergraph_metadata["description"] == "Test Hypergraph"
-    assert hg.hypergraph_metadata["weighted"] == False
+    assert hg._node_metadata == node_metadata
+    assert hg._hypergraph_metadata["description"] == "Test Hypergraph"
+    assert hg._hypergraph_metadata["weighted"] == False
 
 
 def test_hypergraph_initialization_with_edges():
@@ -236,9 +236,9 @@ def test_add_edge_with_new_nodes():
     """Test adding an edge introduces new nodes."""
     hg = Hypergraph()
     hg.add_edge((1, 2, 3))
-    assert 1 in hg.node_metadata
-    assert 2 in hg.node_metadata
-    assert 3 in hg.node_metadata
+    assert 1 in hg._node_metadata
+    assert 2 in hg._node_metadata
+    assert 3 in hg._node_metadata
 
 
 def test_add_edge_existing_nodes():
@@ -247,9 +247,9 @@ def test_add_edge_existing_nodes():
     hg.add_node(1)
     hg.add_node(2)
     hg.add_edge((1, 2, 3))
-    assert 1 in hg.node_metadata
-    assert 2 in hg.node_metadata
-    assert 3 in hg.node_metadata  # New node added
+    assert 1 in hg._node_metadata
+    assert 2 in hg._node_metadata
+    assert 3 in hg._node_metadata  # New node added
 
 
 def test_add_edges_unweighted():
