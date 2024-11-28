@@ -830,6 +830,9 @@ class Hypergraph:
     def get_all_edges_metadata(self):
         return self._edge_metadata
 
+    def set_attr_to_hypergraph_metadata(self, field, value):
+        self._hypergraph_metadata[field] = value
+
     def set_attr_to_node_metadata(self, node, field, value):
         if node not in self._node_metadata:
             raise ValueError("Node {} not in hypergraph.".format(node))
