@@ -18,7 +18,7 @@ def _save_pickle(obj, file_name: str):
     Parameters
     ----------
     obj : object
-        The object to save. Must implement `_expose_data_structures`.
+        The object to save. Must implement `expose_data_structures`.
     file_name : str
         The name of the file to save the object to.
 
@@ -28,12 +28,12 @@ def _save_pickle(obj, file_name: str):
         The object is saved to a file.
     """
     try:
-        if not hasattr(obj, "_expose_data_structures"):
+        if not hasattr(obj, "expose_data_structures"):
             raise AttributeError(
-                "Object must implement '_expose_data_structures' method."
+                "Object must implement 'expose_data_structures' method."
             )
 
-        data = obj._expose_data_structures()
+        data = obj.expose_data_structures()
         with open(file_name, "wb") as f:
             pickle.dump(data, f)
     except Exception as e:
@@ -50,8 +50,8 @@ def save_hypergraph(hypergraph, file_name: str, binary=False):
         The hypergraph to save
     file_name: str
         The requested name of the file
-    file_type: str
-        The requested type of the file
+    binary: bool
+        Whether to save the hypergraph as a binary file (hgx) or a text file (json)
 
     Returns
     -------

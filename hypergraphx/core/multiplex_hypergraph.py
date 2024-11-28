@@ -424,12 +424,12 @@ class MultiplexHypergraph:
             )
         return h
 
-    def add_attr_to_node_metadata(self, node, field, value):
+    def set_attr_to_node_metadata(self, node, field, value):
         if node not in self._node_metadata:
             raise ValueError("Node {} not in hypergraph.".format(node))
         self._node_metadata[node][field] = value
 
-    def add_attr_to_edge_metadata(self, edge, layer, field, value):
+    def set_attr_to_edge_metadata(self, edge, layer, field, value):
         edge = tuple(sorted(edge))
         if edge not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
@@ -446,7 +446,7 @@ class MultiplexHypergraph:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         del self._edge_metadata[self._edge_list[(edge, layer)]][field]
 
-    def _expose_data_structures(self):
+    def expose_data_structures(self):
         """
         Expose the internal data structures of the multiplex hypergraph for serialization.
 
@@ -469,7 +469,7 @@ class MultiplexHypergraph:
             "existing_layers": self._existing_layers,
         }
 
-    def _populate_from_dict(self, data):
+    def populate_from_dict(self, data):
         """
         Populate the attributes of the multiplex hypergraph from a dictionary.
 
@@ -488,3 +488,36 @@ class MultiplexHypergraph:
         self._reverse_edge_list = data.get("reverse_edge_list", {})
         self._next_edge_id = data.get("next_edge_id", 0)
         self._existing_layers = data.get("existing_layers", set())
+
+    def expose_attributes_for_hashing(self):
+        """
+        Expose relevant attributes for hashing specific to MultiplexHypergraph.
+
+        Returns
+        -------
+        dict
+            A dictionary containing key attributes.
+        """
+        edges = []
+        for edge in sorted(self._edge_list.keys()):
+            edge = (tuple(sorted(edge[0])), edge[1])
+            edge_id = self._edge_list[edge]
+            edges.append(
+                {
+                    "nodes": edge,
+                    "weight": self._weights.get(edge_id, 1),
+                    "metadata": self._edge_metadata.get(edge_id, {}),
+                }
+            )
+
+        nodes = []
+        for node in sorted(self._node_metadata.keys()):
+            nodes.append({"node": node, "metadata": self._node_metadata[node]})
+
+        return {
+            "type": "MultiplexHypergraph",
+            "weighted": self._weighted,
+            "hypergraph_metadata": self._hypergraph_metadata,
+            "edges": edges,
+            "nodes": nodes,
+        }

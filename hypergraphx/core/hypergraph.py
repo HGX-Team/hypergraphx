@@ -830,14 +830,14 @@ class Hypergraph:
     def get_all_edges_metadata(self):
         return self._edge_metadata
 
-    def add_attr_to_node_metadata(self, node, field, value):
+    def set_attr_to_node_metadata(self, node, field, value):
         if node not in self._node_metadata:
             raise ValueError("Node {} not in hypergraph.".format(node))
         self._node_metadata[node][field] = value
 
-    def add_attr_to_edge_metadata(self, edge, field, value):
+    def set_attr_to_edge_metadata(self, edge, field, value):
         edge = tuple(sorted(edge))
-        if edge not in self._edge_metadata:
+        if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         self._edge_metadata[self._edge_list[edge]][field] = value
 
@@ -1104,7 +1104,7 @@ class Hypergraph:
         """
         return iter(self._edge_list.items())
 
-    def _expose_data_structures(self):
+    def expose_data_structures(self):
         """
         Expose the internal data structures of the hypergraph for serialization.
 
@@ -1126,7 +1126,7 @@ class Hypergraph:
             "next_edge_id": self._next_edge_id,
         }
 
-    def _populate_from_dict(self, data):
+    def populate_from_dict(self, data):
         """
         Populate the attributes of the hypergraph from a dictionary.
 
@@ -1146,3 +1146,36 @@ class Hypergraph:
         self._empty_edges = data.get("empty_edges", {})
         self._reverse_edge_list = data.get("reverse_edge_list", {})
         self._next_edge_id = data.get("next_edge_id", 0)
+
+    def expose_attributes_for_hashing(self):
+        """
+        Expose relevant attributes for hashing specific to Hypergraph.
+
+        Returns
+        -------
+        dict
+            A dictionary containing key attributes.
+        """
+        edges = []
+        for edge in sorted(self._edge_list.keys()):
+            sorted_edge = sorted(edge)
+            edge_id = self._edge_list[edge]
+            edges.append(
+                {
+                    "nodes": sorted_edge,
+                    "weight": self._weights.get(edge_id, 1),
+                    "metadata": self._edge_metadata.get(edge_id, {}),
+                }
+            )
+
+        nodes = []
+        for node in sorted(self._adj.keys()):
+            nodes.append({"node": node, "metadata": self._node_metadata[node]})
+
+        return {
+            "type": "Hypergraph",
+            "weighted": self._weighted,
+            "hypergraph_metadata": self._hypergraph_metadata,
+            "edges": edges,
+            "nodes": nodes,
+        }

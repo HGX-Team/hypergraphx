@@ -50,7 +50,7 @@ def _load_pickle(file_name: str):
         else:
             raise ValueError(f"Unknown hypergraph type: {h_type}")
 
-        H._populate_from_dict(data)
+        H.populate_from_dict(data)
         return H
 
     except Exception as e:

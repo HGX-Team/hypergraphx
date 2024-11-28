@@ -3,8 +3,8 @@ from hypergraphx import Hypergraph
 
 def test_initialization():
     h = TemporalHypergraph()
-    assert isinstance(h.hypergraph_metadata, dict)
-    assert h.hypergraph_metadata["weighted"] is False
+    assert isinstance(h._hypergraph_metadata, dict)
+    assert h._hypergraph_metadata["weighted"] is False
     assert h.get_nodes() == []
 
 
