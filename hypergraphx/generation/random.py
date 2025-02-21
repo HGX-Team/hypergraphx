@@ -2,8 +2,6 @@
 Generate random hypergraphs
 """
 
-import random
-
 from hypergraphx import Hypergraph
 
 
@@ -60,24 +58,20 @@ def random_uniform_hypergraph(num_nodes: int, size: int, num_edges: int):
     -------
     Hypergraph
         A random hypergraph with the given number of nodes and hyperedges of the given size.
-
-    Examples
-    --------
-    >>> from hypergraphx.generation import random_uniform_hypergraph
-    >>> random_uniform_hypergraph(10, 3, 5)
-    Hypergraph with 10 nodes and 5 edges.
-    Edge list: [(5, 7, 9), (0, 2, 3), (0, 2, 9), (7, 8, 9), (1, 8, 9)]
     """
     return random_hypergraph(num_nodes, {size: num_edges})
 
 
-def random_shuffle(hg: Hypergraph, order=None, size=None, inplace=True):
+import random
+
+def random_shuffle(hg: "Hypergraph", order=None, size=None, inplace=True, p=1.0):
     """
-    Shuffle the nodes of a hypergraph's hyperedges of a given order / size.
+    Shuffle the nodes of a hypergraph's hyperedges of a given order/size,
+    replacing a fraction p of them.
 
     Parameters
     ----------
-    hg : hypergraph
+    hg : Hypergraph
         The Hypergraph of interest.
     order : int
         The order of the hyperedges to shuffle.
@@ -85,6 +79,8 @@ def random_shuffle(hg: Hypergraph, order=None, size=None, inplace=True):
         The size of the hyperedges to shuffle.
     inplace : bool
         Whether to modify the hypergraph in place or return a copy.
+    p : float
+        Fraction of hyperedges to randomize (0 <= p <= 1).
 
     Returns
     -------
@@ -94,7 +90,8 @@ def random_shuffle(hg: Hypergraph, order=None, size=None, inplace=True):
     Raises
     ------
     ValueError
-        If order and size are both specified or neither are specified.
+        If order and size are both specified or neither are specified,
+        or if p is not between 0 and 1.
     """
     if order is not None and size is not None:
         raise ValueError("Order and size cannot be both specified.")
@@ -102,22 +99,41 @@ def random_shuffle(hg: Hypergraph, order=None, size=None, inplace=True):
         raise ValueError("Order or size must be specified.")
     if size is None:
         size = order + 1
+    if not (0 <= p <= 1):
+        raise ValueError("p must be between 0 and 1.")
 
-    num_edges = hg.num_edges(size=size)
+    # Retrieve current hyperedges of the specified size.
+    current_edges = list(hg.get_edges(size=size))
+    num_edges = len(current_edges)
+    num_to_randomize = int(p * num_edges)
+
     nodes = list(hg.get_nodes())
 
-    edges = list()
-    while len(edges) < num_edges:
-        edges.append(tuple(sorted(random.sample(nodes, size))))
-    edges = set(edges)
+    new_random_edges = [
+        tuple(sorted(random.sample(nodes, size)))
+        for _ in range(num_to_randomize)
+    ]
+
+    # Randomly choose indices of hyperedges to replace.
+    indices_to_replace = set(random.sample(range(num_edges), num_to_randomize))
+    new_edges = []
+    new_idx = 0
+    for i, edge in enumerate(current_edges):
+        if i in indices_to_replace:
+            new_edges.append(new_random_edges[new_idx])
+            new_idx += 1
+        else:
+            new_edges.append(edge)
+
+    #print(new_edges)
 
     if inplace:
-        hg.remove_edges(hg.get_edges(size=size))
-        hg.add_edges(list(edges))
+        hg.remove_edges(current_edges)
+        hg.add_edges(new_edges)
     else:
         h = hg.copy()
-        h.remove_edges(h.get_edges(size=size))
-        h.add_edges(list(edges))
+        h.remove_edges(current_edges)
+        h.add_edges(new_edges)
         return h
 
 
