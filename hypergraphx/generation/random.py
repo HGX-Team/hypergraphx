@@ -1,7 +1,7 @@
 """
 Generate random hypergraphs
 """
-import random
+import random, numpy as np
 from hypergraphx import Hypergraph
 
 
@@ -62,10 +62,11 @@ def random_uniform_hypergraph(num_nodes: int, size: int, num_edges: int):
     return random_hypergraph(num_nodes, {size: num_edges})
 
 
-def random_shuffle(hg: Hypergraph, order=None, size=None, inplace=True, p=1.0):
+def random_shuffle(hg: Hypergraph, order=None, size=None, inplace=True, p=1.0, preserve_degree=False):
     """
     Shuffle the nodes of a hypergraph's hyperedges of a given order/size,
-    replacing a fraction p of them.
+    replacing a fraction p of them. For the hyperedges to be replaced,
+    only the nodes originally in those hyperedges are used to build the new ones.
 
     Parameters
     ----------
@@ -79,6 +80,8 @@ def random_shuffle(hg: Hypergraph, order=None, size=None, inplace=True, p=1.0):
         Whether to modify the hypergraph in place or return a copy.
     p : float
         Fraction of hyperedges to randomize (0 <= p <= 1).
+    preserve_degree : bool
+        Whether to preserve the degree distribution of the nodes involved in interaction of size `size`.
 
     Returns
     -------
@@ -105,25 +108,31 @@ def random_shuffle(hg: Hypergraph, order=None, size=None, inplace=True, p=1.0):
     num_edges = len(current_edges)
     num_to_randomize = int(p * num_edges)
 
-    nodes = list(hg.get_nodes())
-
-    new_random_edges = [
-        tuple(sorted(random.sample(nodes, size)))
-        for _ in range(num_to_randomize)
-    ]
-
     # Randomly choose indices of hyperedges to replace.
     indices_to_replace = set(random.sample(range(num_edges), num_to_randomize))
+
+    # Build a pool of nodes only from the hyperedges being randomized.
+    pool_nodes = {}
+    for i in indices_to_replace:
+        for node in current_edges[i]:
+            if node not in pool_nodes:
+                pool_nodes[node] = 1
+            elif preserve_degree:
+                pool_nodes[node] += 1
+
+    weights = np.array(list(pool_nodes.values()))
+    weights = weights / np.sum(weights)
+    pool_nodes = np.array(list(pool_nodes.keys()))
+
     new_edges = []
-    new_idx = 0
     for i, edge in enumerate(current_edges):
         if i in indices_to_replace:
-            new_edges.append(new_random_edges[new_idx])
-            new_idx += 1
+            # Build a new hyperedge using nodes only from the pool.
+            new_edge = tuple(sorted(np.random.choice(pool_nodes, size, replace=False, p=weights)))
+
+            new_edges.append(new_edge)
         else:
             new_edges.append(edge)
-
-    #print(new_edges)
 
     if inplace:
         hg.remove_edges(current_edges)
@@ -133,6 +142,7 @@ def random_shuffle(hg: Hypergraph, order=None, size=None, inplace=True, p=1.0):
         h.remove_edges(current_edges)
         h.add_edges(new_edges)
         return h
+
 
 
 def add_random_edge(hg: Hypergraph, order=None, size=None, inplace=True):
