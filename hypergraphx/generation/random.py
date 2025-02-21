@@ -1,7 +1,7 @@
 """
 Generate random hypergraphs
 """
-
+import random
 from hypergraphx import Hypergraph
 
 
@@ -62,9 +62,7 @@ def random_uniform_hypergraph(num_nodes: int, size: int, num_edges: int):
     return random_hypergraph(num_nodes, {size: num_edges})
 
 
-import random
-
-def random_shuffle(hg: "Hypergraph", order=None, size=None, inplace=True, p=1.0):
+def random_shuffle(hg: Hypergraph, order=None, size=None, inplace=True, p=1.0):
     """
     Shuffle the nodes of a hypergraph's hyperedges of a given order/size,
     replacing a fraction p of them.
@@ -225,6 +223,3 @@ def add_random_edges(hg: Hypergraph, num_edges, order=None, size=None, inplace=T
         h = hg.copy()
         h.add_edges(list(edges))
         return h
-
-
-
