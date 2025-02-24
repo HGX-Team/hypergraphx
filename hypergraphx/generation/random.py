@@ -176,9 +176,9 @@ def random_shuffle_all_orders(hg: Hypergraph, p: float = 1.0, inplace: bool = Tr
 
     for size in set(hg.get_sizes()):
         if inplace:
-            random_shuffle(target_hg, size=size, p=p, preserve_degree=preserve_degree, inplace=True)
+            random_shuffle(target_hg, size=size, p=p, inplace=True, preserve_degree=preserve_degree)
         else:
-            target_hg = random_shuffle(target_hg, size=size, p=p, preserve_degree=preserve_degree, inplace=False)
+            target_hg = random_shuffle(target_hg, size=size, p=p, inplace=False, preserve_degree=preserve_degree)
 
     return target_hg
 
