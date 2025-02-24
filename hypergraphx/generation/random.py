@@ -65,23 +65,22 @@ def random_uniform_hypergraph(num_nodes: int, size: int, num_edges: int):
 def random_shuffle(hg: Hypergraph, order=None, size=None, inplace=True, p=1.0, preserve_degree=False):
     """
     Shuffle the nodes of a hypergraph's hyperedges of a given order/size,
-    replacing a fraction p of them. For the hyperedges to be replaced,
-    only the nodes originally in those hyperedges are used to build the new ones.
+    replacing a fraction p of them.
 
     Parameters
     ----------
     hg : Hypergraph
-        The Hypergraph of interest.
+        The hypergraph to process.
+    p : float, optional
+        The fraction of hyperedges to randomize (0 <= p <= 1). Default is 1.0.
     order : int
         The order of the hyperedges to shuffle.
     size : int
         The size of the hyperedges to shuffle.
-    inplace : bool
-        Whether to modify the hypergraph in place or return a copy.
-    p : float
-        Fraction of hyperedges to randomize (0 <= p <= 1).
-    preserve_degree : bool
-        Whether to preserve the degree distribution of the nodes involved in interaction of size `size`.
+    inplace : bool, optional
+        If True, modify the given hypergraph directly; if False, operate on a copy and return it.
+    preserve_degree : bool, optional
+        If True, attempt to preserve the degree distribution of the nodes during shuffling.
 
     Returns
     -------
@@ -142,6 +141,46 @@ def random_shuffle(hg: Hypergraph, order=None, size=None, inplace=True, p=1.0, p
         h.remove_edges(current_edges)
         h.add_edges(new_edges)
         return h
+
+def random_shuffle_all_orders(hg: Hypergraph, p: float = 1.0, inplace: bool = True, preserve_degree: bool = False) -> Hypergraph:
+    """
+    Shuffle the nodes of a hypergraph's hyperedges of a given order/size,
+    replacing a fraction p of them. The process is repeated for every order of interaction.
+
+    Parameters
+    ----------
+    hg : Hypergraph
+        The hypergraph to process.
+    p : float, optional
+        The fraction of hyperedges to randomize (0 <= p <= 1). Default is 1.0.
+    inplace : bool, optional
+        If True, modify the given hypergraph directly; if False, operate on a copy and return it.
+    preserve_degree : bool, optional
+        If True, attempt to preserve the degree distribution of the nodes during shuffling.
+
+    Returns
+    -------
+    Hypergraph
+        The hypergraph with shuffled hyperedges. This is either the original hypergraph (if inplace is True)
+        or a new, modified copy (if inplace is False).
+
+    Raises
+    ------
+    ValueError
+        If `p` is not between 0 and 1.
+    """
+    if not (0 <= p <= 1):
+        raise ValueError("Parameter 'p' must be between 0 and 1.")
+
+    target_hg = hg if inplace else hg.copy()
+
+    for size in set(hg.get_sizes()):
+        if inplace:
+            random_shuffle(target_hg, size=size, p=p, preserve_degree=preserve_degree, inplace=True)
+        else:
+            target_hg = random_shuffle(target_hg, size=size, p=p, preserve_degree=preserve_degree, inplace=False)
+
+    return target_hg
 
 
 
