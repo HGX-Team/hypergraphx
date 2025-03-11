@@ -12,10 +12,9 @@ def dummy_hypergraph():
 
 def test_no_shuffle(dummy_hypergraph):
     """Test that with p=0, the hypergraph remains unchanged."""
-    random.seed(42)
     hg = dummy_hypergraph
     original_edges = list(hg.get_edges(3))
-    random_shuffle(hg, size=3, inplace=True, p=0.0)
+    random_shuffle(hg, size=3, inplace=True, p=0.0, seed=42)
     new_edges = list(hg.get_edges(3))
     assert (
         new_edges == original_edges
@@ -28,10 +27,10 @@ def test_full_shuffle():
     Using a fresh instance here to ensure no interference from other tests.
     """
     random.seed(42)
-    edges = [(0, 1, 2), (3, 4, 5), (6, 7, 8)]
+    edges = [(0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 1, 9), (13, 14, 15), (16, 17, 18)]
     hg = Hypergraph(edges)
     original_edges = list(hg.get_edges(size=3))
-    random_shuffle(hg, size=3, inplace=True, p=1.0)
+    random_shuffle(hg, size=3, inplace=True, p=1.0, seed=42)
     new_edges = list(hg.get_edges(size=3))
     # With p=1.0, all edges should be replaced with new random ones.
     assert (
@@ -47,15 +46,13 @@ def test_intermediate_shuffle():
 
     Using a fresh instance to ensure no interference from other tests.
     """
-    import random
 
-    random.seed(42)
     edges = [(0, 1, 2), (3, 4, 5), (6, 7, 8), (3, 4, 7)]
     hg = Hypergraph(edges)
     original_edges = list(hg.get_edges(size=3))
 
     p = 0.5
-    random_shuffle(hg, size=3, inplace=True, p=p)
+    random_shuffle(hg, size=3, inplace=True, p=p, seed=42)
     new_edges = list(hg.get_edges(size=3))
 
     # Ensure the number of edges remains the same.
@@ -77,15 +74,25 @@ def test_intermediate_shuffle_only_one_size():
 
     Using a fresh instance to ensure no interference from other tests.
     """
-    import random
 
-    random.seed(42)
-    edges = [(0, 1, 2), (3, 4, 5), (6, 7, 8), (3, 4, 7), (1, 2), (3, 4), (5, 6)]
+    edges = [
+        (0, 1, 2),
+        (3, 4, 5),
+        (6, 7, 8),
+        (3, 4, 7),
+        (0, 1, 5),
+        (2, 4, 5),
+        (1, 7, 8),
+        (3, 5, 7),
+        (1, 2),
+        (3, 4),
+        (5, 6),
+    ]
     hg = Hypergraph(edges)
     original_edges = list(hg.get_edges(size=3))
 
     p = 0.5
-    random_shuffle(hg, size=3, inplace=True, p=p)
+    random_shuffle(hg, size=3, inplace=True, p=p, seed=42)
     new_edges = list(hg.get_edges(size=3))
     total_new_edges = list(hg.get_edges())
 
@@ -106,10 +113,9 @@ def test_intermediate_shuffle_only_one_size():
 
 def test_non_inplace(dummy_hypergraph):
     """Test that non-inplace operation returns a new hypergraph while leaving the original unchanged."""
-    random.seed(42)
     hg = dummy_hypergraph
     original_edges = list(hg.get_edges(size=3))
-    new_hg = random_shuffle(hg, size=3, inplace=False, p=1.0)
+    new_hg = random_shuffle(hg, size=3, inplace=False, p=1.0, seed=42)
     # Original hypergraph should remain unchanged.
     assert (
         list(hg.get_edges(size=3)) == original_edges
@@ -124,21 +130,21 @@ def test_both_order_and_size_error(dummy_hypergraph):
     """Test that specifying both order and size raises a ValueError."""
     hg = dummy_hypergraph
     with pytest.raises(ValueError, match="both specified"):
-        random_shuffle(hg, order=2, size=3, inplace=True, p=1.0)
+        random_shuffle(hg, order=2, size=3, inplace=True, p=1.0, seed=42)
 
 
 def test_neither_order_nor_size_error(dummy_hypergraph):
     """Test that specifying neither order nor size raises a ValueError."""
     hg = dummy_hypergraph
     with pytest.raises(ValueError, match="must be specified"):
-        random_shuffle(hg, inplace=True, p=1.0)
+        random_shuffle(hg, inplace=True, p=1.0, seed=42)
 
 
 def test_invalid_p_error(dummy_hypergraph):
     """Test that an invalid value of p raises a ValueError."""
     hg = dummy_hypergraph
     with pytest.raises(ValueError, match="p must be between 0 and 1"):
-        random_shuffle(hg, size=3, inplace=True, p=1.5)
+        random_shuffle(hg, size=3, inplace=True, p=1.5, seed=42)
 
 
 def test_random_shuffle_all_orders_multiple_sizes():
@@ -148,9 +154,6 @@ def test_random_shuffle_all_orders_multiple_sizes():
     For each hyperedge size present in the hypergraph, exactly a fraction `p` of the hyperedges
     should be replaced. The test uses a fixed random seed to ensure reproducibility.
     """
-    import random
-
-    random.seed(60)
 
     # Define a hypergraph with hyperedges of multiple sizes.
     edges = [
@@ -178,7 +181,7 @@ def test_random_shuffle_all_orders_multiple_sizes():
 
     p = 0.5
     # Apply shuffling across all hyperedge sizes.
-    random_shuffle_all_orders(hg, p=p, inplace=True)
+    random_shuffle_all_orders(hg, p=p, inplace=True, seed=42)
 
     # Verify that for each hyperedge size, the number of replaced hyperedges is as expected.
     for size, orig_edges in original_edges_by_size.items():

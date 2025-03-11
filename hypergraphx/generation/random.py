@@ -6,7 +6,7 @@ import random, numpy as np
 from hypergraphx import Hypergraph
 
 
-def random_hypergraph(num_nodes: int, num_edges_by_size: dict):
+def random_hypergraph(num_nodes: int, num_edges_by_size: dict, seed=None):
     """
     Generate a random hypergraph with a given number of nodes and hyperedges for each size.
     If a hyperedge is sampled multiple times, it will be added to the hypergraph only once.
@@ -16,6 +16,8 @@ def random_hypergraph(num_nodes: int, num_edges_by_size: dict):
     num_nodes : int
     num_edges_by_size : dict
         A dictionary mapping the size of the hyperedges to the number of hyperedges of that size.
+    seed : int, optional
+        Seed for the random number generator.
 
     Returns
     -------
@@ -29,6 +31,8 @@ def random_hypergraph(num_nodes: int, num_edges_by_size: dict):
     Hypergraph with 10 nodes and 8 edges.
     Edge list: [(3, 4), (4, 9), (7, 9), (8, 9), (3, 6), (0, 6, 9), (3, 6, 8), (1, 3, 4)]
     """
+    if seed is not None:
+        random.seed(seed)
     h = Hypergraph()
     nodes = list(range(num_nodes))
     h.add_nodes(nodes)
@@ -41,7 +45,7 @@ def random_hypergraph(num_nodes: int, num_edges_by_size: dict):
     return h
 
 
-def random_uniform_hypergraph(num_nodes: int, size: int, num_edges: int):
+def random_uniform_hypergraph(num_nodes: int, size: int, num_edges: int, seed=None):
     """
     Generate a random hypergraph with a given number of nodes and hyperedges of a given size.
     If a hyperedge is sampled multiple times, it will be added to the hypergraph only once.
@@ -54,17 +58,19 @@ def random_uniform_hypergraph(num_nodes: int, size: int, num_edges: int):
         The size of the hyperedges.
     num_edges : int
         The number of hyperedges of the given size.
+    seed : int, optional
+        Seed for the random number generator.
 
     Returns
     -------
     Hypergraph
         A random hypergraph with the given number of nodes and hyperedges of the given size.
     """
-    return random_hypergraph(num_nodes, {size: num_edges})
+    return random_hypergraph(num_nodes, {size: num_edges}, seed)
 
 
 def random_shuffle(
-    hg: Hypergraph, order=None, size=None, inplace=True, p=1.0, preserve_degree=False
+    hg: Hypergraph, order=None, size=None, inplace=True, p=1.0, preserve_degree=False, seed=None
 ):
     """
     Shuffle the nodes of a hypergraph's hyperedges of a given order/size,
@@ -84,6 +90,8 @@ def random_shuffle(
         If True, modify the given hypergraph directly; if False, operate on a copy and return it.
     preserve_degree : bool, optional
         If True, attempt to preserve the degree distribution of the nodes during shuffling.
+    seed : int, optional
+        Seed for the random number generator.
 
     Returns
     -------
@@ -104,6 +112,9 @@ def random_shuffle(
         size = order + 1
     if not (0 <= p <= 1):
         raise ValueError("p must be between 0 and 1.")
+
+    if seed is not None:
+        np.random.seed(seed)
 
     # Retrieve current hyperedges of the specified size.
     current_edges = list(hg.get_edges(size=size))
@@ -149,7 +160,7 @@ def random_shuffle(
 
 
 def random_shuffle_all_orders(
-    hg: Hypergraph, p: float = 1.0, inplace: bool = True, preserve_degree: bool = False
+    hg: Hypergraph, p: float = 1.0, inplace: bool = True, preserve_degree: bool = False, seed=None
 ) -> Hypergraph:
     """
     Shuffle the nodes of a hypergraph's hyperedges of a given order/size,
@@ -165,6 +176,8 @@ def random_shuffle_all_orders(
         If True, modify the given hypergraph directly; if False, operate on a copy and return it.
     preserve_degree : bool, optional
         If True, attempt to preserve the degree distribution of the nodes during shuffling.
+    seed : int, optional
+        Seed for the random number generator.
 
     Returns
     -------
@@ -185,7 +198,7 @@ def random_shuffle_all_orders(
     for size in set(hg.get_sizes()):
         if inplace:
             random_shuffle(
-                target_hg, size=size, p=p, inplace=True, preserve_degree=preserve_degree
+                target_hg, size=size, p=p, inplace=True, preserve_degree=preserve_degree, seed=seed
             )
         else:
             target_hg = random_shuffle(
@@ -194,12 +207,13 @@ def random_shuffle_all_orders(
                 p=p,
                 inplace=False,
                 preserve_degree=preserve_degree,
+                seed=seed
             )
 
     return target_hg
 
 
-def add_random_edge(hg: Hypergraph, order=None, size=None, inplace=True):
+def add_random_edge(hg: Hypergraph, order=None, size=None, inplace=True, seed=None):
     """
     Add a random hyperedge of a given order / size to a hypergraph.
 
@@ -213,6 +227,8 @@ def add_random_edge(hg: Hypergraph, order=None, size=None, inplace=True):
         The size of the edge to add.
     inplace : bool
         Whether to modify the hypergraph in place or return a new one.
+    seed : int, optional
+        Seed for the random number generator
 
     Returns
     -------
@@ -231,6 +247,9 @@ def add_random_edge(hg: Hypergraph, order=None, size=None, inplace=True):
     if size is None:
         size = order + 1
 
+    if seed is not None:
+        random.seed(seed)
+
     nodes = list(hg.get_nodes())
     edge = tuple(sorted(random.sample(nodes, size)))
 
@@ -242,7 +261,7 @@ def add_random_edge(hg: Hypergraph, order=None, size=None, inplace=True):
         return h
 
 
-def add_random_edges(hg: Hypergraph, num_edges, order=None, size=None, inplace=True):
+def add_random_edges(hg: Hypergraph, num_edges, order=None, size=None, inplace=True, seed=None):
     """
     Add random hyperedges of a given order / size to a hypergraph.
 
@@ -258,6 +277,8 @@ def add_random_edges(hg: Hypergraph, num_edges, order=None, size=None, inplace=T
         The size of the edges to add.
     inplace : bool
         Whether to modify the hypergraph in place or return a copy.
+    seed : int, optional
+        Seed for the random number generator
 
     Returns
     -------
@@ -275,6 +296,8 @@ def add_random_edges(hg: Hypergraph, num_edges, order=None, size=None, inplace=T
         raise ValueError("Order or size must be specified.")
     if size is None:
         size = order + 1
+    if seed is not None:
+        random.seed(seed)
 
     nodes = list(hg.get_nodes())
     edges = set()
