@@ -13,7 +13,7 @@ def _canon_edge(edge):
             # Sort the edge itself if it contains IDs (non-tuple elements)
             return tuple(sorted(edge))
 
-    raise ValueError("Edge must be either a tuple of two IDs or a tuple of two tuples")
+    return tuple(sorted(edge))
 
 
 class MultiplexHypergraph:
