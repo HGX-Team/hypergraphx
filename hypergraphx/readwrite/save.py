@@ -34,6 +34,7 @@ def _save_pickle(obj, file_name: str):
             )
 
         data = obj.expose_data_structures()
+
         with open(file_name, "wb") as f:
             pickle.dump(data, f)
     except Exception as e:
@@ -91,37 +92,37 @@ def save_hypergraph(hypergraph, file_name: str, binary=False):
             # Add edges
             if hypergraph_type in ["Hypergraph", "DirectedHypergraph"]:
                 for edge, metadata in hypergraph.get_edges(metadata=True).items():
+                    if weighted:
+                        metadata["weight"] = hypergraph.get_weight(edge)
                     d = {
                         "type": "edge",
                         "interaction": edge,
                         "metadata": metadata,
                     }
-                    if weighted:
-                        d["weight"] = hypergraph.get_weight(edge)
                     out.append(d)
             elif hypergraph_type == "MultiplexHypergraph":
                 for edge, metadata in hypergraph.get_edges(metadata=True).items():
                     edge, layer = edge
+                    metadata["layer"] = layer
+                    if weighted:
+                        metadata["weight"] = hypergraph.get_weight(edge, layer)
                     d = {
                         "type": "edge",
                         "interaction": edge,
                         "metadata": metadata,
-                        "layer": layer,
                     }
-                    if weighted:
-                        d["weight"] = hypergraph.get_weight(edge, layer)
                     out.append(d)
             elif hypergraph_type == "TemporalHypergraph":
                 for edge, metadata in hypergraph.get_edges(metadata=True).items():
                     time, edge = edge
+                    if weighted:
+                        metadata["weight"] = hypergraph.get_weight(edge, time)
+                    metadata["time"] = time
                     d = {
                         "type": "edge",
                         "interaction": edge,
                         "metadata": metadata,
-                        "time": time,
                     }
-                    if weighted:
-                        d["weight"] = hypergraph.get_weight(edge, time)
                     out.append(d)
             else:
                 raise ValueError("Invalid hypergraph type.")

@@ -1,6 +1,21 @@
 from hypergraphx import Hypergraph
 
 
+def _canon_edge(edge):
+    if not isinstance(edge, tuple):
+        raise ValueError("Edge must be a tuple")
+
+    if len(edge) == 2:
+        if isinstance(edge[0], tuple) and isinstance(edge[1], tuple):
+            # Sort the inner tuples and return
+            return (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
+        elif not isinstance(edge[0], tuple) and not isinstance(edge[1], tuple):
+            # Sort the edge itself if it contains IDs (non-tuple elements)
+            return tuple(sorted(edge))
+
+    raise ValueError("Edge must be either a tuple of two IDs or a tuple of two tuples")
+
+
 class TemporalHypergraph:
     """
     A Temporal Hypergraph is a hypergraph where each hyperedge is associated with a specific timestamp.
@@ -128,12 +143,14 @@ class TemporalHypergraph:
         return self._node_metadata
 
     def set_edge_metadata(self, edge, metadata):
+        edge = _canon_edge(edge)
         if edge not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         e_id = self._edge_list[edge]
         self._edge_metadata[e_id] = metadata
 
     def get_edge_metadata(self, edge, time):
+        edge = _canon_edge(edge)
         k = (time, edge)
         if k not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
@@ -173,12 +190,14 @@ class TemporalHypergraph:
         return self._weighted
 
     def get_weight(self, edge, time):
+        edge = _canon_edge(edge)
         if (time, edge) not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         e_id = self._edge_list[(time, edge)]
         return self._weights[e_id]
 
     def set_weight(self, edge, time, weight):
+        edge = _canon_edge(edge)
         if not self._weighted and weight != 1:
             raise ValueError(
                 "If the hypergraph is not weighted, weight can be 1 or None."
@@ -209,7 +228,7 @@ class TemporalHypergraph:
         if t < 0:
             raise ValueError("Time must be a positive integer")
 
-        _edge = tuple(sorted(edge))
+        _edge = _canon_edge(edge)
         edge = (t, _edge)
 
         if edge not in self._edge_list:
@@ -247,6 +266,7 @@ class TemporalHypergraph:
         ValueError
             If the edge is not in the hypergraph.
         """
+        _edge = _canon_edge(edge)
         if edge not in self._edge_list:
             raise ValueError(f"Edge {edge} not in hypergraph.")
 
@@ -433,7 +453,7 @@ class TemporalHypergraph:
         self._node_metadata[node][field] = value
 
     def set_attr_to_edge_metadata(self, edge, time, field, value):
-        edge = tuple(sorted(edge))
+        _edge = _canon_edge(edge)
         if edge not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         self._edge_metadata[self._edge_list[(time, edge)]][field] = value
@@ -444,7 +464,7 @@ class TemporalHypergraph:
         del self._node_metadata[node][field]
 
     def remove_attr_from_edge_metadata(self, edge, time, field):
-        edge = tuple(sorted(edge))
+        _edge = _canon_edge(edge)
         if edge not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         del self._edge_metadata[self._edge_list[(time, edge)]][field]

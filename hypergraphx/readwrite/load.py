@@ -142,7 +142,7 @@ def load_hypergraph(file_name: str) -> Hypergraph:
                     H.add_node(node["idx"], node["metadata"])
                 for edge in edges:
                     interaction = edge["interaction"]
-                    weight = edge.get("weight", None) if weighted else None
+                    weight = edge["metadata"].get("weight", None) if weighted else None
                     H.add_edge(interaction, weight, metadata=edge["metadata"])
                 return H
 
@@ -161,8 +161,10 @@ def load_hypergraph(file_name: str) -> Hypergraph:
                 # Add edges to the hypergraph
                 for edge in edges:
                     interaction = edge["interaction"]
-                    weight = edge.get("weight", None) if weighted else None
-                    layer = edge.get("layer")  # Retrieve the layer for the edge
+                    weight = edge["metadata"].get("weight", None) if weighted else None
+                    layer = edge["metadata"].get(
+                        "layer"
+                    )  # Retrieve the layer for the edge
                     metadata = edge["metadata"]
 
                     # Add the edge to the specified layer
@@ -192,8 +194,8 @@ def load_hypergraph(file_name: str) -> Hypergraph:
                 # Add edges to the hypergraph
                 for edge in edges:
                     interaction = edge["interaction"]
-                    weight = edge.get("weight", None) if weighted else None
-                    time = edge.get("time")
+                    weight = edge["metadata"].get("weight", None) if weighted else None
+                    time = edge["metadata"].get("time")
                     metadata = edge["metadata"]
                     H.add_edge(interaction, time, weight=weight, metadata=metadata)
                 return H
