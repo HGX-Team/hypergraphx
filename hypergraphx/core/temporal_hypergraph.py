@@ -2,8 +2,7 @@ from hypergraphx import Hypergraph
 
 
 def _canon_edge(edge):
-    if not isinstance(edge, tuple):
-        raise ValueError("Edge must be a tuple")
+    edge = tuple(edge)
 
     if len(edge) == 2:
         if isinstance(edge[0], tuple) and isinstance(edge[1], tuple):
