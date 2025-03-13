@@ -437,3 +437,32 @@ def test_get_incident_edges_different_times():
         15,
         ("A", "B"),
     ) in incident_edges, "Edge (15, ('A', 'B')) should be incident to node A."
+
+
+def test_get_times_for_edge():
+    """
+    Test retrieving times at which an edge is present in a temporal hypergraph.
+    """
+    thg = TemporalHypergraph()
+    thg.add_edge(("A", "B"), time=5)
+    thg.add_edge(("B", "A"), time=10)
+    thg.add_edge(("A", "C"), time=15)
+    times = thg.get_times_for_edge(("A", "B"))
+    assert times == [5, 10], "Edge ('A', 'B') should be present at times 5 and 10."
+
+
+def test_get_times_for_directed_edge():
+    """
+    Test retrieving times at which an edge is present in a temporal hypergraph.
+    """
+    thg = TemporalHypergraph()
+    thg.add_edge((("A",), ("B",)), time=5)
+    thg.add_edge((("A", "B"), ("C", "D")), time=5)
+    thg.add_edge((("A", "B"), ("D", "C")), time=15)
+    thg.add_edge((("B", "A"), ("D", "C")), time=25)
+    times = thg.get_times_for_edge((("B", "A"), ("C", "D")))
+    assert times == [
+        5,
+        15,
+        25,
+    ], "Edge (('A', 'B'), ('C', 'D')) should be present at times 5 and 10."

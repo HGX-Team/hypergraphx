@@ -212,6 +212,14 @@ class TemporalHypergraph:
             return self._node_metadata
         return list(self._node_metadata.keys())
 
+    def get_times_for_edge(self, edge):
+        edge = _canon_edge(edge)
+        times = []
+        for time, _edge in self._edge_list.keys():
+            if _edge == edge:
+                times.append(time)
+        return times
+
     def add_edge(self, edge, time, weight=None, metadata=None):
         if not isinstance(time, int):
             raise TypeError("Time must be an integer")
