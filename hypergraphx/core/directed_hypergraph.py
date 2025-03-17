@@ -3,6 +3,22 @@ from typing import Tuple, List
 from sklearn.preprocessing import LabelEncoder
 
 
+def _get_edge_size(self, edge):
+    """
+    Get the size of a hyperedge.
+
+    Parameters
+    ----------
+    edge
+
+    Returns
+    -------
+    int
+        The size of the hyperedge.
+    """
+    return len(edge[0]) + len(edge[1])
+
+
 class DirectedHypergraph:
     """
     A Directed Hypergraph is a generalization of a graph in which hyperedges have a direction.
@@ -95,6 +111,37 @@ class DirectedHypergraph:
         else:
             raise ValueError(
                 "Invalid value for source_target. Must be 'source' or 'target'."
+            )
+
+    def get_incident_edges(self, node, order: int = None, size: int = None):
+        """
+        Get the incident edges of a node.
+
+        Parameters
+        ----------
+        node : object
+            The node of interest.
+        order : int, optional
+            The order of the hyperedges to consider. If None, all hyperedges are considered.
+        size : int, optional
+            The size of the hyperedges to consider. If None, all hyperedges are considered.
+
+        Returns
+        -------
+        list
+            The list of incident edges.
+        """
+        if order is not None and size is not None:
+            raise ValueError("Order and size cannot be both specified.")
+        if order is None and size is None:
+            return self.get_source_edges(node) + self.get_target_edges(node)
+        elif size is not None:
+            return self.get_source_edges(node, size=size) + self.get_target_edges(
+                node, size=size
+            )
+        elif order is not None:
+            return self.get_source_edges(node, order=order) + self.get_target_edges(
+                node, order=order
             )
 
     def set_node_metadata(self, node, metadata):
@@ -389,21 +436,6 @@ class DirectedHypergraph:
                 for e_idx in self._adj_target[node]
                 if self._get_edge_size(self._reverse_edge_list[e_idx]) - 1 == order
             ]
-
-    def _get_edge_size(self, edge):
-        """
-        Get the size of a hyperedge.
-
-        Parameters
-        ----------
-        edge
-
-        Returns
-        -------
-        int
-            The size of the hyperedge.
-        """
-        return len(edge[0]) + len(edge[1])
 
     def get_edges(
         self,

@@ -15,6 +15,17 @@ def _canon_edge(edge):
     return tuple(sorted(edge))
 
 
+def _get_size(edge):
+    if len(edge) == 2 and isinstance(edge[0], tuple) and isinstance(edge[1], tuple):
+        return len(edge[0]) + len(edge[1])
+    else:
+        return len(edge)
+
+
+def _get_order(edge):
+    return _get_size(edge) - 1
+
+
 class TemporalHypergraph:
     """
     A Temporal Hypergraph is a hypergraph where each hyperedge is associated with a specific timestamp.
@@ -112,6 +123,25 @@ class TemporalHypergraph:
         self._adj = adj_dict
 
     def get_incident_edges(self, node):
+        """
+        Get the edges incident to a node.
+
+        Parameters
+        ----------
+        node: object
+            The node to get the incident edges for.
+
+        Returns
+        -------
+        list
+            A list of edges incident to the node.
+
+        Raises
+        ------
+        ValueError
+            If the node is not in the hypergraph.
+
+        """
         if node not in self._adj:
             raise ValueError("Node {} not in hypergraph.".format(node))
         return [self._reverse_edge_list[e_id] for e_id in self._adj[node]]
@@ -219,7 +249,52 @@ class TemporalHypergraph:
                 times.append(time)
         return times
 
+    def get_sizes(self):
+        """
+        Get the size of each edge in the hypergraph.
+
+        Returns
+        -------
+        list
+            A list of integers representing the size of each edge.
+        """
+        return [_get_size(edge[1]) for edge in self._edge_list.keys()]
+
+    def get_orders(self):
+        """
+        Get the order of each edge in the hypergraph.
+
+        Returns
+        -------
+        list
+            A list of integers representing the order of each edge.
+        """
+        return [_get_order(edge[1]) for edge in self._edge_list.keys()]
+
     def add_edge(self, edge, time, weight=None, metadata=None):
+        """
+        Add an edge to the temporal hypergraph. If the edge already exists, the weight is updated.
+
+        Parameters
+        ----------
+        edge : tuple
+            The edge to add. If the hypergraph is undirected, should be a tuple.
+            If the hypergraph is directed, should be a tuple of two tuples.
+        time: int
+            The time at which the edge occurs.
+        weight: float, optional
+            The weight of the edge. Default is None.
+
+        metadata: dict, optional
+            Metadata for the edge. Default is an empty dictionary.
+
+        Raises
+        ------
+        TypeError
+            If time is not an integer.
+        ValueError
+            If the hypergraph is not weighted and weight is not None or 1.
+        """
         if not isinstance(time, int):
             raise TypeError("Time must be an integer")
 
@@ -338,6 +413,27 @@ class TemporalHypergraph:
             del self._node_metadata[node]
 
     def add_edges(self, edge_list, time_list, weights=None, metadata=None):
+        """
+        Add multiple edges to the temporal hypergraph.
+
+        Parameters
+        ----------
+        edge_list: list
+            A list of edges to add.
+        time_list: list
+            A list of times corresponding to each edge in `edge_list`.
+        weights: list, optional
+            A list of weights for each edge in `edge_list`. Must be provided if the hypergraph is weighted.
+        metadata: list, optional
+            A list of metadata dictionaries for each edge in `edge_list`.
+
+        Raises
+        ------
+        TypeError
+            If `edge_list` and `time_list` are not lists.
+        ValueError
+            If `edge_list` and `time_list` have mismatched lengths.
+        """
         if not isinstance(edge_list, list) or not isinstance(time_list, list):
             raise TypeError("Edge list and time list must be lists")
 
@@ -372,6 +468,21 @@ class TemporalHypergraph:
                 i += 1
 
     def get_edges(self, time_window=None, metadata=False):
+        """
+        Get the edges in the temporal hypergraph. If a time window is provided, only edges within the window are returned.
+
+        Parameters
+        ----------
+        time_window: tuple, optional
+            A tuple of two integers representing the start and end times of the window.
+        metadata: bool, optional
+            If True, return edge metadata. Default is False.
+
+        Returns
+        -------
+        list
+            A list of edges in the hypergraph.
+        """
         edges = []
         if time_window is None:
             if metadata:
