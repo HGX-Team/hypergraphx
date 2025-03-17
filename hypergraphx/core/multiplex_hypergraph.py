@@ -114,6 +114,16 @@ class MultiplexHypergraph:
             raise ValueError("Node {} not in hypergraph.".format(node))
         return [self._reverse_edge_list[e_id] for e_id in self._adj[node]]
 
+    def degree(self, node, order=None, size=None):
+        from hypergraphx.measures.degree import degree
+
+        return degree(self, node, order=order, size=size)
+
+    def degree_sequence(self, order=None, size=None):
+        from hypergraphx.measures.degree import degree_sequence
+
+        return degree_sequence(self, order=order, size=size)
+
     def get_edge_metadata(self, edge, layer):
         edge = tuple(sorted(edge))
         k = (edge, layer)

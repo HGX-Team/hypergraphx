@@ -587,6 +587,16 @@ class TemporalHypergraph:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         del self._edge_metadata[self._edge_list[(time, edge)]][field]
 
+    def degree(self, node, order=None, size=None):
+        from hypergraphx.measures.degree import degree
+
+        return degree(self, node, order=order, size=size)
+
+    def degree_sequence(self, order=None, size=None):
+        from hypergraphx.measures.degree import degree_sequence
+
+        return degree_sequence(self, order=order, size=size)
+
     def expose_data_structures(self):
         """
         Expose the internal data structures of the temporal hypergraph for serialization.

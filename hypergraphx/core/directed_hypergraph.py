@@ -551,6 +551,16 @@ class DirectedHypergraph:
         del self._adj_source[node]
         del self._adj_target[node]
 
+    def degree(self, node, order=None, size=None):
+        from hypergraphx.measures.degree import degree
+
+        return degree(self, node, order=order, size=size)
+
+    def degree_sequence(self, order=None, size=None):
+        from hypergraphx.measures.degree import degree_sequence
+
+        return degree_sequence(self, order=order, size=size)
+
     def get_nodes(self, metadata=False):
         """Returns the list of nodes in the hypergraph."""
         if not metadata:

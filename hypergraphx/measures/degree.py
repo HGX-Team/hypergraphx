@@ -1,6 +1,11 @@
 import numpy as np
 
-from hypergraphx import Hypergraph
+from hypergraphx import (
+    Hypergraph,
+    DirectedHypergraph,
+    TemporalHypergraph,
+    MultiplexHypergraph,
+)
 
 
 def degree(hg: Hypergraph, node, order=None, size=None):
