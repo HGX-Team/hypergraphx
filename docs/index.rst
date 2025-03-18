@@ -1,8 +1,3 @@
-.. Hypergraphx documentation master file, created by
-sphinx-quickstart on Tue Mar 28 01:59:32 2023.
-You can adapt this file completely to your liking, but it should at least
-contain the root `toctree` directive.
-
 Welcome to Hypergraphx's documentation!
 =======================================
 .. image:: ../logo/logo.png
