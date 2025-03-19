@@ -8,13 +8,13 @@ from hypergraphx import (
 )
 
 
-def degree(hg: Hypergraph, node, order=None, size=None):
+def degree(hg: Hypergraph|DirectedHypergraph, node, order=None, size=None):
     """
     Computes the degree of a node in the hypergraph.
 
     Parameters
     ----------
-    hg : Hypergraph
+    hg : Hypergraph|DirectedHypergraph
         The hypergraph of interest.
     node : Node
         The node to check.
@@ -38,14 +38,14 @@ def degree(hg: Hypergraph, node, order=None, size=None):
         return len(hg.get_incident_edges(node, order=order))
 
 
-def degree_sequence(hg: Hypergraph, order=None, size=None):
+def degree_sequence(hg: Hypergraph|DirectedHypergraph, order=None, size=None):
     """
     Computes the degree sequence of the hypergraph.
 
     Parameters
     ----------
-    hg : Hypergraph
-        The hypergraph ofinterest.
+    hg : Hypergraph|DirectedHypergraph
+        The hypergraph of interest.
     order : int
         The order of the hyperedges to consider. If None, all hyperedges are considered.
     size : int
@@ -95,13 +95,13 @@ def degree_correlation(hg: "Hypergraph") -> np.ndarray:
     return matrix_degree_corr
 
 
-def degree_distribution(hg: "Hypergraph", order=None, size=None):
+def degree_distribution(hg: Hypergraph|DirectedHypergraph, order=None, size=None):
     """
     Computes the degree distribution of the hypergraph.
 
     Parameters
     ----------
-    hg : Hypergraph
+    hg : Hypergraph|DirectedHypergraph
         The hypergraph of interest.
     order : int
         The order of the hyperedges to consider. If None, all hyperedges are considered.
