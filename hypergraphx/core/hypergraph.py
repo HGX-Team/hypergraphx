@@ -450,6 +450,9 @@ class Hypergraph:
     def set_edge_list(self, edge_list):
         self._edge_list = edge_list
 
+    def get_edge_list(self):
+        return self._edge_list
+
     def add_empty_edge(self, name, metadata):
         if name not in self._empty_edges:
             self._empty_edges[name] = metadata
@@ -537,8 +540,6 @@ class Hypergraph:
                 else {edge: self.get_edge_metadata(edge) for edge in edges}
             )
 
-    def get_edge_list(self):
-        return self._edge_list
     #Weight
     def set_weight(self, edge, weight):
         """Sets the weight of the specified edge.
