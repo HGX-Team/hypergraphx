@@ -272,6 +272,12 @@ class Hypergraph:
         -------
         list
             The incident hyperedges of the node.
+
+        Raises
+        ------
+        ValueError
+            If the node is not in the hypergraph.
+
         """
         if node not in self._adj:
             raise ValueError("Node {} not in hypergraph.".format(node))
@@ -521,7 +527,6 @@ class Hypergraph:
             for edge in edges:
                 h.set_edge_metadata(edge, self.get_edge_metadata(edge))
             return h
-
         elif subhypergraph:
             h = Hypergraph(weighted=self._weighted)
             if self._weighted:
