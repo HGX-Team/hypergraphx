@@ -974,6 +974,10 @@ class Hypergraph:
 
         return dual_random_walk_adjacency(self, return_mapping)
 
+    def adjacency_factor(self,t:int = 0):
+        from hypergraphx.linalg import adjacency_factor
+        return adjacency_factor(self, t)
+
     #Metadata
     def set_hypergraph_metadata(self, metadata):
         self._hypergraph_metadata = metadata

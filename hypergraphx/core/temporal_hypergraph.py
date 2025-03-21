@@ -1,4 +1,5 @@
 import copy
+import math
 
 from sklearn.preprocessing import LabelEncoder
 
@@ -856,6 +857,20 @@ class TemporalHypergraph:
                     break
         return uniform
 
+    def min_time(self):
+        min = math.inf
+        for edge in self._edge_list:
+            if min > edge[0]:
+                min = edge[0]
+        return min
+
+    def max_time(self):
+        max = -math.inf
+        for edge in self._edge_list:
+            if max < edge[0]:
+                max = edge[0]
+        return max
+
     #Adj
     def get_adj_dict(self):
         return self._adj
@@ -889,6 +904,40 @@ class TemporalHypergraph:
         from hypergraphx.utils.cc import is_isolated
 
         return is_isolated(self, node, size=size, order=order)
+
+    def temporal_adjacency_matrix(self,return_mapping: bool = False):
+        from hypergraphx.linalg import temporal_adjacency_matrix
+        return temporal_adjacency_matrix(self, return_mapping)
+
+    def annealed_adjacency_matrix(self, return_mapping: bool = False):
+        from hypergraphx.linalg import annealed_adjacency_matrix
+        return annealed_adjacency_matrix(self, return_mapping)
+
+    def adjacency_factor(self, t: int = 0):
+        from hypergraphx.linalg import adjacency_factor
+        return adjacency_factor(self, t)
+
+    def subhypergraph(self, time_window = None, add_all_nodes: bool = False):
+        edges = self.get_edges()
+        res = dict()
+        if time_window is None:
+            time_window = (-math.inf, math.inf)
+        if not isinstance(time_window, tuple):
+            raise ValueError("Time window must be a tuple of length 2 or None")
+
+        for edge in edges:
+            if time_window[0] <= edge[0] < time_window[1]:
+                if edge[0] not in res.keys():
+                    res[edge[0]] = Hypergraph(weighted=self.is_weighted())
+                weight = self.get_weight(edge[1], edge[0])
+                res[edge[0]].add_edge(edge[1], weight)
+        if add_all_nodes:
+            for node in self.get_nodes():
+                for k,v in res.items():
+                    if v.check_node(node):
+                        v.add_node(node)
+
+        return res
 
     #Metadata
     def set_hypergraph_metadata(self, metadata):

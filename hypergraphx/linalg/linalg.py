@@ -3,10 +3,13 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
+from nbformat.v4 import new_markdown_cell
 from scipy import sparse
+from scipy.sparse import csr_matrix, csc_matrix
 from scipy.special import factorial
+from xgi import subhypergraph
 
-from hypergraphx import Hypergraph
+from hypergraphx import Hypergraph, TemporalHypergraph
 from hypergraphx.utils.labeling import get_inverse_mapping
 
 
@@ -257,9 +260,9 @@ def adjacency_matrix_by_order(
     adj = adj - diagonal_matrix
     return adj, mapping
 
-
-def temporal_adjacency_matrix_by_order(
-    temporal_hypergraph: Dict[int, Hypergraph], order: int
+def temporal_adjacency_matrix(
+    temporal_hypergraph: TemporalHypergraph,
+    return_mapping: bool = False,
 ) -> Dict[int, sparse.csc_array]:
     """Compute the temporal adjacency matrix of the temporal hypergraph by order.
     For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix at time t
@@ -275,15 +278,48 @@ def temporal_adjacency_matrix_by_order(
     A dictionary encoding the temporal adjacency matrix, i.e., {time : adjacency matrix}, and the dictionary of node mappings.
     """
     temporal_adjacency = {}
-    for t in temporal_hypergraph.keys():
-        hypergraph_t = temporal_hypergraph[t]
+    subhypergraphs = temporal_hypergraph.subhypergraph()
+    mapping = dict()
+    for t in subhypergraphs.keys():
+        hypergraph_t = subhypergraphs[t]
+        if return_mapping:
+            adj_t, map = adjacency_matrix(hypergraph_t,return_mapping)
+            mapping[t] = map
+        else:
+            adj_t = adjacency_matrix(hypergraph_t, return_mapping)
+        temporal_adjacency[t] = adj_t
+    if return_mapping:
+        return temporal_adjacency, mapping
+    else:
+        return temporal_adjacency
+
+def temporal_adjacency_matrix_by_order(
+    temporal_hypergraph: TemporalHypergraph, order: int
+) -> Dict[int, sparse.csc_array]:
+    """Compute the temporal adjacency matrix of the temporal hypergraph by order.
+    For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix at time t
+    counts the number of hyperedges of a given order, existing at time t, where both i and j are contained.
+
+    Parameters
+    ----------
+    temporal_hypergraph: a dictionary {time : Hypergraph}.
+    order: the order.
+
+    Returns
+    -------
+    A dictionary encoding the temporal adjacency matrix, i.e., {time : adjacency matrix}, and the dictionary of node mappings.
+    """
+    temporal_adjacency = {}
+    subhypergraphs = temporal_hypergraph.subhypergraph()
+    for t in subhypergraphs.keys():
+        hypergraph_t = subhypergraphs[t]
         adj_t, mapping = adjacency_matrix_by_order(hypergraph_t, order)
         temporal_adjacency[t] = adj_t
     return temporal_adjacency, mapping
 
 
 def temporal_adjacency_matrices_all_orders(
-    temporal_hypergraph: Dict[int, Hypergraph], max_order: int
+    temporal_hypergraph: TemporalHypergraph, max_order: int = None
 ):  # -> Dict[int, Tuple[sparse.csc_array]] ### Fra, I am not sure how to declare the output type
     """Compute the temporal adjacency matrices of the temporal hypergraph for all orders.
     For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix of order d at time t
@@ -299,6 +335,8 @@ def temporal_adjacency_matrices_all_orders(
     A dictionary encoding the temporal adjacency matrices, i.e., {order : {time : adjacency matrix}}, and the dictionary of node mappings.
     """
     temporal_adjacencies = {}
+    if max_order is None:
+        max_order = temporal_hypergraph.max_order()
     for order in range(1, max_order + 1):
         adj_order_d, mapping = temporal_adjacency_matrix_by_order(
             temporal_hypergraph, order
@@ -308,8 +346,9 @@ def temporal_adjacency_matrices_all_orders(
 
 
 def annealed_adjacency_matrix(
-    temporal_adjacency_matrix: Dict[int, sparse.csc_array]
-) -> sparse.csc_array:
+    temporal_hypergraph: TemporalHypergraph,
+    return_mapping: bool = False,
+) -> sparse.csc_array | Tuple[sparse.csc_array, Dict[int, Any]]:
     """Compute the annealed adjacency matrix of the temporal hypergraph by order.
     For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix
     counts the average number of hyperedges of a given order where both i and j are contained over time.
@@ -322,12 +361,39 @@ def annealed_adjacency_matrix(
     -------
     The annealed adjacency matrix for a given order.
     """
+    encoder = temporal_hypergraph.get_mapping()
+    temporal_adjacency_matrix, mapping = temporal_hypergraph.temporal_adjacency_matrix(return_mapping=True)
     T = len(temporal_adjacency_matrix.keys())
     temporal_adjacency_matrix_lst = temporal_adjacency_matrix.values()
-    annealed_adjacency_matrix = sum(temporal_adjacency_matrix_lst) / T
-    return annealed_adjacency_matrix
+    res = dict()
+    t = min(mapping.keys())
+    for matrix in temporal_adjacency_matrix_lst:
+        for j in range(matrix.shape[1]):
+            for i in range(matrix.indptr[j], matrix.indptr[j + 1]):
+                row = mapping[t][matrix.indices[i]]
+                column = mapping[t][j]
+                if row != column:
+                    cell = (row, column)
+                    cell = tuple(sorted(cell))
+                    if cell not in res.keys():
+                        res[cell] = 0
+                    res[cell] += matrix.data[i]
+        t+=1
+    res = {k: v / T for k,v in res.items()}
+    matrix_row = []
+    matrix_col = []
+    matrix_val = []
+    for k,v in res.items():
+        matrix_row.append(encoder.transform([k[0]])[0])
+        matrix_col.append(encoder.transform([k[1]])[0])
+        matrix_val.append(v)
+    matrix = csc_matrix((matrix_val, (matrix_row, matrix_col)))
+    if return_mapping:
+        return matrix, get_inverse_mapping(encoder)
+    else:
+        return matrix
 
-
+#TODO: Check and DO
 def annealed_adjacency_matrices_all_orders(
     temporal_adjacency_matrices: Dict[int, Dict[int, sparse.csc_array]]
 ):  # -> Tuple[sparse.csc_array]: ###Fra, here as well I am not sure!
@@ -526,3 +592,27 @@ def adjacency_tensor(hypergraph: Hypergraph) -> np.ndarray:
             T[tuple(perm)] = 1
 
     return T
+
+def adjacency_factor(hypergraph: Hypergraph|TemporalHypergraph, t: int = 0):
+    if isinstance(hypergraph, Hypergraph):
+        matrix, mapping = hypergraph.adjacency_matrix(return_mapping=True)
+    elif isinstance(hypergraph, TemporalHypergraph):
+        matrix, mapping = hypergraph.annealed_adjacency_matrix(return_mapping=True)
+    else:
+        raise ValueError("An Hypergraph or Temporal Hypergraph must be provided.")
+    new_mapping = dict()
+    for k, v in mapping.items():
+        new_mapping[v] = k
+    mapping = new_mapping
+    res = dict()
+    for node1 in hypergraph.get_nodes():
+        res[node1] = 0
+        for node2 in hypergraph.get_nodes():
+            if node1 != node2:
+                try:
+                    val = round(float(matrix[mapping[node1], mapping[node2]]),3)
+                except IndexError:
+                    val = round(float(matrix[mapping[node2], mapping[node1]]),3)
+                if val != 0:
+                    res[node1] += val ** t
+    return res
