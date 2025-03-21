@@ -1,9 +1,6 @@
 import networkx as nx
-from networkx import subgraph
-
 from hypergraphx import Hypergraph, TemporalHypergraph, DirectedHypergraph
 from hypergraphx.representations.projections import line_graph, bipartite_projection
-
 
 def s_betweenness(H: Hypergraph, s=1):
     """
@@ -22,7 +19,6 @@ def s_betweenness(H: Hypergraph, s=1):
     lg, id_to_edge = line_graph(H, s=s)
     b = nx.betweenness_centrality(lg)
     return {id_to_edge[k]: v for k, v in b.items()}
-
 
 def s_closeness(H: Hypergraph, s=1):
     """

@@ -917,7 +917,22 @@ class TemporalHypergraph:
         from hypergraphx.linalg import adjacency_factor
         return adjacency_factor(self, t)
 
-    def subhypergraph(self, time_window = None, add_all_nodes: bool = False):
+    def subhypergraph(self, time_window = None, add_all_nodes: bool = False) -> dict[int,Hypergraph]:
+        """
+        Create an hypergraph for each time of the Temporal Hypergraph.
+        Parameters
+        ----------
+        time_window : tuple[int,int]|None, optional
+            Give the time window (a,b), only the times inside the interval [a,b) will be considered.
+            If not specified all the times will be considered.
+        add_all_nodes : bool, optional
+            If True, the hypergraphs will have all the nodes of the Temporal Hypergraph even if they are not present
+            in their corresponding time.
+        Returns
+        -------
+        dict: dict[int, Hypergraph]
+            A dictionary where the keys are the time and the values are the hypergraphs
+        """
         edges = self.get_edges()
         res = dict()
         if time_window is None:

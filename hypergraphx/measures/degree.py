@@ -14,13 +14,13 @@ def degree(hg: Hypergraph|DirectedHypergraph|TemporalHypergraph, node, order=Non
 
     Parameters
     ----------
-    hg : Hypergraph|DirectedHypergraph
+    hg : Hypergraph|DirectedHypergraph|TemporalHypergraph
         The hypergraph of interest.
     node : Node
         The node to check.
-    order : int
+    order : int, optional
         The order of the hyperedges to consider. If None, all hyperedges are considered.
-    size : int
+    size : int, optional
         The size of the hyperedges to consider. If None, all hyperedges are considered.
 
     Returns
@@ -44,11 +44,11 @@ def degree_sequence(hg: Hypergraph|DirectedHypergraph|TemporalHypergraph, order=
 
     Parameters
     ----------
-    hg : Hypergraph|DirectedHypergraph
+    hg : Hypergraph|DirectedHypergraph|TemporalHypergraph
         The hypergraph of interest.
-    order : int
+    order : int, optional
         The order of the hyperedges to consider. If None, all hyperedges are considered.
-    size : int
+    size : int, optional
         The size of the hyperedges to consider. If None, all hyperedges are considered.
 
     Returns
@@ -101,11 +101,11 @@ def degree_distribution(hg: Hypergraph|DirectedHypergraph|TemporalHypergraph, or
 
     Parameters
     ----------
-    hg : Hypergraph|DirectedHypergraph
+    hg : Hypergraph|DirectedHypergraph|TemporalHypergraph
         The hypergraph of interest.
-    order : int
+    order : int, optional
         The order of the hyperedges to consider. If None, all hyperedges are considered.
-    size : int
+    size : int, optional
         The size of the hyperedges to consider. If None, all hyperedges are considered.
 
     Returns
