@@ -4,7 +4,7 @@ from typing import Tuple, List
 from sklearn.preprocessing import LabelEncoder
 
 
-def _get_edge_size(self, edge):
+def _get_edge_size(edge):
     """
     Get the size of a hyperedge.
 
@@ -417,13 +417,13 @@ class DirectedHypergraph:
             return [
                 self._reverse_edge_list[e_idx]
                 for e_idx in self._adj_source[node]
-                if self._get_edge_size(self._reverse_edge_list[e_idx]) == size
+                if _get_edge_size(self._reverse_edge_list[e_idx]) == size
             ]
         elif order is not None:
             return [
                 self._reverse_edge_list[e_idx]
                 for e_idx in self._adj_source[node]
-                if self._get_edge_size(self._reverse_edge_list[e_idx]) - 1 == order
+                if _get_edge_size(self._reverse_edge_list[e_idx]) - 1 == order
             ]
 
     def get_target_edges(self, node, order=None, size=None):
@@ -451,13 +451,13 @@ class DirectedHypergraph:
             return [
                 self._reverse_edge_list[e_idx]
                 for e_idx in self._adj_target[node]
-                if self._get_edge_size(self._reverse_edge_list[e_idx]) == size
+                if _get_edge_size(self._reverse_edge_list[e_idx]) == size
             ]
         elif order is not None:
             return [
                 self._reverse_edge_list[e_idx]
                 for e_idx in self._adj_target[node]
-                if self._get_edge_size(self._reverse_edge_list[e_idx]) - 1 == order
+                if _get_edge_size(self._reverse_edge_list[e_idx]) - 1 == order
             ]
 
     def get_edges(
@@ -483,13 +483,13 @@ class DirectedHypergraph:
                 edges = [
                     edge
                     for edge in list(self._edge_list.keys())
-                    if self._get_edge_size(edge) - 1 == order
+                    if _get_edge_size(edge) - 1 == order
                 ]
             else:
                 edges = [
                     edge
                     for edge in list(self._edge_list.keys())
-                    if self._get_edge_size(edge) - 1 <= order
+                    if _get_edge_size(edge) - 1 <= order
                 ]
 
         if subhypergraph and keep_isolated_nodes:
