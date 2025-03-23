@@ -696,6 +696,28 @@ class DirectedHypergraph:
         """
         return [len(edge[0]) + len(edge[1]) for edge in self._edge_list.keys()]
 
+    def max_size(self):
+        """
+        Returns the maximum size of the hypergraph.
+
+        Returns
+        -------
+        int
+            Maximum size of the hypergraph.
+        """
+        return max(self.get_sizes())
+
+    def max_order(self):
+        """
+        Returns the maximum order of the hypergraph.
+
+        Returns
+        -------
+        int
+            Maximum order of the hypergraph.
+        """
+        return self.max_size() - 1
+
     def distribution_sizes(self):
         """
         Returns the distribution of sizes of the hyperedges in the hypergraph.

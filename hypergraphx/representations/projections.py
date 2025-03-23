@@ -1,6 +1,4 @@
 import networkx as nx
-from pyparsing import srange
-
 from hypergraphx import Hypergraph, DirectedHypergraph
 from hypergraphx.measures.edge_similarity import intersection, jaccard_similarity
 
