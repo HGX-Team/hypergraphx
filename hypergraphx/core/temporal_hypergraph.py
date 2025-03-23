@@ -122,7 +122,7 @@ class TemporalHypergraph:
                 edge_list, time_list, weights=weights, metadata=edge_metadata
             )
 
-    #Node
+    # Node
     def add_node(self, node, metadata=None):
         if metadata is None:
             metadata = {}
@@ -319,7 +319,7 @@ class TemporalHypergraph:
                 ]
             )
 
-    #Edge
+    # Edge
     def add_edge(self, edge, time, weight=None, metadata=None):
         """
         Add an edge to the temporal hypergraph. If the edge already exists, the weight is updated.
@@ -438,24 +438,26 @@ class TemporalHypergraph:
                 )
                 i += 1
 
-    def remove_edge(self, edge):
+    def remove_edge(self, edge, time):
         """
         Remove an edge from the temporal hypergraph.
 
         Parameters
         ----------
         edge : tuple
-            The edge to remove. Should be of the form (time, (nodes...)).
+            The edge to remove.
+        time : int
+            The time at which the edge occurs.
 
         Raises
         ------
         ValueError
             If the edge is not in the hypergraph.
         """
-        _edge = _canon_edge(edge)
+        edge = _canon_edge(edge)
+        edge = (time, edge)
         if edge not in self._edge_list:
             raise ValueError(f"Edge {edge} not in hypergraph.")
-
         edge_id = self._edge_list[edge]
 
         # Remove edge from reverse lookup and metadata
@@ -518,14 +520,14 @@ class TemporalHypergraph:
         return k in self._edge_list
 
     def get_edges(
-            self,
-            time_window=None,
-            order = None,
-            size = None,
-            up_to = False,
-            #subhypergraph = False,
-            #keep_isolated_nodes=False,
-            metadata=False
+        self,
+        time_window=None,
+        order=None,
+        size=None,
+        up_to=False,
+        # subhypergraph = False,
+        # keep_isolated_nodes=False,
+        metadata=False,
     ):
         """
         Get the edges in the temporal hypergraph. If a time window is provided, only edges within the window are returned.
@@ -549,12 +551,12 @@ class TemporalHypergraph:
         """
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
-        #if not subhypergraph and keep_isolated_nodes:
+        # if not subhypergraph and keep_isolated_nodes:
         #    raise ValueError("Cannot keep nodes if not returning subhypergraphs.")
 
         edges = []
         if time_window is None:
-            edges =  list(self._edge_list.keys())
+            edges = list(self._edge_list.keys())
         elif isinstance(time_window, tuple) and len(time_window) == 2:
             for _t, _edge in list(sorted(self._edge_list.keys())):
                 if time_window[0] <= _t < time_window[1]:
@@ -565,23 +567,14 @@ class TemporalHypergraph:
             if size is not None:
                 order = size - 1
             if not up_to:
-                edges = [
-                    edge
-                    for edge in edges
-                    if len(edge[1]) - 1 == order
-                ]
+                edges = [edge for edge in edges if len(edge[1]) - 1 == order]
             else:
-                edges = [
-                    edge
-                    for edge in edges
-                    if len(edge[1]) - 1 <= order
-                ]
+                edges = [edge for edge in edges if len(edge[1]) - 1 <= order]
         return (
             edges
             if not metadata
-            else {edge: self.get_edge_metadata(edge[1],edge[0]) for edge in edges}
+            else {edge: self.get_edge_metadata(edge[1], edge[0]) for edge in edges}
         )
-
 
     def aggregate(self, time_window):
         if not isinstance(time_window, int) or time_window <= 0:
@@ -608,8 +601,8 @@ class TemporalHypergraph:
         while t_start <= max_time:
             # Collect edges for the current window
             while (
-                    edge_index < len(sorted_edges)
-                    and t_start <= sorted_edges[edge_index][0] < t_end
+                edge_index < len(sorted_edges)
+                and t_start <= sorted_edges[edge_index][0] < t_end
             ):
                 edges_in_window.append(sorted_edges[edge_index])
                 edge_index += 1
@@ -641,6 +634,19 @@ class TemporalHypergraph:
         return aggregated
 
     def get_times_for_edge(self, edge):
+        """
+        Get the times at which a specific set of nodes forms a hyperedge in the hypergraph.
+
+        Parameters
+        ----------
+        edge: tuple
+            The set of nodes forming the hyperedge.
+
+        Returns
+        -------
+        times: list
+            A list of times at which the hyperedge occurs.
+        """
         edge = _canon_edge(edge)
         times = []
         for time, _edge in self._edge_list.keys():
@@ -717,7 +723,7 @@ class TemporalHypergraph:
         else:
             return list(w.values())
 
-    #Info
+    # Info
     def max_order(self):
         """
         Returns the maximum order of the hypergraph.
@@ -871,14 +877,14 @@ class TemporalHypergraph:
                 max = edge[0]
         return max
 
-    #Adj
+    # Adj
     def get_adj_dict(self):
         return self._adj
 
     def set_adj_dict(self, adj_dict):
         self._adj = adj_dict
 
-    #Degree
+    # Degree
     def degree(self, node, order=None, size=None):
         from hypergraphx.measures.degree import degree
 
@@ -894,7 +900,7 @@ class TemporalHypergraph:
 
         return degree_distribution(self, order=order, size=size)
 
-    #Utils
+    # Utils
     def isolated_nodes(self, size=None, order=None):
         from hypergraphx.utils.cc import isolated_nodes
 
@@ -905,19 +911,24 @@ class TemporalHypergraph:
 
         return is_isolated(self, node, size=size, order=order)
 
-    def temporal_adjacency_matrix(self,return_mapping: bool = False):
+    def temporal_adjacency_matrix(self, return_mapping: bool = False):
         from hypergraphx.linalg import temporal_adjacency_matrix
+
         return temporal_adjacency_matrix(self, return_mapping)
 
     def annealed_adjacency_matrix(self, return_mapping: bool = False):
         from hypergraphx.linalg import annealed_adjacency_matrix
+
         return annealed_adjacency_matrix(self, return_mapping)
 
     def adjacency_factor(self, t: int = 0):
         from hypergraphx.linalg import adjacency_factor
+
         return adjacency_factor(self, t)
 
-    def subhypergraph(self, time_window = None, add_all_nodes: bool = False) -> dict[int,Hypergraph]:
+    def subhypergraph(
+        self, time_window=None, add_all_nodes: bool = False
+    ) -> dict[int, Hypergraph]:
         """
         Create an hypergraph for each time of the Temporal Hypergraph.
         Parameters
@@ -948,13 +959,13 @@ class TemporalHypergraph:
                 res[edge[0]].add_edge(edge[1], weight)
         if add_all_nodes:
             for node in self.get_nodes():
-                for k,v in res.items():
+                for k, v in res.items():
                     if v.check_node(node):
                         v.add_node(node)
 
         return res
 
-    #Metadata
+    # Metadata
     def set_hypergraph_metadata(self, metadata):
         self._hypergraph_metadata = metadata
 
@@ -1035,7 +1046,7 @@ class TemporalHypergraph:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         del self._edge_metadata[self._edge_list[(time, edge)]][field]
 
-    #Basic Functions
+    # Basic Functions
     def clear(self):
         self._edge_list.clear()
         self._adj.clear()
@@ -1095,7 +1106,7 @@ class TemporalHypergraph:
         """
         return iter(self._edge_list.items())
 
-    #Data Structure Extra
+    # Data Structure Extra
     def expose_data_structures(self):
         """
         Expose the internal data structures of the temporal hypergraph for serialization.
