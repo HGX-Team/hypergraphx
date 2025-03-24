@@ -466,3 +466,18 @@ def test_get_times_for_directed_edge():
         15,
         25,
     ], "Edge (('A', 'B'), ('C', 'D')) should be present at times 5 and 10."
+
+def test_degree_sequence():
+    """
+    Test getting the degree sequence of a temporal hypergraph.
+    """
+    thg = TemporalHypergraph()
+    thg.add_edge(("A", "B"), time=5)
+    thg.add_edge(("B", "A"), time=10)
+    thg.add_edge(("A", "C"), time=15)
+    degree_sequence = thg.degree_sequence()
+    assert degree_sequence == {
+        "A": 3,
+        "B": 2,
+        "C": 1,
+    }, "Degree sequence should be {A: 3, B: 2, C: 1}."
