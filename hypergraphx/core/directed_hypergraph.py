@@ -696,6 +696,28 @@ class DirectedHypergraph:
         """
         return [len(edge[0]) + len(edge[1]) for edge in self._edge_list.keys()]
 
+    def max_size(self):
+        """
+        Returns the maximum size of the hypergraph.
+
+        Returns
+        -------
+        int
+            Maximum size of the hypergraph.
+        """
+        return max(self.get_sizes())
+
+    def max_order(self):
+        """
+        Returns the maximum order of the hypergraph.
+
+        Returns
+        -------
+        int
+            Maximum order of the hypergraph.
+        """
+        return self.max_size() - 1
+
     def distribution_sizes(self):
         """
         Returns the distribution of sizes of the hyperedges in the hypergraph.
@@ -875,6 +897,10 @@ class DirectedHypergraph:
         from hypergraphx.utils.cc import is_isolated
 
         return is_isolated(self, node, size=size, order=order)
+
+    def to_line_graph(self, distance="intersection",s:int = 1, weighted=False):
+        from hypergraphx.representations.projections import directed_line_graph
+        return directed_line_graph(self, distance, s, weighted)
 
     #Metadata
     def set_hypergraph_metadata(self, metadata):
