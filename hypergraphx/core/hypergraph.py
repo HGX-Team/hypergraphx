@@ -978,6 +978,10 @@ class Hypergraph:
         from hypergraphx.linalg import adjacency_factor
         return adjacency_factor(self, t)
 
+    def to_line_graph(self, distance="intersection",s:int = 1, weighted=False):
+        from hypergraphx.representations.projections import line_graph
+        return line_graph(self, distance, s, weighted)
+
     #Metadata
     def set_hypergraph_metadata(self, metadata):
         self._hypergraph_metadata = metadata

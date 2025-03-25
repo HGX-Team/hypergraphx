@@ -1,6 +1,5 @@
 import networkx as nx
-
-from hypergraphx import Hypergraph
+from hypergraphx import Hypergraph, DirectedHypergraph
 from hypergraphx.measures.edge_similarity import intersection, jaccard_similarity
 
 
@@ -175,4 +174,74 @@ def line_graph(h: Hypergraph, distance="intersection", s=1, weighted=False):
                                 edge_to_id[adj[n][i]], edge_to_id[adj[n][j]], weight=1
                             )
                     vis[k] = True
+    return g, id_to_edge
+
+def directed_line_graph(h: DirectedHypergraph, distance="intersection", s=1, weighted=False):
+    """
+    Returns a line graph of the directed hypergraph.
+
+    Parameters
+    ----------
+    h : DirectedHypergraph
+        The directed hypergraph to be projected.
+    distance : str
+        The distance function to be used. Can be 'intersection' or 'jaccard'.
+    s : float
+        The threshold for the distance function.
+    weighted : bool
+        Whether the line graph should be weighted or not.
+
+    Returns
+    -------
+    networkx.Graph
+        The line graph of the hypergraph.
+
+    Notes
+    -----
+    Computing the line graph can be very expensive for large hypergraphs.
+
+    Example
+    -------
+    >>> import networkx as nx
+    >>> import hypergraphx as hgx
+    >>> from hypergraphx.representations.projections import line_graph
+    >>>
+    >>> h = hgx.Hypergraph()
+    >>> h.add_nodes([1, 2, 3, 4, 5])
+    >>> h.add_edges([(1, 2), (1, 2, 3), (3, 4, 5)])
+    >>> g, idx = line_graph(h)
+    >>> g.edges()
+    EdgeView([(0, 1), (1, 2)])
+    """
+
+    def _distance(a, b):
+        if distance == "intersection":
+            return intersection(a, b)
+        if distance == "jaccard":
+            return jaccard_similarity(a, b)
+
+    edges = h.get_edges()
+    edge_to_id = {}
+    id_to_edge = {}
+    cont = 0
+    for e in edges:
+        edge_to_id[e] = cont
+        id_to_edge[cont] = e
+        cont += 1
+
+    g = nx.DiGraph()
+    g.add_nodes_from([i for i in range(len(h))])
+
+    for edge1 in h.get_edges():
+        for edge2 in h.get_edges():
+            if edge1 != edge2:
+                source = set(edge1[1])
+                target = set(edge2[0])
+                w = _distance(source, target)
+                if w >= s:
+                    if weighted:
+                        g.add_edge(edge_to_id[edge1],edge_to_id[edge2], weight=w)
+                    else:
+                        g.add_edge( edge_to_id[edge1],edge_to_id[edge2] )
+
     return g, id_to_edge
