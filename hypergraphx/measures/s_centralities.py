@@ -59,10 +59,11 @@ def s_betweenness_averaged(H: TemporalHypergraph, s=1):
         lg, id_to_edge = line_graph(hypergraph, s=s)
         b = nx.betweenness_centrality(lg)
         for k, v in b.items():
+            k = id_to_edge[k]
             if k not in res.keys():
                 res[k] = 0
             res[k] += v
-    return {id_to_edge[k]: v for k, v in res.items()}
+    return {k: v/T for k, v in res.items()}
 
 def s_closeness_averaged(H: TemporalHypergraph, s=1):
     """
@@ -87,10 +88,11 @@ def s_closeness_averaged(H: TemporalHypergraph, s=1):
         lg, id_to_edge = line_graph(hypergraph, s=s)
         b = nx.closeness_centrality(lg)
         for k, v in b.items():
+            k = id_to_edge[k]
             if k not in res.keys():
                 res[k] = 0
             res[k] += v
-    return {id_to_edge[k]: v for k, v in res.items()}
+    return {k: v/T for k, v in res.items()}
 
 def s_betweenness_nodes(H: Hypergraph|DirectedHypergraph):
     """
@@ -150,10 +152,12 @@ def s_betweenness_nodes_averaged(H: TemporalHypergraph):
         lg, id_to_edge = bipartite_projection(hypergraph)
         b = nx.betweenness_centrality(lg)
         for k, v in b.items():
-            if k not in res.keys():
-                res[k] = 0
-            res[k] += v
-    return {id_to_edge[k]: v/T for k, v in res.items() if "E" not in k}
+            if "E" not in k:
+                k = id_to_edge[k]
+                if k not in res.keys():
+                    res[k] = 0
+                res[k] += v
+    return {k: v/T for k, v in res.items() if "E" not in k}
 
 def s_closenness_nodes_averaged(H: TemporalHypergraph):
     """
@@ -177,7 +181,9 @@ def s_closenness_nodes_averaged(H: TemporalHypergraph):
         lg, id_to_edge = bipartite_projection(hypergraph)
         b = nx.closeness_centrality(lg)
         for k, v in b.items():
-            if k not in res.keys():
-                res[k] = 0
-            res[k] += v
-    return {id_to_edge[k]: v/T for k, v in res.items() if "E" not in k}
+            if "E" not in k:
+                k = id_to_edge[k]
+                if k not in res.keys():
+                    res[k] = 0
+                res[k] += v
+    return {k: v/T for k, v in res.items() if "E" not in k}
