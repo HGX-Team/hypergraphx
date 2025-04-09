@@ -7,7 +7,7 @@ def directed_configuration_model(hypergraph: DirectedHypergraph) -> DirectedHype
     """
     This function implements the directed configuration model to generate
     random hyperedges based on the given hypergraph. It ensures that each node's
-    in-degree and out-degree are preserved in the generated hypergraph. 
+    in-degree and out-degree are preserved in the generated hypergraph.
     The number of hyperedges is preserved.
     Head and tail size is preserved for each hyperedge.
 
@@ -23,9 +23,9 @@ def directed_configuration_model(hypergraph: DirectedHypergraph) -> DirectedHype
     """
 
     hypergraph = list(hypergraph.get_edges())
-    num_steps_sources = len(hypergraph)*10
-    num_steps_targets = len(hypergraph)*10
-    
+    num_steps_sources = len(hypergraph) * 10
+    num_steps_targets = len(hypergraph) * 10
+
     new_hyperedges = []
 
     for hyperedge in hypergraph:
@@ -76,7 +76,6 @@ def directed_configuration_model(hypergraph: DirectedHypergraph) -> DirectedHype
     final_hyperedges = []
     for edge in new_hyperedges:
         final_hyperedges.append(tuple((tuple(sorted(edge[0])), tuple(sorted(edge[1])))))
-    
+
     new_hypergraph = DirectedHypergraph(edge_list=final_hyperedges)
     return new_hypergraph
-

@@ -173,7 +173,6 @@ def HEC_centrality(HG, max_iter=100, tol=1e-6):
 
 
 def apply(HG, x, g=lambda v, e: np.sum(v[list(e)])):
-
     new_x = np.zeros(HG.num_nodes())
     for edge in HG.get_edges():
         edge = list(edge)

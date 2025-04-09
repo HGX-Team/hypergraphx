@@ -88,7 +88,8 @@ class DirectedHypergraph:
             if weighted and weights is not None and len(edge_list) != len(weights):
                 raise ValueError("Edge list and weights must have the same length.")
             self.add_edges(edge_list, weights=weights, metadata=edge_metadata)
-    #Nodes
+
+    # Nodes
     def add_node(self, node, metadata=None):
         """
         Add a node to the hypergraph. If the node is already in the hypergraph, nothing happens.
@@ -293,7 +294,7 @@ class DirectedHypergraph:
         """
         return [edge[1] for edge in self._edge_list.keys()]
 
-    #Edges
+    # Edges
     def add_edge(self, edge: Tuple[Tuple, Tuple], weight=None, metadata=None):
         """Add a directed hyperedge to the hypergraph. If the hyperedge already exists, its weight is updated.
 
@@ -583,10 +584,11 @@ class DirectedHypergraph:
     def get_edge_list(self):
         return self._edge_list
 
-    '''def add_empty_edge(self, name, metadata):
+    """def add_empty_edge(self, name, metadata):
         pass
         Don't know if needed    
-    '''
+    """
+
     def check_edge(self, edge: Tuple[Tuple, Tuple]):
         """Checks if the specified edge is in the hypergraph.
 
@@ -604,7 +606,7 @@ class DirectedHypergraph:
         edge = (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
         return edge in self._edge_list
 
-    #Weight
+    # Weight
     def get_weight(self, edge: Tuple[Tuple, Tuple]):
         """Returns the weight of the specified directed edge."""
         edge = (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
@@ -676,7 +678,7 @@ class DirectedHypergraph:
         else:
             raise ValueError(f"Edge {edge} not in hypergraph.")
 
-    #Info
+    # Info
     def num_nodes(self):
         """Returns the number of nodes in the hypergraph."""
         return len(self.get_nodes())
@@ -774,7 +776,7 @@ class DirectedHypergraph:
                     break
         return uniform
 
-    #Adj
+    # Adj
     def get_adj_dict(self, source_target):
         if source_target == "source":
             return self._adj_source
@@ -795,7 +797,7 @@ class DirectedHypergraph:
                 "Invalid value for source_target. Must be 'source' or 'target'."
             )
 
-    #Degree
+    # Degree
     def degree(self, node, order=None, size=None):
         from hypergraphx.measures.degree import degree
 
@@ -811,36 +813,36 @@ class DirectedHypergraph:
 
         return degree_distribution(self, order=order, size=size)
 
-    #Connected Components
-    '''def is_connected(self, size=None, order=None):
+    # Connected Components
+    """def is_connected(self, size=None, order=None):
         from hypergraphx.utils.cc import is_connected
 
-        return is_connected(self, size=size, order=order)'''
-        #TODO
+        return is_connected(self, size=size, order=order)"""
+    # TODO
 
-    '''def connected_components(self, size=None, order=None):
+    """def connected_components(self, size=None, order=None):
         from hypergraphx.utils.cc import connected_components
 
-        return connected_components(self, size=size, order=order)'''
-        #TODO
+        return connected_components(self, size=size, order=order)"""
+    # TODO
 
-    '''def node_connected_component(self, node, size=None, order=None):
+    """def node_connected_component(self, node, size=None, order=None):
         from hypergraphx.utils.cc import node_connected_component
 
-        return node_connected_component(self, node, size=size, order=order)'''
-        #TODO
+        return node_connected_component(self, node, size=size, order=order)"""
+    # TODO
 
-    '''def num_connected_components(self, size=None, order=None):
+    """def num_connected_components(self, size=None, order=None):
         from hypergraphx.utils.cc import num_connected_components
 
-        return num_connected_components(self, size=size, order=order)'''
-        #TODO
+        return num_connected_components(self, size=size, order=order)"""
+    # TODO
 
-    '''def largest_component(self, size=None, order=None):
+    """def largest_component(self, size=None, order=None):
         from hypergraphx.utils.cc import largest_component
 
-        return largest_component(self, size=size, order=order)'''
-        #TODO
+        return largest_component(self, size=size, order=order)"""
+    # TODO
 
     '''def subhypergraph_largest_component(self, size=None, order=None):
         """
@@ -860,34 +862,34 @@ class DirectedHypergraph:
         """
         nodes = self.largest_component(size=size, order=order)
         return self.subhypergraph(nodes)'''
-        #TODO
+    # TODO
 
-    '''def largest_component_size(self, size=None, order=None):
+    """def largest_component_size(self, size=None, order=None):
         from hypergraphx.utils.cc import largest_component_size
 
-        return largest_component_size(self, size=size, order=order)'''
-        #TODO
+        return largest_component_size(self, size=size, order=order)"""
+    # TODO
 
-    #Matrix
-    '''def binary_incidence_matrix(self, return_mapping: bool = False):
+    # Matrix
+    """def binary_incidence_matrix(self, return_mapping: bool = False):
         from hypergraphx.linalg import binary_incidence_matrix
 
-        return binary_incidence_matrix(self, return_mapping)'''
-        #TODO
+        return binary_incidence_matrix(self, return_mapping)"""
+    # TODO
 
-    '''def incidence_matrix(self, return_mapping: bool = False):
+    """def incidence_matrix(self, return_mapping: bool = False):
         from hypergraphx.linalg import incidence_matrix
 
-        return incidence_matrix(self, return_mapping)'''
-        #TODO
+        return incidence_matrix(self, return_mapping)"""
+    # TODO
 
-    '''def adjacency_matrix(self, return_mapping: bool = False):
+    """def adjacency_matrix(self, return_mapping: bool = False):
         from hypergraphx.linalg import adjacency_matrix
 
-        return adjacency_matrix(self, return_mapping)'''
-        #TODO
+        return adjacency_matrix(self, return_mapping)"""
+    # TODO
 
-    #Utility
+    # Utility
     def isolated_nodes(self, size=None, order=None):
         from hypergraphx.utils.cc import isolated_nodes
 
@@ -898,11 +900,12 @@ class DirectedHypergraph:
 
         return is_isolated(self, node, size=size, order=order)
 
-    def to_line_graph(self, distance="intersection",s:int = 1, weighted=False):
+    def to_line_graph(self, distance="intersection", s: int = 1, weighted=False):
         from hypergraphx.representations.projections import directed_line_graph
+
         return directed_line_graph(self, distance, s, weighted)
 
-    #Metadata
+    # Metadata
     def set_hypergraph_metadata(self, metadata):
         self._hypergraph_metadata = metadata
 
@@ -979,7 +982,7 @@ class DirectedHypergraph:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         del self._edge_metadata[self._edge_list[edge]][field]
 
-    #Basic Functions
+    # Basic Functions
     def clear(self):
         self._edge_list.clear()
         self._adj_source.clear()
@@ -1036,7 +1039,7 @@ class DirectedHypergraph:
         """
         return iter(self._edge_list.items())
 
-    #Data Structure Extra
+    # Data Structure Extra
     def expose_data_structures(self):
         """
         Expose the internal data structures of the directed hypergraph for serialization.

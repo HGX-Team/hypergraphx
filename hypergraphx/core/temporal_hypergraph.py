@@ -37,6 +37,7 @@ def _get_nodes(edge):
     else:
         return list(edge)
 
+
 class TemporalHypergraph:
     """
     A Temporal Hypergraph is a hypergraph where each hyperedge is associated with a specific timestamp.

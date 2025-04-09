@@ -2,6 +2,7 @@ import networkx as nx
 from hypergraphx import Hypergraph, TemporalHypergraph, DirectedHypergraph
 from hypergraphx.representations.projections import line_graph, bipartite_projection
 
+
 def s_betweenness(H: Hypergraph, s=1):
     """
     Computes the betweenness centrality for each edge in the hypergraph.
@@ -20,6 +21,7 @@ def s_betweenness(H: Hypergraph, s=1):
     b = nx.betweenness_centrality(lg)
     return {id_to_edge[k]: v for k, v in b.items()}
 
+
 def s_closeness(H: Hypergraph, s=1):
     """
     Compute the closeness centrality for each edge in the hypergraph.
@@ -35,6 +37,7 @@ def s_closeness(H: Hypergraph, s=1):
     lg, id_to_edge = line_graph(H, s=s)
     c = nx.closeness_centrality(lg)
     return {id_to_edge[k]: v for k, v in c.items()}
+
 
 def s_betweenness_averaged(H: TemporalHypergraph, s=1):
     """
@@ -63,7 +66,8 @@ def s_betweenness_averaged(H: TemporalHypergraph, s=1):
             if k not in res.keys():
                 res[k] = 0
             res[k] += v
-    return {k: v/T for k, v in res.items()}
+    return {k: v / T for k, v in res.items()}
+
 
 def s_closeness_averaged(H: TemporalHypergraph, s=1):
     """
@@ -92,9 +96,10 @@ def s_closeness_averaged(H: TemporalHypergraph, s=1):
             if k not in res.keys():
                 res[k] = 0
             res[k] += v
-    return {k: v/T for k, v in res.items()}
+    return {k: v / T for k, v in res.items()}
 
-def s_betweenness_nodes(H: Hypergraph|DirectedHypergraph):
+
+def s_betweenness_nodes(H: Hypergraph | DirectedHypergraph):
     """
     Computes the betweenness centrality for each node in the hypergraph.
     Parameters
@@ -112,7 +117,8 @@ def s_betweenness_nodes(H: Hypergraph|DirectedHypergraph):
     b = nx.betweenness_centrality(lg)
     return {id_to_edge[k]: v for k, v in b.items() if "E" not in k}
 
-def s_closeness_nodes(H: Hypergraph|DirectedHypergraph):
+
+def s_closeness_nodes(H: Hypergraph | DirectedHypergraph):
     """
     Computes the closeness centrality for each node in the hypergraph.
     Parameters
@@ -128,6 +134,7 @@ def s_closeness_nodes(H: Hypergraph|DirectedHypergraph):
     lg, id_to_edge = bipartite_projection(H)
     b = nx.closeness_centrality(lg)
     return {id_to_edge[k]: v for k, v in b.items() if "E" not in k}
+
 
 def s_betweenness_nodes_averaged(H: TemporalHypergraph):
     """
@@ -157,7 +164,8 @@ def s_betweenness_nodes_averaged(H: TemporalHypergraph):
                 if k not in res.keys():
                     res[k] = 0
                 res[k] += v
-    return {k: v/T for k, v in res.items() if "E" not in k}
+    return {k: v / T for k, v in res.items() if "E" not in k}
+
 
 def s_closenness_nodes_averaged(H: TemporalHypergraph):
     """
@@ -186,4 +194,4 @@ def s_closenness_nodes_averaged(H: TemporalHypergraph):
                 if k not in res.keys():
                     res[k] = 0
                 res[k] += v
-    return {k: v/T for k, v in res.items() if "E" not in k}
+    return {k: v / T for k, v in res.items() if "E" not in k}

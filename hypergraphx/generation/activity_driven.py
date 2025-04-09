@@ -6,10 +6,12 @@ from hypergraphx.dynamics.randwalk import *
 
 def rnd_pwl(xmin, xmax, g, size=1):
     r = np.random.random(size=size)
-    return (r * (xmax ** (1. - g) - xmin ** (1. - g)) + xmin ** (1. - g)) ** (1. / (1. - g))
+    return (r * (xmax ** (1.0 - g) - xmin ** (1.0 - g)) + xmin ** (1.0 - g)) ** (
+        1.0 / (1.0 - g)
+    )
 
 
-def HOADmodel(N: int, activities_per_order: dict, time = 100):
+def HOADmodel(N: int, activities_per_order: dict, time=100):
     """
     Generate a temporal hypergraph according to the HOAD model.
 

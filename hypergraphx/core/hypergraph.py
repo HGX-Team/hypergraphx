@@ -69,7 +69,8 @@ class Hypergraph:
             if weighted and weights is not None and len(edge_list) != len(weights):
                 raise ValueError("Edge list and weights must have the same length.")
             self.add_edges(edge_list, weights=weights, metadata=edge_metadata)
-    #Nodes
+
+    # Nodes
     def add_node(self, node, metadata=None):
         """
         Add a node to the hypergraph. If the node is already in the hypergraph, nothing happens.
@@ -298,7 +299,7 @@ class Hypergraph:
                 ]
             )
 
-    #Edges
+    # Edges
     def add_edge(self, edge, weight=None, metadata=None):
         """Add a hyperedge to the hypergraph. If the hyperedge is already in the hypergraph, its weight is updated.
 
@@ -545,7 +546,7 @@ class Hypergraph:
                 else {edge: self.get_edge_metadata(edge) for edge in edges}
             )
 
-    #Weight
+    # Weight
     def set_weight(self, edge, weight):
         """Sets the weight of the specified edge.
 
@@ -646,7 +647,7 @@ class Hypergraph:
         else:
             return list(w.values())
 
-    #Info
+    # Info
     def max_order(self):
         """
         Returns the maximum order of the hypergraph.
@@ -786,7 +787,7 @@ class Hypergraph:
                     break
         return uniform
 
-    #Adj And Subhypergraph
+    # Adj And Subhypergraph
     def get_adj_dict(self):
         return self._adj
 
@@ -876,7 +877,7 @@ class Hypergraph:
 
         return h
 
-    #Degree
+    # Degree
     def degree(self, node, order=None, size=None):
         from hypergraphx.measures.degree import degree
 
@@ -892,7 +893,7 @@ class Hypergraph:
 
         return degree_distribution(self, order=order, size=size)
 
-    #Connected Components
+    # Connected Components
     def is_connected(self, size=None, order=None):
         from hypergraphx.utils.cc import is_connected
 
@@ -942,7 +943,7 @@ class Hypergraph:
 
         return largest_component_size(self, size=size, order=order)
 
-    #Matrix
+    # Matrix
     def binary_incidence_matrix(self, return_mapping: bool = False):
         from hypergraphx.linalg import binary_incidence_matrix
 
@@ -958,7 +959,7 @@ class Hypergraph:
 
         return adjacency_matrix(self, return_mapping)
 
-    #Utils
+    # Utils
     def isolated_nodes(self, size=None, order=None):
         from hypergraphx.utils.cc import isolated_nodes
 
@@ -974,15 +975,17 @@ class Hypergraph:
 
         return dual_random_walk_adjacency(self, return_mapping)
 
-    def adjacency_factor(self,t:int = 0):
+    def adjacency_factor(self, t: int = 0):
         from hypergraphx.linalg import adjacency_factor
+
         return adjacency_factor(self, t)
 
-    def to_line_graph(self, distance="intersection",s:int = 1, weighted=False):
+    def to_line_graph(self, distance="intersection", s: int = 1, weighted=False):
         from hypergraphx.representations.projections import line_graph
+
         return line_graph(self, distance, s, weighted)
 
-    #Metadata
+    # Metadata
     def set_hypergraph_metadata(self, metadata):
         self._hypergraph_metadata = metadata
 
@@ -1055,7 +1058,7 @@ class Hypergraph:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         del self._edge_metadata[self._edge_list[edge]][field]
 
-    #Basic Functions
+    # Basic Functions
     def clear(self):
         self._edge_list.clear()
         self._adj.clear()
@@ -1117,7 +1120,7 @@ class Hypergraph:
         """
         return iter(self._edge_list.items())
 
-    #Data Structure Extra
+    # Data Structure Extra
     def expose_data_structures(self):
         """
         Expose the internal data structures of the hypergraph for serialization.

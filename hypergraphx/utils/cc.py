@@ -101,7 +101,9 @@ def largest_component_size(hg: Hypergraph, order=None, size=None):
     return len(hg.largest_component(size=None, order=None))
 
 
-def isolated_nodes(hg: Hypergraph|DirectedHypergraph|TemporalHypergraph, order=None, size=None):
+def isolated_nodes(
+    hg: Hypergraph | DirectedHypergraph | TemporalHypergraph, order=None, size=None
+):
     """
     Return the isolated nodes of the hypergraph.
     Parameters
@@ -123,7 +125,12 @@ def isolated_nodes(hg: Hypergraph|DirectedHypergraph|TemporalHypergraph, order=N
     ]
 
 
-def is_isolated(hg: Hypergraph|DirectedHypergraph|TemporalHypergraph, node, order=None, size=None):
+def is_isolated(
+    hg: Hypergraph | DirectedHypergraph | TemporalHypergraph,
+    node,
+    order=None,
+    size=None,
+):
     """
     Return True if the given node is isolated.
     Parameters

@@ -189,7 +189,6 @@ def get_svc(hypergraph, min_order=2, max_order=None, alpha=0.01):
     svh_dfs = []
 
     for order in list(range(min_order, max_order + 1))[::-1]:
-
         drop = []
         for l in list(map(lambda x: tuple(combinations(x, order)), s_groups)):
             drop.extend(l)

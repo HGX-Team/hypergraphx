@@ -176,7 +176,10 @@ def line_graph(h: Hypergraph, distance="intersection", s=1, weighted=False):
                     vis[k] = True
     return g, id_to_edge
 
-def directed_line_graph(h: DirectedHypergraph, distance="intersection", s=1, weighted=False):
+
+def directed_line_graph(
+    h: DirectedHypergraph, distance="intersection", s=1, weighted=False
+):
     """
     Returns a line graph of the directed hypergraph.
 
@@ -240,8 +243,8 @@ def directed_line_graph(h: DirectedHypergraph, distance="intersection", s=1, wei
                 w = _distance(source, target)
                 if w >= s:
                     if weighted:
-                        g.add_edge(edge_to_id[edge1],edge_to_id[edge2], weight=w)
+                        g.add_edge(edge_to_id[edge1], edge_to_id[edge2], weight=w)
                     else:
-                        g.add_edge( edge_to_id[edge1],edge_to_id[edge2] )
+                        g.add_edge(edge_to_id[edge1], edge_to_id[edge2])
 
     return g, id_to_edge

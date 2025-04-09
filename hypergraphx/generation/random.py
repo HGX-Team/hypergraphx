@@ -70,7 +70,13 @@ def random_uniform_hypergraph(num_nodes: int, size: int, num_edges: int, seed=No
 
 
 def random_shuffle(
-    hg: Hypergraph, order=None, size=None, inplace=True, p=1.0, preserve_degree=False, seed=None
+    hg: Hypergraph,
+    order=None,
+    size=None,
+    inplace=True,
+    p=1.0,
+    preserve_degree=False,
+    seed=None,
 ):
     """
     Shuffle the nodes of a hypergraph's hyperedges of a given order/size,
@@ -160,7 +166,11 @@ def random_shuffle(
 
 
 def random_shuffle_all_orders(
-    hg: Hypergraph, p: float = 1.0, inplace: bool = True, preserve_degree: bool = False, seed=None
+    hg: Hypergraph,
+    p: float = 1.0,
+    inplace: bool = True,
+    preserve_degree: bool = False,
+    seed=None,
 ) -> Hypergraph:
     """
     Shuffle the nodes of a hypergraph's hyperedges of a given order/size,
@@ -198,7 +208,12 @@ def random_shuffle_all_orders(
     for size in set(hg.get_sizes()):
         if inplace:
             random_shuffle(
-                target_hg, size=size, p=p, inplace=True, preserve_degree=preserve_degree, seed=seed
+                target_hg,
+                size=size,
+                p=p,
+                inplace=True,
+                preserve_degree=preserve_degree,
+                seed=seed,
             )
         else:
             target_hg = random_shuffle(
@@ -207,7 +222,7 @@ def random_shuffle_all_orders(
                 p=p,
                 inplace=False,
                 preserve_degree=preserve_degree,
-                seed=seed
+                seed=seed,
             )
 
     return target_hg
@@ -261,7 +276,9 @@ def add_random_edge(hg: Hypergraph, order=None, size=None, inplace=True, seed=No
         return h
 
 
-def add_random_edges(hg: Hypergraph, num_edges, order=None, size=None, inplace=True, seed=None):
+def add_random_edges(
+    hg: Hypergraph, num_edges, order=None, size=None, inplace=True, seed=None
+):
     """
     Add random hyperedges of a given order / size to a hypergraph.
 

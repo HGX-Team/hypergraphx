@@ -375,7 +375,6 @@ def topological_temporal_distance_same_order(
             ref_list = list(df.timestamp.unique())
 
         for ref_time in ref_list:
-
             # Introduce delta_t_low as the previous element in dt_list.
             # If delta_t is the first element, then delta_t_low=0
             if p == 0:
@@ -385,7 +384,6 @@ def topological_temporal_distance_same_order(
             t_cnt += 1
 
             if ref_time <= max_time:
-
                 # To speed up computation, update the cnt_dist dynamically.
                 # At each consecutive delta_t in dt_list, update the counter including the couples of events
                 # with temporal delay delta_t', such that delta_t_low <= delta_t' < delta_t. Each couple is computed once.

@@ -58,6 +58,7 @@ def hye_list_to_binary_incidence(
 
     return sparse.coo_array((data, (rows, columns)), shape=shape, dtype=np.uint8)
 
+
 def binary_incidence_matrix(
     hypergraph: Hypergraph,
     return_mapping: bool = False,
@@ -90,6 +91,7 @@ def binary_incidence_matrix(
         return incidence, mapping
     return incidence
 
+
 def incidence_matrix(
     hypergraph: Hypergraph,
     return_mapping: bool = False,
@@ -117,6 +119,7 @@ def incidence_matrix(
     if return_mapping:
         return incidence, mapping
     return incidence
+
 
 def incidence_matrix_by_order(
     hypergraph: Hypergraph,
@@ -159,6 +162,7 @@ def incidence_matrix_by_order(
         return incidence, mapping
     return incidence
 
+
 def incidence_matrices_all_orders(
     hypergraph: Hypergraph,
     shape: Optional[Tuple[int]] = None,
@@ -197,6 +201,7 @@ def incidence_matrices_all_orders(
             )
     return incidence_matrices
 
+
 def adjacency_matrix(
     hypergraph: Hypergraph, return_mapping: bool = False
 ) -> sparse.csc_array | Tuple[sparse.csc_array, Dict[int, Any]]:
@@ -223,6 +228,7 @@ def adjacency_matrix(
     if return_mapping:
         return adj, mapping
     return adj
+
 
 def adjacency_matrix_by_order(
     hypergraph: Hypergraph, order: int, return_mapping: bool = False
@@ -252,6 +258,7 @@ def adjacency_matrix_by_order(
     else:
         return adj
 
+
 def dual_random_walk_adjacency(
     hypergraph: Hypergraph, return_mapping: bool = False
 ) -> sparse.csr_array | Tuple[sparse.csr_array, Dict[int, Any]]:
@@ -279,6 +286,7 @@ def dual_random_walk_adjacency(
     if return_mapping:
         return adj, mapping
     return adj
+
 
 def degree_matrix(hypergraph, order, mapping=None):
     """
@@ -312,6 +320,7 @@ def degree_matrix(hypergraph, order, mapping=None):
 
     return sparse.diags(degree_lst)
 
+
 def laplacian_matrix_by_order(
     hypergraph: Hypergraph,
     order: int,
@@ -332,6 +341,7 @@ def laplacian_matrix_by_order(
 
     return laplacian
 
+
 def laplacian_matrices_all_orders(
     hypergraph: Hypergraph, weighted=False, shape: Optional[Tuple[int]] = None
 ) -> List[sparse.spmatrix]:
@@ -341,6 +351,7 @@ def laplacian_matrices_all_orders(
             hypergraph, order, weighted, shape
         )
     return laplacian_matrices
+
 
 def compute_multiorder_laplacian(
     hypergraph: Hypergraph, sigmas, order_weighted=False, degree_weighted=True
@@ -368,6 +379,7 @@ def compute_multiorder_laplacian(
 
     return multiorder_laplacian
 
+
 def are_commuting(laplacian_matrices: List[sparse.spmatrix], verbose=True) -> bool:
     orders = len(laplacian_matrices)
 
@@ -389,6 +401,7 @@ def are_commuting(laplacian_matrices: List[sparse.spmatrix], verbose=True) -> bo
     if verbose:
         print("The Laplacian matrices commute")
     return True
+
 
 def adjacency_tensor(hypergraph: Hypergraph) -> np.ndarray:
     """
@@ -421,7 +434,8 @@ def adjacency_tensor(hypergraph: Hypergraph) -> np.ndarray:
 
     return T
 
-def adjacency_factor(hypergraph: Hypergraph|TemporalHypergraph, t: int = 0):
+
+def adjacency_factor(hypergraph: Hypergraph | TemporalHypergraph, t: int = 0):
     if isinstance(hypergraph, Hypergraph):
         matrix, mapping = hypergraph.adjacency_matrix(return_mapping=True)
     elif isinstance(hypergraph, TemporalHypergraph):
@@ -438,18 +452,22 @@ def adjacency_factor(hypergraph: Hypergraph|TemporalHypergraph, t: int = 0):
         for node2 in hypergraph.get_nodes():
             if node1 != node2:
                 try:
-                    val = round(float(matrix[mapping[node1], mapping[node2]]),3)
+                    val = round(float(matrix[mapping[node1], mapping[node2]]), 3)
                 except IndexError:
-                    val = round(float(matrix[mapping[node2], mapping[node1]]),3)
+                    val = round(float(matrix[mapping[node2], mapping[node1]]), 3)
                 if val != 0:
-                    res[node1] += val ** t
+                    res[node1] += val**t
     return res
 
-#Temporal Hypergraph Adjacency Matrix
+
+# Temporal Hypergraph Adjacency Matrix
 def temporal_adjacency_matrix(
     temporal_hypergraph: TemporalHypergraph,
     return_mapping: bool = False,
-) -> Dict[int, sparse.csc_array] | Tuple[Dict[int, sparse.csc_array], dict[int,dict[int,int]]]:
+) -> (
+    Dict[int, sparse.csc_array]
+    | Tuple[Dict[int, sparse.csc_array], dict[int, dict[int, int]]]
+):
     """
     Compute the temporal adjacency matrix of the temporal hypergraph by order.
     For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix at time t
@@ -480,9 +498,13 @@ def temporal_adjacency_matrix(
     else:
         return temporal_adjacency_matrixes
 
+
 def temporal_adjacency_matrix_by_order(
     temporal_hypergraph: TemporalHypergraph, order: int, return_mapping: bool = False
-) -> Dict[int, sparse.csc_array] | Tuple[Dict[int, sparse.csc_array], dict[int,dict[int,int]]]:
+) -> (
+    Dict[int, sparse.csc_array]
+    | Tuple[Dict[int, sparse.csc_array], dict[int, dict[int, int]]]
+):
     """Compute the temporal adjacency matrix of the temporal hypergraph by order.
     For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix at time t
     counts the number of hyperedges of a given order, existing at time t, where both i and j are contained.
@@ -506,7 +528,9 @@ def temporal_adjacency_matrix_by_order(
     mapping = dict()
     for t in subhypergraphs.keys():
         hypergraph_t = subhypergraphs[t]
-        adj_t, matrix_map = adjacency_matrix_by_order(hypergraph_t, order, return_mapping = return_mapping)
+        adj_t, matrix_map = adjacency_matrix_by_order(
+            hypergraph_t, order, return_mapping=return_mapping
+        )
         temporal_adjacency[t] = adj_t
         if return_mapping:
             mapping[t] = matrix_map
@@ -515,11 +539,15 @@ def temporal_adjacency_matrix_by_order(
     else:
         return temporal_adjacency
 
+
 def temporal_adjacency_matrices_all_orders(
     temporal_hypergraph: TemporalHypergraph,
     max_order: int = None,
-    return_mapping: bool = False
-)-> dict[int, Tuple[sparse.csc_array]] | Tuple[Dict[int, Tuple[sparse.csc_array]], dict[int,dict[int,int]]] :
+    return_mapping: bool = False,
+) -> (
+    dict[int, Tuple[sparse.csc_array]]
+    | Tuple[Dict[int, Tuple[sparse.csc_array]], dict[int, dict[int, int]]]
+):
     """Compute the temporal adjacency matrices of the temporal hypergraph for all orders.
     For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix of order d at time t
     counts the number of hyperedges of order d, existing at time t, where both i and j are contained.
@@ -544,7 +572,7 @@ def temporal_adjacency_matrices_all_orders(
     mapping_dict = dict()
     for order in range(1, max_order + 1):
         adj_order_d, mapping = temporal_adjacency_matrix_by_order(
-            temporal_hypergraph, order, return_mapping= True
+            temporal_hypergraph, order, return_mapping=True
         )
         temporal_adjacencies[order] = adj_order_d
         mapping_dict[order] = mapping
@@ -552,6 +580,7 @@ def temporal_adjacency_matrices_all_orders(
         return temporal_adjacencies, mapping_dict
     else:
         return temporal_adjacencies
+
 
 def annealed_adjacency_matrix(
     temporal_hypergraph: TemporalHypergraph,
@@ -574,7 +603,9 @@ def annealed_adjacency_matrix(
         Return the dictionary mapping the new node indices to the Temporal Hypergraph
     """
     encoder = temporal_hypergraph.get_mapping()
-    temporal_adjacency_matrix, mapping = temporal_hypergraph.temporal_adjacency_matrix(return_mapping=True)
+    temporal_adjacency_matrix, mapping = temporal_hypergraph.temporal_adjacency_matrix(
+        return_mapping=True
+    )
     T = len(temporal_adjacency_matrix.keys())
     temporal_adjacency_matrix_lst = temporal_adjacency_matrix.values()
     res = dict()
@@ -590,12 +621,12 @@ def annealed_adjacency_matrix(
                     if cell not in res.keys():
                         res[cell] = 0
                     res[cell] += matrix.data[i]
-        t+=1
-    res = {k: v / T for k,v in res.items()}
+        t += 1
+    res = {k: v / T for k, v in res.items()}
     matrix_row = []
     matrix_col = []
     matrix_val = []
-    for k,v in res.items():
+    for k, v in res.items():
         matrix_row.append(encoder.transform([k[0]])[0])
         matrix_col.append(encoder.transform([k[1]])[0])
         matrix_val.append(v)
@@ -605,9 +636,10 @@ def annealed_adjacency_matrix(
     else:
         return matrix
 
+
 def annealed_adjacency_matrices_all_orders(
-    temporal_hypergraph: TemporalHypergraph
-)->dict[int, sparse.csc_array]:
+    temporal_hypergraph: TemporalHypergraph,
+) -> dict[int, sparse.csc_array]:
     """Compute the annealed adjacency matrices of the temporal hypergraph for all orders.
     For any two nodes i, j in the hypergraph, the entry (i, j) of the adjacency matrix of order d
     counts the average number of hyperedges of order d where both i and j are contained over time.
@@ -620,7 +652,9 @@ def annealed_adjacency_matrices_all_orders(
     annealed_adjacency_matrices_order: dict[int, sparse.csc_array]
         The annealed adjacency matrix for all orders, i.e., {order : annealed adjacency matrix}.
     """
-    temporal_adjacency_matrices = temporal_adjacency_matrices_all_orders(temporal_hypergraph)
+    temporal_adjacency_matrices = temporal_adjacency_matrices_all_orders(
+        temporal_hypergraph
+    )
     annealed_adjacency_matrices_order = dict()
     for order, temporal_adjacency_matrix in temporal_adjacency_matrices.items():
         T = len(temporal_adjacency_matrix.keys())
