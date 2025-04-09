@@ -3,7 +3,7 @@ import json
 from hypergraphx import Hypergraph
 
 
-def load_hif(path: str) -> Hypergraph:
+def read_hif(path: str) -> Hypergraph:
     """
     Load a hypergraph from a HIF file.
 
@@ -90,7 +90,7 @@ def load_hif(path: str) -> Hypergraph:
     return H
 
 
-def save_hif(H: Hypergraph, path: str):
+def write_hif(H: Hypergraph, path: str):
     """
     Save a hypergraph to a HIF file.
 

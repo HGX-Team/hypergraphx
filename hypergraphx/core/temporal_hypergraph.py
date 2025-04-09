@@ -31,6 +31,12 @@ def _get_order(edge):
     return _get_size(edge) - 1
 
 
+def _get_nodes(edge):
+    if len(edge) == 2 and isinstance(edge[0], tuple) and isinstance(edge[1], tuple):
+        return list(edge[0]) + list(edge[1])
+    else:
+        return list(edge)
+
 class TemporalHypergraph:
     """
     A Temporal Hypergraph is a hypergraph where each hyperedge is associated with a specific timestamp.
@@ -377,10 +383,11 @@ class TemporalHypergraph:
             metadata = {}
         self._edge_metadata[e_id] = metadata
 
-        for node in _edge:
+        nodes = _get_nodes(_edge)
+        for node in nodes:
             self.add_node(node)
 
-        for node in _edge:
+        for node in nodes:
             self._adj[node].append(e_id)
 
     def add_edges(self, edge_list, time_list, weights=None, metadata=None):

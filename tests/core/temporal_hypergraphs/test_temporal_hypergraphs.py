@@ -481,3 +481,18 @@ def test_degree_sequence():
         "B": 2,
         "C": 1,
     }, "Degree sequence should be {A: 3, B: 2, C: 1}."
+
+
+def test_nodes_temporal_directed_hypergraph():
+    Ht = TemporalHypergraph()
+    Ht.add_node(0)
+    Ht.add_node(1)
+    Ht.add_node(2)
+    Ht.add_node(3)
+
+    Ht.add_edge((tuple([0, 1]), tuple([2, 3])), time=0)
+
+    nodes = Ht.get_nodes()
+    assert len(nodes) == 4, "Should have 4 nodes"
+    assert [0, 1, 2, 3] == list(sorted(nodes)), "Nodes should be [0, 1, 2, 3]"
+    
