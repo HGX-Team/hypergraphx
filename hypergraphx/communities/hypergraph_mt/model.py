@@ -248,14 +248,15 @@ class HypergraphMT:
             hypergraph.get_sizes()
         )  # TODO: check whether we want to refactor the name of this variable
 
-        # Isolated nodes.
-        self.isolates = np.where(self.incidence.getnnz(1) == 0)[
-            0
-        ]  # TODO: implement it as a core method
-        # Non-isolated nodes.
-        self.non_isolates = np.where(self.incidence.getnnz(1) != 0)[
-            0
-        ]  # TODO: implement it as a core method
+        row_sums = self.incidence.sum(axis=1)
+        # If row_sums is a matrix (e.g., from sparse), convert to 1D array
+        if hasattr(row_sums, "A1"):
+            row_sums = row_sums.A1
+        else:
+            row_sums = np.asarray(row_sums).flatten()
+
+        self.isolates = np.where(row_sums == 0)[0]
+        self.non_isolates = np.where(row_sums != 0)[0]
 
         # Normalize u such that every row sums to 1.
         self.normalizeU = normalizeU
