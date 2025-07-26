@@ -196,7 +196,7 @@ class DirectedHypergraph:
             True if the node is in the hypergraph, False otherwise.
 
         """
-        return node in self._adj_source and self._adj_target
+        return node in self._adj_source and node in self._adj_target
 
     def get_neighbors(self, node, order: int = None, size: int = None):
         """
