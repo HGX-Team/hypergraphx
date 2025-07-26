@@ -180,7 +180,7 @@ class DirectedHypergraph:
         if not metadata:
             return list(self._adj_source.keys())
         else:
-            return {node: self._node_metadata[node] for node in self._adj_source.keys()}
+            return {node: self.get_node_metadata(node) for node in self._adj_source.keys()}
 
     def check_node(self, node):
         """Checks if the specified node is in the hypergraph.
@@ -196,7 +196,7 @@ class DirectedHypergraph:
             True if the node is in the hypergraph, False otherwise.
 
         """
-        return node in self._adj_source or self._adj_target
+        return node in self._adj_source and self._adj_target
 
     def get_neighbors(self, node, order: int = None, size: int = None):
         """
