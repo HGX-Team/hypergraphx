@@ -112,7 +112,7 @@ class DirectedHypergraph:
         if self._node_metadata[node] == {}:
             self._node_metadata[node] = metadata
 
-    def add_nodes(self, node_list: list):
+    def add_nodes(self, node_list: list, metadata=None):
         """
         Add a list of nodes to the hypergraph.
 
@@ -126,7 +126,12 @@ class DirectedHypergraph:
         None
         """
         for node in node_list:
-            self.add_node(node)
+            try:
+                self.add_node(node, metadata[node] if metadata is not None else None)
+            except KeyError:
+                raise ValueError(
+                    "The metadata dictionary must contain an entry for each node in the node list."
+                )
 
     def remove_node(self, node, keep_edges=False):
         """Remove a node from the hypergraph, with an option to keep or remove edges incident to it."""
