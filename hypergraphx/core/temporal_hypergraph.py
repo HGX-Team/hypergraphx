@@ -496,25 +496,6 @@ class TemporalHypergraph(IUndirectedHypergraph):
     def set_edge_list(self, edge_list):
         self._edge_list = edge_list
 
-    def check_edge(self, edge, time):
-        """Checks if the specified edge is in the hypergraph.
-
-        Parameters
-        ----------
-        edge : tuple
-            The edge to check.
-        time : int
-            The time to check.
-        Returns
-        -------
-        bool
-            True if the edge is in the hypergraph, False otherwise.
-
-        """
-        edge = _canon_edge(edge)
-        k = (time, edge)
-        return k in self._edge_list
-
     def get_edges(
         self,
         time_window=None,
@@ -962,54 +943,18 @@ class TemporalHypergraph(IUndirectedHypergraph):
         return res
 
     # Metadata
-    def set_hypergraph_metadata(self, metadata):
-        self._hypergraph_metadata = metadata
-
-    def get_hypergraph_metadata(self):
-        return self._hypergraph_metadata
-
-    def set_node_metadata(self, node, metadata):
-        if node not in self._node_metadata:
-            raise ValueError("Node {} not in hypergraph.".format(node))
-        self._node_metadata[node] = metadata
-
-    def get_node_metadata(self, node):
-        if node not in self._node_metadata:
-            raise ValueError("Node {} not in hypergraph.".format(node))
-        return self._node_metadata[node]
-
-    def get_all_nodes_metadata(self):
-        return self._node_metadata
-
-    def set_edge_metadata(self, edge, time, metadata):
-        edge = _canon_edge(edge)
-        k = (time, edge)
-        if k not in self._edge_list:
-            raise ValueError("Edge {} not in hypergraph.".format(edge))
-        e_id = self._edge_list[k]
-        self._edge_metadata[e_id] = metadata
-
-    def get_edge_metadata(self, edge, time):
-        edge = _canon_edge(edge)
-        k = (time, edge)
-        if k not in self._edge_list:
-            raise ValueError("Edge {} not in hypergraph.".format(edge))
-        e_id = self._edge_list[k]
-        return self._edge_metadata[e_id]
-
-    def get_all_edges_metadata(self):
-        return self._edge_metadata
+    def _restructure_query_edge(self, edge, time):
+        # modify the edge being queried by making a tuple of it and the time
+        return (time, edge)
 
     def set_incidence_metadata(self, edge, time, node, metadata):
-        edge = _canon_edge(edge)
         k = (time, edge)
         if k not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         self._incidences_metadata[(k, node)] = metadata
 
     def get_incidence_metadata(self, edge, time, node):
-        edge = _canon_edge(edge)
-        k = (time, edge)
+        k = self._restructure_query_edge(edge, time)
         if k not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         return self._incidences_metadata[(k, node)]
