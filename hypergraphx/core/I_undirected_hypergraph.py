@@ -113,7 +113,7 @@ class IUndirectedHypergraph(IHypergraph):
         """Set the adjacency dictionary."""
         self._adj = adj_dict
 
-    def get_incident_edges(self, node, order: int = None, size: int = None):
+    def get_incident_edges(self, node, order: int = None, size: int = None) -> List[Tuple]:
         """
         Get the incident hyperedges of a node in the hypergraph.
 
@@ -137,7 +137,7 @@ class IUndirectedHypergraph(IHypergraph):
             If the node is not in the hypergraph.
 
         """
-        if node not in self._adj:
+        if not self.check_node(node):
             raise ValueError("Node {} not in hypergraph.".format(node))
         if order is not None and size is not None:
             raise ValueError("Order and size cannot be both specified.")
@@ -155,3 +155,17 @@ class IUndirectedHypergraph(IHypergraph):
                     if len(self._reverse_edge_list[edge_id]) - 1 == order
                 ]
             )
+    
+    
+    def _canon_edge(self, edge) -> Tuple:
+        edge = tuple(edge)
+
+        if len(edge) == 2:
+            if isinstance(edge[0], tuple) and isinstance(edge[1], tuple):
+                # Sort the inner tuples and return
+                return (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
+            elif not isinstance(edge[0], tuple) and not isinstance(edge[1], tuple):
+                # Sort the edge itself if it contains IDs (non-tuple elements)
+                return tuple(sorted(edge))
+
+        return tuple(sorted(edge))

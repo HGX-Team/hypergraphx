@@ -52,13 +52,13 @@ class IHypergraph(ABC):
         self._hypergraph_metadata = hypergraph_metadata or {}
         self._hypergraph_metadata.update({"weighted": weighted})
 
-        self._weighted = weighted
-        self._weights = {}
-        self._node_metadata = node_metadata or {}
-        self._edge_metadata = edge_metadata or {}
-        self._edge_list = {}
-        self._reverse_edge_list = {}
-        self._next_edge_id = 0
+        self._weighted:bool = weighted
+        self._weights:dict = {}
+        self._node_metadata:dict = node_metadata or {}
+        self._edge_metadata:dict = edge_metadata or {}
+        self._edge_list:list = {}
+        self._reverse_edge_list:list = {}
+        self._next_edge_id:int = 0
 
         self._incidences_metadata = {}
 
@@ -244,7 +244,7 @@ class IHypergraph(ABC):
             neigh = set()
             edges = self.get_incident_edges(node)
             for edge in edges:
-                neigh.update(edge[1])
+                neigh.add(edge[1])
             if node in neigh:
                 neigh.remove(node)
             return neigh
@@ -254,13 +254,13 @@ class IHypergraph(ABC):
             neigh = set()
             edges = self.get_incident_edges(node, order=order)
             for edge in edges:
-                neigh.update(edge[1])
+                neigh.add(edge[1])
             if node in neigh:
                 neigh.remove(node)
             return neigh
 
     
-    def get_incident_edges(self, node, order: int = None, size: int = None):
+    def get_incident_edges(self, node, order: int = None, size: int = None) -> List[Tuple]:
         """
         Get the incident edges of a node.
 
@@ -606,7 +606,7 @@ class IHypergraph(ABC):
 
 
     # Edge metadata    
-    def get_edge_metadata(self, edge, *args, **kwargs):
+    def get_edge_metadata(self, edge, *args, **kwargs) -> dict:
         """
         Get metadata for a specific edge.
         """
@@ -628,17 +628,19 @@ class IHypergraph(ABC):
         """Get metadata for all edges."""
         return self._edge_metadata
     
-    def set_attr_to_edge_metadata(self, edge, layer, field, value):
+    def set_attr_to_edge_metadata(self, edge, field, value, *args, **kwargs):
         edge = self._canon_edge(edge)
+        k = self._restructure_query_edge(edge, *args, **kwargs)
         if edge not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        self._edge_metadata[self._edge_list[(edge, layer)]][field] = value
+        self._edge_metadata[self._edge_list[k]][field] = value
         
-    def remove_attr_from_edge_metadata(self, edge, layer, field):
+    def remove_attr_from_edge_metadata(self, edge, field, *args, **kwargs):
         edge = self._canon_edge(edge)
+        k = self._restructure_query_edge(edge, *args, **kwargs)
         if edge not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        del self._edge_metadata[self._edge_list[(edge, layer)]][field]
+        del self._edge_metadata[self._edge_list[k]][field]
     
 
     # Incidence metadata
@@ -669,27 +671,14 @@ class IHypergraph(ABC):
     # Utility Methods (Shared Implementation)
     # =============================================================================
     
-    def _canon_edge(self, edge):
+    @abstractmethod
+    def _canon_edge(self, edge) -> Tuple:
         """
         Gets the canonical form of an edge (sorts the inner tuples)
         Works for hyperedges but WILL BREAK FOR METAEDGES
         TODO: Add recursive canonicalization for future metagraph integration
         """
-
-        edge = tuple(edge)
-
-        def is_tuple(e):
-            return isinstance(e, tuple)
-
-        if len(edge) == 2:
-            if is_tuple(edge[0]) and is_tuple(edge[1]):
-                # Sort the inner tuples and return
-                return (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
-            elif not is_tuple(edge[0]) and not is_tuple(edge[1]):
-                # Sort the edge itself if it contains IDs (non-tuple elements)
-                return tuple(sorted(edge))
-
-        return tuple(sorted(edge))
+        pass
 
     @abstractmethod
     def clear(self):
@@ -775,7 +764,7 @@ class IHypergraph(ABC):
         pass
 
     @abstractmethod
-    def expose_attributes_for_hashing(self) -> Dict:
+    def expose_attributes_for_hashing(self) -> dict:
         """
         Expose relevant attributes for hashing.
 

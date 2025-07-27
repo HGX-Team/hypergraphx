@@ -405,7 +405,7 @@ class MultiplexHypergraph(IUndirectedHypergraph):
         self._next_edge_id = data.get("next_edge_id", 0)
         self._existing_layers = data.get("existing_layers", set())
 
-    def expose_attributes_for_hashing(self):
+    def expose_attributes_for_hashing(self) -> dict:
         """
         Expose relevant attributes for hashing specific to MultiplexHypergraph.
 

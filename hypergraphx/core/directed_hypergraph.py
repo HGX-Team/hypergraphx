@@ -660,6 +660,21 @@ class DirectedHypergraph(IHypergraph):
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         del self._edge_metadata[self._edge_list[edge]][field]
 
+    def _canon_edge(self, edge) -> Tuple:
+        """
+        Gets the canonical form of an edge (sorts the inner tuples)
+        Works for hyperedges but WILL BREAK FOR METAEDGES
+        TODO: Add recursive canonicalization for future metagraph integration
+        """
+        inner_sorted_edge = list()
+
+        for e in edge:
+            if isinstance(e, tuple):
+                inner_sorted_edge.append(tuple(sorted(e)))
+            else:
+                inner_sorted_edge.append(e)
+        return tuple(inner_sorted_edge)
+
     # Basic Functions
     def clear(self):
         self._edge_list.clear()

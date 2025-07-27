@@ -208,7 +208,7 @@ class Hypergraph(IUndirectedHypergraph):
             self._reverse_edge_list[self._next_edge_id] = edge
             self._weights[self._next_edge_id] = 1 if not self._weighted else weight
             self._next_edge_id += 1
-        elif edge in self._edge_list and self._weighted:
+        elif self._weighted:
             self._weights[self._edge_list[edge]] += weight
 
         if metadata is not None:
@@ -578,6 +578,12 @@ class Hypergraph(IUndirectedHypergraph):
         #   already get the canonical form of the edge
         return edge
 
+    def set_attr_to_edge_metadata(self, edge, field, value):
+        edge = tuple(sorted(edge))
+        if edge not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        self._edge_metadata[self._edge_list[edge]][field] = value
+    
     # Basic Functions
     def clear(self):
         self._adj.clear()
@@ -634,7 +640,7 @@ class Hypergraph(IUndirectedHypergraph):
         self._reverse_edge_list = data.get("reverse_edge_list", {})
         self._next_edge_id = data.get("next_edge_id", 0)
 
-    def expose_attributes_for_hashing(self):
+    def expose_attributes_for_hashing(self) -> dict:
         """
         Expose relevant attributes for hashing specific to Hypergraph.
 
@@ -651,7 +657,7 @@ class Hypergraph(IUndirectedHypergraph):
                 {
                     "nodes": sorted_edge,
                     "weight": self._weights.get(edge_id, 1),
-                    "metadata": self._edge_metadata.get(edge_id, {}),
+                    "metadata": self._edge_metadata[edge_id],
                 }
             )
 

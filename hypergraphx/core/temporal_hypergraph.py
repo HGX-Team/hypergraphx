@@ -928,7 +928,7 @@ class TemporalHypergraph(IUndirectedHypergraph):
         self._reverse_edge_list = data.get("reverse_edge_list", {})
         self._next_edge_id = data.get("next_edge_id", 0)
 
-    def expose_attributes_for_hashing(self):
+    def expose_attributes_for_hashing(self) -> dict:
         """
         Expose relevant attributes for hashing specific to TemporalHypergraph.
 
