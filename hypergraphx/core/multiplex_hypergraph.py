@@ -1,7 +1,21 @@
 from hypergraphx import Hypergraph
-from hypergraphx.core.i_undirected_hypergraph import IUndirectedHypergraph
 
-class MultiplexHypergraph(IUndirectedHypergraph):
+
+def _canon_edge(edge):
+    edge = tuple(edge)
+
+    if len(edge) == 2:
+        if isinstance(edge[0], tuple) and isinstance(edge[1], tuple):
+            # Sort the inner tuples and return
+            return (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
+        elif not isinstance(edge[0], tuple) and not isinstance(edge[1], tuple):
+            # Sort the edge itself if it contains IDs (non-tuple elements)
+            return tuple(sorted(edge))
+
+    return tuple(sorted(edge))
+
+
+class MultiplexHypergraph:
     """
     A Multiplex Hypergraph is a hypergraph where hyperedges are organized into multiple layers.
     Each layer share the same node-set and represents a specific context or relationship between nodes, and hyperedges can
@@ -46,20 +60,21 @@ class MultiplexHypergraph(IUndirectedHypergraph):
             If `edge_list` and `edge_layer` have mismatched lengths.
             If `edge_list` contains improperly formatted edges when `edge_layer` is None.
         """
-        # Call parent constructor
-        super().__init__(
-            edge_list=edge_list,
-            weighted=weighted,
-            weights=weights,
-            hypergraph_metadata=hypergraph_metadata,
-            node_metadata=node_metadata,
-            edge_metadata=edge_metadata
+        # Initialize hypergraph metadata
+        self._hypergraph_metadata = hypergraph_metadata or {}
+        self._hypergraph_metadata.update(
+            {"weighted": weighted, "type": "MultiplexHypergraph"}
         )
 
-        # Configure additional hypergraph metadata
-        self._hypergraph_metadata["type"] = "MultiplexHypergraph"
-        
-        # Initialize other attributes
+        # Initialize core attributes
+        self._node_metadata = {}
+        self._edge_metadata = {}
+        self._weighted = weighted
+        self._weights = {}
+        self._edge_list = {}
+        self._adj = {}
+        self._reverse_edge_list = {}
+        self._next_edge_id = 0
         self._existing_layers = set()
 
         # Add node metadata if provided
@@ -70,8 +85,7 @@ class MultiplexHypergraph(IUndirectedHypergraph):
         # Handle edge and layer consistency
         if edge_list is not None and edge_layer is None:
             # Extract layers from edge_list if layer information is embedded
-            pairwise_edge_mask = (isinstance(edge, tuple) and len(edge) == 2 for edge in edge_list)
-            if all(pairwise_edge_mask):
+            if all(isinstance(edge, tuple) and len(edge) == 2 for edge in edge_list):
                 edge_layer = [edge[1] for edge in edge_list]
                 edge_list = [edge[0] for edge in edge_list]
             else:
@@ -89,21 +103,98 @@ class MultiplexHypergraph(IUndirectedHypergraph):
                 metadata=edge_metadata,
             )
 
+    def get_adj_dict(self):
+        return self._adj
+
+    def set_adj_dict(self, adj_dict):
+        self._adj = adj_dict
 
     def get_incident_edges(self, node):
         if node not in self._adj:
             raise ValueError("Node {} not in hypergraph.".format(node))
         return [self._reverse_edge_list[e_id] for e_id in self._adj[node]]
 
-    def _restructure_query_edge(self, edge, layer):
-        # modify the edge being queried by making a tuple of it and the layer
-        return (edge, layer)
+    def degree(self, node, order=None, size=None):
+        from hypergraphx.measures.degree import degree
+
+        return degree(self, node, order=order, size=size)
+
+    def degree_sequence(self, order=None, size=None):
+        from hypergraphx.measures.degree import degree_sequence
+
+        return degree_sequence(self, order=order, size=size)
+
+    def get_edge_metadata(self, edge, layer):
+        edge = tuple(sorted(edge))
+        k = (edge, layer)
+        if k not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        return self._edge_metadata[self._edge_list[k]]
+
+    def is_weighted(self):
+        return self._weighted
+
+    def get_edge_list(self):
+        return self._edge_list
+
+    def set_edge_list(self, edge_list):
+        self._edge_list = edge_list
 
     def get_existing_layers(self):
         return self._existing_layers
 
     def set_existing_layers(self, existing_layers):
         self._existing_layers = existing_layers
+
+    def get_nodes(self, metadata=False):
+        if metadata:
+            return self._node_metadata
+        else:
+            return list(self._node_metadata.keys())
+
+    def add_node(self, node, metadata=None):
+        """
+        Add a node to the hypergraph. If the node is already in the hypergraph, nothing happens.
+
+        Parameters
+        ----------
+        node : object
+            The node to add.
+
+        Returns
+        -------
+        None
+        """
+        if metadata is None:
+            metadata = {}
+        if node not in self._adj:
+            self._adj[node] = []
+            self._node_metadata[node] = {}
+        if self._node_metadata[node] == {}:
+            self._node_metadata[node] = metadata
+
+    def add_nodes(self, node_list: list, node_metadata=None):
+        """
+        Add a list of nodes to the hypergraph.
+
+        Parameters
+        ----------
+        node_list : list
+            The list of nodes to add.
+
+        Returns
+        -------
+        None
+        """
+        for node in node_list:
+            try:
+                self.add_node(
+                    node, node_metadata[node] if node_metadata is not None else None
+                )
+            except KeyError:
+                raise ValueError(
+                    "The metadata dictionary must contain an entry for each node in the node list."
+                )
 
     def add_edges(self, edge_list, edge_layer, weights=None, metadata=None):
         """Add a list of hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.
@@ -192,7 +283,7 @@ class MultiplexHypergraph(IUndirectedHypergraph):
 
         self._existing_layers.add(layer)
 
-        edge = self._canon_edge(edge)
+        edge = _canon_edge(edge)
         k = (edge, layer)
         order = len(edge) - 1
 
@@ -232,8 +323,8 @@ class MultiplexHypergraph(IUndirectedHypergraph):
         ValueError
             If the edge is not in the hypergraph.
         """
-        edge = self._canon_edge(edge)
-        if not self.check_edge(edge):
+        edge = _canon_edge(edge)
+        if edge not in self._edge_list:
             raise ValueError(f"Edge {edge} not in hypergraph.")
 
         edge_id = self._edge_list[edge]
@@ -304,6 +395,26 @@ class MultiplexHypergraph(IUndirectedHypergraph):
         else:
             return list(self._edge_list.keys())
 
+    def get_weight(self, edge, layer):
+        edge = _canon_edge(edge)
+        k = (edge, layer)
+        if k not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(k))
+        else:
+            return self._weights[self._edge_list[k]]
+
+    def set_weight(self, edge, layer, weight):
+        if not self._weighted and weight != 1:
+            raise ValueError(
+                "If the hypergraph is not weighted, weight can be 1 or None."
+            )
+
+        k = (_canon_edge(edge), layer)
+        if k not in self._edge_list:
+            raise ValueError("Edge {} not in hypergraph.".format(edge))
+        else:
+            self._weights[self._edge_list[k]] = weight
+
     def set_dataset_metadata(self, metadata):
         self._hypergraph_metadata["multiplex_metadata"] = metadata
 
@@ -317,6 +428,12 @@ class MultiplexHypergraph(IUndirectedHypergraph):
 
     def get_layer_metadata(self, layer_name):
         return self._hypergraph_metadata[layer_name]
+
+    def get_hypergraph_metadata(self):
+        return self._hypergraph_metadata
+
+    def set_hypergraph_metadata(self, metadata):
+        self._hypergraph_metadata = metadata
 
     def aggregated_hypergraph(self):
         h = Hypergraph(
@@ -333,8 +450,16 @@ class MultiplexHypergraph(IUndirectedHypergraph):
             )
         return h
 
+    def set_attr_to_hypergraph_metadata(self, field, value):
+        self._hypergraph_metadata[field] = value
+
+    def set_attr_to_node_metadata(self, node, field, value):
+        if node not in self._node_metadata:
+            raise ValueError("Node {} not in hypergraph.".format(node))
+        self._node_metadata[node][field] = value
+
     def set_attr_to_edge_metadata(self, edge, layer, field, value):
-        edge = self._canon_edge(edge)
+        edge = _canon_edge(edge)
         if edge not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         self._edge_metadata[self._edge_list[(edge, layer)]][field] = value
@@ -345,22 +470,10 @@ class MultiplexHypergraph(IUndirectedHypergraph):
         del self._node_metadata[node][field]
 
     def remove_attr_from_edge_metadata(self, edge, layer, field):
-        edge = self._canon_edge(edge)
+        edge = _canon_edge(edge)
         if edge not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         del self._edge_metadata[self._edge_list[(edge, layer)]][field]
-
-    def clear(self):
-        self._adj.clear()
-        self._weights.clear()
-        self._hypergraph_metadata.clear()
-        self._incidences_metadata.clear()
-        self._node_metadata.clear()
-        self._edge_metadata.clear()
-        self._edge_list.clear()
-        self._reverse_edge_list.clear()
-        self._existing_layers.clear()
-
 
     def expose_data_structures(self):
         """
@@ -405,7 +518,7 @@ class MultiplexHypergraph(IUndirectedHypergraph):
         self._next_edge_id = data.get("next_edge_id", 0)
         self._existing_layers = data.get("existing_layers", set())
 
-    def expose_attributes_for_hashing(self) -> dict:
+    def expose_attributes_for_hashing(self):
         """
         Expose relevant attributes for hashing specific to MultiplexHypergraph.
 
