@@ -1,10 +1,12 @@
 import copy
 import warnings
+from typing import Tuple, Any
 
 from sklearn.preprocessing import LabelEncoder
 
+from hypergraphx.core.i_undirected_hypergraph import IUndirectedHypergraph
 
-class Hypergraph:
+class Hypergraph(IUndirectedHypergraph):
     """
     A Hypergraph is a generalization of a graph where an edge (hyperedge) can connect
     any number of nodes. It is represented as a set of nodes and a set of hyperedges,
@@ -454,6 +456,13 @@ class Hypergraph:
         for edge in edge_list:
             self.remove_edge(edge)
 
+    def _restructure_query_edge(self, k: Tuple[Tuple, Any]):
+        """
+        An implementation-specific helper for modifying a query edge
+        prior to metadata retrieval.
+        """
+        return tuple(sorted(k))
+    
     def set_edge_list(self, edge_list):
         self._edge_list = edge_list
 

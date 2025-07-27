@@ -1,4 +1,7 @@
+from typing import Tuple, Any
+
 from hypergraphx import Hypergraph
+from hypergraphx.core.i_undirected_hypergraph import IUndirectedHypergraph
 
 
 def _canon_edge(edge):
@@ -15,7 +18,7 @@ def _canon_edge(edge):
     return tuple(sorted(edge))
 
 
-class MultiplexHypergraph:
+class MultiplexHypergraph(IUndirectedHypergraph):
     """
     A Multiplex Hypergraph is a hypergraph where hyperedges are organized into multiple layers.
     Each layer share the same node-set and represents a specific context or relationship between nodes, and hyperedges can
@@ -415,6 +418,14 @@ class MultiplexHypergraph:
         else:
             self._weights[self._edge_list[k]] = weight
 
+    
+    def _restructure_query_edge(self, k: Tuple[Tuple, Any], layer):
+        """
+        An implementation-specific helper for modifying a query edge
+        prior to metadata retrieval.
+        """
+        return (k, layer)
+
     def set_dataset_metadata(self, metadata):
         self._hypergraph_metadata["multiplex_metadata"] = metadata
 
@@ -475,6 +486,15 @@ class MultiplexHypergraph:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         del self._edge_metadata[self._edge_list[(edge, layer)]][field]
 
+    def clear(self):
+        self._edge_list.clear()
+        self._adj.clear()
+        self._weights.clear()
+        self._hypergraph_metadata.clear()
+        self._node_metadata.clear()
+        self._edge_metadata.clear()
+        self._reverse_edge_list.clear()
+    
     def expose_data_structures(self):
         """
         Expose the internal data structures of the multiplex hypergraph for serialization.

@@ -1,9 +1,11 @@
 import copy
 import math
+from typing import Tuple, Any
 
 from sklearn.preprocessing import LabelEncoder
 
 from hypergraphx import Hypergraph
+from hypergraphx.core.i_undirected_hypergraph import IUndirectedHypergraph
 
 
 def _canon_edge(edge):
@@ -38,7 +40,7 @@ def _get_nodes(edge):
         return list(edge)
 
 
-class TemporalHypergraph:
+class TemporalHypergraph(IUndirectedHypergraph):
     """
     A Temporal Hypergraph is a hypergraph where each hyperedge is associated with a specific timestamp.
     Temporal hypergraphs are useful for modeling systems where interactions between nodes change over time, such as social networks,
@@ -973,6 +975,13 @@ class TemporalHypergraph:
 
         return res
 
+    def _restructure_query_edge(self, k: Tuple[Tuple, Any], time):
+        """
+        An implementation-specific helper for modifying a query edge
+        prior to metadata retrieval.
+        """
+        return (time, k)
+    
     # Metadata
     def set_hypergraph_metadata(self, metadata):
         self._hypergraph_metadata = metadata

@@ -1,7 +1,9 @@
 import copy
-from typing import Tuple, List
+from typing import Tuple, List, Any
 
 from sklearn.preprocessing import LabelEncoder
+
+from hypergraphx.core.i_hypergraph import IHypergraph
 
 
 def _get_edge_size(edge):
@@ -20,7 +22,7 @@ def _get_edge_size(edge):
     return len(edge[0]) + len(edge[1])
 
 
-class DirectedHypergraph:
+class DirectedHypergraph(IHypergraph):
     """
     A Directed Hypergraph is a generalization of a graph in which hyperedges have a direction.
     Each hyperedge connects a set of source nodes to a set of target nodes.
@@ -904,6 +906,21 @@ class DirectedHypergraph:
         from hypergraphx.representations.projections import directed_line_graph
 
         return directed_line_graph(self, distance, s, weighted)
+
+    def _canon_edge(self, edge: Tuple) -> Tuple:
+        """
+        Gets the canonical form of an edge (sorts the inner tuples)
+        Works for hyperedges but WILL BREAK FOR METAEDGES
+        TODO: Add recursive canonicalization for future metagraph integration
+        """
+        return (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
+    
+    def _restructure_query_edge(self, k: Tuple[Tuple, Any]):
+        """
+        An implementation-specific helper for modifying a query edge
+        prior to metadata retrieval.
+        """
+        return k
 
     # Metadata
     def set_hypergraph_metadata(self, metadata):

@@ -660,7 +660,7 @@ class IHypergraph(ABC):
         return {k: v for k, v in self._incidences_metadata.items()}
 
     @abstractmethod
-    def _restructure_query_edge(self, k: Tuple[Tuple, Any]):
+    def _restructure_query_edge(self, k: Tuple[Tuple, Any], *args, **kwargs):
         """
         An implementation-specific helper for modifying a query edge
         prior to metadata retrieval.
@@ -672,7 +672,7 @@ class IHypergraph(ABC):
     # =============================================================================
     
     @abstractmethod
-    def _canon_edge(self, edge) -> Tuple:
+    def _canon_edge(self, edge: Tuple) -> Tuple:
         """
         Gets the canonical form of an edge (sorts the inner tuples)
         Works for hyperedges but WILL BREAK FOR METAEDGES
