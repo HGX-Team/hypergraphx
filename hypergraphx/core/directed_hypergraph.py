@@ -3,6 +3,8 @@ from typing import Tuple, List
 
 from sklearn.preprocessing import LabelEncoder
 
+from hypergraphx.core.I_hypergraph import IHypergraph
+
 
 def _get_edge_size(edge):
     """
@@ -20,7 +22,7 @@ def _get_edge_size(edge):
     return len(edge[0]) + len(edge[1])
 
 
-class DirectedHypergraph:
+class DirectedHypergraph(IHypergraph):
     """
     A Directed Hypergraph is a generalization of a graph in which hyperedges have a direction.
     Each hyperedge connects a set of source nodes to a set of target nodes.
@@ -68,15 +70,17 @@ class DirectedHypergraph:
 
         # Initialize core attributes
         self._weighted = weighted
+        self._weights = {}
+        self._node_metadata = node_metadata or {}
+        self._edge_metadata = edge_metadata or {}
+        self._edge_list = {}
+        self._reverse_edge_list = {}
+        self._next_edge_id = 0
+
+        # Initialize other attributes
         self._adj_source = {}
         self._adj_target = {}
-        self._edge_list = {}
-        self._node_metadata = {}
-        self._edge_metadata = {}
         self._incidences_metadata = {}
-        self._reverse_edge_list = {}
-        self._weights = {}
-        self._next_edge_id = 0
 
         # Add node metadata if provided
         if node_metadata:
@@ -90,6 +94,7 @@ class DirectedHypergraph:
             self.add_edges(edge_list, weights=weights, metadata=edge_metadata)
 
     # Nodes
+    # Overwrite the parent interface's definition for adding nodes
     def add_node(self, node, metadata=None):
         """
         Add a node to the hypergraph. If the node is already in the hypergraph, nothing happens.
@@ -111,27 +116,6 @@ class DirectedHypergraph:
             self._node_metadata[node] = {}
         if self._node_metadata[node] == {}:
             self._node_metadata[node] = metadata
-
-    def add_nodes(self, node_list: list, metadata=None):
-        """
-        Add a list of nodes to the hypergraph.
-
-        Parameters
-        ----------
-        node_list : list
-            The list of nodes to add.
-
-        Returns
-        -------
-        None
-        """
-        for node in node_list:
-            try:
-                self.add_node(node, metadata[node] if metadata is not None else None)
-            except KeyError:
-                raise ValueError(
-                    "The metadata dictionary must contain an entry for each node in the node list."
-                )
 
     def remove_node(self, node, keep_edges=False):
         """Remove a node from the hypergraph, with an option to keep or remove edges incident to it."""

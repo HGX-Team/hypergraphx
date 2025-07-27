@@ -1,4 +1,5 @@
 from hypergraphx import Hypergraph
+from hypergraphx.core.I_undirected_hypergraph import IUndirectedHypergraph
 
 
 def _canon_edge(edge):
@@ -15,7 +16,7 @@ def _canon_edge(edge):
     return tuple(sorted(edge))
 
 
-class MultiplexHypergraph:
+class MultiplexHypergraph(IUndirectedHypergraph):
     """
     A Multiplex Hypergraph is a hypergraph where hyperedges are organized into multiple layers.
     Each layer share the same node-set and represents a specific context or relationship between nodes, and hyperedges can
@@ -67,14 +68,16 @@ class MultiplexHypergraph:
         )
 
         # Initialize core attributes
-        self._node_metadata = {}
-        self._edge_metadata = {}
         self._weighted = weighted
         self._weights = {}
+        self._node_metadata = node_metadata or {}
+        self._edge_metadata = edge_metadata or {}
         self._edge_list = {}
-        self._adj = {}
         self._reverse_edge_list = {}
         self._next_edge_id = 0
+        
+        # Initialize other attributes
+        self._adj = {}
         self._existing_layers = set()
 
         # Add node metadata if provided
@@ -85,7 +88,8 @@ class MultiplexHypergraph:
         # Handle edge and layer consistency
         if edge_list is not None and edge_layer is None:
             # Extract layers from edge_list if layer information is embedded
-            if all(isinstance(edge, tuple) and len(edge) == 2 for edge in edge_list):
+            pairwise_edge_mask = (isinstance(edge, tuple) and len(edge) == 2 for edge in edge_list)
+            if all(pairwise_edge_mask):
                 edge_layer = [edge[1] for edge in edge_list]
                 edge_list = [edge[0] for edge in edge_list]
             else:
@@ -131,9 +135,6 @@ class MultiplexHypergraph:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         return self._edge_metadata[self._edge_list[k]]
 
-    def is_weighted(self):
-        return self._weighted
-
     def get_edge_list(self):
         return self._edge_list
 
@@ -151,50 +152,6 @@ class MultiplexHypergraph:
             return self._node_metadata
         else:
             return list(self._node_metadata.keys())
-
-    def add_node(self, node, metadata=None):
-        """
-        Add a node to the hypergraph. If the node is already in the hypergraph, nothing happens.
-
-        Parameters
-        ----------
-        node : object
-            The node to add.
-
-        Returns
-        -------
-        None
-        """
-        if metadata is None:
-            metadata = {}
-        if node not in self._adj:
-            self._adj[node] = []
-            self._node_metadata[node] = {}
-        if self._node_metadata[node] == {}:
-            self._node_metadata[node] = metadata
-
-    def add_nodes(self, node_list: list, node_metadata=None):
-        """
-        Add a list of nodes to the hypergraph.
-
-        Parameters
-        ----------
-        node_list : list
-            The list of nodes to add.
-
-        Returns
-        -------
-        None
-        """
-        for node in node_list:
-            try:
-                self.add_node(
-                    node, node_metadata[node] if node_metadata is not None else None
-                )
-            except KeyError:
-                raise ValueError(
-                    "The metadata dictionary must contain an entry for each node in the node list."
-                )
 
     def add_edges(self, edge_list, edge_layer, weights=None, metadata=None):
         """Add a list of hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.
