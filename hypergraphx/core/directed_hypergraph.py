@@ -61,20 +61,18 @@ class DirectedHypergraph(IHypergraph):
             If `edge_list` and `weights` have mismatched lengths when `weighted` is True.
             If `edge_list` contains improperly formatted edges.
         """
-        # Initialize hypergraph metadata
-        self._hypergraph_metadata = hypergraph_metadata or {}
-        self._hypergraph_metadata.update(
-            {"weighted": weighted, "type": "DirectedHypergraph"}
+        # Call parent constructor
+        super().__init__(
+            edge_list=edge_list,
+            weighted=weighted,
+            weights=weights,
+            hypergraph_metadata=hypergraph_metadata,
+            node_metadata=node_metadata,
+            edge_metadata=edge_metadata
         )
 
-        # Initialize core attributes
-        self._weighted = weighted
-        self._weights = {}
-        self._node_metadata = node_metadata or {}
-        self._edge_metadata = edge_metadata or {}
-        self._edge_list = {}
-        self._reverse_edge_list = {}
-        self._next_edge_id = 0
+        # Configure additional hypergraph metadata
+        self._hypergraph_metadata["type"] = "DirectedHypergraph"
 
         # Initialize other attributes
         self._adj_source = {}

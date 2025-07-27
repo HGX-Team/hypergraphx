@@ -59,6 +59,11 @@ class Hypergraph(IUndirectedHypergraph):
         # Initialize other attributes
         self._empty_edges = {}
 
+        # Add node metadata if provided
+        if node_metadata:
+            for node, metadata in node_metadata.items():
+                self.add_node(node, metadata=metadata)
+
         # Add edges if provided
         if edge_list:
             if weighted and weights is not None and len(edge_list) != len(weights):

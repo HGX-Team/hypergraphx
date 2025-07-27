@@ -3,7 +3,6 @@ from typing import Dict, List, Set, Tuple, Union, Optional, Any
 
 from hypergraphx.core.i_hypergraph import IHypergraph
 
-
 class IUndirectedHypergraph(IHypergraph):
     """
     Abstract base class defining the common interface for all undirected hypergraph implementations.
@@ -55,15 +54,8 @@ class IUndirectedHypergraph(IHypergraph):
             node_metadata=node_metadata,
             edge_metadata=edge_metadata
         )
-        
         # Initialize undirected-specific data structures
         self._adj = {}
-        
-        # Add nodes from node_metadata to adjacency structure
-        if node_metadata:
-            for node in node_metadata.keys():
-                if node not in self._adj:
-                    self._adj[node] = []
 
     # =============================================================================
     # Undirected-Specific Node Management
@@ -96,6 +88,22 @@ class IUndirectedHypergraph(IHypergraph):
     # =============================================================================
     # Undirected-Specific Adjacency and Structure Access
     # =============================================================================
+    
+    def check_node(self, node):
+        """Checks if the specified node is in the hypergraph.
+
+        Parameters
+        ----------
+        node : Object
+            The node to check.
+
+        Returns
+        -------
+        bool
+            True if the node is in the hypergraph, False otherwise.
+
+        """
+        return node in self._adj
     
     def get_adj_dict(self):
         """Get the adjacency dictionary."""

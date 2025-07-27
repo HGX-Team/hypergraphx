@@ -46,23 +46,20 @@ class MultiplexHypergraph(IUndirectedHypergraph):
             If `edge_list` and `edge_layer` have mismatched lengths.
             If `edge_list` contains improperly formatted edges when `edge_layer` is None.
         """
-        # Initialize hypergraph metadata
-        self._hypergraph_metadata = hypergraph_metadata or {}
-        self._hypergraph_metadata.update(
-            {"weighted": weighted, "type": "MultiplexHypergraph"}
+        # Call parent constructor
+        super().__init__(
+            edge_list=edge_list,
+            weighted=weighted,
+            weights=weights,
+            hypergraph_metadata=hypergraph_metadata,
+            node_metadata=node_metadata,
+            edge_metadata=edge_metadata
         )
 
-        # Initialize core attributes
-        self._weighted = weighted
-        self._weights = {}
-        self._node_metadata = node_metadata or {}
-        self._edge_metadata = edge_metadata or {}
-        self._edge_list = {}
-        self._reverse_edge_list = {}
-        self._next_edge_id = 0
+        # Configure additional hypergraph metadata
+        self._hypergraph_metadata["type"] = "MultiplexHypergraph"
         
         # Initialize other attributes
-        self._adj = {}
         self._existing_layers = set()
 
         # Add node metadata if provided
@@ -195,7 +192,7 @@ class MultiplexHypergraph(IUndirectedHypergraph):
 
         self._existing_layers.add(layer)
 
-        edge = _canon_edge(edge)
+        edge = self._canon_edge(edge)
         k = (edge, layer)
         order = len(edge) - 1
 
@@ -337,7 +334,7 @@ class MultiplexHypergraph(IUndirectedHypergraph):
         return h
 
     def set_attr_to_edge_metadata(self, edge, layer, field, value):
-        edge = _canon_edge(edge)
+        edge = self._canon_edge(edge)
         if edge not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         self._edge_metadata[self._edge_list[(edge, layer)]][field] = value
@@ -348,7 +345,7 @@ class MultiplexHypergraph(IUndirectedHypergraph):
         del self._node_metadata[node][field]
 
     def remove_attr_from_edge_metadata(self, edge, layer, field):
-        edge = _canon_edge(edge)
+        edge = self._canon_edge(edge)
         if edge not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         del self._edge_metadata[self._edge_list[(edge, layer)]][field]

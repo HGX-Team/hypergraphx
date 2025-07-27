@@ -4,11 +4,6 @@ import copy
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from collections import Counter
-from hypergraphx.utils.cc import is_isolated
-from hypergraphx.utils.cc import isolated_nodes
-from hypergraphx.measures.degree import degree
-from hypergraphx.measures.degree import degree_sequence
-from hypergraphx.measures.degree import degree_distribution
 
 
 class IHypergraph(ABC):
@@ -66,11 +61,6 @@ class IHypergraph(ABC):
         self._next_edge_id = 0
 
         self._incidences_metadata = {}
-
-        # Add node metadata if provided
-        if node_metadata:
-            for node, metadata in node_metadata.items():
-                self.add_node(node, metadata=metadata)
 
     # =============================================================================
     # Node Management (Shared Implementation)
@@ -424,61 +414,6 @@ class IHypergraph(ABC):
         else:
             return list(w.values())
 
-    def is_weighted(self) -> bool:
-        """
-        Check if the hypergraph is weighted.
-
-        Returns
-        -------
-        bool
-            True if the hypergraph is weighted, False otherwise.
-        """
-        return self._weighted
-
-    # =============================================================================
-    # Degree Methods (Shared Implementation)
-    # =============================================================================
-    
-    def degree(self, node, order=None, size=None):
-        """
-        Calculate the degree of a node.
-
-        Parameters
-        ----------
-        node : object
-            The node to calculate degree for.
-        order : int, optional
-            The order of hyperedges to consider.
-        size : int, optional
-            The size of hyperedges to consider.
-
-        Returns
-        -------
-        int
-            The degree of the node.
-        """
-        return degree(self, node, order=order, size=size)
-
-    def degree_sequence(self, order=None, size=None):
-        """
-        Calculate the degree sequence of the hypergraph.
-
-        Parameters
-        ----------
-        order : int, optional
-            The order of hyperedges to consider.
-        size : int, optional
-            The size of hyperedges to consider.
-
-        Returns
-        -------
-        list
-            The degree sequence.
-        """
-        return degree_sequence(self, order=order, size=size)
-
-    def degree_distribution(self, order=None, size=None):
-        return degree_distribution(self, order=order, size=size)
 
     # =============================================================================
     # Structural Information (Shared Implementation)
@@ -547,7 +482,7 @@ class IHypergraph(ABC):
         def get_nested_size(e):
             if not isinstance(e, tuple):
                 return 1
-            return np.sum([get_nested_size(e)])
+            return np.sum([get_nested_size(f) for f in e])
 
         return [
             get_nested_size(edge)
@@ -611,6 +546,17 @@ class IHypergraph(ABC):
         sizes = self.get_sizes()
         return len(set(sizes)) <= 1
 
+    def is_weighted(self) -> bool:
+        """
+        Check if the hypergraph is weighted.
+
+        Returns
+        -------
+        bool
+            True if the hypergraph is weighted, False otherwise.
+        """
+        return self._weighted
+    
     # =============================================================================
     # Metadata Management (Shared Implementation)
     # =============================================================================
@@ -744,14 +690,6 @@ class IHypergraph(ABC):
                 return tuple(sorted(edge))
 
         return tuple(sorted(edge))
-
-    def isolated_nodes(self, size=None, order=None):
-        """Get isolated nodes in the hypergraph."""
-        return isolated_nodes(self, size=size, order=order)
-
-    def is_isolated(self, node, size=None, order=None):
-        """Check if a node is isolated."""
-        return is_isolated(self, node, size=size, order=order)
 
     @abstractmethod
     def clear(self):
