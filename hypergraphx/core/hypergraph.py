@@ -211,14 +211,16 @@ class Hypergraph(IUndirectedHypergraph):
         elif self._weighted:
             self._weights[self._edge_list[edge]] += weight
 
+        k = self._edge_list[edge]
         if metadata is not None:
-            self._edge_metadata[self._edge_list[edge]] = metadata
+            self._edge_metadata[k] = metadata
         else:
-            self._edge_metadata[self._edge_list[edge]] = {}
+            self._edge_metadata[k] = {}
 
         for node in edge:
-            self.add_node(node)
-            self._adj[node].append(self._edge_list[edge])
+            if not self.check_node(node):
+                self.add_node(node)
+            self._adj[node].append(k)
 
     def add_edges(self, edge_list, weights=None, metadata=None):
         """Add a list of hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.

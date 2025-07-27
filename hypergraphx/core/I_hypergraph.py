@@ -244,7 +244,7 @@ class IHypergraph(ABC):
             neigh = set()
             edges = self.get_incident_edges(node)
             for edge in edges:
-                neigh.add(edge[1])
+                neigh.update(edge)
             if node in neigh:
                 neigh.remove(node)
             return neigh
@@ -254,7 +254,7 @@ class IHypergraph(ABC):
             neigh = set()
             edges = self.get_incident_edges(node, order=order)
             for edge in edges:
-                neigh.add(edge[1])
+                neigh.update(edge)
             if node in neigh:
                 neigh.remove(node)
             return neigh
