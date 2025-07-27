@@ -1,9 +1,7 @@
-import copy
 import warnings
-
 from sklearn.preprocessing import LabelEncoder
 
-from hypergraphx.core.I_undirected_hypergraph import IUndirectedHypergraph
+from hypergraphx.core.i_undirected_hypergraph import IUndirectedHypergraph
 
 class Hypergraph(IUndirectedHypergraph):
     """

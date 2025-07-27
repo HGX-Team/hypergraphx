@@ -1,42 +1,9 @@
 import copy
 import math
-
 from sklearn.preprocessing import LabelEncoder
 
 from hypergraphx import Hypergraph
-from hypergraphx.core.I_undirected_hypergraph import IUndirectedHypergraph
-
-
-def _canon_edge(edge):
-    edge = tuple(edge)
-
-    if len(edge) == 2:
-        if isinstance(edge[0], tuple) and isinstance(edge[1], tuple):
-            # Sort the inner tuples and return
-            return (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
-        elif not isinstance(edge[0], tuple) and not isinstance(edge[1], tuple):
-            # Sort the edge itself if it contains IDs (non-tuple elements)
-            return tuple(sorted(edge))
-
-    return tuple(sorted(edge))
-
-
-def _get_size(edge):
-    if len(edge) == 2 and isinstance(edge[0], tuple) and isinstance(edge[1], tuple):
-        return len(edge[0]) + len(edge[1])
-    else:
-        return len(edge)
-
-
-def _get_order(edge):
-    return _get_size(edge) - 1
-
-
-def _get_nodes(edge):
-    if len(edge) == 2 and isinstance(edge[0], tuple) and isinstance(edge[1], tuple):
-        return list(edge[0]) + list(edge[1])
-    else:
-        return list(edge)
+from hypergraphx.core.i_undirected_hypergraph import IUndirectedHypergraph
 
 
 class TemporalHypergraph(IUndirectedHypergraph):

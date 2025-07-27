@@ -1,5 +1,5 @@
 from hypergraphx import Hypergraph
-from hypergraphx.core.I_undirected_hypergraph import IUndirectedHypergraph
+from hypergraphx.core.i_undirected_hypergraph import IUndirectedHypergraph
 
 class MultiplexHypergraph(IUndirectedHypergraph):
     """

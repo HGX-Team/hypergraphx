@@ -1,9 +1,8 @@
 import copy
 from typing import Tuple, List
-
 from sklearn.preprocessing import LabelEncoder
 
-from hypergraphx.core.I_hypergraph import IHypergraph
+from hypergraphx.core.i_hypergraph import IHypergraph
 
 
 def _get_edge_size(edge):

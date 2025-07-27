@@ -1,21 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Set, Tuple, Union, Optional, Any
 
-from hypergraphx.core.I_hypergraph import IHypergraph
-
-def _canon_edge(edge):
-    """Canonicalize an edge by sorting its components."""
-    edge = tuple(edge)
-
-    if len(edge) == 2:
-        if isinstance(edge[0], tuple) and isinstance(edge[1], tuple):
-            # Sort the inner tuples and return
-            return (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
-        elif not isinstance(edge[0], tuple) and not isinstance(edge[1], tuple):
-            # Sort the edge itself if it contains IDs (non-tuple elements)
-            return tuple(sorted(edge))
-
-    return tuple(sorted(edge))
+from hypergraphx.core.i_hypergraph import IHypergraph
 
 
 class IUndirectedHypergraph(IHypergraph):
