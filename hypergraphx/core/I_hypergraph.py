@@ -58,7 +58,7 @@ class IHypergraph(ABC):
         self._edge_metadata:Dict[Tuple, Dict] = {
             edge_list[i]: edge_metadata[i]
             for i in range(len(edge_list))
-        } if edge_metadata else dict()
+        } if edge_metadata and edge_list else dict()
         
         # store _edge_list and _reverse_edge_list as dictionaries
         #   keys of _edge_list are edges
