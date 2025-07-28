@@ -14,13 +14,13 @@ class MultiplexHypergraph(IHypergraph):
 
     def __init__(
         self,
-        edge_list=None,
-        edge_layer=None,
+        edge_list: Optional[List]=None,
+        edge_layer: Optional[List]=None,
         weighted: bool = False,
-        weights=None,
+        weights: Optional[List[int]]=None,
         hypergraph_metadata: Optional[Dict] = None,
         node_metadata: Optional[Dict] = None,
-        edge_metadata: Optional[Dict] = None,
+        edge_metadata: Optional[List[Dict]] = None
     ):
         """
         Initialize a Multiplex Hypergraph with optional edges, layers, weights, and metadata.
@@ -159,7 +159,7 @@ class MultiplexHypergraph(IHypergraph):
 
                 # Get current metadata and weight before removing
                 current_weight = self._weights.get(edge_id, 1)
-                current_metadata = self._edge_metadata.get(edge_id, {})
+                current_metadata = self.get_edge_metadata(edge, layer)
                 
                 self.remove_edge((edge, layer))
                 if updated_edge:
@@ -274,7 +274,7 @@ class MultiplexHypergraph(IHypergraph):
         if metadata is None:
             metadata = {}
 
-        self._edge_metadata[e_id] = metadata
+        self._edge_metadata[k] = metadata
 
         for node in edge:
             self.add_node(node)
@@ -367,8 +367,8 @@ class MultiplexHypergraph(IHypergraph):
         del self._reverse_edge_list[edge_id]
         if edge_id in self._weights:
             del self._weights[edge_id]
-        if edge_id in self._edge_metadata:
-            del self._edge_metadata[edge_id]
+        if edge in self._edge_metadata.keys():
+            del self._edge_metadata[edge]
 
         nodes, layer = edge_key
         for node in nodes:
@@ -419,16 +419,16 @@ class MultiplexHypergraph(IHypergraph):
             filtered_edges = {k: v for k, v in self._edge_list.items() if k[1] == layer}
             if metadata:
                 return {
-                    self._reverse_edge_list[v]: self._edge_metadata[v]
-                    for v in filtered_edges.values()
+                    self._reverse_edge_list[v]: self._edge_metadata[k]
+                    for k, v in filtered_edges.items()
                 }
             else:
                 return list(filtered_edges.keys())
         else:
             if metadata:
                 return {
-                    self._reverse_edge_list[k]: self._edge_metadata[k]
-                    for k in self._edge_metadata.keys()
+                    self._reverse_edge_list[v]: self._edge_metadata[k]
+                    for k, v in self._edge_list.items()
                 }
             else:
                 return list(self._edge_list.keys())
@@ -812,7 +812,7 @@ class MultiplexHypergraph(IHypergraph):
                 {
                     "nodes": edge,
                     "weight": self._weights.get(edge_id, 1),
-                    "metadata": self._edge_metadata.get(edge_id, {}),
+                    "metadata": self.get_edge_metadata(edge=edge[0], layer=edge[1]),
                 }
             )
 

@@ -18,12 +18,12 @@ class IHypergraph(ABC):
 
     def __init__(
         self,
-        edge_list=None,
+        edge_list: Optional[List]=None,
         weighted: bool = False,
-        weights=None,
+        weights:Optional[List[int]]=None,
         hypergraph_metadata: Optional[Dict] = None,
         node_metadata: Optional[Dict] = None,
-        edge_metadata: Optional[Dict] = None
+        edge_metadata: Optional[List[Dict]] = None
     ):
         """
         Initialize a Hypergraph.
@@ -49,15 +49,22 @@ class IHypergraph(ABC):
             If `edge_list` and `weights` have mismatched lengths when `weighted` is True.
         """
         # Initialize hypergraph metadata
-        self._hypergraph_metadata = hypergraph_metadata or {}
+        self._hypergraph_metadata = hypergraph_metadata or dict()
         self._hypergraph_metadata.update({"weighted": weighted})
 
         self._weighted:bool = weighted
-        self._weights:dict = {}
-        self._node_metadata:dict = node_metadata or {}
-        self._edge_metadata:dict = edge_metadata or {}
-        self._edge_list:list = {}
-        self._reverse_edge_list:list = {}
+        self._weights:dict = dict()
+        self._node_metadata:Dict[Any, Dict] = node_metadata or dict()
+        self._edge_metadata:Dict[Tuple, Dict] = {
+            edge_list[i]: edge_metadata[i]
+            for i in range(len(edge_list))
+        } if edge_metadata else dict()
+        
+        # store _edge_list and _reverse_edge_list as dictionaries
+        #   keys of _edge_list are edges
+        #   values of _edge_list are edge id's, ie integers
+        self._edge_list:dict = dict()
+        self._reverse_edge_list:dict = dict()
         self._next_edge_id:int = 0
 
         self._incidences_metadata = {}
@@ -212,14 +219,59 @@ class IHypergraph(ABC):
         """
         pass
 
-    @abstractmethod
-    def add_edges(self, edge_list, *args, **kwargs) -> None:
+    def add_edges(self,
+                  edge_list:List[Tuple[Tuple, Tuple]],
+                  
+                  weights:List[int]=None,
+                  metadata:List[Dict]=None,
+                  *args,
+                  **kwargs) -> None:
+        """Add a list of hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.
+
+        Parameters
+        ----------
+        edge_list : list
+            The list of hyperedges to add.
+        edge_layer : list
+            The list of layers to which the hyperedges belong.
+        weights : list, optional
+            The list of weights of the hyperedges. If the hypergraph is weighted, this must be provided.
+        metadata : list, optional
+            The list of metadata of the hyperedges.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        ValueError
+            If the hypergraph is weighted and no weights are provided or if the hypergraph is not weighted and weights are provided.
         """
-        Add multiple edges to the hypergraph.
-        
-        Note: Signature varies by implementation.
-        """
-        pass
+        if weights is not None and not self._weighted:
+            print(
+                "Warning: weights are provided but the hypergraph is not weighted. The hypergraph will be weighted."
+            )
+            self._weighted = True
+
+        if self._weighted and weights is not None:
+            if len(set(edge_list)) != len(list(edge_list)):
+                raise ValueError(
+                    "If weights are provided, the edge list must not contain repeated edges."
+                )
+            if len(list(edge_list)) != len(list(weights)):
+                raise ValueError("The number of edges and weights must be the same.")
+
+        for i, edge in enumerate(edge_list):
+            self.add_edge(
+                edge=edge,
+                weight=(
+                    weights[i] if self._weighted and weights is not None else None
+                ),
+                metadata=metadata[i] if metadata is not None else None,
+                *args,
+                **kwargs,
+            )
 
     @abstractmethod
     def remove_edge(self, edge, *args, **kwargs) -> None:
@@ -326,13 +378,16 @@ class IHypergraph(ABC):
         k = self._restructure_query_edge(edge, *args, **kwargs)
         return k in self._edge_list
 
-    def get_edge_list(self):
+    def get_edge_list(self) -> Dict[Tuple, int]:
         """Get the edge list dictionary."""
         return self._edge_list
 
-    def set_edge_list(self, edge_list):
+    def set_edge_list(self, edge_list: List[Tuple]):
         """Set the edge list dictionary."""
-        self._edge_list = edge_list
+        self._edge_list = {
+            e: i for i, e in enumerate(edge_list)
+        }
+        self._next_edge_id = len(edge_list)
 
     # =============================================================================
     # Weight Management
@@ -581,33 +636,32 @@ class IHypergraph(ABC):
         k = self._restructure_query_edge(edge, *args, **kwargs)
         if k not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        return self._edge_metadata[self._edge_list[k]]
+        return dict(self._edge_metadata[k])
     
-    def set_edge_metadata(self, edge, metadata, *args, **kwargs):
+    def set_edge_metadata(self, edge, metadata:Dict, *args, **kwargs):
         edge = self._canon_edge(edge)
         k = self._restructure_query_edge(edge, *args, **kwargs)
         if k not in self._edge_list:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        e_id = self._edge_list[k]
-        self._edge_metadata[e_id] = metadata
+        self._edge_metadata[k] = metadata
     
-    def get_all_edges_metadata(self):
+    def get_all_edges_metadata(self) -> Dict[Tuple, Dict]:
         """Get metadata for all edges."""
         return self._edge_metadata
     
     def set_attr_to_edge_metadata(self, edge, field, value, *args, **kwargs):
         edge = self._canon_edge(edge)
         k = self._restructure_query_edge(edge, *args, **kwargs)
-        if edge not in self._edge_metadata:
+        if k not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        self._edge_metadata[self._edge_list[k]][field] = value
+        self._edge_metadata[k][field] = value
         
     def remove_attr_from_edge_metadata(self, edge, field, *args, **kwargs):
         edge = self._canon_edge(edge)
         k = self._restructure_query_edge(edge, *args, **kwargs)
-        if edge not in self._edge_metadata:
+        if k not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
-        del self._edge_metadata[self._edge_list[k]][field]
+        del self._edge_metadata[k][field]
     
     # Incidence metadata
     @abstractmethod

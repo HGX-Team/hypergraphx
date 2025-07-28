@@ -1,5 +1,5 @@
 import copy
-from typing import Tuple, List, Any
+from typing import Tuple, List, Any, Optional, Dict
 
 from sklearn.preprocessing import LabelEncoder
 
@@ -30,12 +30,12 @@ class DirectedHypergraph(IHypergraph):
 
     def __init__(
         self,
-        edge_list=None,
-        weighted=False,
-        weights=None,
-        hypergraph_metadata=None,
-        node_metadata=None,
-        edge_metadata=None,
+        edge_list: Optional[List]=None,
+        weighted: bool = False,
+        weights:Optional[List[int]]=None,
+        hypergraph_metadata: Optional[Dict] = None,
+        node_metadata: Optional[Dict] = None,
+        edge_metadata: Optional[List[Dict]] = None
     ):
         """
         Initialize a Directed Hypergraph.
@@ -546,7 +546,7 @@ class DirectedHypergraph(IHypergraph):
 
             del self._reverse_edge_list[e_idx]
             del self._weights[e_idx]
-            del self._edge_metadata[e_idx]
+            del self._edge_metadata[edge]
             del self._edge_list[edge]
 
         else:
@@ -824,9 +824,7 @@ class DirectedHypergraph(IHypergraph):
                 {
                     "nodes": sorted_edge,
                     "weight": self._weights.get(edge_id, 1),
-                    "metadata": self._edge_metadata.get(edge_id, {})\
-                        if isinstance(self._edge_metadata, dict)\
-                            else self._edge_metadata[edge_id],
+                    "metadata": self.get_edge_metadata(edge),
                 }
             )
 

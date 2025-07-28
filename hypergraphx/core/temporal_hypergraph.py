@@ -39,13 +39,13 @@ class TemporalHypergraph(IHypergraph):
 
     def __init__(
         self,
-        edge_list=None,
-        time_list=None,
+        edge_list: Optional[List]=None,
+        time_list: Optional[List]=None,
         weighted: bool = False,
-        weights=None,
+        weights: Optional[List[int]]=None,
         hypergraph_metadata: Optional[Dict] = None,
         node_metadata: Optional[Dict] = None,
-        edge_metadata: Optional[Dict] = None,
+        edge_metadata: Optional[List[Dict]] = None
     ):
         """
         Initialize a Temporal Hypergraph with optional edges, times, weights, and metadata.
@@ -112,7 +112,10 @@ class TemporalHypergraph(IHypergraph):
             if len(edge_list) != len(time_list):
                 raise ValueError("Edge list and time list must have the same length.")
             self.add_edges(
-                edge_list, time_list, weights=weights, metadata=edge_metadata
+                edge_list,
+                time_list,
+                weights=weights,
+                metadata=edge_metadata
             )
 
     # =============================================================================
@@ -143,7 +146,7 @@ class TemporalHypergraph(IHypergraph):
                         updated_edge,
                         time,
                         weight=self._weights.get(edge_id, 1),
-                        metadata=self._edge_metadata.get(edge_id, {}),
+                        metadata=self.get_edge_metadata(edge=edge, time=time),
                     )
         else:
             for edge_id in edges_to_process:
@@ -224,7 +227,7 @@ class TemporalHypergraph(IHypergraph):
 
         if metadata is None:
             metadata = {}
-        self._edge_metadata[e_id] = metadata
+        self._edge_metadata[temporal_edge] = metadata
 
         nodes = _get_nodes(_edge)
         for node in nodes:
@@ -280,8 +283,8 @@ class TemporalHypergraph(IHypergraph):
         del self._reverse_edge_list[edge_id]
         if edge_id in self._weights:
             del self._weights[edge_id]
-        if edge_id in self._edge_metadata:
-            del self._edge_metadata[edge_id]
+        if temporal_edge in self._edge_metadata.keys():
+            del self._edge_metadata[temporal_edge]
 
         # Remove from adjacency lists
         nodes = _get_nodes(_edge)
@@ -333,7 +336,7 @@ class TemporalHypergraph(IHypergraph):
         return (
             edges
             if not metadata
-            else {edge: self.get_edge_metadata(edge[1], edge[0]) for edge in edges}
+            else {edge: self.get_edge_metadata(edge=edge[1], time=edge[0]) for edge in edges}
         )
 
     def get_neighbors(self, node, order: int = None, size: int = None):
@@ -499,7 +502,7 @@ class TemporalHypergraph(IHypergraph):
             for time, edge_nodes in edges_in_window:
                 Hypergraph_t.add_edge(
                     edge_nodes,
-                    metadata=self.get_edge_metadata(edge_nodes, time),
+                    metadata=self.get_edge_metadata(edge=edge_nodes, time=time),
                     weight=self.get_weight(edge_nodes, time),
                 )
 
@@ -547,14 +550,6 @@ class TemporalHypergraph(IHypergraph):
     # Metadata Management (Use base class with temporal edge format)
     # =============================================================================
     
-    def get_edge_metadata(self, edge, time: int) -> dict:
-        """Get metadata for a specific edge at a specific time."""
-        return super().get_edge_metadata(edge, time)
-
-    def set_edge_metadata(self, edge, time: int, metadata):
-        """Set metadata for a specific edge at a specific time."""
-        super().set_edge_metadata(edge, metadata, time)
-
     def get_incidence_metadata(self, edge, node, time: int = None):
         """Get incidence metadata for a specific edge-node pair."""
         edge = self._canon_edge(edge)
@@ -700,7 +695,7 @@ class TemporalHypergraph(IHypergraph):
                 {
                     "nodes": edge,
                     "weight": self._weights.get(edge_id, 1),
-                    "metadata": self._edge_metadata.get(edge_id, {}),
+                    "metadata": self.get_edge_metadata(edge=edge[1], time=edge[0]),
                 }
             )
 

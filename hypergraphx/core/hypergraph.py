@@ -4,9 +4,9 @@ from typing import Tuple, Any, List, Dict, Optional
 
 from sklearn.preprocessing import LabelEncoder
 
-from hypergraphx.core.i_undirected_hypergraph import IUndirectedHypergraph
+from hypergraphx.core.i_hypergraph import IHypergraph
 
-class Hypergraph(IUndirectedHypergraph):
+class Hypergraph(IHypergraph):
     """
     A Hypergraph is a generalization of a graph where an edge (hyperedge) can connect
     any number of nodes. It is represented as a set of nodes and a set of hyperedges,
@@ -15,12 +15,12 @@ class Hypergraph(IUndirectedHypergraph):
 
     def __init__(
         self,
-        edge_list=None,
-        weighted=False,
-        weights=None,
-        hypergraph_metadata=None,
-        node_metadata=None,
-        edge_metadata=None,
+        edge_list: Optional[List]=None,
+        weighted: bool = False,
+        weights:Optional[List[int]]=None,
+        hypergraph_metadata: Optional[Dict] = None,
+        node_metadata: Optional[Dict] = None,
+        edge_metadata: Optional[List[Dict]] = None
     ):
         """
         Initialize a Hypergraph.
@@ -57,13 +57,20 @@ class Hypergraph(IUndirectedHypergraph):
 
         # Add node metadata if provided (using parent's add_nodes method)
         if node_metadata:
-            self.add_nodes(list(node_metadata.keys()), metadata=node_metadata)
+            self.add_nodes(
+                list(node_metadata.keys()),
+                metadata=node_metadata
+            )
 
         # Add edges if provided
         if edge_list:
             if weighted and weights is not None and len(edge_list) != len(weights):
                 raise ValueError("Edge list and weights must have the same length.")
-            self.add_edges(edge_list, weights=weights, metadata=edge_metadata)
+            self.add_edges(
+                edge_list,
+                weights=weights,
+                metadata=edge_metadata
+            )
 
     # =============================================================================
     # Node Management Implementation
@@ -328,7 +335,7 @@ class Hypergraph(IUndirectedHypergraph):
 
         # Set edge metadata using parent method
         if edge in self._edge_list:
-            self._edge_metadata[self._edge_list[edge]] = metadata
+            self.set_edge_metadata(edge, metadata)
 
         # Update adjacency list
         for node in edge:
@@ -406,16 +413,19 @@ class Hypergraph(IUndirectedHypergraph):
             raise KeyError("Edge {} not in hypergraph.".format(edge))
 
         edge_id = self._edge_list[edge]
+
+        del self._reverse_edge_list[edge_id]
+        if edge_id in self._weights:
+            del self._weights[edge_id]
+        if edge in self._edge_metadata:
+            del self._edge_metadata[edge]
         
         # Remove from adjacency lists
         for node in edge:
             if node in self._adj and edge_id in self._adj[node]:
                 self._adj[node].remove(edge_id)
 
-        # Remove from parent's data structures
-        del self._reverse_edge_list[edge_id]
-        del self._edge_metadata[edge_id]
-        del self._weights[edge_id]
+        # Remove from the edge list
         del self._edge_list[edge]
 
     def remove_edges(self, edge_list):
@@ -471,31 +481,21 @@ class Hypergraph(IUndirectedHypergraph):
                     if len(edge) - 1 <= order
                 ]
 
+        edge_metadata = [self.get_edge_metadata(edge) for edge in edges]
+        edge_weights = [self.get_weight(edge) for edge in edges] if self._weighted else None
         if subhypergraph and keep_isolated_nodes:
             h = Hypergraph(weighted=self._weighted)
-            h.add_nodes(list(self.get_nodes()))
-            if self._weighted:
-                edge_weights = [self.get_weight(edge) for edge in edges]
-                h.add_edges(edges, edge_weights)
-            else:
-                h.add_edges(edges)
-
-            for node in h.get_nodes():
-                h.set_node_metadata(node, self.get_node_metadata(node))
-            for edge in edges:
-                h.set_edge_metadata(edge, self.get_edge_metadata(edge))
+            nodes = list(self.get_nodes())
+            node_metadata = [self.get_node_metadata(node) for node in nodes]
+            h.add_nodes(nodes, metadata=node_metadata)
+            h.add_edges(edges, weights=edge_weights, metadata=edge_metadata)
             return h
+        
         elif subhypergraph:
             h = Hypergraph(weighted=self._weighted)
-            if self._weighted:
-                edge_weights = [self.get_weight(edge) for edge in edges]
-                h.add_edges(edges, edge_weights)
-            else:
-                h.add_edges(edges)
-
-            for edge in edges:
-                h.set_edge_metadata(edge, self.get_edge_metadata(edge))
+            h.add_edges(edges, weights=edge_weights, metadata=edge_metadata)
             return h
+        
         else:
             return (
                 edges
@@ -658,10 +658,15 @@ class Hypergraph(IUndirectedHypergraph):
             for edge in edges:
                 if h.is_weighted():
                     h.add_edge(
-                        edge, self.get_weight(edge), self.get_edge_metadata(edge)
+                        edge,
+                        self.get_weight(edge),
+                        self.get_edge_metadata(edge)
                     )
                 else:
-                    h.add_edge(edge, metadata=self.get_edge_metadata(edge))
+                    h.add_edge(
+                        edge,
+                        metadata=self.get_edge_metadata(edge)
+                    )
 
         return h
 
@@ -852,9 +857,7 @@ class Hypergraph(IUndirectedHypergraph):
                 {
                     "nodes": sorted_edge,
                     "weight": self._weights.get(edge_id, 1),
-                    "metadata": self._edge_metadata.get(edge_id, {})\
-                        if isinstance(self._edge_metadata, dict)\
-                            else self._edge_metadata[edge_id],
+                    "metadata": self.get_edge_metadata(edge)
                 }
             )
 
