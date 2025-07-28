@@ -352,9 +352,10 @@ class DirectedHypergraph(IHypergraph):
         else:
             self.set_edge_metadata(edge, {})
 
-    def add_edges(
-        self, edge_list: List[Tuple[Tuple, Tuple]], weights=None, metadata=None
-    ):
+    def add_edges(self,
+                  edge_list: List[Tuple[Tuple, Tuple]],
+                  weights=None,
+                  metadata=None):
         """Add a list of directed hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.
 
         Parameters
