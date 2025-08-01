@@ -4,7 +4,7 @@ from typing import Tuple, Any, List, Dict, Optional
 
 from sklearn.preprocessing import LabelEncoder
 
-from hypergraphx.core.i_undirected_hypergraph import IUndirectedHypergraph
+from hypergraphx.core.I_undirected_hypergraph import IUndirectedHypergraph
 
 
 class Hypergraph(IUndirectedHypergraph):

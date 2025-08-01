@@ -1,5 +1,5 @@
-from hypergraphx.core.i_hypergraph import IHypergraph
-from hypergraphx.core.i_undirected_hypergraph import IUndirectedHypergraph
+from hypergraphx.core.I_hypergraph import IHypergraph
+from hypergraphx.core.I_undirected_hypergraph import IUndirectedHypergraph
 
 from hypergraphx.core.hypergraph import Hypergraph
 from hypergraphx.core.directed_hypergraph import DirectedHypergraph

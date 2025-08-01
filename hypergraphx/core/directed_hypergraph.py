@@ -3,7 +3,7 @@ from typing import Tuple, List, Any, Optional, Dict
 
 from sklearn.preprocessing import LabelEncoder
 
-from hypergraphx.core.i_hypergraph import IHypergraph
+from hypergraphx.core.I_hypergraph import IHypergraph
 
 
 def _get_edge_size(edge):
