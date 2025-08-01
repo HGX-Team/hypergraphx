@@ -11,7 +11,9 @@ from hypergraphx.linalg import *
 from hypergraphx.generation.random import *
 from hypergraphx.representations.projections import clique_projection
 
-
+# TODO: Fix this to avoid wrapping node id's during edge creation:
+#  want (a, b)
+#  currently ((a,),(b,))?
 def to_nx(g:IHypergraph) -> nx.DiGraph:
     """
     Convert a directed Hypergraph to a NetworkX Graph.
@@ -25,7 +27,8 @@ def to_nx(g:IHypergraph) -> nx.DiGraph:
     
     for edge in g.get_edges(order=1, metadata=True):
         G.add_edge(
-            edge,
+            edge[0],
+            edge[1],
             **g.get_edge_metadata(edge)
         )
     

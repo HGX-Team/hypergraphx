@@ -45,14 +45,12 @@ class TestToNx:
         """Test converting a hypergraph with pairwise edges (order 1)."""
         dh = DirectedHypergraph()
         # Add pairwise edge: source (1) -> target (2)
-        dh.add_edge(((1,), (2,)), metadata={'type': 'pairwise'})
+        dh.add_edge((1, 2), metadata={'type': 'pairwise'})
         
         G = to_nx(dh)
         
         assert len(G.nodes()) == 2
         assert len(G.edges()) == 1
-        # Note: The to_nx function seems to have a bug - it should add edges properly
-        # This test might need adjustment based on the actual implementation
     
     def test_to_nx_with_metadata(self):
         """Test that node metadata is preserved in NetworkX conversion."""
