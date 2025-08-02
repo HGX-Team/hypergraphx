@@ -4,7 +4,7 @@ from abc import abstractmethod
 from typing import Tuple, Any, List, Dict, Optional, Set, Union
 from collections import Counter
 
-from hypergraphx.core.I_hypergraph import IHypergraph
+from hypergraphx.core.IHypergraph import IHypergraph
 
 
 class IUndirectedHypergraph(IHypergraph):

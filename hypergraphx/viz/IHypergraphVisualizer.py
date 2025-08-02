@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
-from hypergraphx.core.I_hypergraph import IHypergraph
+from hypergraphx.core.IHypergraph import IHypergraph
 from hypergraphx.viz.Object import Object
 from hypergraphx.linalg import *
 from hypergraphx.generation.random import *

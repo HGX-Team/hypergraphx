@@ -6,7 +6,7 @@ from collections import Counter
 from sklearn.preprocessing import LabelEncoder
 
 from hypergraphx import Hypergraph
-from hypergraphx.core.I_undirected_hypergraph import IUndirectedHypergraph
+from hypergraphx.core.IUndirectedHypergraph import IUndirectedHypergraph
 
 
 def _get_size(edge):

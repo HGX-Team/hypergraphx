@@ -1,10 +1,10 @@
-from hypergraphx.core.I_hypergraph import IHypergraph
-from hypergraphx.core.I_undirected_hypergraph import IUndirectedHypergraph
+from hypergraphx.core.IHypergraph import IHypergraph
+from hypergraphx.core.IUndirectedHypergraph import IUndirectedHypergraph
 
-from hypergraphx.core.hypergraph import Hypergraph
-from hypergraphx.core.directed_hypergraph import DirectedHypergraph
-from hypergraphx.core.multiplex_hypergraph import MultiplexHypergraph
-from hypergraphx.core.temporal_hypergraph import TemporalHypergraph
+from hypergraphx.core.Hypergraph import Hypergraph
+from hypergraphx.core.DirectedHypergraph import DirectedHypergraph
+from hypergraphx.core.MultiplexHypergraph import MultiplexHypergraph
+from hypergraphx.core.TemporalHypergraph import TemporalHypergraph
 from . import readwrite
 
 import sys

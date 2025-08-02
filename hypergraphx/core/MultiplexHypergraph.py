@@ -1,7 +1,7 @@
 from typing import Tuple, Any, List, Dict, Set, Optional, Union
 from collections import Counter
 
-from hypergraphx.core.I_undirected_hypergraph import IUndirectedHypergraph
+from hypergraphx.core.IUndirectedHypergraph import IUndirectedHypergraph
 from hypergraphx import Hypergraph
 
 
