@@ -7,7 +7,6 @@ import networkx as nx
 import numpy as np
 
 from hypergraphx.core.IHypergraph import IHypergraph
-from hypergraphx.viz.Object import Object
 from hypergraphx.linalg import *
 from hypergraphx.generation.random import *
 from hypergraphx.representations.projections import clique_projection
@@ -18,7 +17,11 @@ class IHypergraphVisualizer(ABC):
         self.directed = None
         self.node_labels = self.get_node_labels()
         self.pairwise_edge_labels = self.get_pairwise_edge_labels()
+
+        # Hyperedge stuff
         self.hyperedge_labels = self.get_hyperedge_labels()
+        self.hyperedge_color_by_order = dict()
+        self.hyperedge_facecolor_by_order = dict()
 
     @abstractmethod
     def to_nx(self, pairwise_only: bool=True) -> nx.DiGraph | nx.Graph:
@@ -57,7 +60,7 @@ class IHypergraphVisualizer(ABC):
         """
         return {
             node: metadata.get(key, '')
-            for node, metadata in self.g.nodes(
+            for node, metadata in self.g.get_nodes(
                 metadata=True
             ).items()
             if key in metadata.keys()
@@ -87,7 +90,7 @@ class IHypergraphVisualizer(ABC):
     def get_hyperedge_center_of_mass(self,
             pos,
             hye
-        ) -> Tuple[int, int]:
+        ) -> Tuple[List[Tuple[int, int]], int, int]:
         points = [
             (
                 pos[node][0],
@@ -96,15 +99,13 @@ class IHypergraphVisualizer(ABC):
         ]
         x_c = np.mean([x for x, y in points])
         y_c = np.mean([y for x, y in points])
-        return (x_c, y_c)
+        return points, x_c, y_c
 
     @abstractmethod
     def get_hyperedge_styling_data(
             self,
             hye,
             pos: Dict[int, tuple],
-            hyperedge_color_by_order: Dict[int, str],
-            hyperedge_facecolor_by_order: Dict[int, str]
         ) -> tuple[List[float], List[float], str, str]:
         """
         Get the fill data for a hyperedge.
@@ -156,7 +157,7 @@ class IHypergraphVisualizer(ABC):
             nx.draw_networkx_labels(
                 G=pairwise_G,
                 pos=pos,
-                labels=self.node_labels,
+                labels=self.node_labels if with_node_labels else None,
                 font_size=int(label_size),
                 font_color=label_col,
                 ax=ax,
@@ -167,7 +168,7 @@ class IHypergraphVisualizer(ABC):
             nx.draw_networkx_edge_labels(
                 G=pairwise_G,
                 pos=pos,
-                edge_labels=self.pairwise_edge_labels,
+                edge_labels=self.pairwise_edge_labels if with_pairwise_edge_labels else None,
                 font_size=int(label_size),
                 font_color=label_col,
                 ax=ax,
@@ -189,8 +190,6 @@ class IHypergraphVisualizer(ABC):
         # hyperedge styling
         # Set color hyperedges of size > 2 (order > 1).
         with_hyperedge_labels: bool = False,
-        hyperedge_color_by_order: dict = {2: "#FFBC79", 3: "#79BCFF", 4: "#4C9F4C"},
-        hyperedge_facecolor_by_order: dict = {2: "#FFBC79", 3: "#79BCFF", 4: "#4C9F4C"},
         hyperedge_alpha: Union[float, np.array] = 0.8,
 
         # other styling parameters
@@ -202,8 +201,8 @@ class IHypergraphVisualizer(ABC):
                 x1, y1, color, facecolor = self.get_hyperedge_styling_data(
                     hye,
                     pos,
-                    hyperedge_color_by_order,
-                    hyperedge_facecolor_by_order
+                    self.hyperedge_color_by_order,
+                    self.hyperedge_facecolor_by_order
                 )
                 ax.fill(
                     x1,
@@ -241,7 +240,6 @@ class IHypergraphVisualizer(ABC):
 
         # edge styling
         with_pairwise_edge_labels: bool = False,
-        pairwise_edge_labels: List[str] = None,
         pairwise_edge_color: str = "lightgrey",
         pairwise_edge_width: float = 1.2,
         
@@ -303,6 +301,9 @@ class IHypergraphVisualizer(ABC):
             label_col=label_col,
         )
         
+        # Configure this object's attributes with given hyperedge styling info
+        self.hyperedge_color_by_order.update(hyperedge_color_by_order)
+        self.hyperedge_facecolor_by_order.update(hyperedge_facecolor_by_order)
 
         # Plot the hyperedges (size>2/order>1).
         self.draw_hyperedges(
@@ -313,8 +314,6 @@ class IHypergraphVisualizer(ABC):
             # hyperedge styling
             # Set color hyperedges of size > 2 (order > 1).
             with_hyperedge_labels=with_hyperedge_labels,
-            hyperedge_color_by_order=hyperedge_color_by_order,
-            hyperedge_facecolor_by_order=hyperedge_facecolor_by_order,
             hyperedge_alpha=hyperedge_alpha,
 
             # other styling parameters
