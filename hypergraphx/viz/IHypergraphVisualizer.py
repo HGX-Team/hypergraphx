@@ -106,7 +106,8 @@ class IHypergraphVisualizer(ABC):
             self,
             hye,
             pos: Dict[int, tuple],
-        ) -> tuple[List[float], List[float], str, str]:
+            number_of_refinements: int = 12
+        ) -> Tuple[List[float], List[float]]:
         """
         Get the fill data for a hyperedge.
         """
@@ -197,19 +198,18 @@ class IHypergraphVisualizer(ABC):
         label_col: str = "black",
     ):
         for hye in list(self.g.get_edges()):
-            if len(hye) > 2:
-                x1, y1, color, facecolor = self.get_hyperedge_styling_data(
+            order = len(hye) - 1
+            if order > 1:
+                x1, y1 = self.get_hyperedge_styling_data(
                     hye,
                     pos,
-                    self.hyperedge_color_by_order,
-                    self.hyperedge_facecolor_by_order
                 )
                 ax.fill(
                     x1,
                     y1,
                     alpha=hyperedge_alpha,
-                    c=color,
-                    edgecolor=facecolor
+                    c=self.hyperedge_color_by_order[order],
+                    edgecolor=self.hyperedge_facecolor_by_order[order],
                 )
                 if with_hyperedge_labels:
                     ax.annotate(

@@ -32,8 +32,9 @@ class HypergraphVisualizer(IHypergraphVisualizer):
     def get_hyperedge_styling_data(
             self,
             hye,
-            pos: Dict[int, tuple]
-        ) -> tuple[List[float], List[float], str, str]:
+            pos: Dict[int, tuple],
+            number_of_refinements: int = 12
+        ) -> Tuple[List[float], List[float]]:
         """
         Get the fill data for a hyperedge.
         """
@@ -57,7 +58,7 @@ class HypergraphVisualizer(IHypergraphVisualizer):
         points.append(points[0])
 
         obj = Object(points)
-        smoothed_obj_coords = obj.Smooth_by_Chaikin(number_of_refinements=12)
+        smoothed_obj_coords = obj.Smooth_by_Chaikin(number_of_refinements)
         
         order = len(hye) - 1
         if order not in self.hyperedge_color_by_order.keys():
@@ -69,4 +70,4 @@ class HypergraphVisualizer(IHypergraphVisualizer):
             self.hyperedge_facecolor_by_order[order] = std_face_color
 
         # Extract x and y coordinates from the smoothed object.
-        return [i for i, j in smoothed_obj_coords], [j for i, j in smoothed_obj_coords]
+        return [pt[0] for pt in smoothed_obj_coords], [pt[1] for pt in smoothed_obj_coords]
