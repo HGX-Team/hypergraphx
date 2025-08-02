@@ -1,9 +1,5 @@
-import copy
 import math
-from typing import Tuple, Any, List, Dict, Optional, Union
-from collections import Counter
-
-from sklearn.preprocessing import LabelEncoder
+from typing import Tuple, Any, List, Dict, Optional
 
 from hypergraphx import Hypergraph
 from hypergraphx.core.IUndirectedHypergraph import IUndirectedHypergraph

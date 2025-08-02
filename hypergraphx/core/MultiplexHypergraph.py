@@ -1,5 +1,4 @@
-from typing import Tuple, Any, List, Dict, Set, Optional, Union
-from collections import Counter
+from typing import Tuple, Any, List, Dict, Optional
 
 from hypergraphx.core.IUndirectedHypergraph import IUndirectedHypergraph
 from hypergraphx import Hypergraph

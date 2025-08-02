@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-import random
 from typing import Optional, Union
 
 import matplotlib.pyplot as plt

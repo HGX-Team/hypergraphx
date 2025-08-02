@@ -1,15 +1,10 @@
 import pytest
 import copy
-import numpy as np
-import matplotlib.pyplot as plt
 import networkx as nx
-from unittest.mock import Mock, patch, MagicMock
-from hypergraphx.viz.Object import Object
-from typing import Dict, List
+from unittest.mock import Mock, patch
 
 # Import the classes to test
 from hypergraphx.core.Hypergraph import Hypergraph
-from hypergraphx.viz.IHypergraphVisualizer import IHypergraphVisualizer
 from hypergraphx.viz.HypergraphVisualizer import HypergraphVisualizer
 
 

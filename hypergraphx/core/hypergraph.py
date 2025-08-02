@@ -1,11 +1,5 @@
-import copy
-import warnings
 from typing import Tuple, Any, List, Dict, Optional
-
-from sklearn.preprocessing import LabelEncoder
-
 from hypergraphx.core.IUndirectedHypergraph import IUndirectedHypergraph
-
 
 class Hypergraph(IUndirectedHypergraph):
     """

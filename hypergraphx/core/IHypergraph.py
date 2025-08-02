@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List, Set, Tuple, Union, Optional, Any
+from typing import Dict, List, Tuple, Optional, Any
 import copy
-import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from collections import Counter
 

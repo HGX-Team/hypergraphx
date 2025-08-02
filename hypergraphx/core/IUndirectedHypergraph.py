@@ -1,8 +1,6 @@
-import copy
 import warnings
 from abc import abstractmethod
-from typing import Tuple, Any, List, Dict, Optional, Set, Union
-from collections import Counter
+from typing import Tuple, Any, List, Dict, Optional, Set
 
 from hypergraphx.core.IHypergraph import IHypergraph
 
