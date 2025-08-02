@@ -23,7 +23,7 @@ class IHypergraphVisualizer(ABC):
         self.hyperedge_facecolor_by_order = dict()
 
     @abstractmethod
-    def to_nx(self, pairwise_only: bool=True) -> nx.DiGraph | nx.Graph:
+    def to_nx(self, *args, **kwargs) -> nx.DiGraph | nx.Graph:
         pass
 
     # TODO: Fix this to avoid wrapping node id's during edge creation:
