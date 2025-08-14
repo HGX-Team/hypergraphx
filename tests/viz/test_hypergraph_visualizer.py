@@ -258,7 +258,7 @@ class TestHypergraphVisualizer:
         assert isinstance(labels, dict)
         assert len(labels) == 0
     
-    @patch('hypergraphx.viz.Object')
+    @patch('hypergraphx.viz.HypergraphVisualizer.Object')
     @patch('hypergraphx.viz.IHypergraphVisualizer.IHypergraphVisualizer.get_hyperedge_center_of_mass')
     def test_get_hyperedge_styling_data_uses_smoothing(self, mock_get_center, mock_object_class, visualizer):
         """Test that get_hyperedge_styling_data uses the Object smoothing functionality."""
@@ -269,6 +269,7 @@ class TestHypergraphVisualizer:
         
         # Set up Object mock
         mock_object = Mock()
+        mock_object.Smooth_by_Chaikin.return_value = [(i, i) for i in range(49)]  # Expected 49 points
         mock_object_class.return_value = mock_object
         
         # Initialize color dictionaries to avoid KeyError
@@ -284,7 +285,7 @@ class TestHypergraphVisualizer:
         mock_object_class.assert_called_once()
         
         # Verify smoothing was called
-        mock_object.Smooth_by_Chaikin.assert_called_once_with(number_of_refinements=4)
+        mock_object.Smooth_by_Chaikin.assert_called_once_with(4)
 
         # Verify results
         x_coords, y_coords = result
