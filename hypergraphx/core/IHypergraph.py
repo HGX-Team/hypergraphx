@@ -597,6 +597,10 @@ class IHypergraph(ABC):
         """Set an attribute in hypergraph metadata."""
         self._hypergraph_metadata[field] = value
 
+    def add_attr_to_node_metadata(self, field, value):
+        """Included for backwards compatibility"""
+        self.set_attr_to_hypergraph_metadata(field, value)
+
     # Node metadata
     def get_node_metadata(self, node):
         """Get metadata for a specific node."""
@@ -619,6 +623,10 @@ class IHypergraph(ABC):
         if node not in self._node_metadata:
             raise ValueError("Node {} not in hypergraph.".format(node))
         self._node_metadata[node][field] = value
+
+    def add_attr_to_node_metadata(self, node, field, value):
+        """Included for backwards compatibility"""
+        self.set_attr_to_node_metadata(node, field, value)
 
     def remove_attr_from_node_metadata(self, node, field):
         """Remove an attribute from node metadata."""
@@ -654,7 +662,11 @@ class IHypergraph(ABC):
         if k not in self._edge_metadata:
             raise ValueError("Edge {} not in hypergraph.".format(edge))
         self._edge_metadata[k][field] = value
-        
+    
+    def add_attr_to_edge_metadata(self, edge, field, value, *args, **kwargs):
+        """Included for backwards compatibility"""
+        self.set_attr_to_edge_metadata(edge, field, value, *args, **kwargs)
+
     def remove_attr_from_edge_metadata(self, edge, field, *args, **kwargs):
         edge = self._canon_edge(edge)
         k = self._restructure_query_edge(edge, *args, **kwargs)

@@ -280,11 +280,11 @@ class TestHypergraphVisualizer:
         
         result = visualizer.get_hyperedge_styling_data(hyperedge, pos, number_of_refinements=4)
 
-        # # Verify Object was created
-        # mock_object_class.assert_called_once()
+        # Verify Object was created
+        mock_object_class.assert_called_once()
         
-        # # Verify smoothing was called
-        # mock_object.Smooth_by_Chaikin.assert_called_once_with(number_of_refinements=4)
+        # Verify smoothing was called
+        mock_object.Smooth_by_Chaikin.assert_called_once_with(number_of_refinements=4)
 
         # Verify results
         x_coords, y_coords = result
