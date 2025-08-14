@@ -16,7 +16,7 @@ class HypergraphVisualizer(IHypergraphVisualizer):
     def to_nx(self) -> nx.Graph:
         return self.get_pairwise_subgraph()
 
-    def get_hyperedge_labels(self, key:str="type") -> Dict[tuple, str]:
+    def get_hyperedge_labels(self, key:str="label") -> Dict[tuple, str]:
         """
         Get hyperedge labels for visualization.
         """
@@ -31,7 +31,7 @@ class HypergraphVisualizer(IHypergraphVisualizer):
             hye,
             pos: Dict[int, tuple],
             number_of_refinements: int = 12
-        ) -> Tuple[List[float], List[float]]:
+        ) -> Tuple[Tuple[float, float], Tuple[List[float], List[float]]]:
         """
         Get the fill data for a hyperedge.
         """
@@ -67,4 +67,10 @@ class HypergraphVisualizer(IHypergraphVisualizer):
             self.hyperedge_facecolor_by_order[order] = std_face_color
 
         # Extract x and y coordinates from the smoothed object.
-        return [pt[0] for pt in smoothed_obj_coords], [pt[1] for pt in smoothed_obj_coords]
+        return (
+            (x_c, y_c),
+            (
+                [pt[0] for pt in smoothed_obj_coords],
+                [pt[1] for pt in smoothed_obj_coords]
+            )
+        )

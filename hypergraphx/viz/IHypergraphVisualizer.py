@@ -53,7 +53,7 @@ class IHypergraphVisualizer(ABC):
         
         return G
 
-    def get_node_labels(self, key:str="text") -> Dict[int, str]:
+    def get_node_labels(self, key:str="label") -> Dict[int, str]:
         """
         Get node labels for visualization.
         """
@@ -66,7 +66,7 @@ class IHypergraphVisualizer(ABC):
         }
 
 
-    def get_pairwise_edge_labels(self, key:str="type") -> Dict[tuple, str]:
+    def get_pairwise_edge_labels(self, key:str="label") -> Dict[tuple, str]:
         """
         Get edge labels for edges of order 1 (standard edge pairs) to use for visualization.
         """
@@ -80,7 +80,7 @@ class IHypergraphVisualizer(ABC):
         }
 
     @abstractmethod
-    def get_hyperedge_labels(self, key:str="type") -> Dict[tuple, str]:
+    def get_hyperedge_labels(self, key:str="label") -> Dict[tuple, str]:
         """
         Get hyperedge labels for visualization.
         """
@@ -106,9 +106,13 @@ class IHypergraphVisualizer(ABC):
             hye,
             pos: Dict[int, tuple],
             number_of_refinements: int = 12
-        ) -> Tuple[List[float], List[float]]:
+        ) -> Tuple[Tuple[float, float], Tuple[List[float], List[float]]]:
         """
         Get the fill data for a hyperedge.
+
+        Returns 2 tuples:
+            (x_c, y_c): center of mass of the hyperedge
+            (x_coords, y_coords): coords of the shape enclosing members of the hyperedge
         """
         pass
 
@@ -199,13 +203,16 @@ class IHypergraphVisualizer(ABC):
         for hye in list(self.g.get_edges()):
             order = len(hye) - 1
             if order > 1:
-                x1, y1 = self.get_hyperedge_styling_data(
+                center_of_mass, outline_coords = self.get_hyperedge_styling_data(
                     hye,
                     pos,
                 )
+                x_c, y_c = center_of_mass
+                x_coords, y_coords = outline_coords
+
                 ax.fill(
-                    x1,
-                    y1,
+                    x_coords,
+                    y_coords,
                     alpha=hyperedge_alpha,
                     c=self.hyperedge_color_by_order[order],
                     edgecolor=self.hyperedge_facecolor_by_order[order],
@@ -213,7 +220,7 @@ class IHypergraphVisualizer(ABC):
                 if with_hyperedge_labels:
                     ax.annotate(
                         self.hyperedge_labels.get(hye, ''),
-                        (x1, y1),
+                        (x_c, y_c),
                         fontsize=label_size,
                         color=label_col,
                     )

@@ -37,10 +37,10 @@ class TestHypergraphVisualizer:
         h.set_node_metadata(4, {"text": "Node4"})
         
         # Add edges with metadata
-        h.add_edge((1, 2), metadata={"type": "edge_type_1"})
-        h.add_edge((2, 3), metadata={"type": "edge_type_2"})
-        h.add_edge((1, 2, 3), metadata={"type": "hyperedge_type_1"})
-        h.add_edge((2, 3, 4), metadata={"type": "hyperedge_type_2"})
+        h.add_edge((1, 2), metadata={"label": "edge_type_1"})
+        h.add_edge((2, 3), metadata={"label": "edge_type_2"})
+        h.add_edge((1, 2, 3), metadata={"label": "hyperedge_type_1"})
+        h.add_edge((2, 3, 4), metadata={"label": "hyperedge_type_2"})
         
         return h
 
@@ -91,7 +91,7 @@ class TestHypergraphVisualizer:
 
     def test_get_hyperedge_labels_with_metadata(self, visualizer_with_metadata):
         """Test getting hyperedge labels from metadata."""
-        labels = visualizer_with_metadata.get_hyperedge_labels("type")
+        labels = visualizer_with_metadata.get_hyperedge_labels("label")
         
         # Should only include hyperedges (order > 1, i.e., size > 2)
         expected_hyperedges = {(1, 2, 3), (2, 3, 4)}
@@ -102,7 +102,7 @@ class TestHypergraphVisualizer:
 
     def test_get_hyperedge_labels_empty_for_no_metadata(self, visualizer):
         """Test that get_hyperedge_labels returns empty dict when no metadata."""
-        labels = visualizer.get_hyperedge_labels("type")
+        labels = visualizer.get_hyperedge_labels("label")
         
         # Should be empty since no metadata was added
         assert isinstance(labels, dict)
@@ -134,8 +134,12 @@ class TestHypergraphVisualizer:
         # Should return tuple of (x_coords, y_coords, color, facecolor)
         assert isinstance(result, tuple)
         assert len(result) == 2
-        
-        x_coords, y_coords = result
+        assert len(result[0]) == 2
+        x_c, y_c = result[0]
+        assert isinstance(x_c, float)
+        assert isinstance(y_c, float)
+        assert len(result[1]) == 2
+        x_coords, y_coords = result[1]
         assert isinstance(x_coords, list)
         assert isinstance(y_coords, list)
         assert isinstance(visualizer.hyperedge_color_by_order[2], str)
@@ -254,7 +258,7 @@ class TestHypergraphVisualizer:
         assert visualizer.directed == False
         
         # Should not raise errors when getting labels from empty hypergraph
-        labels = visualizer.get_hyperedge_labels("type")
+        labels = visualizer.get_hyperedge_labels("label")
         assert isinstance(labels, dict)
         assert len(labels) == 0
     
@@ -288,7 +292,15 @@ class TestHypergraphVisualizer:
         mock_object.Smooth_by_Chaikin.assert_called_once_with(4)
 
         # Verify results
-        x_coords, y_coords = result
+        assert len(result) == 2
+        assert len(result[0]) == 2
+        x_c, y_c = result[0]
+        assert isinstance(x_c, float)
+        assert isinstance(y_c, float)
+        assert len(result[1]) == 2
+        x_coords, y_coords = result[1]
+        assert isinstance(x_coords, list)
+        assert isinstance(y_coords, list)
         assert len(x_coords) == 49
         assert len(y_coords) == 49
 
@@ -307,7 +319,7 @@ class TestHypergraphVisualizer:
     def test_get_hyperedge_labels_filters_by_size(self, hypergraph_with_metadata):
         """Test that get_hyperedge_labels only returns edges with size > 2."""
         visualizer = HypergraphVisualizer(hypergraph_with_metadata)
-        labels = visualizer.get_hyperedge_labels("type")
+        labels = visualizer.get_hyperedge_labels("label")
         
         # All returned edges should have size > 2 (be hyperedges)
         for edge in labels.keys():
@@ -343,7 +355,12 @@ class TestHypergraphVisualizer:
         )
         
         assert len(result) == 2
-        x_coords, y_coords = result
+        assert len(result[0]) == 2
+        x_c, y_c = result[0]
+        assert isinstance(x_c, float)
+        assert isinstance(y_c, float)
+        assert len(result[1]) == 2
+        x_coords, y_coords = result[1]
         assert isinstance(x_coords, list)
         assert isinstance(y_coords, list)
         assert len(x_coords) > 0
