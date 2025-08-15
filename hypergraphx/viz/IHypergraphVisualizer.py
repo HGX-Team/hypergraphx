@@ -87,9 +87,9 @@ class IHypergraphVisualizer(ABC):
         pass
 
     def get_hyperedge_center_of_mass(self,
-            pos,
-            hye
-        ) -> Tuple[List[Tuple[int, int]], int, int]:
+            pos: Dict[int, tuple],
+            hye: Tuple[int]
+        ) -> Tuple[List[Tuple[int, int]], float, float]:
         points = [
             (
                 pos[node][0],
@@ -140,7 +140,7 @@ class IHypergraphVisualizer(ABC):
     ):
         
         # Initialize a networkx graph with the nodes and only the pairwise interactions of the hypergraph.
-        pairwise_G = self.to_nx(pairwise_only=True)
+        pairwise_G = self.to_nx()
         
         if type(node_shape) == str:
             node_shape = {n: node_shape for n in pairwise_G.nodes()}

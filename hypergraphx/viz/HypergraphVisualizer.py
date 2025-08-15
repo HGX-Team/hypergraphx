@@ -28,7 +28,7 @@ class HypergraphVisualizer(IHypergraphVisualizer):
 
     def get_hyperedge_styling_data(
             self,
-            hye,
+            hye: Tuple[int],
             pos: Dict[int, tuple],
             number_of_refinements: int = 12
         ) -> Tuple[Tuple[float, float], Tuple[List[float], List[float]]]:
@@ -41,7 +41,7 @@ class HypergraphVisualizer(IHypergraphVisualizer):
         # Order points in a clockwise fashion.
         points = sorted(
             points,
-            key=lambda x: np.arctan2(x[1] - y_c, x[0] - x_c)
+            key=lambda point: np.arctan2(point[1] - y_c, point[0] - x_c)
         )
 
         offset_multiplier = 2.5 if len(points) == 3 else 1.8
@@ -52,8 +52,8 @@ class HypergraphVisualizer(IHypergraphVisualizer):
             ) for x, y in points
         ]
         # append the starting point to the cartesian coords list so it corresponds to a polygon
-        points.append(points[0])
-
+        if points[0] != points[-1]:
+            points.append(points[0])
         obj = Object(points)
         smoothed_obj_coords = obj.Smooth_by_Chaikin(number_of_refinements)
         
