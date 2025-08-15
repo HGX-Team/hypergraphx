@@ -3,7 +3,6 @@ from hypergraphx.viz.IHypergraphVisualizer import IHypergraphVisualizer
 
 # Import classes
 from hypergraphx.viz.HypergraphVisualizer import HypergraphVisualizer
-from hypergraphx.viz.Object import Object
 
 # Import functions
 from hypergraphx.viz.draw_communities import draw_communities

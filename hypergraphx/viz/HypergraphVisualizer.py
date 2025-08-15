@@ -4,7 +4,6 @@ import numpy as np
 
 from hypergraphx.core.Hypergraph import Hypergraph
 from hypergraphx.viz.IHypergraphVisualizer import IHypergraphVisualizer
-from hypergraphx.viz.Object import Object
 from hypergraphx.linalg import *
 from hypergraphx.generation.random import *
 
@@ -51,11 +50,8 @@ class HypergraphVisualizer(IHypergraphVisualizer):
                 y_c + offset_multiplier * (y - y_c)
             ) for x, y in points
         ]
-        # append the starting point to the cartesian coords list so it corresponds to a polygon
-        if points[0] != points[-1]:
-            points.append(points[0])
-        obj = Object(points)
-        smoothed_obj_coords = obj.Smooth_by_Chaikin(number_of_refinements)
+
+        smoothed_obj_coords = self.Smooth_by_Chaikin(points, number_of_refinements)
         
         order = len(hye) - 1
         if order not in self.hyperedge_color_by_order.keys():
