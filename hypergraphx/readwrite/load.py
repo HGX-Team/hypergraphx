@@ -1,14 +1,133 @@
+from __future__ import annotations
 import json
+import gzip
+import pickle
 import os
-import pickle
+import tempfile
 
-from hypergraphx import DirectedHypergraph
-from hypergraphx import Hypergraph, TemporalHypergraph
-from hypergraphx import MultiplexHypergraph
+from typing import Any, Dict, Iterable, List, Tuple, Union
+from urllib.request import urlopen, Request
+from urllib.error import HTTPError, URLError
 
+from hypergraphx.core.hypergraph import Hypergraph
+from hypergraphx.core.directed_hypergraph import DirectedHypergraph
+from hypergraphx.core.multiplex_hypergraph import MultiplexHypergraph
+from hypergraphx.core.temporal_hypergraph import TemporalHypergraph
 
-import pickle
+# --- Fixed base URL for the Trento server ---
+_BASE = "https://cricca.disi.unitn.it/datasets/hypergraphx-data"
 
+__all__ = ["load_hypergraph", "load_hypergraph_from_server"]
+
+# ---------------------------------------------------------------------------
+# Helpers: validation, decoding, and shared constructors
+# ---------------------------------------------------------------------------
+
+def _decompress_gzip_if_needed(raw: bytes) -> bytes:
+    """Return gzip-decompressed bytes if possible; else return the original bytes."""
+    try:
+        return gzip.decompress(raw)
+    except OSError:
+        return raw
+
+def _ensure_hypergraph_obj(obj: Any):
+    """Raise if obj is not a recognized Hypergraph type."""
+    allowed = (Hypergraph, DirectedHypergraph, MultiplexHypergraph, TemporalHypergraph, dict)
+    if not isinstance(obj, allowed):
+        raise TypeError(f"Object has type {type(obj)!r}, expected one of {allowed}.")
+
+def _download(url: str, *, timeout: int = 30) -> bytes:
+    """Download bytes from URL with a friendly UA."""
+    try:
+        req = Request(url, headers={"User-Agent": "hypergraphx-loader/1.0"})
+        with urlopen(req, timeout=timeout) as resp:
+            return resp.read()
+    except HTTPError as e:
+        raise FileNotFoundError(f"Not found at {url} (HTTP {e.code}).") from e
+    except URLError as e:
+        raise ConnectionError(f"Network error reaching {url}: {e.reason}") from e
+
+# ---------------------------------------------------------------------------
+# JSON -> Hypergraph (shared by local JSON loader and remote JSON loader)
+# ---------------------------------------------------------------------------
+
+def _split_json_records(data_list: List[dict]):
+    """Split JSON 'array of objects' into metadata, type, nodes, edges."""
+    hypergraph_metadata: Dict[str, Any] = {}
+    hypergraph_type: Union[str, None] = None
+    nodes: List[dict] = []
+    edges: List[dict] = []
+
+    for obj in data_list:
+        if "hypergraph_metadata" in obj:
+            hypergraph_metadata = obj["hypergraph_metadata"]
+        if "hypergraph_type" in obj:
+            hypergraph_type = obj["hypergraph_type"]
+        t = obj.get("type")
+        if t == "node":
+            nodes.append(obj)
+        elif t == "edge":
+            edges.append(obj)
+
+    return hypergraph_type, hypergraph_metadata, nodes, edges
+
+def _build_hypergraph_from_json_objects(data_list: List[dict]):
+    """
+    Construct the correct Hypergraph* from the JSON 'array of objects' format.
+    This is the single source of truth used by *both* local and remote JSON loaders.
+    """
+    htype, meta, nodes, edges = _split_json_records(data_list)
+    if htype not in {"Hypergraph", "DirectedHypergraph", "MultiplexHypergraph", "TemporalHypergraph"}:
+        raise ValueError(f"Unsupported or missing 'hypergraph_type': {htype!r}")
+
+    weighted = bool(meta.get("weighted", False))
+
+    # Instantiate
+    if htype == "Hypergraph":
+        H = Hypergraph(hypergraph_metadata=meta, weighted=weighted)
+    elif htype == "DirectedHypergraph":
+        H = DirectedHypergraph(hypergraph_metadata=meta, weighted=weighted)
+    elif htype == "MultiplexHypergraph":
+        H = MultiplexHypergraph(hypergraph_metadata=meta, weighted=weighted)
+    else:  # htype == "TemporalHypergraph"
+        H = TemporalHypergraph(hypergraph_metadata=meta, weighted=weighted)
+
+    # Add nodes
+    for n in nodes:
+        H.add_node(n["idx"], n["metadata"])
+
+    # Add edges depending on type
+    if htype in {"Hypergraph", "DirectedHypergraph"}:
+        for e in edges:
+            interaction = e["interaction"]
+            weight = e["metadata"].get("weight", None) if weighted else None
+            H.add_edge(interaction, weight, metadata=e["metadata"])
+    elif htype == "MultiplexHypergraph":
+        for e in edges:
+            interaction = e["interaction"]
+            layer = e["metadata"].get("layer")
+            weight = e["metadata"].get("weight", None) if weighted else None
+            H.add_edge(interaction, layer, weight=weight, metadata=e["metadata"])
+    else:  # TemporalHypergraph
+        for e in edges:
+            interaction = e["interaction"]
+            time = e["metadata"].get("time")
+            weight = e["metadata"].get("weight", None) if weighted else None
+            H.add_edge(interaction, time, weight=weight, metadata=e["metadata"])
+
+    return H
+
+def _parse_json_bytes_to_hypergraph(data: bytes):
+    """Decode UTF-8 JSON bytes (array of objects) and build the hypergraph."""
+    try:
+        data_list = json.loads(data.decode("utf-8"))
+    except Exception as e:
+        raise ValueError("Failed to parse JSON payload.") from e
+    return _build_hypergraph_from_json_objects(data_list)
+
+# ---------------------------------------------------------------------------
+# Local loaders
+# ---------------------------------------------------------------------------
 
 def _load_pickle(file_name: str):
     """
@@ -52,191 +171,129 @@ def _load_pickle(file_name: str):
 
         H.populate_from_dict(data)
         return H
-
     except Exception as e:
-        raise RuntimeError(f"Failed to load hypergraph from {file_name}: {e}")
+        raise RuntimeError(f"Failed to load pickle '{file_name}': {e}") from e
 
+def _load_json_file(file_name: str):
+    """Load a local .json file (array of objects) using the shared JSON builder."""
+    with open(file_name, "r", encoding="utf-8") as infile:
+        data_list = json.load(infile)
+    return _build_hypergraph_from_json_objects(data_list)
 
-def _check_existence(file_name: str, file_type: str):
+def _load_hgr_file(file_name: str):
+    """Load a local .hgr (hmetis) file. Logic preserved from your original implementation."""
+    with open(file_name) as file:
+        edges = 0
+        nodes = 0
+        mode = 0
+        w_l: List[int] = []
+        edge_l: List[Tuple[int, ...]] = []
+        read_count = 0
+        read_node = 0
+        for line in file:
+            this_l = line.strip()
+            if len(this_l) == 0 or this_l[0] == "%":
+                pass  # comment/empty
+            elif nodes == 0:
+                head = this_l.split(" ")
+                edges = int(head[0])
+                nodes = int(head[1])
+                if len(head) == 3:
+                    mode = int(head[2])
+            elif read_count < edges:
+                read_count += 1
+                entries = [int(r) for r in this_l.split(" ") if r != ""]
+                if mode % 10 == 1 and len(entries) > 1:  # weighted
+                    w_l += [int(entries[0])]
+                    edge_l += [tuple(entries[1:])]
+                elif mode % 10 != 1 and len(entries) > 0:
+                    edge_l += [tuple(entries)]
+                else:
+                    raise ValueError(f"Empty edge in file. {read_count} edges read.")
+            elif read_node < nodes:
+                read_node += 1
+            else:
+                raise ValueError("File read to the end unexpectedly.")
+        H = Hypergraph(
+            edge_list=edge_l,
+            weighted=(mode % 10) == 1,
+            weights=w_l if mode % 10 == 1 else None,
+        )
+        return H
+
+# ---------------------------------------------------------------------------
+# Public: local loader by file extension
+# ---------------------------------------------------------------------------
+
+def load_hypergraph(file_name: str):
     """
-    Check if a file exists.
+    Load a hypergraph from a local file.
+
     Parameters
     ----------
     file_name : str
-        Name of the file
-    file_type : str
-        Type of the file
-
-    Returns
-    -------
-    bool
-        True if the file exists, False otherwise.
-    """
-    file_name += ".{}".format(file_type)
-    return os.path.isfile(file_name)
-
-
-def load_hypergraph(file_name: str) -> Hypergraph:
-    """
-    Load a hypergraph from a file.
-
-    Parameters
-    ----------
-    file_name : str
-        The name of the file
-    file_type : str
-        The type of the file
+        The path to the file. Type inferred from extension.
 
     Returns
     -------
     Hypergraph
-        The loaded hypergraph
+        The loaded hypergraph.
 
     Raises
     ------
     ValueError
-        If the file type is not valid.
+        If the file extension is not one of {"hgx","json","hgr"}.
 
     Notes
     -----
-    The file type can be either "pickle", "json" or "hgr" (hmetis).
+    Supported local types:
+      - "hgx"   : pickled Hypergraph object
+      - "json"  : array-of-objects JSON (server/local format)
+      - "hgr"   : hMetis format
     """
-    file_type = file_name.split(".")[-1]
+    file_type = file_name.split(".")[-1].lower()
     if file_type == "hgx":
         return _load_pickle(file_name)
     elif file_type == "json":
-        with open(file_name, "r") as infile:
-            # Load the entire JSON array of objects
-            data_list = json.load(infile)
-
-            hypergraph_metadata = {}
-            nodes = []
-            edges = []
-            hypergraph_type = None
-
-            # Process each JSON object
-            for data in data_list:
-                if "hypergraph_metadata" in data:
-                    hypergraph_metadata = data["hypergraph_metadata"]
-                if "hypergraph_type" in data:
-                    hypergraph_type = data["hypergraph_type"]
-                if "type" in data and data["type"] == "node":
-                    nodes.append(data)
-                if "type" in data and data["type"] == "edge":
-                    edges.append(data)
-
-            # Create the appropriate hypergraph object
-            if hypergraph_type in ["Hypergraph", "DirectedHypergraph"]:
-                weighted = hypergraph_metadata.get("weighted", False)
-                if hypergraph_type == "Hypergraph":
-                    H = Hypergraph(
-                        hypergraph_metadata=hypergraph_metadata, weighted=weighted
-                    )
-                elif hypergraph_type == "DirectedHypergraph":
-                    H = DirectedHypergraph(
-                        hypergraph_metadata=hypergraph_metadata, weighted=weighted
-                    )
-
-                # Add nodes and edges to the hypergraph
-                for node in nodes:
-                    H.add_node(node["idx"], node["metadata"])
-                for edge in edges:
-                    interaction = edge["interaction"]
-                    weight = edge["metadata"].get("weight", None) if weighted else None
-                    H.add_edge(interaction, weight, metadata=edge["metadata"])
-                return H
-
-            elif hypergraph_type == "MultiplexHypergraph":
-                weighted = hypergraph_metadata.get("weighted", False)
-
-                # Initialize the MultiplexHypergraph object
-                H = MultiplexHypergraph(
-                    hypergraph_metadata=hypergraph_metadata, weighted=weighted
-                )
-
-                # Add nodes to the hypergraph
-                for node in nodes:
-                    H.add_node(node["idx"], node["metadata"])
-
-                # Add edges to the hypergraph
-                for edge in edges:
-                    interaction = edge["interaction"]
-                    weight = edge["metadata"].get("weight", None) if weighted else None
-                    layer = edge["metadata"].get(
-                        "layer"
-                    )  # Retrieve the layer for the edge
-                    metadata = edge["metadata"]
-
-                    # Add the edge to the specified layer
-                    H.add_edge(
-                        interaction,
-                        layer,
-                        weight=weight,
-                        metadata=metadata,
-                    )
-
-                return H
-            elif hypergraph_type == "TemporalHypergraph":
-                weighted = hypergraph_metadata.get("weighted", False)
-
-                # Initialize the TemporalHypergraph object
-                H = TemporalHypergraph(
-                    hypergraph_metadata=hypergraph_metadata, weighted=weighted
-                )
-
-                # Add nodes to the hypergraph
-                for node in nodes:
-                    try:
-                        H.add_node(node["idx"], node["metadata"])
-                    except:
-                        print(node)
-
-                # Add edges to the hypergraph
-                for edge in edges:
-                    interaction = edge["interaction"]
-                    weight = edge["metadata"].get("weight", None) if weighted else None
-                    time = edge["metadata"].get("time")
-                    metadata = edge["metadata"]
-                    H.add_edge(interaction, time, weight=weight, metadata=metadata)
-                return H
+        return _load_json_file(file_name)
     elif file_type == "hgr":
-        with open(file_name) as file:
-            edges = 0
-            nodes = 0
-            mode = 0
-            w_l = []
-            edge_l = []
-            read_count = 0
-            read_node = 0
-            for line in file:
-                this_l = line.strip()
-                if len(this_l) == 0 or this_l[0] == "%":
-                    pass  # do nothing for comments
-                elif nodes == 0:
-                    head = this_l.split(" ")
-                    edges = int(head[0])
-                    nodes = int(head[1])
-                    if len(head) == 3:
-                        mode = int(head[2])
-                elif read_count < edges:
-                    read_count += 1
-                    entries = [int(r) for r in this_l.split(" ") if r != ""]
-                    if mode % 10 == 1 and len(entries) > 1:  # read weight
-                        w_l += [int(entries[0])]
-                        edge_l += [tuple(entries[1:])]
-                    elif mode % 10 != 1 and len(entries) > 0:
-                        edge_l += [tuple(entries)]
-                    else:
-                        raise f"Empty edge in file. {read_count} edges read."
-                elif read_node < nodes:
-                    read_node += 1
-                else:
-                    raise f"File read to the end."
-            H = Hypergraph(
-                edge_list=edge_l,
-                weighted=(mode % 10) == 1,
-                weights=w_l if mode % 10 == 1 else None,
-            )
-            return H
+        return _load_hgr_file(file_name)
     else:
-        raise ValueError("Invalid file type.")
+        raise ValueError("Invalid file type. Expected one of: 'hgx', 'json', 'hgr'.")
+
+# ---------------------------------------------------------------------------
+# Public: remote loader (fixed base URL)
+# ---------------------------------------------------------------------------
+
+def load_hypergraph_from_server(name: str, fmt: str = "binary", *, timeout: int = 30):
+    """
+    Load a hypergraph directly from the server
+    """
+    kind = fmt.lower()
+    if kind not in {"binary", "json"}:
+        raise ValueError("fmt must be 'binary' or 'json'.")
+
+    suffix = "hgx.gz" if kind == "binary" else "json.gz"
+    url = f"{_BASE}/{name}/{name}.{suffix}"
+
+    raw = _download(url, timeout=timeout)
+    payload = _decompress_gzip_if_needed(raw)
+
+    if kind == "json":
+        return _parse_json_bytes_to_hypergraph(payload)
+
+    # --- binary path: mirror _load_pickle(file_name) exactly ---
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(prefix=f"{name}_", suffix=".hgx", delete=False) as tmp:
+            tmp.write(payload)
+            tmp_path = tmp.name
+        # Call your existing pickle loader to ensure identical logic/validations
+        return _load_pickle(tmp_path)
+    finally:
+        if tmp_path and os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+
