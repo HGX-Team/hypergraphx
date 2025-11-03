@@ -1,5 +1,8 @@
-from hypergraphx.core.directed_hypergraph import DirectedHypergraph
+from hypergraphx.core.i_hypergraph import IHypergraph
+from hypergraphx.core.i_undirected_hypergraph import IUndirectedHypergraph
+
 from hypergraphx.core.hypergraph import Hypergraph
+from hypergraphx.core.directed_hypergraph import DirectedHypergraph
 from hypergraphx.core.multiplex_hypergraph import MultiplexHypergraph
 from hypergraphx.core.temporal_hypergraph import TemporalHypergraph
 from . import readwrite
