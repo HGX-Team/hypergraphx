@@ -839,6 +839,17 @@ class TemporalHypergraph:
             A list of integers representing the order of each edge.
         """
         return [_get_order(edge[1]) for edge in self._edge_list.keys()]
+    
+    def get_times(self):
+        """
+        Get the times of each edge in the hypergraph.
+
+        Returns
+        -------
+        list
+            A list of integers representing the times of each edge.
+        """
+        return [edge[0] for edge in self._edge_list.keys()]
 
     def is_weighted(self):
         """
