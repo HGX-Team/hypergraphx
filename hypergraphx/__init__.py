@@ -1,7 +1,19 @@
-from hypergraphx.core.directed_hypergraph import DirectedHypergraph
-from hypergraphx.core.hypergraph import Hypergraph
-from hypergraphx.core.multiplex_hypergraph import MultiplexHypergraph
-from hypergraphx.core.temporal_hypergraph import TemporalHypergraph
+# Core interfaces
+from hypergraphx.core.IHypergraph import IHypergraph
+from hypergraphx.core.IUndirectedHypergraph import IUndirectedHypergraph
+
+# Core classes
+from hypergraphx.core.Hypergraph import Hypergraph
+from hypergraphx.core.DirectedHypergraph import DirectedHypergraph
+from hypergraphx.core.MultiplexHypergraph import MultiplexHypergraph
+from hypergraphx.core.TemporalHypergraph import TemporalHypergraph
+
+# Visualization interface
+from hypergraphx.viz.IHypergraphVisualizer import IHypergraphVisualizer
+
+# Visualization class
+from hypergraphx.viz.HypergraphVisualizer import HypergraphVisualizer
+
 from . import readwrite
 
 import sys

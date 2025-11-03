@@ -1,3 +1,6 @@
+.claude/*
+/build/*
+.venv/*
 /venv/
 /.idea/
 /.vscode/
