@@ -1,5 +1,6 @@
-from hypergraphx import Hypergraph
 from collections import deque
+
+from hypergraphx import Hypergraph
 
 
 def _bfs(hg: Hypergraph, start, max_depth=None, order=None, size=None):
@@ -16,7 +17,13 @@ def _bfs(hg: Hypergraph, start, max_depth=None, order=None, size=None):
     Returns
     -------
     set. The nodes visited during the search.
+
+    Raises
+    ------
+    ValueError. If the start node is not in the hypergraph.
     """
+    if not hg.check_node(start):
+        raise ValueError(f"Node {start} not in hypergraph.")
     visited = set()
     queue = deque([(start, 0)])
 
@@ -48,7 +55,13 @@ def _dfs(hg: Hypergraph, start, max_depth=None, order=None, size=None):
     Returns
     -------
     set. The nodes visited during the search.
+
+    Raises
+    ------
+    ValueError. If the start node is not in the hypergraph.
     """
+    if not hg.check_node(start):
+        raise ValueError(f"Node {start} not in hypergraph.")
     visited = set()
     stack = [(start, 0)]
 
@@ -65,4 +78,3 @@ def _dfs(hg: Hypergraph, start, max_depth=None, order=None, size=None):
                 stack.extend((n, new_depth) for n in neighbors if n not in visited)
 
     return visited
-

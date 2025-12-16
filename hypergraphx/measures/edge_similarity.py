@@ -78,4 +78,3 @@ def jaccard_distance(a: set, b: set):
     0.5
     """
     return 1 - jaccard_similarity(a, b)
-

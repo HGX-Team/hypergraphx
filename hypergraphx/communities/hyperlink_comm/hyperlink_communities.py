@@ -9,7 +9,9 @@ from hypergraphx.readwrite.load import _load_pickle
 from hypergraphx.readwrite.save import _save_pickle
 
 
-def hyperlink_communities(H: Hypergraph, load_distances=None, save_distances=None) -> np.ndarray:
+def hyperlink_communities(
+    H: Hypergraph, load_distances=None, save_distances=None
+) -> np.ndarray:
     """
     Computes the dendrogram of the given hypergraph
 
@@ -32,7 +34,9 @@ def hyperlink_communities(H: Hypergraph, load_distances=None, save_distances=Non
     lcc = H.largest_component()
     H = H.subhypergraph(lcc)
     h = H.get_edges()
-    print("Subhypergraph info - nodes: {} edges: {}".format(H.num_nodes(), H.num_edges()))
+    print(
+        "Subhypergraph info - nodes: {} edges: {}".format(H.num_nodes(), H.num_edges())
+    )
 
     adj = {}
     edge_to_id = {}
@@ -67,23 +71,25 @@ def hyperlink_communities(H: Hypergraph, load_distances=None, save_distances=Non
                     if k not in vis:
                         w = jaccard(e_i, e_j)
                         if w > 0:
-                            G.add_edge(edge_to_id[adj[n][i]], edge_to_id[adj[n][j]], weight=w)
+                            G.add_edge(
+                                edge_to_id[adj[n][i]], edge_to_id[adj[n][j]], weight=w
+                            )
                         vis[k] = True
             c += 1
 
-        X = nx.to_numpy_array(G, weight='weight', nonedge=1.0)
+        X = nx.to_numpy_array(G, weight="weight", nonedge=1.0)
         _save_pickle(X, "{}.hlcd".format(save_distances))
 
     print("dist computed")
 
     np.fill_diagonal(X, 0.0)
     dist_matrix = ssd.squareform(X)
-    dendrogram = linkage(dist_matrix, method='average')
+    dendrogram = linkage(dist_matrix, method="average")
     return dendrogram
 
 
 def _cut_dendrogram(dendrogram, cut_height):
-    cut = fcluster(dendrogram, t=cut_height, criterion='distance')
+    cut = fcluster(dendrogram, t=cut_height, criterion="distance")
     return cut
 
 
@@ -119,7 +125,9 @@ def get_num_hyperlink_communties(dendrogram: np.ndarray, cut_height: float) -> i
     return len(set(cut))
 
 
-def overlapping_communities(H: Hypergraph, dendrogram: np.ndarray, cut_height: float) -> dict:
+def overlapping_communities(
+    H: Hypergraph, dendrogram: np.ndarray, cut_height: float
+) -> dict:
     """
     Returns the overlapping communities in the dendrogram at the given cut height
 

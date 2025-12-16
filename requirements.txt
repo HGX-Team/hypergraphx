@@ -5,4 +5,4 @@ pandas
 scikit-learn
 pytest
 matplotlib
-seaborn~=0.12.1
+seaborn

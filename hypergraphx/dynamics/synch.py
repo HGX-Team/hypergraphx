@@ -193,7 +193,6 @@ def higher_order_MSF(
     C=5,
     verbose=True,
 ):
-
     N = hypergraph.num_nodes()
 
     # If the coupling is natural, we evaluate a single-parameter MSF for this scenario

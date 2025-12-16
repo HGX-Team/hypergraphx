@@ -4,8 +4,14 @@ from scipy.stats import spearmanr
 from hypergraphx import Hypergraph
 
 
-def scale_free_hypergraph(num_nodes: int, edges_by_size: dict, scale_by_size: dict, correlated: bool = True,
-                          corr_target: float = None, num_shuffles: int = 0):
+def scale_free_hypergraph(
+    num_nodes: int,
+    edges_by_size: dict,
+    scale_by_size: dict,
+    correlated: bool = True,
+    corr_target: float = None,
+    num_shuffles: int = 0,
+):
     """
     Generate a scale-free hypergraph.
 
@@ -72,7 +78,9 @@ def scale_free_hypergraph(num_nodes: int, edges_by_size: dict, scale_by_size: di
                     corr, _ = spearmanr(exp_dist, old_dist)
         edges = set()
         while len(edges) < num_edges:
-            edge = np.random.choice(nodes, size=size, replace=False, p=exp_dist / np.sum(exp_dist))
+            edge = np.random.choice(
+                nodes, size=size, replace=False, p=exp_dist / np.sum(exp_dist)
+            )
             edge = tuple(sorted(edge))
             edges.add(edge)
 

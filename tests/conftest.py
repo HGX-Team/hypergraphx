@@ -1,6 +1,6 @@
+from collections import Counter
 from pathlib import Path
 from typing import Dict, List, Tuple
-from collections import Counter
 
 import numpy as np
 import pytest
@@ -44,7 +44,9 @@ def synthetic_small_numerical_datasets() -> Dict[str, Hypergraph]:
         hye_file = DATA_DIR / dataset / "hyperedges.txt"
         hye_list, weights = _read_hye_list(hye_file)
         weighted = weights is not None
-        datasets[dataset] = Hypergraph(edge_list=hye_list, weighted=weighted, weights=weights)
+        datasets[dataset] = Hypergraph(
+            edge_list=hye_list, weighted=weighted, weights=weights
+        )
 
     return datasets
 

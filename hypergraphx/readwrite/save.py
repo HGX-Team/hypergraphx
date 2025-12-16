@@ -1,73 +1,129 @@
 import json
 import pickle
 
-from hypergraphx import Hypergraph
+from hypergraphx import (
+    Hypergraph,
+    TemporalHypergraph,
+    DirectedHypergraph,
+    MultiplexHypergraph,
+)
+
+import pickle
 
 
 def _save_pickle(obj, file_name: str):
     """
-    Save a pickle file.
+    Save an object as a pickle file.
 
     Parameters
     ----------
     obj : object
-        The object to save
+        The object to save. Must implement `expose_data_structures`.
     file_name : str
-        The name of the file
+        The name of the file to save the object to.
 
     Returns
     -------
     None
-        the object is saved to a file
+        The object is saved to a file.
     """
-    with open("{}".format(file_name), "wb") as f:
-        pickle.dump(obj, f)
+    try:
+        if not hasattr(obj, "expose_data_structures"):
+            raise AttributeError(
+                "Object must implement 'expose_data_structures' method."
+            )
+
+        data = obj.expose_data_structures()
+
+        with open(file_name, "wb") as f:
+            pickle.dump(data, f)
+    except Exception as e:
+        raise RuntimeError(f"Failed to save object to {file_name}: {e}")
 
 
-def save_hypergraph(hypergraph: Hypergraph, file_name: str, file_type: str):
+import json
+
+
+def save_hypergraph(hypergraph, file_name: str, binary=False):
     """
-    Save a hypergraph to a file.
+    Save a hypergraph to a file in JSON format efficiently by writing in chunks.
 
     Parameters
     ----------
     hypergraph: Hypergraph
-        The hypergraph to save
+        The hypergraph to save.
     file_name: str
-        The requested name of the file
-    file_type: str
-        The requested type of the file
+        The name of the file.
+    binary: bool
+        Whether to save the hypergraph as a binary file (hgx) or a text file (json).
 
     Returns
     -------
     None
-        The hypergraph is saved to a file
+        The hypergraph is saved to a file.
 
     Raises
     ------
     ValueError
-        If the file type is not valid
-
-    Notes
-    -----
-    The file type can be either "pickle" or "json".
+        If the hypergraph type is not valid.
     """
-    if file_type == "pickle":
+    if binary:
         _save_pickle(hypergraph, file_name)
-    elif file_type == "json":
-        with open(file_name, "w+") as outfile:
-            out = []
-            for node in hypergraph.get_nodes():
-                json_object = json.dumps(hypergraph.get_meta(node))
-                out.append(json_object)
+        return
 
-            for edge in hypergraph.get_edges():
-                meta = hypergraph.get_meta(edge)
-                if hypergraph.is_weighted():
-                    meta["weight"] = hypergraph.get_weight(edge)
-                json_object = json.dumps(meta)
-                out.append(json_object)
-            json.dump(out, outfile)
+    with open(file_name, "w") as outfile:
+        outfile.write("[\n")  # Start JSON array
+        first = True
 
-    else:
-        raise ValueError("Invalid file type.")
+        def write_item(item):
+            """Helper function to write a JSON object, ensuring proper comma placement."""
+            nonlocal first
+            if not first:
+                outfile.write(",\n")
+            json.dump(
+                item, outfile, separators=(",", ":")
+            )  # No pretty-print for efficiency
+            first = False
 
+        # Get hypergraph metadata
+        hypergraph_type = str(type(hypergraph)).split(".")[-1][:-2]
+        weighted = hypergraph.is_weighted()
+
+        write_item(
+            {
+                "hypergraph_type": hypergraph_type,
+                "hypergraph_metadata": hypergraph.get_hypergraph_metadata(),
+            }
+        )
+
+        # Write nodes
+        for node, metadata in hypergraph.get_nodes(metadata=True).items():
+            write_item({"type": "node", "idx": node, "metadata": metadata})
+
+        # Write edges
+        if hypergraph_type in ["Hypergraph", "DirectedHypergraph"]:
+            for edge, metadata in hypergraph.get_edges(metadata=True).items():
+                if weighted:
+                    metadata["weight"] = hypergraph.get_weight(edge)
+                write_item({"type": "edge", "interaction": edge, "metadata": metadata})
+
+        elif hypergraph_type == "MultiplexHypergraph":
+            for edge, metadata in hypergraph.get_edges(metadata=True).items():
+                edge, layer = edge
+                metadata["layer"] = layer
+                if weighted:
+                    metadata["weight"] = hypergraph.get_weight(edge, layer)
+                write_item({"type": "edge", "interaction": edge, "metadata": metadata})
+
+        elif hypergraph_type == "TemporalHypergraph":
+            for edge, metadata in hypergraph.get_edges(metadata=True).items():
+                time, edge = edge
+                if weighted:
+                    metadata["weight"] = hypergraph.get_weight(edge, time)
+                metadata["time"] = time
+                write_item({"type": "edge", "interaction": edge, "metadata": metadata})
+
+        else:
+            raise ValueError("Invalid hypergraph type.")
+
+        outfile.write("\n]")  # Close JSON array

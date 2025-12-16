@@ -5,7 +5,7 @@ import numpy as np
 from hypergraphx import Hypergraph
 
 
-def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=True):
+def _cm_MCMC(hypergraph, n_steps=1000, label="edge", n_clash=1, detailed=True):
     """
     Conduct Markov Chain Monte Carlo in order to approximately
     sample from the space of appropriately-labeled graphs.
@@ -16,6 +16,7 @@ def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=True):
         n_clash >= 2 may lead to performance gains at the cost of decreased accuracy.
     detailed: if True, preserve the number of edges of given dimension incident to each node
     """
+
     def proposal_generator(m):
         # Propose a transition in stub- and edge-labeled MH.
 
@@ -46,7 +47,7 @@ def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=True):
 
         for v in f:
             if (len(g1) < len(f1)) & (len(g2) < len(f2)):
-                if np.random.rand() < .5:
+                if np.random.rand() < 0.5:
                     g1.append(v)
                 else:
                     g2.append(v)
@@ -55,7 +56,7 @@ def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=True):
             elif len(g2) < len(f2):
                 g2.append(v)
         if len(g1) != len(f1):
-            print('oops')
+            print("oops")
             print(f1, f2, g1, g2)
         return tuple(sorted(g1)), tuple(sorted(g2))
 
@@ -86,12 +87,11 @@ def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=True):
         mh_rounds += 1
 
         if message:
-            print(str(n_steps) + ' steps completed.')
+            print(str(n_steps) + " steps completed.")
 
         return new_h
 
     def vertex_labeled_mh(message=True):
-
         rand = np.random.rand
         randint = np.random.randint
 
@@ -170,8 +170,14 @@ def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=True):
             c.update(add)
             done = k - n_rejected >= n_steps
         if message:
-            print(str(epoch_num) + ' epochs completed, ' + str(k - n_rejected) + ' steps taken, ' + str(
-                n_rejected) + ' steps rejected.')
+            print(
+                str(epoch_num)
+                + " epochs completed, "
+                + str(k - n_rejected)
+                + " steps taken, "
+                + str(n_rejected)
+                + " steps rejected."
+            )
 
         new_h = Hypergraph()
         new_h.add_edges([tuple(sorted(f)) for f in list(c.elements())])
@@ -179,25 +185,39 @@ def _cm_MCMC(hypergraph, n_steps=1000, label='edge', n_clash=1, detailed=True):
         mh_rounds += 1
         return new_h
 
-    if (label == 'edge') or (label == 'stub'):
+    if (label == "edge") or (label == "stub"):
         return stub_edge_mh()
-    elif label == 'vertex':
+    elif label == "vertex":
         return vertex_labeled_mh()
     else:
-        print('not implemented')
+        print("not implemented")
 
 
-def configuration_model(hypergraph, n_steps=1000, label='edge', order=None, size=None, n_clash=1, detailed=True):
+def configuration_model(
+    hypergraph,
+    n_steps=1000,
+    label="edge",
+    order=None,
+    size=None,
+    n_clash=1,
+    detailed=True,
+):
     if order is not None and size is not None:
-        raise ValueError('Only one of order and size can be specified.')
+        raise ValueError("Only one of order and size can be specified.")
     if order is None and size is None:
-        return _cm_MCMC(hypergraph, n_steps=n_steps, label=label, n_clash=n_clash, detailed=detailed)
+        return _cm_MCMC(
+            hypergraph, n_steps=n_steps, label=label, n_clash=n_clash, detailed=detailed
+        )
 
     if size is None:
         size = order + 1
 
-    tmp_h = hypergraph.get_edges(size=size, up_to=False, subhypergraph=True, keep_isolated_nodes=True)
-    shuffled = _cm_MCMC(tmp_h, n_steps=n_steps, label=label, n_clash=n_clash, detailed=detailed)
+    tmp_h = hypergraph.get_edges(
+        size=size, up_to=False, subhypergraph=True, keep_isolated_nodes=True
+    )
+    shuffled = _cm_MCMC(
+        tmp_h, n_steps=n_steps, label=label, n_clash=n_clash, detailed=detailed
+    )
     for e in hypergraph.get_edges():
         if len(e) != size:
             shuffled.add_edge(e)

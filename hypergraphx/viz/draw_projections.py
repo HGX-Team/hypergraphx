@@ -8,7 +8,7 @@ from hypergraphx.representations.projections import (
 )
 
 
-def draw_bipartite(h: Hypergraph, pos=None, ax=None, align='vertical', **kwargs):
+def draw_bipartite(h: Hypergraph, pos=None, ax=None, align="vertical", **kwargs):
     """
     Draws a bipartite graph representation of the hypergraph.
     Parameters
@@ -32,7 +32,9 @@ def draw_bipartite(h: Hypergraph, pos=None, ax=None, align='vertical', **kwargs)
     g, id_to_obj = bipartite_projection(h)
 
     if pos is None:
-        pos = nx.bipartite_layout(g, nodes=[n for n, d in g.nodes(data=True) if d['bipartite'] == 0])
+        pos = nx.bipartite_layout(
+            g, nodes=[n for n, d in g.nodes(data=True) if d["bipartite"] == 0]
+        )
 
     if ax is None:
         ax = plt.gca()
@@ -71,4 +73,3 @@ def draw_clique(h: Hypergraph, pos=None, ax=None, **kwargs):
     nx.draw_networkx(g, pos=pos, ax=ax, **kwargs)
     plt.show()
     return ax
-

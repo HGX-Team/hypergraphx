@@ -36,6 +36,7 @@ class HyMMSBMSampler:
         exact_dyadic_sampling: bool = True,
         burn_in_steps: int = 1000,
         intermediate_steps: int = 1000,
+        seed: Optional[int] = 42,
     ) -> None:
         """Initialize the sampler instance.
 
@@ -444,7 +445,7 @@ class HyMMSBMSampler:
 
             norm = np.linalg.norm(expected_values)
             if norm != 0.0:
-                rescaling_const = np.inner(input_values, expected_values) / norm ** 2
+                rescaling_const = np.inner(input_values, expected_values) / norm**2
                 self._model.u *= np.sqrt(rescaling_const)
         elif avg_deg is not None:
             avg_deg_model = self._model.expected_degree(per_node=False, d="all")

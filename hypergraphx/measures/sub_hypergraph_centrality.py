@@ -26,4 +26,4 @@ def subhypergraph_centrality(hypergraph: Hypergraph) -> np.ndarray:
     """
     adj = hypergraph.adjacency_matrix().todense()
     eigenvals, eigenvecs = np.linalg.eigh(adj)
-    return special.logsumexp(eigenvals.reshape(1, -1), b=eigenvecs ** 2, axis=1)
+    return special.logsumexp(eigenvals.reshape(1, -1), b=eigenvecs**2, axis=1)

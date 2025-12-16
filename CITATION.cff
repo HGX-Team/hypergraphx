@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the following article:"
+preferred-citation:
+  type: article
+  title: "Hypergraphx: a library for higher-order network analysis"
+  authors:
+    - family-names: "Lotito"
+      given-names: "Quintino Francesco"
+    - family-names: "Contisciani"
+      given-names: "Martina"
+    - family-names: "De Bacco"
+      given-names: "Caterina"
+    - family-names: "Di Gaetano"
+      given-names: "Leonardo"
+    - family-names: "Gallo"
+      given-names: "Luca"
+    - family-names: "Montresor"
+      given-names: "Alberto"
+    - family-names: "Musciotto"
+      given-names: "Federico"
+    - family-names: "Ruggeri"
+      given-names: "Nicolò"
+    - family-names: "Battiston"
+      given-names: "Federico"
+  journal: "Journal of Complex Networks"
+  volume: "11"
+  issue: "3"
+  pages: "cnad019"
+  year: 2023
+  publisher: "Oxford University Press"
+  doi: "10.1093/comnet/cnad019"
+  url: "https://doi.org/10.1093/comnet/cnad019"

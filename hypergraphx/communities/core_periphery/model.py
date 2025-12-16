@@ -1,5 +1,6 @@
 import math
 import random
+
 import numpy as np
 
 from hypergraphx import Hypergraph
@@ -156,20 +157,36 @@ def core_periphery(hypergraph: Hypergraph, greedy_start=False, N_ITER=1000):
             new_R = R
 
             for e in adj[i]:
-                new_R -= (w[e]/len(e) * aggregate_local_core_values(list(e), order, local_core_values))
+                new_R -= (
+                    w[e]
+                    / len(e)
+                    * aggregate_local_core_values(list(e), order, local_core_values)
+                )
 
             for e in adj[j]:
-                new_R -= (w[e]/len(e) * aggregate_local_core_values(list(e), order, local_core_values))
+                new_R -= (
+                    w[e]
+                    / len(e)
+                    * aggregate_local_core_values(list(e), order, local_core_values)
+                )
 
             s_tmp = order[i]
             order[i] = order[j]
             order[j] = s_tmp
 
             for e in adj[i]:
-                new_R += (w[e]/len(e) * aggregate_local_core_values(list(e), order, local_core_values))
+                new_R += (
+                    w[e]
+                    / len(e)
+                    * aggregate_local_core_values(list(e), order, local_core_values)
+                )
 
             for e in adj[j]:
-                new_R += (w[e]/len(e) * aggregate_local_core_values(list(e), order, local_core_values))
+                new_R += (
+                    w[e]
+                    / len(e)
+                    * aggregate_local_core_values(list(e), order, local_core_values)
+                )
 
             if new_R < R:
                 s_tmp = order[i]
