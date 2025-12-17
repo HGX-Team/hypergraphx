@@ -392,6 +392,21 @@ def power_set(A):
 
 
 def _is_connected(edges, N):
+    """
+    Check if a graph represented by a list of edges is connected.
+
+    Parameters
+    ----------
+    edges : list
+        A list of edges, where each edge is represented as a list of nodes.
+    N : int
+        The total number of nodes in the graph.
+
+    Returns
+    -------
+    bool
+        True if the graph is connected, False otherwise.
+    """
     nodes = set(itertools.chain(*edges))
     if not edges:
         return False
