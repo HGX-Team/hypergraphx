@@ -1,9 +1,8 @@
-import copy
 import math
+import warnings
 
-from sklearn.preprocessing import LabelEncoder
-
-from hypergraphx import Hypergraph
+from .hypergraph import Hypergraph
+from hypergraphx.core.base_hypergraph import BaseHypergraph
 
 
 def _canon_edge(edge):
@@ -38,7 +37,7 @@ def _get_nodes(edge):
         return list(edge)
 
 
-class TemporalHypergraph:
+class TemporalHypergraph(BaseHypergraph):
     """
     A Temporal Hypergraph is a hypergraph where each hyperedge is associated with a specific timestamp.
     Temporal hypergraphs are useful for modeling systems where interactions between nodes change over time, such as social networks,
@@ -85,27 +84,14 @@ class TemporalHypergraph:
             If `edge_list` contains improperly formatted edges when `time_list` is None.
             If `time_list` is provided without `edge_list`.
         """
-        # Initialize hypergraph metadata
-        self._hypergraph_metadata = hypergraph_metadata or {}
-        self._hypergraph_metadata.update(
-            {"weighted": weighted, "type": "TemporalHypergraph"}
-        )
-
-        # Initialize core attributes
-        self._weighted = weighted
-        self._weights = {}
         self._adj = {}
-        self._edge_list = {}
-        self._incidences_metadata = {}
-        self._node_metadata = {}
-        self._edge_metadata = {}
-        self._reverse_edge_list = {}
-        self._next_edge_id = 0
-
-        # Add node metadata if provided
-        if node_metadata:
-            for node, metadata in node_metadata.items():
-                self.add_node(node, metadata=metadata)
+        metadata = hypergraph_metadata or {}
+        metadata.update({"weighted": weighted, "type": "TemporalHypergraph"})
+        self._init_base(
+            weighted=weighted,
+            hypergraph_metadata=metadata,
+            node_metadata=node_metadata,
+        )
 
         # Handle edge and time list consistency
         if edge_list is not None and time_list is None:
@@ -129,24 +115,50 @@ class TemporalHypergraph:
                 edge_list, time_list, weights=weights, metadata=edge_metadata
             )
 
+    def _normalize_edge(self, edge, time=None, **kwargs):
+        if time is None:
+            if isinstance(edge, tuple) and len(edge) == 2:
+                if isinstance(edge[0], int) and isinstance(edge[1], (tuple, list)):
+                    time = edge[0]
+                    edge = edge[1]
+                elif isinstance(edge[1], int) and isinstance(edge[0], (tuple, list)):
+                    time = edge[1]
+                    edge = edge[0]
+                else:
+                    raise ValueError(
+                        "Temporal edges must be provided as (time, edge) or with a time argument."
+                    )
+            else:
+                raise ValueError(
+                    "Temporal edges must be provided as (time, edge) or with a time argument."
+                )
+        return (time, _canon_edge(edge))
+
+    def _edge_nodes(self, edge_key):
+        return _get_nodes(edge_key[1])
+
+    def _edge_size(self, edge_key):
+        return _get_size(edge_key[1])
+
+    def _edge_key_without_node(self, edge_key, node):
+        time, edge = edge_key
+        return (time, tuple(n for n in edge if n != node))
+
+    def _allow_empty_edge(self):
+        return False
+
+    def _new_like(self):
+        return TemporalHypergraph(weighted=self._weighted)
+
+    def _hash_edge_nodes(self, edge_key):
+        return (edge_key[0], tuple(sorted(edge_key[1])))
+
     # Node
     def add_node(self, node, metadata=None):
-        if metadata is None:
-            metadata = {}
-        if node not in self._node_metadata:
-            self._adj[node] = []
-            self._node_metadata[node] = {}
-        if self._node_metadata[node] == {}:
-            self._node_metadata[node] = metadata
+        super().add_node(node, metadata=metadata)
 
     def add_nodes(self, node_list: list, metadata=None):
-        for node in node_list:
-            try:
-                self.add_node(node, metadata[node] if metadata is not None else None)
-            except KeyError:
-                raise ValueError(
-                    "The metadata dictionary must contain an entry for each node in the node list."
-                )
+        super().add_nodes(node_list, metadata=metadata)
 
     def remove_node(self, node, keep_edges=False):
         """
@@ -165,32 +177,7 @@ class TemporalHypergraph:
         ValueError
             If the node is not in the hypergraph.
         """
-        if node not in self._adj:
-            raise ValueError(f"Node {node} not in hypergraph.")
-
-        edges_to_process = list(self._adj[node])
-
-        if keep_edges:
-            for edge_id in edges_to_process:
-                time, edge = self._reverse_edge_list[edge_id]
-                updated_edge = tuple(n for n in edge if n != node)
-
-                self.remove_edge((time, edge))
-                if updated_edge:
-                    self.add_edge(
-                        updated_edge,
-                        time,
-                        weight=self._weights.get(edge_id, 1),
-                        metadata=self._edge_metadata.get(edge_id, {}),
-                    )
-        else:
-            for edge_id in edges_to_process:
-                time, edge = self._reverse_edge_list[edge_id]
-                self.remove_edge((time, edge))
-
-        del self._adj[node]
-        if node in self._node_metadata:
-            del self._node_metadata[node]
+        super().remove_node(node, keep_edges=keep_edges)
 
     def remove_nodes(self, node_list, keep_edges=False):
         """
@@ -213,13 +200,10 @@ class TemporalHypergraph:
         KeyError
             If any of the nodes is not in the hypergraph.
         """
-        for node in node_list:
-            self.remove_node(node, keep_edges=keep_edges)
+        super().remove_nodes(node_list, keep_edges=keep_edges)
 
     def get_nodes(self, metadata=False):
-        if metadata:
-            return self._node_metadata
-        return list(self._node_metadata.keys())
+        return super().get_nodes(metadata=metadata)
 
     def check_node(self, node):
         """Checks if the specified node is in the hypergraph.
@@ -235,96 +219,13 @@ class TemporalHypergraph:
             True if the node is in the hypergraph, False otherwise.
 
         """
-        return node in self._adj
+        return super().check_node(node)
 
     def get_neighbors(self, node, order: int = None, size: int = None):
-        """
-        Get the neighbors of a node in the hypergraph.
-
-        Parameters
-        ----------
-        node : object
-            The node of interest.
-        order : int
-            The order of the hyperedges to consider.
-        size : int
-            The size of the hyperedges to consider.
-
-        Returns
-        -------
-        set
-            The neighbors of the node.
-
-        Raises
-        ------
-        ValueError
-            If order and size are both specified or neither are specified.
-        """
-        if node not in self._adj:
-            raise ValueError("Node {} not in hypergraph.".format(node))
-        if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
-        if order is None and size is None:
-            neigh = set()
-            edges = self.get_incident_edges(node)
-            for edge in edges:
-                neigh.update(edge[1])
-            if node in neigh:
-                neigh.remove(node)
-            return neigh
-        else:
-            if order is None:
-                order = size - 1
-            neigh = set()
-            edges = self.get_incident_edges(node, order=order)
-            for edge in edges:
-                neigh.update(edge[1])
-            if node in neigh:
-                neigh.remove(node)
-            return neigh
+        return super().get_neighbors(node, order=order, size=size)
 
     def get_incident_edges(self, node, order: int = None, size: int = None):
-        """
-        Get the incident hyperedges of a node in the hypergraph.
-
-        Parameters
-        ----------
-        node : object
-            The node of interest.
-        order : int
-            The order of the hyperedges to consider.
-        size : int
-            The size of the hyperedges to consider.
-
-        Returns
-        -------
-        list
-            The incident hyperedges of the node.
-
-        Raises
-        ------
-        ValueError
-            If the node is not in the hypergraph.
-
-        """
-        if node not in self._adj:
-            raise ValueError("Node {} not in hypergraph.".format(node))
-        if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
-        if order is None and size is None:
-            return list(
-                [self._reverse_edge_list[edge_id] for edge_id in self._adj[node]]
-            )
-        else:
-            if order is None:
-                order = size - 1
-            return list(
-                [
-                    self._reverse_edge_list[edge_id]
-                    for edge_id in self._adj[node]
-                    if len(self._reverse_edge_list[edge_id][1]) - 1 == order
-                ]
-            )
+        return super().get_incident_edges(node, order=order, size=size)
 
     # Edge
     def add_edge(self, edge, time, weight=None, metadata=None):
@@ -352,44 +253,11 @@ class TemporalHypergraph:
             If the hypergraph is not weighted and weight is not None or 1.
         """
         if not isinstance(time, int):
-            raise TypeError("Time must be an integer")
-
-        if not self._weighted and weight is not None and weight != 1:
-            raise ValueError(
-                "If the hypergraph is not weighted, weight can be 1 or None."
-            )
-        if weight is None:
-            weight = 1
-
-        t = time
-
-        if t < 0:
-            raise ValueError("Time must be a positive integer")
-
-        _edge = _canon_edge(edge)
-        edge = (t, _edge)
-
-        if edge not in self._edge_list:
-            e_id = self._next_edge_id
-            self._reverse_edge_list[e_id] = edge
-            self._edge_list[edge] = e_id
-            self._next_edge_id += 1
-            self._weights[e_id] = weight
-        elif edge in self._edge_list and self._weighted:
-            self._weights[self._edge_list[edge]] += weight
-
-        e_id = self._edge_list[edge]
-
-        if metadata is None:
-            metadata = {}
-        self._edge_metadata[e_id] = metadata
-
-        nodes = _get_nodes(_edge)
-        for node in nodes:
-            self.add_node(node)
-
-        for node in nodes:
-            self._adj[node].append(e_id)
+            raise TypeError("Time must be an integer.")
+        if time < 0:
+            raise ValueError("Time must be a non-negative integer.")
+        edge_key = self._normalize_edge(edge, time=time)
+        self._add_edge(edge_key, weight=weight, metadata=metadata)
 
     def add_edges(self, edge_list, time_list, weights=None, metadata=None):
         """
@@ -420,8 +288,9 @@ class TemporalHypergraph:
             raise ValueError("Edge list and time list must have the same length")
 
         if weights is not None and not self._weighted:
-            print(
-                "Warning: weights are provided but the hypergraph is not weighted. The hypergraph will be weighted."
+            warnings.warn(
+                "Weights are provided but the hypergraph is not weighted. The hypergraph will be weighted.",
+                UserWarning,
             )
             self._weighted = True
 
@@ -433,9 +302,8 @@ class TemporalHypergraph:
             if len(list(edge_list)) != len(list(weights)):
                 raise ValueError("The number of edges and weights must be the same.")
 
-        i = 0
         if edge_list is not None:
-            for edge in edge_list:
+            for i, edge in enumerate(edge_list):
                 self.add_edge(
                     edge,
                     time_list[i],
@@ -444,9 +312,8 @@ class TemporalHypergraph:
                     ),
                     metadata=metadata[i] if metadata is not None else None,
                 )
-                i += 1
 
-    def remove_edge(self, edge, time):
+    def remove_edge(self, edge, time=None):
         """
         Remove an edge from the temporal hypergraph.
 
@@ -462,25 +329,8 @@ class TemporalHypergraph:
         ValueError
             If the edge is not in the hypergraph.
         """
-        edge = _canon_edge(edge)
-        edge = (time, edge)
-        if edge not in self._edge_list:
-            raise ValueError(f"Edge {edge} not in hypergraph.")
-        edge_id = self._edge_list[edge]
-
-        # Remove edge from reverse lookup and metadata
-        del self._reverse_edge_list[edge_id]
-        if edge_id in self._weights:
-            del self._weights[edge_id]
-        if edge_id in self._edge_metadata:
-            del self._edge_metadata[edge_id]
-
-        time, nodes = edge
-        for node in nodes:
-            if edge_id in self._adj[node]:
-                self._adj[node].remove(edge_id)
-
-        del self._edge_list[edge]
+        edge_key = self._normalize_edge(edge, time=time)
+        self._remove_edge_key(edge_key)
 
     def remove_edges(self, edge_list):
         """
@@ -523,9 +373,8 @@ class TemporalHypergraph:
             True if the edge is in the hypergraph, False otherwise.
 
         """
-        edge = _canon_edge(edge)
-        k = (time, edge)
-        return k in self._edge_list
+        edge_key = self._normalize_edge(edge, time=time)
+        return self._edge_exists(edge_key)
 
     def get_edges(
         self,
@@ -571,17 +420,15 @@ class TemporalHypergraph:
                     edges.append((_t, _edge))
         else:
             raise ValueError("Time window must be a tuple of length 2 or None")
-        if order is not None or size is not None:
-            if size is not None:
-                order = size - 1
-            if not up_to:
-                edges = [edge for edge in edges if len(edge[1]) - 1 == order]
-            else:
-                edges = [edge for edge in edges if len(edge[1]) - 1 <= order]
+        edges = self._filter_edges_by_order(
+            edges, order=order, size=size, up_to=up_to
+        )
         return (
             edges
             if not metadata
-            else {edge: self.get_edge_metadata(edge[1], edge[0]) for edge in edges}
+            else {
+                edge: self.get_edge_metadata(edge[1], edge[0]) for edge in edges
+            }
         )
 
     def aggregate(self, time_window):
@@ -664,182 +511,14 @@ class TemporalHypergraph:
 
     # Weight
     def set_weight(self, edge, time, weight):
-        edge = _canon_edge(edge)
-        if not self._weighted and weight != 1:
-            raise ValueError(
-                "If the hypergraph is not weighted, weight can be 1 or None."
-            )
-        if (time, edge) not in self._edge_list:
-            raise ValueError("Edge {} not in hypergraph.".format(edge))
-        e_id = self._edge_list[(time, edge)]
-        self._weights[e_id] = weight
+        edge_key = self._normalize_edge(edge, time=time)
+        super().set_weight(edge_key, weight)
 
     def get_weight(self, edge, time):
-        edge = _canon_edge(edge)
-        if (time, edge) not in self._edge_list:
-            raise ValueError("Edge {} not in hypergraph.".format(edge))
-        e_id = self._edge_list[(time, edge)]
-        return self._weights[e_id]
-
-    def get_weights(self, order=None, size=None, up_to=False, asdict=False):
-        """Returns the list of weights of the edges in the hypergraph. If order is specified, it returns the list of weights of the edges of the specified order.
-        If size is specified, it returns the list of weights of the edges of the specified size. If both order and size are specified, it raises a ValueError.
-        If up_to is True, it returns the list of weights of the edges of order smaller or equal to the specified order.
-
-        Parameters
-        ----------
-        order : int, optional
-            Order of the edges to get the weights of.
-
-        size : int, optional
-            Size of the edges to get the weights of.
-
-        up_to : bool, optional
-            If True, it returns the list of weights of the edges of order smaller or equal to the specified order. Default is False.
-
-        asdict : bool, optional
-        Returns
-        -------
-        list
-            List of weights of the edges in the hypergraph.
-
-        Raises
-        ------
-        ValueError
-            If both order and size are specified.
-
-        """
-        w = None
-        if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
-        if order is None and size is None:
-            w = {
-                edge: self._weights[self._edge_list[edge]] for edge in self.get_edges()
-            }
-
-        if size is not None:
-            order = size - 1
-
-        if w is None:
-            w = {
-                edge: self._weights[self._edge_list[edge]]
-                for edge in self.get_edges(order=order, up_to=up_to)
-            }
-
-        if asdict:
-            return w
-        else:
-            return list(w.values())
+        edge_key = self._normalize_edge(edge, time=time)
+        return super().get_weight(edge_key)
 
     # Info
-    def max_order(self):
-        """
-        Returns the maximum order of the hypergraph.
-
-        Returns
-        -------
-        int
-            Maximum order of the hypergraph.
-        """
-        return self.max_size() - 1
-
-    def max_size(self):
-        """
-        Returns the maximum size of the hypergraph.
-
-        Returns
-        -------
-        int
-            Maximum size of the hypergraph.
-        """
-        return max(self.get_sizes())
-
-    def num_nodes(self):
-        """
-        Returns the number of nodes in the hypergraph.
-
-        Returns
-        -------
-        int
-            Number of nodes in the hypergraph.
-        """
-        return len(list(self.get_nodes()))
-
-    def num_edges(self, order=None, size=None, up_to=False):
-        """Returns the number of edges in the hypergraph. If order is specified, it returns the number of edges of the specified order.
-        If size is specified, it returns the number of edges of the specified size. If both order and size are specified, it raises a ValueError.
-        If up_to is True, it returns the number of edges of order smaller or equal to the specified order.
-
-        Parameters
-        ----------
-        order : int, optional
-            Order of the edges to count.
-        size : int, optional
-            Size of the edges to count.
-        up_to : bool, optional
-            If True, it returns the number of edges of order smaller or equal to the specified order. Default is False.
-
-        Returns
-        -------
-        int
-            Number of edges in the hypergraph.
-        """
-        if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
-
-        if order is None and size is None:
-            return len(self._edge_list)
-        else:
-            if size is not None:
-                order = size - 1
-            if not up_to:
-                s = 0
-                for edge in self._edge_list:
-                    if len(edge) - 1 == order:
-                        s += 1
-                return s
-            else:
-                s = 0
-                for edge in self._edge_list:
-                    if len(edge) - 1 <= order:
-                        s += 1
-                return s
-
-    def distribution_sizes(self):
-        """
-        Returns the distribution of sizes of the hyperedges in the hypergraph.
-
-        Returns
-        -------
-        collections.Counter
-            Distribution of sizes of the hyperedges in the hypergraph.
-        """
-        from collections import Counter
-
-        return dict(Counter(self.get_sizes()))
-
-    def get_sizes(self):
-        """
-        Get the size of each edge in the hypergraph.
-
-        Returns
-        -------
-        list
-            A list of integers representing the size of each edge.
-        """
-        return [_get_size(edge[1]) for edge in self._edge_list.keys()]
-
-    def get_orders(self):
-        """
-        Get the order of each edge in the hypergraph.
-
-        Returns
-        -------
-        list
-            A list of integers representing the order of each edge.
-        """
-        return [_get_order(edge[1]) for edge in self._edge_list.keys()]
-    
     def get_times(self):
         """
         Get the times of each edge in the hypergraph.
@@ -850,17 +529,6 @@ class TemporalHypergraph:
             A list of integers representing the times of each edge.
         """
         return [edge[0] for edge in self._edge_list.keys()]
-
-    def is_weighted(self):
-        """
-        Check if the hypergraph is weighted.
-
-        Returns
-        -------
-        bool
-            True if the hypergraph is weighted, False otherwise.
-        """
-        return self._weighted
 
     def is_uniform(self):
         """
@@ -876,25 +544,24 @@ class TemporalHypergraph:
         for edge in self._edge_list:
             if sz is None:
                 sz = len(edge[1])
-            else:
-                if len(edge[1]) != sz:
-                    uniform = False
-                    break
+            elif len(edge[1]) != sz:
+                uniform = False
+                break
         return uniform
 
     def min_time(self):
-        min = math.inf
+        min_time = math.inf
         for edge in self._edge_list:
-            if min > edge[0]:
-                min = edge[0]
-        return min
+            if min_time > edge[0]:
+                min_time = edge[0]
+        return min_time
 
     def max_time(self):
-        max = -math.inf
+        max_time = -math.inf
         for edge in self._edge_list:
-            if max < edge[0]:
-                max = edge[0]
-        return max
+            if max_time < edge[0]:
+                max_time = edge[0]
+        return max_time
 
     # Adj
     def get_adj_dict(self):
@@ -1005,37 +672,23 @@ class TemporalHypergraph:
         return self._node_metadata
 
     def set_edge_metadata(self, edge, time, metadata):
-        edge = _canon_edge(edge)
-        k = (time, edge)
-        if k not in self._edge_list:
-            raise ValueError("Edge {} not in hypergraph.".format(edge))
-        e_id = self._edge_list[k]
-        self._edge_metadata[e_id] = metadata
+        edge_key = self._normalize_edge(edge, time=time)
+        super().set_edge_metadata(edge_key, metadata)
 
     def get_edge_metadata(self, edge, time):
-        edge = _canon_edge(edge)
-        k = (time, edge)
-        if k not in self._edge_list:
-            raise ValueError("Edge {} not in hypergraph.".format(edge))
-        e_id = self._edge_list[k]
-        return self._edge_metadata[e_id]
+        edge_key = self._normalize_edge(edge, time=time)
+        return super().get_edge_metadata(edge_key)
 
     def get_all_edges_metadata(self):
         return self._edge_metadata
 
     def set_incidence_metadata(self, edge, time, node, metadata):
-        edge = _canon_edge(edge)
-        k = (time, edge)
-        if k not in self._edge_list:
-            raise ValueError("Edge {} not in hypergraph.".format(edge))
-        self._incidences_metadata[(k, node)] = metadata
+        edge_key = self._normalize_edge(edge, time=time)
+        super().set_incidence_metadata(edge_key, node, metadata)
 
     def get_incidence_metadata(self, edge, time, node):
-        edge = _canon_edge(edge)
-        k = (time, edge)
-        if k not in self._edge_list:
-            raise ValueError("Edge {} not in hypergraph.".format(edge))
-        return self._incidences_metadata[(k, node)]
+        edge_key = self._normalize_edge(edge, time=time)
+        return super().get_incidence_metadata(edge_key, node)
 
     def get_all_incidences_metadata(self):
         return {k: v for k, v in self._incidences_metadata.items()}
@@ -1049,10 +702,8 @@ class TemporalHypergraph:
         self._node_metadata[node][field] = value
 
     def set_attr_to_edge_metadata(self, edge, time, field, value):
-        _edge = _canon_edge(edge)
-        if edge not in self._edge_metadata:
-            raise ValueError("Edge {} not in hypergraph.".format(edge))
-        self._edge_metadata[self._edge_list[(time, edge)]][field] = value
+        edge_key = self._normalize_edge(edge, time=time)
+        super().set_attr_to_edge_metadata(edge_key, field, value)
 
     def remove_attr_from_node_metadata(self, node, field):
         if node not in self._node_metadata:
@@ -1060,94 +711,14 @@ class TemporalHypergraph:
         del self._node_metadata[node][field]
 
     def remove_attr_from_edge_metadata(self, edge, time, field):
-        _edge = _canon_edge(edge)
-        if edge not in self._edge_metadata:
-            raise ValueError("Edge {} not in hypergraph.".format(edge))
-        del self._edge_metadata[self._edge_list[(time, edge)]][field]
+        edge_key = self._normalize_edge(edge, time=time)
+        super().remove_attr_from_edge_metadata(edge_key, field)
 
     # Basic Functions
     def clear(self):
-        self._edge_list.clear()
-        self._adj.clear()
-        self._weights.clear()
-        self._hypergraph_metadata.clear()
-        self._node_metadata.clear()
-        self._edge_metadata.clear()
-        self._reverse_edge_list.clear()
-
-    def copy(self):
-        """
-        Returns a copy of the hypergraph.
-
-        Returns
-        -------
-        Hypergraph
-            A copy of the hypergraph.
-        """
-        return copy.deepcopy(self)
-
-    def __str__(self):
-        """
-        Returns a string representation of the hypergraph.
-
-        Returns
-        -------
-        str
-            A string representation of the hypergraph.
-        """
-        title = "Hypergraph with {} nodes and {} edges.\n".format(
-            self.num_nodes(), self.num_edges()
-        )
-        details = "Distribution of hyperedge sizes: {}".format(
-            self.distribution_sizes()
-        )
-        return title + details
-
-    def __len__(self):
-        """
-        Returns the number of edges in the hypergraph.
-
-        Returns
-        -------
-        int
-            The number of edges in the hypergraph.
-        """
-        return len(self._edge_list)
-
-    def __iter__(self):
-        """
-        Returns an iterator over the edges in the hypergraph.
-
-        Returns
-        -------
-        iterator
-            An iterator over the edges in the hypergraph.
-        """
-        return iter(self._edge_list.items())
+        super().clear()
 
     # Data Structure Extra
-    def expose_data_structures(self):
-        """
-        Expose the internal data structures of the temporal hypergraph for serialization.
-
-        Returns
-        -------
-        dict
-            A dictionary containing all internal attributes of the temporal hypergraph.
-        """
-        return {
-            "type": "TemporalHypergraph",
-            "hypergraph_metadata": self._hypergraph_metadata,
-            "_weighted": self._weighted,
-            "_weights": self._weights,
-            "_adj": self._adj,
-            "_edge_list": self._edge_list,
-            "node_metadata": self._node_metadata,
-            "edge_metadata": self._edge_metadata,
-            "reverse_edge_list": self._reverse_edge_list,
-            "next_edge_id": self._next_edge_id,
-        }
-
     def populate_from_dict(self, data):
         """
         Populate the attributes of the temporal hypergraph from a dictionary.
@@ -1157,58 +728,4 @@ class TemporalHypergraph:
         data : dict
             A dictionary containing the attributes to populate the hypergraph.
         """
-        self._hypergraph_metadata = data.get("hypergraph_metadata", {})
-        self._weighted = data.get("_weighted", False)
-        self._weights = data.get("_weights", {})
-        self._adj = data.get("_adj", {})
-        self._edge_list = data.get("_edge_list", {})
-        self._node_metadata = data.get("node_metadata", {})
-        self._edge_metadata = data.get("edge_metadata", {})
-        self._reverse_edge_list = data.get("reverse_edge_list", {})
-        self._next_edge_id = data.get("next_edge_id", 0)
-
-    def expose_attributes_for_hashing(self):
-        """
-        Expose relevant attributes for hashing specific to TemporalHypergraph.
-
-        Returns
-        -------
-        dict
-            A dictionary containing key attributes.
-        """
-        edges = []
-        for edge in sorted(self._edge_list.keys()):
-            edge = (edge[0], tuple(sorted(edge[1])))
-            edge_id = self._edge_list[edge]
-            edges.append(
-                {
-                    "nodes": edge,
-                    "weight": self._weights.get(edge_id, 1),
-                    "metadata": self._edge_metadata.get(edge_id, {}),
-                }
-            )
-
-        nodes = []
-        for node in sorted(self._node_metadata.keys()):
-            nodes.append({"node": node, "metadata": self._node_metadata[node]})
-
-        return {
-            "type": "TemporalHypergraph",
-            "weighted": self._weighted,
-            "hypergraph_metadata": self._hypergraph_metadata,
-            "edges": edges,
-            "nodes": nodes,
-        }
-
-    def get_mapping(self):
-        """
-        Map the nodes of the hypergraph to integers in [0, n_nodes).
-
-        Returns
-        -------
-        LabelEncoder
-            The mapping.
-        """
-        encoder = LabelEncoder()
-        encoder.fit(self.get_nodes())
-        return encoder
+        super().populate_from_dict(data)
