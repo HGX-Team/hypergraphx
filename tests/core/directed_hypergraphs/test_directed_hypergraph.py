@@ -101,6 +101,28 @@ def test_remove_node_with_edges(directed_hypergraph):
     ), "The node should be removed from the hypergraph."
 
 
+def test_get_incident_edges_filters_by_size():
+    hg = DirectedHypergraph()
+    hg.add_edge((("A",), ("B",)))  # size 2
+    hg.add_edge((("A", "C"), ("D",)))  # size 3
+    incident_edges = hg.get_incident_edges("A", size=3)
+    assert incident_edges == [(("A", "C"), ("D",))]
+
+
+def test_get_neighbors_undirected_union():
+    hg = DirectedHypergraph()
+    hg.add_edge((("A",), ("B",)))
+    hg.add_edge((("C",), ("A",)))
+    neighbors = hg.get_neighbors("A")
+    flattened = set()
+    for node in neighbors:
+        if isinstance(node, tuple):
+            flattened.update(node)
+        else:
+            flattened.add(node)
+    assert {"B", "C"}.issubset(flattened)
+
+
 def test_weighted_hypergraph():
     """
     Test if the hypergraph is properly recognized as weighted.

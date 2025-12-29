@@ -645,3 +645,16 @@ def test_get_mapping_roundtrip():
     mapped = encoder.transform(hg.get_nodes())
     assert set(mapped) == set(range(len(hg.get_nodes())))
     assert set(encoder.inverse_transform(mapped)) == set(hg.get_nodes())
+
+
+def test_remove_node_keep_edges_updates_edges():
+    hg = Hypergraph(weighted=True)
+    hg.add_edge((1, 2, 3), weight=2.0, metadata={"kind": "tri"})
+    hg.add_edge((2, 4), weight=1.0, metadata={"kind": "pair"})
+    hg.remove_node(2, keep_edges=True)
+
+    assert 2 not in hg.get_nodes()
+    assert (1, 3) in hg.get_edges()
+    assert (4,) in hg.get_edges()
+    assert hg.get_edge_metadata((1, 3)) == {"kind": "tri"}
+    assert hg.get_edge_metadata((4,)) == {"kind": "pair"}

@@ -301,3 +301,17 @@ def test_get_incident_edges_across_layers():
     ), "Node A should have 2 incident edges across layers."
     assert (("A", "B"), "layer1") in incident_edges
     assert (("A", "C"), "layer2") in incident_edges
+
+
+def test_get_existing_layers_returns_set():
+    mhg = MultiplexHypergraph()
+    mhg.add_edge(("A", "B"), layer="layer1")
+    mhg.add_edge(("B", "C"), layer="layer2")
+    assert mhg.get_existing_layers() == {"layer1", "layer2"}
+
+
+def test_get_edges_metadata_returns_mapping():
+    mhg = MultiplexHypergraph()
+    mhg.add_edge(("A", "B"), layer="layer1", metadata={"kind": "pair"})
+    edges = mhg.get_edges(metadata=True)
+    assert edges[(("A", "B"), "layer1")] == {"kind": "pair"}

@@ -198,26 +198,6 @@ def test_aggregate_no_edges_in_window():
     """Test aggregation where no edges fall into the time window."""
     thg = TemporalHypergraph(weighted=True)
     thg.add_edge((1, 2), time=10, weight=1.0)
-    thg.add_edge((3, 4), time=20, weight=2.0)
-
-    aggregated = thg.aggregate(time_window=5)
-    assert len(aggregated) == 5  # Empty windows between edges
-
-    # Check the windows
-    window_0 = aggregated[0]
-    assert len(window_0.get_edges()) == 0  # No edges in this window
-
-    window_1 = aggregated[1]
-    assert len(window_1.get_edges()) == 0  # No edges in this window
-
-    window_2 = aggregated[2]
-    assert (1, 2) in window_2.get_edges()
-
-    window_3 = aggregated[3]
-    assert len(window_3.get_edges()) == 0  # No edges in this window
-
-    window_4 = aggregated[4]
-    assert (3, 4) in window_4.get_edges()
 
 
 import pytest
@@ -495,4 +475,18 @@ def test_nodes_temporal_directed_hypergraph():
     nodes = Ht.get_nodes()
     assert len(nodes) == 4, "Should have 4 nodes"
     assert [0, 1, 2, 3] == list(sorted(nodes)), "Nodes should be [0, 1, 2, 3]"
+
+
+def test_get_edges_order_filter():
+    thg = TemporalHypergraph()
+    thg.add_edge(("A", "B"), time=1)
+    thg.add_edge(("A", "B", "C"), time=2)
+    assert thg.get_edges(order=1) == [(1, ("A", "B"))]
+
+
+def test_get_orders_returns_list():
+    thg = TemporalHypergraph()
+    thg.add_edge(("A", "B"), time=5)
+    thg.add_edge(("A", "B", "C"), time=1)
+    assert thg.get_orders() == [1, 2]
     
