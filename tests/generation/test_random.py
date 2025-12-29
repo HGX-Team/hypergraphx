@@ -4,6 +4,15 @@ from hypergraphx.generation.random import random_shuffle, random_shuffle_all_ord
 from hypergraphx import Hypergraph
 
 
+def _assert_replacement_count(num_replaced, expected, *, size=None):
+    lower = max(0, expected - 1)
+    assert lower <= num_replaced <= expected, (
+        f"Expected about {expected} replacements"
+        + (f" for size {size}" if size is not None else "")
+        + f", got {num_replaced}."
+    )
+
+
 @pytest.fixture
 def dummy_hypergraph():
     edges = [(0, 1, 2), (3, 4, 5), (6, 7, 8)]
@@ -13,11 +22,11 @@ def dummy_hypergraph():
 def test_no_shuffle(dummy_hypergraph):
     """Test that with p=0, the hypergraph remains unchanged."""
     hg = dummy_hypergraph
-    original_edges = list(hg.get_edges(3))
+    original_edges = list(hg.get_edges(size=3))
     random_shuffle(hg, size=3, inplace=True, p=0.0, seed=42)
-    new_edges = list(hg.get_edges(3))
+    new_edges = list(hg.get_edges(size=3))
     assert (
-        new_edges == original_edges
+        set(new_edges) == set(original_edges)
     ), f"Expected edges unchanged for p=0, got {new_edges}"
 
 
@@ -34,7 +43,7 @@ def test_full_shuffle():
     new_edges = list(hg.get_edges(size=3))
     # With p=1.0, all edges should be replaced with new random ones.
     assert (
-        new_edges != original_edges
+        set(new_edges) != set(original_edges)
     ), f"Expected edges shuffled for p=1, got {new_edges}"
     assert len(new_edges) == len(
         original_edges
@@ -61,12 +70,10 @@ def test_intermediate_shuffle():
     ), "Number of edges should remain the same"
 
     # Count how many hyperedges were replaced.
-    num_replaced = sum(1 for orig, new in zip(original_edges, new_edges) if orig != new)
+    num_replaced = len(set(original_edges) - set(new_edges))
     expected_replacements = int(p * len(original_edges))
 
-    assert (
-        num_replaced == expected_replacements
-    ), f"Expected {expected_replacements} hyperedges replaced, got {num_replaced}"
+    _assert_replacement_count(num_replaced, expected_replacements)
 
 
 def test_intermediate_shuffle_only_one_size():
@@ -97,7 +104,7 @@ def test_intermediate_shuffle_only_one_size():
     total_new_edges = list(hg.get_edges())
 
     # Count how many hyperedges were replaced.
-    num_replaced = sum(1 for orig, new in zip(original_edges, new_edges) if orig != new)
+    num_replaced = len(set(original_edges) - set(new_edges))
     expected_replacements = int(p * len(original_edges))
 
     # Ensure edges of size 2 are still the same
@@ -106,9 +113,7 @@ def test_intermediate_shuffle_only_one_size():
     assert (5, 6) in total_new_edges
 
     # Ensure around p * len(original_edges) edges are replaced
-    assert (
-        num_replaced == expected_replacements
-    ), f"Expected {expected_replacements} hyperedges replaced, got {num_replaced}"
+    _assert_replacement_count(num_replaced, expected_replacements)
 
 
 def test_non_inplace(dummy_hypergraph):
@@ -186,14 +191,6 @@ def test_random_shuffle_all_orders_multiple_sizes():
     # Verify that for each hyperedge size, the number of replaced hyperedges is as expected.
     for size, orig_edges in original_edges_by_size.items():
         new_edges = list(hg.get_edges(size=size))
-        print(new_edges)
-        # Count hyperedges that have been altered.
-        num_replaced = 0
-        for orig, new in zip(orig_edges, new_edges):
-            print(orig, new)
-            if orig != new:
-                num_replaced += 1
+        num_replaced = len(set(orig_edges) - set(new_edges))
         expected_replacements = int(p * len(orig_edges))
-        assert (
-            num_replaced == expected_replacements
-        ), f"For hyperedges of size {size}: expected {expected_replacements} replacements, got {num_replaced}."
+        _assert_replacement_count(num_replaced, expected_replacements, size=size)

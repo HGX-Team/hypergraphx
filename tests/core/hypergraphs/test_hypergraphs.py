@@ -538,10 +538,6 @@ def test_get_edges_keep_nodes_without_subhypergraph_error():
         hg.get_edges(order=1, keep_isolated_nodes=True)
 
 
-import pytest
-from hypergraphx import Hypergraph  # Replace with the actual module name
-
-
 def test_get_incident_edges_no_filters():
     """
     Test retrieving all incident edges for a node without order or size filters.
@@ -620,3 +616,32 @@ def test_get_incident_edges_empty_adj_list():
     hg.add_node(1)
     incident_edges = hg.get_incident_edges(1)
     assert incident_edges == [], "Node 1 should have no incident edges."
+
+
+def test_expose_and_populate_roundtrip():
+    hg = Hypergraph(
+        edge_list=[(1, 2, 3), (2, 4)],
+        weighted=True,
+        weights=[1.5, 2.0],
+        node_metadata={1: {"role": "a"}, 2: {"role": "b"}},
+        edge_metadata=[{"kind": "tri"}, {"kind": "pair"}],
+        hypergraph_metadata={"name": "roundtrip"},
+    )
+    data = hg.expose_data_structures()
+    restored = Hypergraph()
+    restored.populate_from_dict(data)
+
+    assert set(restored.get_nodes()) == set(hg.get_nodes())
+    assert set(restored.get_edges()) == set(hg.get_edges())
+    assert restored.is_weighted() == hg.is_weighted()
+    assert restored.get_weight((1, 2, 3)) == 1.5
+    assert restored.get_edge_metadata((1, 2, 3)) == {"kind": "tri"}
+    assert restored.get_hypergraph_metadata()["name"] == "roundtrip"
+
+
+def test_get_mapping_roundtrip():
+    hg = Hypergraph(edge_list=[("a", "b"), ("b", "c", "d")])
+    encoder = hg.get_mapping()
+    mapped = encoder.transform(hg.get_nodes())
+    assert set(mapped) == set(range(len(hg.get_nodes())))
+    assert set(encoder.inverse_transform(mapped)) == set(hg.get_nodes())
