@@ -1,6 +1,8 @@
 Welcome to Hypergraphx's documentation!
 =======================================
 
+.. include:: index_content.rst
+
 .. toctree::
    :maxdepth: 2
    :caption: 🚀 Get Started
