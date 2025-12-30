@@ -28,6 +28,22 @@ hypergraphx.readwrite.hif module
    :undoc-members:
    :show-inheritance:
 
+hypergraphx.readwrite.io_json module
+------------------------------------
+
+.. automodule:: hypergraphx.readwrite.io_json
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+hypergraphx.readwrite.io_pickle module
+--------------------------------------
+
+.. automodule:: hypergraphx.readwrite.io_pickle
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 hypergraphx.readwrite.hashing module
 ------------------------------------
 

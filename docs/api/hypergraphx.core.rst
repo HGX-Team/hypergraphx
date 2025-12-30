@@ -28,14 +28,6 @@ hypergraphx.core.directed module
    :undoc-members:
    :show-inheritance:
 
-hypergraphx.core.meta\_handler module
--------------------------------------
-
-.. automodule:: hypergraphx.core.meta_handler
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 hypergraphx.core.multiplex module
 ---------------------------------------------
 
@@ -48,14 +40,6 @@ hypergraphx.core.temporal module
 --------------------------------------------
 
 .. automodule:: hypergraphx.core.temporal
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-hypergraphx.core.base module
--------------------------------------
-
-.. automodule:: hypergraphx.core.base
    :members:
    :undoc-members:
    :show-inheritance:
