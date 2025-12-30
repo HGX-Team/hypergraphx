@@ -3,20 +3,7 @@ import warnings
 
 from .hypergraph import Hypergraph
 from hypergraphx.core.base_hypergraph import BaseHypergraph
-
-
-def _canon_edge(edge):
-    edge = tuple(edge)
-
-    if len(edge) == 2:
-        if isinstance(edge[0], tuple) and isinstance(edge[1], tuple):
-            # Sort the inner tuples and return
-            return (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
-        elif not isinstance(edge[0], tuple) and not isinstance(edge[1], tuple):
-            # Sort the edge itself if it contains IDs (non-tuple elements)
-            return tuple(sorted(edge))
-
-    return tuple(sorted(edge))
+from hypergraphx.utils.edges import canon_edge
 
 
 def _get_size(edge):
@@ -132,7 +119,7 @@ class TemporalHypergraph(BaseHypergraph):
                 raise ValueError(
                     "Temporal edges must be provided as (time, edge) or with a time argument."
                 )
-        return (time, _canon_edge(edge))
+        return (time, canon_edge(edge))
 
     def _edge_nodes(self, edge_key):
         return _get_nodes(edge_key[1])
@@ -300,6 +287,7 @@ class TemporalHypergraph(BaseHypergraph):
                 UserWarning,
             )
             self._weighted = True
+            self._hypergraph_metadata["weighted"] = True
 
         if self._weighted and weights is not None:
             try:
@@ -518,7 +506,7 @@ class TemporalHypergraph(BaseHypergraph):
         times: list
             A list of times at which the hyperedge occurs.
         """
-        edge = _canon_edge(edge)
+        edge = canon_edge(edge)
         times = []
         for time, _edge in self._edge_list.keys():
             if _edge == edge:

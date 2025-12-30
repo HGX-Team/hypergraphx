@@ -12,9 +12,12 @@ class SerializationMixin:
             "hypergraph_metadata": self._hypergraph_metadata,
             "node_metadata": self._node_metadata,
             "edge_metadata": self._edge_metadata,
+            "incidences_metadata": self._incidences_metadata,
             "reverse_edge_list": self._reverse_edge_list,
             "next_edge_id": self._next_edge_id,
         }
+        if hasattr(self, "_empty_edges"):
+            data["empty_edges"] = self._empty_edges
         data.update(self._expose_adjacency_data())
         data.update(self._extra_data_structures())
         return data

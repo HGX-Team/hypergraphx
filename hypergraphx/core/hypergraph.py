@@ -89,11 +89,11 @@ class Hypergraph(BaseHypergraph):
 
         Raises
         ------
-        KeyError
+        ValueError
             If the node is not in the hypergraph.
         """
         if node not in self._adj:
-            raise KeyError("Node {} not in hypergraph.".format(node))
+            self._raise_missing_node(node)
         super().remove_node(node, keep_edges=keep_edges)
 
     # Edges
@@ -158,6 +158,7 @@ class Hypergraph(BaseHypergraph):
                 UserWarning,
             )
             self._weighted = True
+            self._hypergraph_metadata["weighted"] = True
 
         if self._weighted and weights is not None:
             try:
@@ -321,7 +322,7 @@ class Hypergraph(BaseHypergraph):
                 if self._weighted:
                     h.add_edge(
                         edge,
-                        weight=self._edge_list[edge],
+                        weight=self.get_weight(edge),
                         metadata=self.get_edge_metadata(edge),
                     )
                 else:

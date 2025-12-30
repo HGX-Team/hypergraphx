@@ -103,12 +103,14 @@ def save_hypergraph(hypergraph, file_name: str, binary=False):
         # Write edges
         if hypergraph_type in ["Hypergraph", "DirectedHypergraph"]:
             for edge, metadata in hypergraph.get_edges(metadata=True).items():
+                metadata = dict(metadata)
                 if weighted:
                     metadata["weight"] = hypergraph.get_weight(edge)
                 write_item({"type": "edge", "interaction": edge, "metadata": metadata})
 
         elif hypergraph_type == "MultiplexHypergraph":
             for edge, metadata in hypergraph.get_edges(metadata=True).items():
+                metadata = dict(metadata)
                 edge, layer = edge
                 metadata["layer"] = layer
                 if weighted:
@@ -117,6 +119,7 @@ def save_hypergraph(hypergraph, file_name: str, binary=False):
 
         elif hypergraph_type == "TemporalHypergraph":
             for edge, metadata in hypergraph.get_edges(metadata=True).items():
+                metadata = dict(metadata)
                 time, edge = edge
                 if weighted:
                     metadata["weight"] = hypergraph.get_weight(edge, time)

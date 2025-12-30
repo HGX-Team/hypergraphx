@@ -409,7 +409,7 @@ def test_remove_node_not_in_hypergraph():
     """Test removing a node that does not exist in the hypergraph."""
     hg = Hypergraph()
     hg.add_edge((1, 2))
-    with pytest.raises(KeyError, match="Node 10 not in hypergraph."):
+    with pytest.raises(ValueError, match="Node 10 not in hypergraph."):
         hg.remove_node(10)
 
 

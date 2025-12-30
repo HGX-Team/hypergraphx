@@ -85,6 +85,10 @@ class DirectedHypergraph(BaseHypergraph):
     def _edge_size(self, edge_key):
         return len(edge_key[0]) + len(edge_key[1])
 
+    def _edge_key_without_node(self, edge_key, node):
+        source, target = edge_key
+        return (tuple(n for n in source if n != node), tuple(n for n in target if n != node))
+
     def _add_edge(self, edge_key, weight=None, metadata=None):
         weight = self._validate_weight(weight)
         edge_id = self._add_edge_key(edge_key, weight=weight, metadata=metadata)
@@ -125,7 +129,7 @@ class DirectedHypergraph(BaseHypergraph):
         if self._node_metadata[node] == {}:
             self._node_metadata[node] = metadata
 
-    def add_nodes(self, node_list: list):
+    def add_nodes(self, node_list: list, metadata=None):
         """
         Add a list of nodes to the hypergraph.
 
@@ -133,30 +137,46 @@ class DirectedHypergraph(BaseHypergraph):
         ----------
         node_list : list
             The list of nodes to add.
+        metadata : dict, optional
+            Optional mapping of nodes to metadata.
 
         Returns
         -------
         None
         """
         for node in node_list:
-            self.add_node(node)
+            try:
+                self.add_node(node, metadata[node] if metadata is not None else None)
+            except KeyError:
+                raise ValueError(
+                    "The metadata dictionary must contain an entry for each node in the node list."
+                )
 
     def remove_node(self, node, keep_edges=False):
         """Remove a node from the hypergraph, with an option to keep or remove edges incident to it."""
         if node not in self._adj_source or node not in self._adj_target:
-            raise KeyError(f"Node {node} not in hypergraph.")
+            self._raise_missing_node(node)
 
         # Handle incident edges
-        if not keep_edges:
-            target_edges = self.get_target_edges(node)
-            source_edges = self.get_source_edges(node)
-            for edge in source_edges:
-                self.remove_edge(edge)
-            for edge in target_edges:
-                self.remove_edge(edge)
+        edge_ids = set(self._adj_source[node]) | set(self._adj_target[node])
+        if keep_edges:
+            for edge_id in list(edge_ids):
+                edge_key = self._reverse_edge_list[edge_id]
+                updated_key = self._edge_key_without_node(edge_key, node)
+                weight = self._weights.get(edge_id, 1)
+                metadata = self._edge_metadata.get(edge_id, {})
+                self._remove_edge_key(edge_key)
+                if self._allow_empty_edge() or self._edge_size(updated_key) > 0:
+                    self._add_edge(updated_key, weight=weight, metadata=metadata)
+        else:
+            for edge_id in list(edge_ids):
+                edge_key = self._reverse_edge_list[edge_id]
+                self._remove_edge_key(edge_key)
 
         del self._adj_source[node]
         del self._adj_target[node]
+        if node in self._node_metadata:
+            del self._node_metadata[node]
 
     def remove_nodes(self, node_list, keep_edges=False):
         """
@@ -237,8 +257,9 @@ class DirectedHypergraph(BaseHypergraph):
         if order is None and size is None:
             neigh = set()
             edges = self.get_incident_edges(node)
-            for edge in edges:
-                neigh.update(edge)
+            for source, target in edges:
+                neigh.update(source)
+                neigh.update(target)
             if node in neigh:
                 neigh.remove(node)
             return neigh
@@ -247,8 +268,9 @@ class DirectedHypergraph(BaseHypergraph):
                 order = size - 1
             neigh = set()
             edges = self.get_incident_edges(node, order=order)
-            for edge in edges:
-                neigh.update(edge)
+            for source, target in edges:
+                neigh.update(source)
+                neigh.update(target)
             if node in neigh:
                 neigh.remove(node)
             return neigh
@@ -355,6 +377,7 @@ class DirectedHypergraph(BaseHypergraph):
                 UserWarning,
             )
             self._weighted = True
+            self._hypergraph_metadata["weighted"] = True
 
         if self._weighted and weights is not None:
             if len(edge_list) != len(weights):

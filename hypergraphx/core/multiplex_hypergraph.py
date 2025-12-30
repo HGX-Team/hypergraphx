@@ -2,20 +2,7 @@ import warnings
 
 from .hypergraph import Hypergraph
 from hypergraphx.core.base_hypergraph import BaseHypergraph
-
-
-def _canon_edge(edge):
-    edge = tuple(edge)
-
-    if len(edge) == 2:
-        if isinstance(edge[0], tuple) and isinstance(edge[1], tuple):
-            # Sort the inner tuples and return
-            return (tuple(sorted(edge[0])), tuple(sorted(edge[1])))
-        elif not isinstance(edge[0], tuple) and not isinstance(edge[1], tuple):
-            # Sort the edge itself if it contains IDs (non-tuple elements)
-            return tuple(sorted(edge))
-
-    return tuple(sorted(edge))
+from hypergraphx.utils.edges import canon_edge
 
 
 class MultiplexHypergraph(BaseHypergraph):
@@ -100,7 +87,7 @@ class MultiplexHypergraph(BaseHypergraph):
                 edge, layer = edge
             else:
                 raise ValueError("Multiplex edges must include a layer.")
-        return (_canon_edge(edge), layer)
+        return (canon_edge(edge), layer)
 
     def _edge_nodes(self, edge_key):
         return edge_key[0]
@@ -237,6 +224,7 @@ class MultiplexHypergraph(BaseHypergraph):
                 UserWarning,
             )
             self._weighted = True
+            self._hypergraph_metadata["weighted"] = True
 
         if self._weighted and weights is not None:
             try:
