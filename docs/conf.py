@@ -44,3 +44,8 @@ html_static_path = ["_static"]
 
 # Render notebooks without executing them on RTD.
 nbsphinx_execute = "never"
+
+# Global substitutions for RST files.
+rst_epilog = f"""
+.. |copyright| replace:: {copyright}
+"""

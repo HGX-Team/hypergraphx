@@ -87,4 +87,4 @@ License
 This project is licensed under the `BSD 3-Clause License
 <https://github.com/HGX-Team/hypergraphx/blob/main/LICENSE.md>`_.
 
-Copyright (C) 2023 HGX-Team
+Copyright |copyright|
