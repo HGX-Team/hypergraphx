@@ -26,6 +26,7 @@ author = "HGX-Team"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
+    "sphinx.ext.autosectionlabel",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx.ext.mathjax",
@@ -34,6 +35,7 @@ extensions = [
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+autosectionlabel_prefix_document = True
 
 
 # -- Options for HTML output -------------------------------------------------

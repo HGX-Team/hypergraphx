@@ -3,6 +3,15 @@ Quickstart
 
 Common tasks and minimal examples. Copy and run.
 
+Tasks
+-----
+
+- Create and query: :doc:`api/hypergraphx.core`
+- Load and save: :doc:`api/hypergraphx.readwrite`
+- Measures: :doc:`api/hypergraphx.measures`
+- Projections: :doc:`api/hypergraphx.representations`
+- Matrices: :doc:`api/hypergraphx.linalg`
+
 Core classes
 ------------
 
@@ -20,6 +29,7 @@ Create a hypergraph
 
    hg = hgx.Hypergraph(edge_list=[(0, 1, 2), (2, 3)], weighted=True, weights=[1.0, 2.0])
    hg.add_edge((3, 4), weight=1.5, metadata={"kind": "tri"})
+   print(hg)
 
 Directed / temporal / multiplex
 -------------------------------
@@ -41,6 +51,16 @@ Common queries
    hg.get_incident_edges(2)
    hg.degree(2)
    hg.get_edge_metadata((0, 1, 2))
+
+Common patterns
+---------------
+
+.. code-block:: python
+
+   # Build -> analyze -> save
+   hg = hgx.Hypergraph(edge_list=[(0, 1), (1, 2, 3)])
+   seq = degree_sequence(hg)
+   hgx.save_hypergraph(hg, "graph.json")
 
 Load and save
 -------------

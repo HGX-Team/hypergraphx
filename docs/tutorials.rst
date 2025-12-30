@@ -1,6 +1,8 @@
 Tutorials
 =========
 
+Short, runnable notebooks covering core workflows and advanced analyses.
+
 .. toctree::
    :maxdepth: 1
 

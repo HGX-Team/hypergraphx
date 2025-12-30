@@ -10,6 +10,7 @@ Welcome to Hypergraphx's documentation!
 
    about
    installation
+   overview
    quickstart
 
 .. toctree::
