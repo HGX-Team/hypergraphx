@@ -1,7 +1,7 @@
 import pytest
 
 from hypergraphx import Hypergraph
-from hypergraphx.utils.cc import (
+from hypergraphx.utils.components import (
     connected_components,
     node_connected_component,
     num_connected_components,

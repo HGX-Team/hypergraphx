@@ -1,13 +1,30 @@
 """Core hypergraph data structures."""
 
-from .directed_hypergraph import DirectedHypergraph
-from .hypergraph import Hypergraph
-from .multiplex_hypergraph import MultiplexHypergraph
-from .temporal_hypergraph import TemporalHypergraph
+from .base import BaseHypergraph, SerializationMixin
+from .directed import DirectedHypergraph
+from hypergraphx.exceptions import (
+    HypergraphxError,
+    InvalidFileTypeError,
+    InvalidFormatError,
+    MissingEdgeError,
+    MissingNodeError,
+    ReadwriteError,
+)
+from .multiplex import MultiplexHypergraph
+from .temporal import TemporalHypergraph
+from .undirected import Hypergraph
 
 __all__ = [
+    "BaseHypergraph",
+    "SerializationMixin",
     "DirectedHypergraph",
     "Hypergraph",
     "MultiplexHypergraph",
     "TemporalHypergraph",
+    "HypergraphxError",
+    "InvalidFileTypeError",
+    "InvalidFormatError",
+    "MissingEdgeError",
+    "MissingNodeError",
+    "ReadwriteError",
 ]

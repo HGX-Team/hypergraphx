@@ -1,6 +1,6 @@
 import random
 
-from hypergraphx.core.temporal_hypergraph import TemporalHypergraph
+from hypergraphx.core.temporal import TemporalHypergraph
 from hypergraphx.dynamics.randwalk import *
 
 

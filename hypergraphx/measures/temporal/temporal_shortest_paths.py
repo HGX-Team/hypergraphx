@@ -79,7 +79,7 @@ def supra_adj(temporal_network, subtimes, unique_individuals, dataset):
     for i, t in enumerate(subtimes) :
         subnet = temporal_network[t]
         # for each edge, find cross-diagonal
-        if isinstance(subnet, hgx.core.hypergraph.Hypergraph):   
+        if isinstance(subnet, hgx.Hypergraph):
             edges = subnet.get_edges()
             raise NotImplementedError("Currently not yet extended to hypergraphs")
         elif isinstance(subnet, nx.classes.graph.Graph):   

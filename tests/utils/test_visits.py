@@ -1,7 +1,7 @@
 import pytest
 
 from hypergraphx import Hypergraph
-from hypergraphx.utils.visits import _bfs, _dfs
+from hypergraphx.utils.traversal import _bfs, _dfs
 
 
 def test_bfs_basic():

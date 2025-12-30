@@ -4,26 +4,26 @@ hypergraphx.core package
 Submodules
 ----------
 
-hypergraphx.core.hypergraph module
+hypergraphx.core.undirected module
 ----------------------------------
 
-.. automodule:: hypergraphx.core.hypergraph
+.. automodule:: hypergraphx.core.undirected
    :members:
    :undoc-members:
    :show-inheritance:
 
-hypergraphx.core.base\_hypergraph module
+hypergraphx.core.base module
 ---------------------------------------
 
-.. automodule:: hypergraphx.core.base_hypergraph
+.. automodule:: hypergraphx.core.base
    :members:
    :undoc-members:
    :show-inheritance:
 
-hypergraphx.core.directed\_hypergraph module
+hypergraphx.core.directed module
 --------------------------------------------
 
-.. automodule:: hypergraphx.core.directed_hypergraph
+.. automodule:: hypergraphx.core.directed
    :members:
    :undoc-members:
    :show-inheritance:
@@ -36,18 +36,18 @@ hypergraphx.core.meta\_handler module
    :undoc-members:
    :show-inheritance:
 
-hypergraphx.core.multiplex\_hypergraph module
+hypergraphx.core.multiplex module
 ---------------------------------------------
 
-.. automodule:: hypergraphx.core.multiplex_hypergraph
+.. automodule:: hypergraphx.core.multiplex
    :members:
    :undoc-members:
    :show-inheritance:
 
-hypergraphx.core.temporal\_hypergraph module
+hypergraphx.core.temporal module
 --------------------------------------------
 
-.. automodule:: hypergraphx.core.temporal_hypergraph
+.. automodule:: hypergraphx.core.temporal
    :members:
    :undoc-members:
    :show-inheritance:
