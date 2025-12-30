@@ -8,7 +8,6 @@ Welcome to Hypergraphx's documentation!
    :caption: Home
    :hidden:
 
-   about
    installation
    overview
    quickstart
