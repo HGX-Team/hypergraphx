@@ -10,6 +10,11 @@ from scipy.special import comb
 from hypergraphx import Hypergraph
 from hypergraphx.communities.hy_sc.model import HySC
 from hypergraphx.linalg.linalg import binary_incidence_matrix, incidence_matrix
+from hypergraphx.utils.preprocessing import (
+    hyperedges_per_node,
+    isolates_from_incidence,
+    non_isolates_from_incidence,
+)
 
 DEFAULT_SEED = 10
 DEFAULT_INF = 1e10  # infinite initial value for the log-likelihood
@@ -236,9 +241,7 @@ class HypergraphMT:
         self.D = max([len(e) for e in self.hyperEdges])
 
         # List of length N containing the indices of non-zero hyperedges for every node.
-        self.hye_per_node = np.split(self.incidence.indices, self.incidence.indptr)[
-            1:-1
-        ]  # TODO: implement it as a core method
+        self.hye_per_node = hyperedges_per_node(self.incidence)
         # List of list containing the indices of hyperedges with a given degree.
         self.HyD2eId = extract_indicesHy(
             self.hyperEdges
@@ -248,15 +251,8 @@ class HypergraphMT:
             hypergraph.get_sizes()
         )  # TODO: check whether we want to refactor the name of this variable
 
-        row_sums = self.incidence.sum(axis=1)
-        # If row_sums is a matrix (e.g., from sparse), convert to 1D array
-        if hasattr(row_sums, "A1"):
-            row_sums = row_sums.A1
-        else:
-            row_sums = np.asarray(row_sums).flatten()
-
-        self.isolates = np.where(row_sums == 0)[0]
-        self.non_isolates = np.where(row_sums != 0)[0]
+        self.isolates = isolates_from_incidence(self.incidence)
+        self.non_isolates = non_isolates_from_incidence(self.incidence)
 
         # Normalize u such that every row sums to 1.
         self.normalizeU = normalizeU

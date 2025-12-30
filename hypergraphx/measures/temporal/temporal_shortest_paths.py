@@ -2,7 +2,6 @@ import hypergraphx as hgx
 import json
 from tqdm import tqdm
 from datetime import datetime
-import requests
 from hypergraphx.representations.projections import clique_projection
 
 import os
@@ -835,4 +834,3 @@ def calc_shortest_fastest_paths_temporal_hypergraphs(root=None,
     if verbose: print("Done with script!\n")
 
     return processed_path_data_square_array
-

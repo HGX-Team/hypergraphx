@@ -168,7 +168,7 @@ def incidence_matrices_all_orders(
     shape: Optional[Tuple[int]] = None,
     keep_isolated_nodes: bool = False,
     return_mapping: bool = False,
-) -> List[sparse.spmatrix]:
+) -> Dict[int, sparse.spmatrix]:
     """Produce the incidence matrices of a hypergraph at all orders.
     For any node i and hyperedge e, the entry (i, e) of the incidence matrix is the
     weight of the hyperedge if the node belongs to it, 0 otherwise.
@@ -186,8 +186,7 @@ def incidence_matrices_all_orders(
 
     Returns
     -------
-    The incidence matrix.
-    If return_mapping is True, return the dictionary of node mappings.
+    Dictionary mapping each order to its incidence matrix.
     """
     incidence_matrices = {}
     for order in range(1, hypergraph.max_order() + 1):
@@ -344,7 +343,7 @@ def laplacian_matrix_by_order(
 
 def laplacian_matrices_all_orders(
     hypergraph: Hypergraph, weighted=False, shape: Optional[Tuple[int]] = None
-) -> List[sparse.spmatrix]:
+) -> Dict[int, sparse.spmatrix]:
     laplacian_matrices = {}
     for order in range(1, hypergraph.max_order() + 1):
         laplacian_matrices[order] = laplacian_matrix_by_order(
