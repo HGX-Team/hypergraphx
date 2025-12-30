@@ -14,6 +14,8 @@ Welcome to Hypergraphx's documentation!
    🚀 Quickstart <quickstart>
    📚 Tutorials <tutorials>
 
+----
+
 .. toctree::
    :maxdepth: 2
    :caption: 📖 API Reference
@@ -30,4 +32,9 @@ Welcome to Hypergraphx's documentation!
    💾 Data loading <api/hypergraphx.readwrite.rst>
    🔗 Representations <api/hypergraphx.representations.rst>
 
+----
+
+.. include:: overview.rst
+   :start-after: .. overview-start
+   :end-before: .. overview-end
 Copyright |copyright|

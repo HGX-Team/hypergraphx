@@ -8,6 +8,13 @@
 
 Hypergraphx (HGX) is a Python library for higher-order network analysis.
 
+.. raw:: html
+
+   <div class="hero">
+     <div class="hero-title">Build, analyze, and visualize higher-order networks.</div>
+     <div class="hero-code"><code>hg = hgx.Hypergraph(edge_list=[(0,1,2),(2,3)])</code></div>
+   </div>
+
 Project links
 -------------
 
@@ -23,6 +30,22 @@ Get started
 - :doc:`quickstart`
 - :doc:`tutorials`
 - :doc:`api/hypergraphx.core`
+
+Quick links
+-----------
+
+.. list-table::
+   :widths: 25 75
+   :header-rows: 0
+
+   * - 🚀 Quickstart
+     - Minimal examples and common patterns.
+   * - 📚 Tutorials
+     - End-to-end notebooks for key workflows.
+   * - 🧩 Core API
+     - Data structures and core operations.
+   * - 💾 Read/write
+     - Load and save hypergraphs.
 
 Higher-order data repository
 ----------------------------

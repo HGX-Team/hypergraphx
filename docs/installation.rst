@@ -7,6 +7,10 @@ You can install HGX using pip:
 
    pip install hypergraphx
 
+.. note::
+
+   If you are using notebooks, install the docs requirements too to enable rich outputs.
+
 To install from source:
 
 .. code:: bash

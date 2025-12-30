@@ -52,6 +52,10 @@ Common queries
    hg.degree(2)
    hg.get_edge_metadata((0, 1, 2))
 
+.. tip::
+
+   For a smaller API surface, start with ``hypergraphx.core`` and ``hypergraphx.readwrite``.
+
 Common patterns
 ---------------
 
