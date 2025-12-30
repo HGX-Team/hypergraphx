@@ -17,7 +17,7 @@ from hypergraphx.core.temporal_hypergraph import TemporalHypergraph
 # --- Fixed base URL for the Trento server ---
 _BASE = "https://cricca.disi.unitn.it/datasets/hypergraphx-data"
 
-__all__ = ["load_hypergraph", "load_hypergraph_from_server"]
+__all__ = ["load", "load_hypergraph", "load_hypergraph_from_server"]
 
 # ---------------------------------------------------------------------------
 # Helpers: validation, decoding, and shared constructors
@@ -261,6 +261,46 @@ def load_hypergraph(file_name: str):
     else:
         raise ValueError("Invalid file type. Expected one of: 'hgx', 'json', 'hgr'.")
 
+
+def load(
+    source: str,
+    *,
+    fmt: str | None = None,
+    remote: bool = False,
+    timeout: int = 30,
+):
+    """
+    Load a hypergraph from a local file or the remote server.
+
+    Parameters
+    ----------
+    source : str
+        Path to a local file, or a dataset name when remote=True.
+    fmt : str, optional
+        Force a specific format. Local: {"hgx","json","hgr"}. Remote: {"binary","json"}.
+    remote : bool
+        If True, load from the remote dataset server.
+    timeout : int
+        Network timeout for remote loads.
+    """
+    if remote:
+        fmt = "binary" if fmt is None else fmt
+        if fmt not in {"binary", "json"}:
+            raise ValueError("fmt must be 'binary' or 'json' for remote loads.")
+        return load_hypergraph_from_server(source, fmt=fmt, timeout=timeout)
+
+    if fmt is None:
+        return load_hypergraph(source)
+
+    fmt = fmt.lower()
+    if fmt in {"hgx", "binary"}:
+        return _load_pickle(source)
+    if fmt == "json":
+        return _load_json_file(source)
+    if fmt == "hgr":
+        return _load_hgr_file(source)
+    raise ValueError("Invalid fmt. Expected one of: 'hgx', 'json', 'hgr'.")
+
 # ---------------------------------------------------------------------------
 # Public: remote loader (fixed base URL)
 # ---------------------------------------------------------------------------
@@ -296,4 +336,3 @@ def load_hypergraph_from_server(name: str, fmt: str = "binary", *, timeout: int 
                 os.remove(tmp_path)
             except OSError:
                 pass
-

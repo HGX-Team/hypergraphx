@@ -3,6 +3,7 @@ import json
 from tqdm import tqdm
 from datetime import datetime
 from hypergraphx.representations.projections import clique_projection
+from hypergraphx.utils.labeling import relabel_edges_with_mapping
 
 import os
 import numpy as np
@@ -17,36 +18,6 @@ def get_ds_windowsize(nsamples):
         return nsamples
     else:
         return 300
-
-
-def relabel(edges: list, relabeling: dict):
-    """
-    Relabel the vertices of a hypergraph according to a given relabeling
-
-    Parameters
-    ----------
-    edges : list
-        Edges of the hypergraph
-    relabeling : dict
-        Relabeling
-
-    Returns
-    -------
-    list
-        Edges of the hypergraph with the vertices relabeled
-
-    Notes
-    -----
-    The relabeling is a dictionary that maps the old labels to the new labels
-    """
-    res = []
-    for edge in edges:
-        new_edge = []
-        for v in edge:
-            new_edge.append(relabeling[v])
-        res.append(tuple(sorted(new_edge)))
-    return sorted(res)
-
 
 
 def supra_adj(temporal_network, subtimes, unique_individuals, dataset):
@@ -460,7 +431,7 @@ def embed_time_series_for_dataset(temporal_network, dataset_name, root, verbose=
     remapping = {old:new for (old,new) in zip(unique_individuals, range(len(unique_individuals)))}
     for t, H in temporal_network.items():
         oldelist = H.get_edges()
-        newelist = relabel(edges=oldelist, relabeling=remapping)
+        newelist = relabel_edges_with_mapping(edges=oldelist, mapping=remapping)
         temporal_network[t] = hgx.Hypergraph(newelist) 
         
     pk.dump([temporal_network, remapping], open(fname_TSmap, 'wb'))
@@ -532,43 +503,12 @@ def embed_time_series_for_dataset(temporal_network, dataset_name, root, verbose=
     return static_node_to_integer_lbl_map, integer_lbl_to_static_node_map, V, Vt0
 
 
-def HO_convert_node_labels_to_integers(H:hgx.Hypergraph)->hgx.Hypergraph:
-    
-    def relabel(edges: list, relabeling: dict):
-        """
-        Relabel the vertices of a hypergraph according to a given relabeling
-
-        Parameters
-        ----------
-        edges : list
-            Edges of the hypergraph
-        relabeling : dict
-            Relabeling
-
-        Returns
-        -------
-        list
-            Edges of the hypergraph with the vertices relabeled
-
-        Notes
-        -----
-        The relabeling is a dictionary that maps the old labels to the new labels
-        """
-        res = []
-        for edge in edges:
-            new_edge = []
-            for v in edge:
-                new_edge.append(relabeling[v])
-            res.append(tuple(sorted(new_edge)))
-        return sorted(res)
-
-
-
+def HO_convert_node_labels_to_integers(H: hgx.Hypergraph) -> hgx.Hypergraph:
     oldelist = H.get_edges()
 
     mapping = {old:new for (old,new) in zip(H.get_nodes(), range(H.num_nodes()))}
     
-    newelist = relabel(edges=oldelist, relabeling=mapping)
+    newelist = relabel_edges_with_mapping(edges=oldelist, mapping=mapping)
 
     
     Hnew = hgx.Hypergraph(newelist)

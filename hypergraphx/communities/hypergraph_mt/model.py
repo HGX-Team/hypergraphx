@@ -10,11 +10,6 @@ from scipy.special import comb
 from hypergraphx import Hypergraph
 from hypergraphx.communities.hy_sc.model import HySC
 from hypergraphx.linalg.linalg import binary_incidence_matrix, incidence_matrix
-from hypergraphx.utils.preprocessing import (
-    hyperedges_per_node,
-    isolates_from_incidence,
-    non_isolates_from_incidence,
-)
 
 DEFAULT_SEED = 10
 DEFAULT_INF = 1e10  # infinite initial value for the log-likelihood
@@ -240,19 +235,23 @@ class HypergraphMT:
         # Maximum observed hyperedge size.
         self.D = max([len(e) for e in self.hyperEdges])
 
+        node_order = list(hypergraph.get_mapping().classes_)
         # List of length N containing the indices of non-zero hyperedges for every node.
-        self.hye_per_node = hyperedges_per_node(self.incidence)
+        self.hye_per_node = hypergraph.incident_edges_by_node(
+            index_by="position", node_order=node_order
+        )
         # List of list containing the indices of hyperedges with a given degree.
-        self.HyD2eId = extract_indicesHy(
-            self.hyperEdges
-        )  # TODO: implement it as a core method
+        edges_by_size = hypergraph.edges_by_size(index_by="position")
+        self.HyD2eId = [
+            edges_by_size.get(d, []) for d in range(2, self.D + 1)
+        ]
         # Hyperedges' size.
         self.HyeId2D = np.array(
             hypergraph.get_sizes()
         )  # TODO: check whether we want to refactor the name of this variable
 
-        self.isolates = isolates_from_incidence(self.incidence)
-        self.non_isolates = non_isolates_from_incidence(self.incidence)
+        self.isolates = hypergraph.isolates(node_order=node_order)
+        self.non_isolates = hypergraph.non_isolates(node_order=node_order)
 
         # Normalize u such that every row sums to 1.
         self.normalizeU = normalizeU
@@ -773,24 +772,6 @@ class HypergraphMT:
         )
         print(f'\nInferred parameters saved in: {outfile + ".npz"}')
         print('To load: theta=np.load(filename), then e.g. theta["u"]')
-
-
-def extract_indicesHy(hyperEdges: np.array) -> List[List[int]]:
-    """Lists containing information about the hyperedges.
-
-    Parameters
-    ----------
-    hyperEdges: array of length E, containing the sets of hyperedges (as tuples).
-
-    Returns
-    -------
-    HyD2eId: list of list containing the indices of hyperedges with a given degree.
-    """
-    HyeId2D = np.array([len(e) for e in hyperEdges])
-    HyD2eId = [
-        list(np.where(HyeId2D == d)[0]) for d in np.arange(2, np.max(HyeId2D + 1))
-    ]
-    return HyD2eId
 
 
 def u0_w0_from_nparray(input_array: np.array) -> np.array:

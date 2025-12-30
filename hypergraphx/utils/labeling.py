@@ -151,3 +151,26 @@ def get_inverse_mapping(mapping: LabelEncoder):
         The inverse mapping
     """
     return dict(zip(mapping.transform(mapping.classes_), mapping.classes_))
+
+
+def relabel_edges_with_mapping(edges: List[Tuple], mapping: dict):
+    """
+    Relabel edges using a dictionary mapping old labels to new labels.
+
+    Parameters
+    ----------
+    edges: List[Tuple]
+        The edges to relabel
+    mapping: dict
+        Mapping from old labels to new labels
+
+    Returns
+    -------
+    List[Tuple]
+        The relabeled edges
+    """
+    res = []
+    for edge in edges:
+        new_edge = [mapping[v] for v in edge]
+        res.append(tuple(sorted(new_edge)))
+    return sorted(res)

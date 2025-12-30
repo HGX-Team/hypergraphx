@@ -169,6 +169,163 @@ class BaseHypergraph(SerializationMixin):
         neighbors.discard(node)
         return neighbors
 
+    def isolates(self, node_order=None):
+        """Return isolated nodes.
+
+        Parameters
+        ----------
+        node_order : list, optional
+            If provided, return indices into this order instead of node labels.
+        """
+        def has_incidence(n):
+            for adj in self._adjacency_maps().values():
+                if n in adj and adj[n]:
+                    return True
+            return False
+
+        isolated_nodes = [n for n in self.get_nodes() if not has_incidence(n)]
+        if node_order is None:
+            return isolated_nodes
+        isolated_set = set(isolated_nodes)
+        return [i for i, n in enumerate(node_order) if n in isolated_set]
+
+    def non_isolates(self, node_order=None):
+        """Return non-isolated nodes.
+
+        Parameters
+        ----------
+        node_order : list, optional
+            If provided, return indices into this order instead of node labels.
+        """
+        def has_incidence(n):
+            for adj in self._adjacency_maps().values():
+                if n in adj and adj[n]:
+                    return True
+            return False
+
+        non_isolated_nodes = [n for n in self.get_nodes() if has_incidence(n)]
+        if node_order is None:
+            return non_isolated_nodes
+        non_isolated_set = set(non_isolated_nodes)
+        return [i for i, n in enumerate(node_order) if n in non_isolated_set]
+
+    def incident_edges_by_node(self, index_by="edge_key", node_order=None):
+        """Return incident edges for each node.
+
+        Parameters
+        ----------
+        index_by : {"edge_key", "edge_id", "position"}
+            Representation for incident edges.
+        node_order : list, optional
+            If provided, return a list aligned to this order.
+        """
+        if index_by not in {"edge_key", "edge_id", "position"}:
+            raise ValueError(
+                'index_by must be one of {"edge_key", "edge_id", "position"}.'
+            )
+
+        edge_list = list(self._edge_list.keys())
+        pos_map = {edge: idx for idx, edge in enumerate(edge_list)}
+
+        def map_edge_id(edge_id):
+            if index_by == "edge_id":
+                return edge_id
+            edge_key = self._reverse_edge_list[edge_id]
+            if index_by == "edge_key":
+                return edge_key
+            return pos_map[edge_key]
+
+        result = {}
+        for node in self.get_nodes():
+            edge_ids = []
+            for adj in self._adjacency_maps().values():
+                if node in adj:
+                    edge_ids.extend(adj[node])
+            seen = set()
+            deduped = []
+            for edge_id in edge_ids:
+                if edge_id in seen:
+                    continue
+                seen.add(edge_id)
+                deduped.append(map_edge_id(edge_id))
+            if index_by == "position":
+                deduped = sorted(deduped)
+            result[node] = deduped
+
+        if node_order is None:
+            return result
+        return [result[node] for node in node_order]
+
+    def edges_by_size(self, index_by="edge_key"):
+        """Return a dictionary mapping edge size to edges of that size.
+
+        Parameters
+        ----------
+        index_by : {"edge_key", "edge_id", "position"}
+            Representation for edges in the output.
+        """
+        if index_by not in {"edge_key", "edge_id", "position"}:
+            raise ValueError(
+                'index_by must be one of {"edge_key", "edge_id", "position"}.'
+            )
+
+        edges = list(self._edge_list.keys())
+        edges_by_size = {}
+        for idx, edge in enumerate(edges):
+            size = self._edge_size(edge)
+            if index_by == "edge_id":
+                value = self._edge_list[edge]
+            elif index_by == "position":
+                value = idx
+            else:
+                value = edge
+            edges_by_size.setdefault(size, []).append(value)
+        return edges_by_size
+
+    def edges_by_order(self, index_by="edge_key"):
+        """Return a dictionary mapping edge order to edges of that order.
+
+        Parameters
+        ----------
+        index_by : {"edge_key", "edge_id", "position"}
+            Representation for edges in the output.
+        """
+        edges_by_size = self.edges_by_size(index_by=index_by)
+        return {size - 1: edges for size, edges in edges_by_size.items()}
+
+    def incidence_dict(
+        self,
+        axis="node",
+        *,
+        index_by="edge_key",
+        node_order=None,
+    ):
+        """Return a dictionary representation of incidences.
+
+        Parameters
+        ----------
+        axis : {"node", "edge"}
+            If "node", map nodes to incident edges.
+            If "edge", map edges to their nodes.
+        index_by : {"edge_key", "edge_id", "position"}
+            Representation for edges when axis="node".
+        node_order : list, optional
+            If provided, return node indices based on this ordering.
+        """
+        if axis not in {"node", "edge"}:
+            raise ValueError('axis must be "node" or "edge".')
+
+        if axis == "node":
+            return self.incident_edges_by_node(index_by=index_by, node_order=node_order)
+
+        if node_order is None:
+            return {edge: list(self._edge_nodes(edge)) for edge in self._edge_list}
+        index_map = {node: idx for idx, node in enumerate(node_order)}
+        return {
+            edge: [index_map[node] for node in self._edge_nodes(edge)]
+            for edge in self._edge_list
+        }
+
     # Incidence helpers
     def _add_incidence(self, node, edge_id, edge_key):
         for adj in self._adjacency_maps().values():

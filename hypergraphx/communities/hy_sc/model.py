@@ -5,10 +5,6 @@ from sklearn.cluster import KMeans
 
 from hypergraphx import Hypergraph
 from hypergraphx.linalg.linalg import binary_incidence_matrix, incidence_matrix
-from hypergraphx.utils.preprocessing import (
-    isolates_from_incidence,
-    non_isolates_from_incidence,
-)
 
 
 class HySC:
@@ -111,9 +107,9 @@ class HySC:
         # TODO: is there a better way to get the weighted sizes?
         self.hye_size_weighted = self.incidence.sum(axis=1)
 
-        # Isolated and non-isolated nodes.
-        self.isolates = isolates_from_incidence(self.incidence)
-        self.non_isolates = non_isolates_from_incidence(self.incidence)
+        node_order = list(hypergraph.get_mapping().classes_)
+        self.isolates = hypergraph.isolates(node_order=node_order)
+        self.non_isolates = hypergraph.non_isolates(node_order=node_order)
 
     def _extract_laplacian(self, weighted_L: bool = False) -> None:
         # Check for division by zero and handle isolated nodes
