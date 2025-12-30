@@ -1,14 +1,25 @@
 Installation
 ============
 
-You can easily install HGX using pip
+You can install HGX using pip:
 
 .. code:: bash
 
    pip install hypergraphx
 
-Otherwise, you can clone the repository and manually install the package
+To install from source:
 
 .. code:: bash
 
-   pip install -e .['all']
+   pip install -e .[all]
+
+Optional dependencies
+---------------------
+
+If you only need core functionality, the base install is enough. For docs or notebooks:
+
+.. code:: bash
+
+   pip install -r requirements_docs.txt
+
+Check the repository ``requirements.txt`` for the minimal runtime dependencies.
