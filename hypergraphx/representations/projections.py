@@ -235,8 +235,9 @@ def directed_line_graph(
     g = nx.DiGraph()
     g.add_nodes_from([i for i in range(len(h))])
 
-    for edge1 in h.get_edges():
-        for edge2 in h.get_edges():
+    edges = h.get_edges()
+    for edge1 in edges:
+        for edge2 in edges:
             if edge1 != edge2:
                 source = set(edge1[1])
                 target = set(edge2[0])

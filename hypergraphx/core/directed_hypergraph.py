@@ -627,7 +627,7 @@ class DirectedHypergraph(BaseHypergraph):
 
     # Metadata
     def get_all_nodes_metadata(self):
-        return list(self._node_metadata.values())
+        return self._node_metadata
 
     def set_edge_metadata(self, edge, metadata):
         edge_key = self._normalize_edge(edge)
