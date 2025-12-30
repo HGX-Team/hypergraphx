@@ -1,3 +1,5 @@
+import logging
+
 from hypergraphx import Hypergraph
 from hypergraphx.generation.configuration_model import configuration_model
 from hypergraphx.motifs.utils import (
@@ -56,7 +58,8 @@ def compute_motifs(hypergraph: Hypergraph, order=3, runs_config_model=10):
     edges = hypergraph.get_edges(size=order, up_to=True)
     output = {}
 
-    print("Computing observed motifs of order {}...".format(order))
+    logger = logging.getLogger(__name__)
+    logger.info("Computing observed motifs of order %s...", order)
 
     if order == 3:
         output["observed"] = _motifs_order_3(edges)
@@ -74,9 +77,7 @@ def compute_motifs(hypergraph: Hypergraph, order=3, runs_config_model=10):
     results = []
 
     for i in range(ROUNDS):
-        print(
-            "Computing config model motifs of order {}. Step: {}".format(order, i + 1)
-        )
+        logger.info("Computing config model motifs of order %s. Step: %s", order, i + 1)
         e1 = configuration_model(hypergraph, label="stub", n_steps=STEPS)
         if order == 3:
             m1 = _motifs_order_3(e1.get_edges())

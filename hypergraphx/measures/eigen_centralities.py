@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 
 
@@ -168,7 +169,7 @@ def HEC_centrality(HG, max_iter=100, tol=1e-6):
             break
         x = new_x.copy()
     else:
-        print("Iteration did not converge!")
+        logging.getLogger(__name__).warning("Iteration did not converge!")
     return {node: x[node] for node in range(HG.num_nodes())}
 
 

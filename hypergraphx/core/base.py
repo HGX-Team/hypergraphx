@@ -161,11 +161,18 @@ class BaseHypergraph(SerializationMixin):
     def _hash_edge_nodes(self, edge_key):
         return sorted(self._edge_nodes(edge_key))
 
+    def _validate_metadata_dict(self, metadata, label):
+        if metadata is None:
+            return
+        if not isinstance(metadata, dict):
+            raise InvalidParameterError(f"{label} metadata must be a dict.")
+
     # Core node methods
     def add_node(self, node, metadata=None):
         """Add a node to the hypergraph if it does not already exist."""
         if metadata is None:
             metadata = {}
+        self._validate_metadata_dict(metadata, "node")
         primary_adj = self._primary_adj_map()
         if node not in primary_adj:
             self._init_node_adjacency(node)
@@ -175,11 +182,13 @@ class BaseHypergraph(SerializationMixin):
 
     def add_nodes(self, node_list, metadata=None):
         """Add multiple nodes to the hypergraph."""
+        if metadata is not None and not isinstance(metadata, dict):
+            raise InvalidParameterError("node metadata must be a dict.")
         for node in node_list:
             try:
                 self.add_node(node, metadata[node] if metadata is not None else None)
             except KeyError:
-                raise ValueError(
+                raise InvalidParameterError(
                     "The metadata dictionary must contain an entry for each node in the node list."
                 )
 
@@ -422,6 +431,8 @@ class BaseHypergraph(SerializationMixin):
         return weight
 
     def _add_edge_key(self, edge_key, weight, metadata):
+        if metadata is not None:
+            self._validate_metadata_dict(metadata, "edge")
         if edge_key not in self._edge_list:
             edge_id = self._next_edge_id
             self._next_edge_id += 1
@@ -437,7 +448,10 @@ class BaseHypergraph(SerializationMixin):
 
     def _add_edge(self, edge_key, weight=None, metadata=None):
         weight = self._validate_weight(weight)
+        existed = edge_key in self._edge_list
         edge_id = self._add_edge_key(edge_key, weight=weight, metadata=metadata)
+        if existed:
+            return
         for node in self._edge_nodes(edge_key):
             self.add_node(node)
             self._add_incidence(node, edge_id, edge_key)
@@ -597,6 +611,7 @@ class BaseHypergraph(SerializationMixin):
 
     # Metadata
     def set_hypergraph_metadata(self, metadata):
+        self._validate_metadata_dict(metadata, "hypergraph")
         self._hypergraph_metadata = metadata
 
     def get_hypergraph_metadata(self):
@@ -605,6 +620,7 @@ class BaseHypergraph(SerializationMixin):
     def set_node_metadata(self, node, metadata):
         if node not in self._node_metadata:
             self._raise_missing_node(node)
+        self._validate_metadata_dict(metadata, "node")
         self._node_metadata[node] = metadata
 
     def get_node_metadata(self, node):
@@ -618,6 +634,7 @@ class BaseHypergraph(SerializationMixin):
     def set_edge_metadata(self, edge_key, metadata):
         if edge_key not in self._edge_list:
             raise MissingEdgeError(f"Edge {edge_key} not in hypergraph.")
+        self._validate_metadata_dict(metadata, "edge")
         self._edge_metadata[self._edge_list[edge_key]] = metadata
 
     def get_edge_metadata(self, edge_key):
@@ -631,6 +648,7 @@ class BaseHypergraph(SerializationMixin):
     def set_incidence_metadata(self, edge_key, node, metadata):
         if edge_key not in self._edge_list:
             raise MissingEdgeError(f"Edge {edge_key} not in hypergraph.")
+        self._validate_metadata_dict(metadata, "incidence")
         self._incidences_metadata[(edge_key, node)] = metadata
 
     def get_incidence_metadata(self, edge_key, node):
@@ -687,6 +705,11 @@ class BaseHypergraph(SerializationMixin):
             self.distribution_sizes()
         )
         return title + details
+
+    def __repr__(self):
+        return "{}(nodes={}, edges={}, weighted={})".format(
+            self._type_name(), self.num_nodes(), self.num_edges(), self._weighted
+        )
 
     def __len__(self):
         return len(self._edge_list)

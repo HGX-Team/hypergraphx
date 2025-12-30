@@ -1,4 +1,5 @@
 from collections import Counter, defaultdict
+import logging
 from functools import reduce
 from itertools import combinations
 from multiprocessing import Pool, cpu_count
@@ -32,7 +33,7 @@ def _approximated_pvalue(t):
     if p >= 0:
         return p
     else:
-        print(n12, n, ns)
+        logging.getLogger(__name__).debug("%s %s %s", n12, n, ns)
         return p
 
 

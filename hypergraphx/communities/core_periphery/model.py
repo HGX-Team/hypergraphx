@@ -1,6 +1,7 @@
 import math
 import random
 
+import logging
 import numpy as np
 
 from hypergraphx import Hypergraph
@@ -198,7 +199,8 @@ def core_periphery(hypergraph: Hypergraph, greedy_start=False, N_ITER=1000):
         for node in range(N_nodes):
             cs[node] = cs[node] + local_core_values[order[node]] * R
 
-        print("{} of {} iter".format(n_iter, N_ITER))
+        logger = logging.getLogger(__name__)
+        logger.info("%s of %s iter", n_iter, N_ITER)
 
     max_node = max(cs, key=cs.get)
     Z = 1 / cs[max_node]

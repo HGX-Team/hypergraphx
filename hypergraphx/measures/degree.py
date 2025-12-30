@@ -139,3 +139,18 @@ def degree_distribution(
         degree_dist[deg] += 1
 
     return degree_dist
+
+
+def node_degree(hg, node, order=None, size=None):
+    """Alias for degree(hg, node, order, size)."""
+    return degree(hg, node, order=order, size=size)
+
+
+def node_degree_sequence(hg, order=None, size=None):
+    """Alias for degree_sequence(hg, order, size)."""
+    return degree_sequence(hg, order=order, size=size)
+
+
+def node_degree_distribution(hg, order=None, size=None):
+    """Alias for degree_distribution(hg, order, size)."""
+    return degree_distribution(hg, order=order, size=size)

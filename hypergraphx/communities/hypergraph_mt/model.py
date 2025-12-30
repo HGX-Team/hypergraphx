@@ -2,6 +2,7 @@ import os
 import time
 from typing import List, Optional, Tuple, Union
 
+import logging
 import numpy as np
 import pandas as pd
 from scipy.optimize import root
@@ -134,7 +135,7 @@ class HypergraphMT:
             self._update_rho()
 
             if self.verbose:
-                print(f"Updating realization {r} ...", end="\n")
+                _log(f"Updating realization {r} ...")
             # Initial value for the log-likelihood.
             loglik = -DEFAULT_INF
             # Convergence local variables.
@@ -161,7 +162,7 @@ class HypergraphMT:
                 it += 1
 
             if self.verbose:
-                print(f"N_real={r} -- num it={it} -- Loglikelihood:{loglik}")
+                _log(f"N_real={r} -- num it={it} -- Loglikelihood:{loglik}")
 
             # Save parameters for the realization with the highest log-likelihood.
             if self.maxL < loglik:
@@ -187,7 +188,7 @@ class HypergraphMT:
 
         # Convergence not reached.
         if np.logical_and(final_it == self.max_iter, not final_convergence):
-            print(f"Solution failed to converge in {self.max_iter} EM steps!")
+            _log(f"Solution failed to converge in {self.max_iter} EM steps!")
 
         # Save inferred parameters.
         if self.out_inference:
@@ -407,7 +408,7 @@ class HypergraphMT:
         # Initialize u around the solution of the Hypergraph Spectral Clustering.
         if baseline_HySC:
             if self.verbose:
-                print(
+                _log(
                     "u is initialized around the solution of the Hypergraph Spectral Clustering."
                 )
             self.u0_current_real_t0 = calculate_u_HySC(
@@ -423,22 +424,22 @@ class HypergraphMT:
         else:
             if self.u0 is None:
                 if self.verbose:
-                    print("u is initialized randomly.")
+                    _log("u is initialized randomly.")
                 self.u0_current_real_t0 = self._randomize_u0()
             else:
                 if self.verbose:
-                    print(
+                    _log(
                         f"u is initialized around the input values chosen with 'initialize_u0'."
                     )
                 self.u0_current_real_t0 = self._add_noise_input(self.u0)
         # Initialize w either randomly or around the input values chosen with "initialize_w0".
         if self.w0 is None:
             if self.verbose:
-                print("w is initialized randomly.")
+                _log("w is initialized randomly.")
             self.w = self._randomize_w0(hyperEdges=hyperEdges)
         else:
             if self.verbose:
-                print(
+                _log(
                     f"w is initialized around the input values chosen with 'initialize_w0'."
                 )
             self.w = self._add_noise_input(self.w0)
@@ -472,7 +473,7 @@ class HypergraphMT:
                 )
             )
             if len(ds) > 0:
-                print("setting certain d in w to zero:", ds)
+                _log("setting certain d in w to zero:", ds)
                 w0[ds] = 0.0
         return w0
 
@@ -583,9 +584,9 @@ class HypergraphMT:
                 self.psiOmega[tmpMask2] = abs(self.psiOmega[tmpMask2])
                 tmpMask = self.psiOmega < 0
                 if tmpMask.sum() > 0:
-                    print("psiOmega", self.psiOmega[tmpMask])
-                    print(np.where(tmpMask))
-                print("i=", i, self.hye_per_node[i])
+                    _log("psiOmega", self.psiOmega[tmpMask])
+                    _log(np.where(tmpMask))
+                _log("i=", i, self.hye_per_node[i])
 
     def _update_rho(self) -> None:
         """Update the rho matrix that represents the variational distribution used in the EM routine."""
@@ -743,7 +744,7 @@ class HypergraphMT:
         )
 
         if np.isnan(loglik):
-            print("Log-likelihood is NaN!!")
+            _log("Log-likelihood is NaN!!")
             return -DEFAULT_INF
         else:
             return loglik
@@ -770,8 +771,8 @@ class HypergraphMT:
             maxL=self.maxL,
             non_isolates=self.non_isolates,
         )
-        print(f'\nInferred parameters saved in: {outfile + ".npz"}')
-        print('To load: theta=np.load(filename), then e.g. theta["u"]')
+        _log(f'Inferred parameters saved in: {outfile + ".npz"}')
+        _log('To load: theta=np.load(filename), then e.g. theta["u"]')
 
 
 def u0_w0_from_nparray(input_array: np.array) -> np.array:
@@ -816,3 +817,9 @@ def func_lagrange_multiplier(lambda_i: float, num: np.array, den: float) -> floa
     """Return the objective function to find the lagrangian multiplier to enforce the constraint on the matrix u."""
     f = num / (lambda_i + den)
     return np.sum(f) - 1
+logger = logging.getLogger(__name__)
+
+
+def _log(*args, **kwargs):
+    message = " ".join(str(a) for a in args)
+    logger.info(message)

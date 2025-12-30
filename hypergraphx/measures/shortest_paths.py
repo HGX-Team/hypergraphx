@@ -1,4 +1,5 @@
 import hypergraphx as hgx
+import logging
 import pickle as pk
 from hypergraphx.representations.projections import clique_projection
 import numpy as np
@@ -6,6 +7,13 @@ import pandas as pd
 import networkx as nx
 from hypergraphx.readwrite import load_hypergraph
 import time
+
+logger = logging.getLogger(__name__)
+
+
+def _log(*args, **kwargs):
+    message = " ".join(str(a) for a in args)
+    logger.info(message)
 
 
 # ========= MAIN FUNCTIONS ======== #
@@ -44,10 +52,10 @@ def calc_HO_shortest_paths(Hbase:hgx.Hypergraph,
     start = time.time()
 
     if root is None:
-        print("No root directory provided, will not save any intermediate results")
+        _log("No root directory provided, will not save any intermediate results")
 
     assert option in ['min', 'max', 'mean'], "option must be one of ['min', 'max', 'mean']"
-    if verbose: print(f"Hyperedge selection strategy: {option.upper()}")
+    if verbose: _log(f"Hyperedge selection strategy: {option.upper()}")
 
     
     Hbase = HO_convert_node_labels_to_integers(Hbase)
@@ -61,7 +69,7 @@ def calc_HO_shortest_paths(Hbase:hgx.Hypergraph,
     assert not(sorted(clique_projection(Hbase, keep_isolated=True)) == sorted(clique_projection(H_dyads, keep_isolated=True).edges())), "The projected graphs should be different from the original graph if we're planning to investigate higher orders"
 
 
-    print("A. Calculating shortest paths")    
+    _log("A. Calculating shortest paths")    
     # For dyads
     shortest_paths_lengths_dy, SPL_dy = calc_ho_shortest_paths(H_dyads)
     # For only higher orders
@@ -78,14 +86,14 @@ def calc_HO_shortest_paths(Hbase:hgx.Hypergraph,
 
 
 
-    print("B. calculating orders and avg orders and redundancies of ho paths")
+    _log("B. calculating orders and avg orders and redundancies of ho paths")
     shortest_paths_ho_dict_enriched = calc_sizes_redundancies_of_shortest_paths(shortest_paths_ho=shortest_paths_ho, 
                             Hbase=Hbase, 
                             option=option, 
                             root=root)
 
     
-    print("C. extracting avg orders of ho paths")
+    _log("C. extracting avg orders of ho paths")
     nodes = Hbase.get_nodes()
 
     # Fill a matrix with nan values
@@ -100,7 +108,7 @@ def calc_HO_shortest_paths(Hbase:hgx.Hypergraph,
     avg_ord = pd.DataFrame(data=avg_ord, index=sorted(nodes), columns= sorted(nodes))
 
     end = time.time()
-    if verbose: print(f"Time taken for shortest paths and avg orders = {end-start:.2f}s \n")
+    if verbose: _log(f"Time taken for shortest paths and avg orders = {end-start:.2f}s \n")
 
 
     # save the average orders
@@ -269,7 +277,7 @@ def calc_sizes_redundancies_of_shortest_paths(shortest_paths_ho, Hbase, option, 
     """
 
     for ctr, (node_i, dicto) in enumerate(shortest_paths_ho.items()):
-        print(f"{ctr}\t/{len(shortest_paths_ho)}", end='\r')
+        _log(f"{ctr}\t/{len(shortest_paths_ho)}", end='\r')
         for node_j, shortest_path in dicto.items():
             path_sizes = np.zeros(len(shortest_path)-1)
             redunancies = np.zeros(len(shortest_path)-1)
@@ -290,7 +298,7 @@ def calc_sizes_redundancies_of_shortest_paths(shortest_paths_ho, Hbase, option, 
                         case 'mean':
                             size_nodepair = np.mean([len(e) for e in incident_edges])
                         case _:
-                            print("No option selected")
+                            _log("No option selected")
                             raise ValueError
                     
                         

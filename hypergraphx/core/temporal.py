@@ -239,6 +239,9 @@ class TemporalHypergraph(BaseHypergraph):
             If time is not an integer.
         ValueError
             If the hypergraph is not weighted and weight is not None or 1.
+        Notes
+        -----
+        Duplicate unweighted edges are ignored; duplicate weighted edges accumulate weights.
         """
         if not isinstance(time, int):
             raise TypeError("Time must be an integer.")

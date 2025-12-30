@@ -14,6 +14,7 @@ from hypergraphx.exceptions import (
 from hypergraphx.readwrite import load_hypergraph, load_hypergraph_from_server, save_hypergraph
 from . import readwrite
 
+import logging
 import sys
 
 MIN_PYTHON_VERSION = (3, 10)
@@ -22,6 +23,8 @@ assert (
 ), f"requires Python {'.'.join([str(n) for n in MIN_PYTHON_VERSION])} or newer"
 
 __version__ = "1.7.9"
+
+logging.getLogger("hypergraphx").addHandler(logging.NullHandler())
 
 __all__ = [
     "DirectedHypergraph",

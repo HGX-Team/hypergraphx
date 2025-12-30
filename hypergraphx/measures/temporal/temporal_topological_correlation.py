@@ -1,4 +1,5 @@
 import itertools
+import logging
 from collections import Counter
 from time import sleep
 
@@ -8,6 +9,8 @@ import pandas as pd
 from tqdm import tqdm
 
 from hypergraphx.representations import projections
+
+logger = logging.getLogger(__name__)
 
 
 def _to_df(H):
@@ -66,7 +69,7 @@ def compute_all_edges_shortest_path(
 
     if graph_distance is None:
         if verbose:
-            print(
+            logger.info(
                 "Computing node shortest path distance of the aggregated projected network..."
             )
         # Compute node shortest path distances for the aggregated projected network
@@ -74,10 +77,10 @@ def compute_all_edges_shortest_path(
             projections.clique_projection(H_agg)
         )
         if verbose:
-            print("Complete!")
+            logger.info("Complete!")
 
     if verbose:
-        print(
+        logger.info(
             "Computing topological distance of hyperlinks path distance of the higher order aggregated network..."
         )
 
@@ -104,7 +107,7 @@ def compute_all_edges_shortest_path(
                     ]
     assert len(edge_dic_distance) == E**2
     if verbose:
-        print("Complete!")
+        logger.info("Complete!")
 
     return edge_dic_distance
 
@@ -539,7 +542,7 @@ def topological_temporal_cond_distance(
         min_val_idx = min(enumerate(avg_cond_top_dist_sr), key=lambda x: x[1])[0]
         avg_cond_top_dist_sr = avg_cond_top_dist_sr.iloc[min_val_idx:]
         if len(avg_cond_top_dist_sr) < 3:
-            print("fit with too few data points")
+            logger.info("fit with too few data points")
         coef = np.polyfit(
             np.log(avg_cond_top_dist_sr.index), avg_cond_top_dist_sr.values, 1
         )

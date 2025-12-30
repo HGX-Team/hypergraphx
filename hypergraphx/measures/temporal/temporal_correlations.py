@@ -1,5 +1,6 @@
 from typing import Dict
 
+import logging
 import numpy as np
 from scipy import sparse
 from scipy.special import factorial
@@ -412,8 +413,8 @@ def cross_order_gap_function_two_orders(
     The cross-order gap function between orders d1 and d2, at time lag tau.
     """
     if order1 == order2:
-        print(
-            "Warning: it is not meaningful to evaluate a cross-order gap within the same order"
+        logging.getLogger(__name__).warning(
+            "It is not meaningful to evaluate a cross-order gap within the same order"
         )
         return 0
 

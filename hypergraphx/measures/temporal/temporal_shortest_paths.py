@@ -1,5 +1,6 @@
 import hypergraphx as hgx
 import json
+import logging
 from tqdm import tqdm
 from datetime import datetime
 from hypergraphx.representations.projections import clique_projection
@@ -12,6 +13,13 @@ import networkx as nx
 import pandas as pd
 from copy import deepcopy
 import matplotlib.pyplot as plt
+
+logger = logging.getLogger(__name__)
+
+
+def _log(*args, **kwargs):
+    message = " ".join(str(a) for a in args)
+    logger.info(message)
 
 def get_ds_windowsize(nsamples):
     if nsamples < 500:
@@ -160,7 +168,7 @@ def calc_size_of_single_path(hyperpath, temporal_network, dataset, option):
 
         else:
             if t1==t2:
-                print("Same time. Neighbour")
+                _log("Same time. Neighbour")
             
             incident_edges = set(temporal_network[t1].get_incident_edges(node=u)).intersection(set(temporal_network[t1].get_incident_edges(node=v)))
             
@@ -211,23 +219,23 @@ def P4_calc_shortest_fastest_paths(start_node_labels, static_graph_embedded, ver
     
     """
 
-    if verbose: print("\tfastest")
+    if verbose: _log("\tfastest")
     fdict = dict()
     weight = 'weight'
     for ctr, n in enumerate(set(start_node_labels).intersection(set(static_graph_embedded.nodes))):
-        print(f"Node {ctr}/{len(start_node_labels)}", end='\r')
+        _log(f"Node {ctr}/{len(start_node_labels)}", end='\r')
         _t = nx.single_source_dijkstra(static_graph_embedded, source=n, weight=weight)
         fdict[n] = _t
-    if verbose: print("")
+    if verbose: _log("")
 
-    if verbose: print("\tshortest")
+    if verbose: _log("\tshortest")
     sdict = dict()
     weight = 'None'
     for ctr, n in enumerate(set(start_node_labels).intersection(set(static_graph_embedded.nodes))):
-        if verbose: print(f"Node {ctr}/{len(start_node_labels)}", end='\r')
+        if verbose: _log(f"Node {ctr}/{len(start_node_labels)}", end='\r')
         _t = nx.single_source_dijkstra(static_graph_embedded, source=n, weight=weight)
         sdict[n] = _t
-    if verbose: print("")
+    if verbose: _log("")
 
     return fdict, sdict
 
@@ -404,7 +412,7 @@ def embed_time_series_for_dataset(temporal_network, dataset_name, root, verbose=
     numwindows = get_ds_windowsize(nsamples = len(temporal_network))
 
     # Pick subset of times and calculate unique individuals
-    if verbose: print("2. PICK SUBSET OF TIMES")
+    if verbose: _log("2. PICK SUBSET OF TIMES")
 
     num_active_nodes = []
     unique_individuals = set()
@@ -422,12 +430,12 @@ def embed_time_series_for_dataset(temporal_network, dataset_name, root, verbose=
     else:
         start_index = min(num_active_nodes[num_active_nodes['|V|']==max_num_active_nodes_at_t].index)
 
-    print(f"Len of time-series = {len(temporal_network)}, numwindows={numwindows}, start_index={start_index}")
+    _log(f"Len of time-series = {len(temporal_network)}, numwindows={numwindows}, start_index={start_index}")
         
     # Relabel appropriately using unique-individuals
     fname_TSmap = f'{root}/paths_temporal/relabeled_{dataset_name}_TS_and_mapping.pck'
 
-    if verbose: print("3. Relabelling the entire Time series".upper())
+    if verbose: _log("3. Relabelling the entire Time series".upper())
     remapping = {old:new for (old,new) in zip(unique_individuals, range(len(unique_individuals)))}
     for t, H in temporal_network.items():
         oldelist = H.get_edges()
@@ -439,9 +447,9 @@ def embed_time_series_for_dataset(temporal_network, dataset_name, root, verbose=
     new_unique_individuals = set(remapping.values())
 
 
-    if verbose: print(f"Numwindows = {numwindows}")
+    if verbose: _log(f"Numwindows = {numwindows}")
 
-    if verbose: print("4. Pick subtimes".upper())
+    if verbose: _log("4. Pick subtimes".upper())
     # Pick subtimes
     subtimes = list(temporal_network.keys())[start_index:start_index+numwindows]
 
@@ -458,7 +466,7 @@ def embed_time_series_for_dataset(temporal_network, dataset_name, root, verbose=
     proj_ho_only_subnetwork = {t: clique_projection(ho_only_subnetwork[t]) for t in subtimes}
 
 
-    if verbose: print("5. Embed using supra-adjacency".upper())
+    if verbose: _log("5. Embed using supra-adjacency".upper())
     # Embed HO
     G_HO_static_OG = supra_adj(temporal_network=proj_subnetwork, subtimes=subtimes, unique_individuals=unique_individuals, dataset=dataset_name)
     # Embed DY
@@ -494,7 +502,7 @@ def embed_time_series_for_dataset(temporal_network, dataset_name, root, verbose=
     G_DY_static = nx.relabel_nodes(G_DY_static_OG, mapping=static_node_to_integer_lbl_map)
     G_onlyHO_static = nx.relabel_nodes(G_only_HO_static_OG, mapping=static_node_to_integer_lbl_map)
 
-    if verbose: print("6. SAVE STATIC EMBEDDINGS \n")
+    if verbose: _log("6. SAVE STATIC EMBEDDINGS \n")
     pk.dump(G_HO_static, open(f'{root}/paths_temporal/G_HO_Static_{dataset_name}.pck', 'wb'))
     pk.dump(G_DY_static, open(f'{root}/paths_temporal/G_DY_Static_{dataset_name}.pck', 'wb'))
     pk.dump(G_onlyHO_static, open(f'{root}/paths_temporal/G_HOonly_Static_{dataset_name}.pck', 'wb'))
@@ -590,11 +598,11 @@ def save_redundancy_info(redundancy_df_S, redundancy_df_F, regime, dataset, root
 
     fname = f"{dsdir}/redundancy_S_{dataset}_{regime}.pck"
     pk.dump(redundancy_df_S, open(fname, 'wb'))
-    print(f"Saved {fname}")
+    _log(f"Saved {fname}")
 
     fname = f"{dsdir}/redundancy_F_{dataset}_{regime}.pck"
     pk.dump(redundancy_df_F, open(fname, 'wb'))
-    print(f"Saved {fname}")
+    _log(f"Saved {fname}")
 
 
 
@@ -684,7 +692,7 @@ def P8_save_square_arrays(outputs, option, regime, verbose, dsdir):
 
     for a, arrobj in zip(arrnames, arrays):
         fname = f"{dsdir}/paths_temporal/{a}_{option}.pck"
-        if verbose: print(f"Save {fname}")
+        if verbose: _log(f"Save {fname}")
         pk.dump(arrobj, open(fname, 'wb'))
 
 
@@ -702,10 +710,10 @@ def calc_shortest_fastest_paths_temporal_hypergraphs(root=None,
     assert root is not None, "Please specify root directory"
 
     if root is None:
-        print("Please specify root directory")
+        _log("Please specify root directory")
         raise ValueError
 
-    if verbose: print("1. LOAD PRECALCULATED VARIABLES")
+    if verbose: _log("1. LOAD PRECALCULATED VARIABLES")
 
     fnamefile = f"{root}/paths_temporal/G_{regime}_Static_{dataset_name}.pck"
     gstatic = pk.load(open(fnamefile, 'rb'))
@@ -716,7 +724,7 @@ def calc_shortest_fastest_paths_temporal_hypergraphs(root=None,
     fname = f'{root}/paths_temporal/V_Vt0_t0_numpeeps.pck'   
     V, Vt0, _, _ = pk.load(open(fname, 'rb'))
 
-    if verbose: print("2. PREP HELPER VARIABLES")
+    if verbose: _log("2. PREP HELPER VARIABLES")
     temp = pd.DataFrame(data=static_node_to_integer_lbl_map.keys(), index=static_node_to_integer_lbl_map.values(), columns=['times', 'OG-node'])
     temp['new-node'] = temp.index
     temp.sort_values('OG-node').head()
@@ -726,22 +734,22 @@ def calc_shortest_fastest_paths_temporal_hypergraphs(root=None,
     start_node_labels = tydel['new-node'].tolist()
     tydel.sort_values('OG-node')
 
-    if verbose: print("3. LOAD TIME-SERIES")
+    if verbose: _log("3. LOAD TIME-SERIES")
     fname_TSmap = f'{root}/paths_temporal/relabeled_{dataset_name}_TS_and_mapping.pck'
     TS, _ = pk.load(open(fname_TSmap, 'rb'))
 
     fname = f"{root}/paths_temporal/SQ_ARR_{regime}_{dataset_name}.pck"
 
     if os.path.exists(fname):
-        if verbose: print("4. LOAD PRECALCULATED SQUARE ARRAYS from P5")
+        if verbose: _log("4. LOAD PRECALCULATED SQUARE ARRAYS from P5")
         SHORTEST_PATH_DATA_after_P5 = pk.load(open(fname, 'rb'))
     else:
-        if verbose: print("4. CALC SHORTEST/FASTEST PATHS")
+        if verbose: _log("4. CALC SHORTEST/FASTEST PATHS")
         fdict, sdict = P4_calc_shortest_fastest_paths(verbose=verbose,
                                                     start_node_labels=start_node_labels,
                                                     static_graph_embedded=gstatic)
 
-        if verbose: print("5. CALCULATE BEST PATHS")
+        if verbose: _log("5. CALCULATE BEST PATHS")
         SHORTEST_PATH_DATA_after_P5 = P5_calc_best_paths(start_node_labels=start_node_labels, temp=temp, 
                                             sdict=sdict, fdict=fdict,
                                             integer_lbl_to_static_node_map=integer_lbl_to_static_node_map)
@@ -749,11 +757,11 @@ def calc_shortest_fastest_paths_temporal_hypergraphs(root=None,
         pk.dump(SHORTEST_PATH_DATA_after_P5, open(fname, 'wb'))
 
 
-    if verbose: print(f"6. FOR BEST PATHS: CALCULATE AVG ORDERS using {option.upper()} selection strategy")
+    if verbose: _log(f"6. FOR BEST PATHS: CALCULATE AVG ORDERS using {option.upper()} selection strategy")
     SHORTEST_PATH_DATA_after_P6 = P6_calc_avg_orders(SHORTEST_PATH_DATA_after_P5, integer_lbl_to_static_node_map, TS, dataset_name, option=option)
 
 
-    if verbose: print(f"6.5. CALCULATE REDUNDANCY INFO")
+    if verbose: _log(f"6.5. CALCULATE REDUNDANCY INFO")
     redundancy_df_S, redundancy_df_F = calc_redundancy_info(SHORTEST_PATH_DATA_after_P6)
     save_redundancy_info(redundancy_df_S=redundancy_df_S, 
                             redundancy_df_F=redundancy_df_F, 
@@ -761,16 +769,16 @@ def calc_shortest_fastest_paths_temporal_hypergraphs(root=None,
                             regime=regime)
 
 
-    if verbose: print(f"7. FOR PATHS, CALCULATE SQUARE ARRAYS using {option.upper()} selection strategy")
+    if verbose: _log(f"7. FOR PATHS, CALCULATE SQUARE ARRAYS using {option.upper()} selection strategy")
     processed_path_data_square_array = P7_construct_square_arrays(SHORTEST_PATH_DATA_after_P6, V, Vt0)
 
 
-    if verbose: print(f"8. SAVE SQUARE ARRAYS using {option.upper()} selection strategy")
-    if verbose: print(f"{option}")
+    if verbose: _log(f"8. SAVE SQUARE ARRAYS using {option.upper()} selection strategy")
+    if verbose: _log(f"{option}")
     P8_save_square_arrays(processed_path_data_square_array, option='min', regime=regime, verbose=False, dsdir=root)
 
 
         
-    if verbose: print("Done with script!\n")
+    if verbose: _log("Done with script!\n")
 
     return processed_path_data_square_array

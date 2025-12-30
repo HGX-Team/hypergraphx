@@ -23,6 +23,7 @@ Welcome to Hypergraphx's documentation!
    :caption: API Reference
    :hidden:
 
+   Public API <api/public_api.rst>
    Core <api/hypergraphx.core.rst>
    Communities <api/hypergraphx.communities.rst>
    Dynamics <api/hypergraphx.dynamics.rst>

@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Any, Dict, List, Optional, Tuple
+import logging
 import numpy as np
 from scipy import sparse
 from scipy.sparse import csc_array
@@ -380,6 +381,7 @@ def compute_multiorder_laplacian(
 
 
 def are_commuting(laplacian_matrices: List[sparse.spmatrix], verbose=True) -> bool:
+    logger = logging.getLogger(__name__)
     orders = len(laplacian_matrices)
 
     for d1 in range(orders - 1):
@@ -394,11 +396,11 @@ def are_commuting(laplacian_matrices: List[sparse.spmatrix], verbose=True) -> bo
 
             if not commutator.any():
                 if verbose:
-                    print("The Laplacian matrices do not commute")
+                    logger.info("The Laplacian matrices do not commute")
                 return False
 
     if verbose:
-        print("The Laplacian matrices commute")
+        logger.info("The Laplacian matrices commute")
     return True
 
 

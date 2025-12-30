@@ -144,8 +144,9 @@ def load_hypergraph_from_server(
                 except OSError:
                     pass
 
+    urls = ", ".join(url_list)
     raise FileNotFoundError(
-        f"Failed to load '{dataset_name}' from server: {last_error}"
+        f"Failed to load '{dataset_name}' from server. Tried: {urls}. Last error: {last_error}"
     )
 
 

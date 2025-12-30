@@ -1,6 +1,7 @@
 from itertools import combinations
 from math import prod
 
+import logging
 import numpy as np
 from numpy.linalg import norm
 from scipy.spatial.distance import squareform, pdist
@@ -96,12 +97,13 @@ class GroupAttractivenessModel:
     def run(self, number_of_iterations, max_edges=None, verbose=False):
         import datetime
 
+        logger = logging.getLogger(__name__)
         for _ in range(number_of_iterations):
             self.iteration()
             self.iterations += 1
             if verbose:
                 if not _ % 100:
-                    print("[%d]: %s" % (self.iterations, datetime.datetime.now()))
+                    logger.info("[%d]: %s", self.iterations, datetime.datetime.now())
 
             if max_edges is not None:
                 if len(self.edges) >= max_edges:

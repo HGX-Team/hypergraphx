@@ -1,3 +1,4 @@
+import logging
 import networkx as nx
 import numpy as np
 import scipy.spatial.distance as ssd
@@ -5,8 +6,7 @@ from scipy.cluster.hierarchy import fcluster, linkage
 
 from hypergraphx import Hypergraph
 from hypergraphx.measures.edge_similarity import jaccard_distance as jaccard
-from hypergraphx.readwrite.load import _load_pickle
-from hypergraphx.readwrite.save import _save_pickle
+from hypergraphx.readwrite.io_pickle import load_pickle, save_pickle
 
 
 def hyperlink_communities(
@@ -30,12 +30,13 @@ def hyperlink_communities(
         The dendrogram of the given hypergraph
 
     """
-    print("Hypergraph info - nodes: {} edges: {}".format(H.num_nodes(), H.num_edges()))
+    logger = logging.getLogger(__name__)
+    logger.info("Hypergraph info - nodes: %s edges: %s", H.num_nodes(), H.num_edges())
     lcc = H.largest_component()
     H = H.subhypergraph(lcc)
     h = H.get_edges()
-    print(
-        "Subhypergraph info - nodes: {} edges: {}".format(H.num_nodes(), H.num_edges())
+    logger.info(
+        "Subhypergraph info - nodes: %s edges: %s", H.num_nodes(), H.num_edges()
     )
 
     adj = {}
@@ -51,18 +52,18 @@ def hyperlink_communities(
             adj[n].append(e)
         cont += 1
 
-    print("Computing distances")
+    logger.info("Computing distances")
 
     G = nx.Graph()
     G.add_nodes_from([i for i in range(len(h))])
 
     try:
-        X = _load_pickle("{}.hlcd".format(load_distances))
+        X = load_pickle("{}.hlcd".format(load_distances))
     except FileNotFoundError:
         vis = {}
         c = 0
         for n in adj:
-            print("Done {} of {}".format(c, len(adj)))
+            logger.info("Done %s of %s", c, len(adj))
             for i in range(len(adj[n]) - 1):
                 for j in range(i + 1, len(adj[n])):
                     k = tuple(sorted((edge_to_id[adj[n][i]], edge_to_id[adj[n][j]])))
@@ -78,9 +79,9 @@ def hyperlink_communities(
             c += 1
 
         X = nx.to_numpy_array(G, weight="weight", nonedge=1.0)
-        _save_pickle(X, "{}.hlcd".format(save_distances))
+        save_pickle(X, "{}.hlcd".format(save_distances))
 
-    print("dist computed")
+    logger.info("dist computed")
 
     np.fill_diagonal(X, 0.0)
     dist_matrix = ssd.squareform(X)

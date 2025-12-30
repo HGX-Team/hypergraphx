@@ -276,6 +276,9 @@ class MultiplexHypergraph(BaseHypergraph):
         ------
         ValueError
             If the hypergraph is weighted and no weight is provided or if the hypergraph is not weighted and a weight is provided.
+        Notes
+        -----
+        Duplicate unweighted edges are ignored; duplicate weighted edges accumulate weights.
         """
         self._existing_layers.add(layer)
         edge_key = self._normalize_edge(edge, layer=layer)

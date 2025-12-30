@@ -1,3 +1,5 @@
+import logging
+
 from hypergraphx import DirectedHypergraph
 from hypergraphx.generation.directed_configuration_model import (
     directed_configuration_model,
@@ -61,7 +63,8 @@ def compute_directed_motifs(
     edges = hypergraph.get_edges(size=order, up_to=True)
     output = {}
 
-    print("Computing observed motifs of order {}...".format(order))
+    logger = logging.getLogger(__name__)
+    logger.info("Computing observed motifs of order %s...", order)
 
     if order == 3:
         output["observed"] = _motifs_order_3(edges)
@@ -79,9 +82,7 @@ def compute_directed_motifs(
     results = []
 
     for i in range(ROUNDS):
-        print(
-            "Computing config model motifs of order {}. Step: {}".format(order, i + 1)
-        )
+        logger.info("Computing config model motifs of order %s. Step: %s", order, i + 1)
         e1 = directed_configuration_model(hypergraph).get_edges()
 
         if order == 3:

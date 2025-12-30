@@ -1,6 +1,14 @@
+import logging
 import numpy as np
 from scipy.integrate import solve_ivp
 from scipy.special import comb, factorial
+
+logger = logging.getLogger(__name__)
+
+
+def _log(*args, **kwargs):
+    message = " ".join(str(a) for a in args)
+    logger.info(message)
 
 
 def lin_system(t, X, F, JF, JH, alpha, *params):
@@ -95,7 +103,7 @@ def sprott_algorithm(
     lyap = np.zeros((C,))
     for iter in range(C):
         if verbose:
-            print("Integrating over cycle " + str(iter + 1) + " of " + str(C))
+            _log("Integrating over cycle " + str(iter + 1) + " of " + str(C))
         sol = solve_ivp(
             fun=lin_system,
             t_span=[0.0, integration_time],
@@ -168,7 +176,7 @@ def sprott_algorithm_multi(
     lyap = np.zeros((C,))
     for iter in range(C):
         if verbose:
-            print("Integrating over cycle " + str(iter + 1) + " of " + str(C))
+            _log("Integrating over cycle " + str(iter + 1) + " of " + str(C))
 
         if all2all:
             sol = solve_ivp(
@@ -203,17 +211,17 @@ def is_natural_coupling(JHs, dim, verbose=True):
 
         if (JH1(X) - JH2(X)).any():
             if verbose:
-                print("The coupling is not natural")
+                _log("The coupling is not natural")
             return False
 
     if verbose:
-        print("The coupling is natural")
+        _log("The coupling is natural")
     return True
 
 
 def is_all_to_all(hypergraph, verbose=True):
     if hypergraph.is_weighted():
-        print(
+        _log(
             "The higher-order network is weighted. Only unweighted higher-order networks are considered"
         )
         return False
@@ -223,9 +231,9 @@ def is_all_to_all(hypergraph, verbose=True):
             num_edges = hypergraph.num_edges(order=order)
             if not comb(N, order + 1) == num_edges:
                 if verbose:
-                    print("The higher-order network is not all-to-all")
+                    _log("The higher-order network is not all-to-all")
                 return False
 
         if verbose:
-            print("The higher-order network is all-to-all")
+            _log("The higher-order network is all-to-all")
         return True

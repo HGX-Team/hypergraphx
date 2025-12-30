@@ -116,6 +116,9 @@ class Hypergraph(BaseHypergraph):
         ------
         ValueError
             If the hypergraph is weighted and no weight is provided or if the hypergraph is not weighted and a weight is provided.
+        Notes
+        -----
+        Duplicate unweighted edges are ignored; duplicate weighted edges accumulate weights.
         """
         edge_key = self._normalize_edge(edge)
         self._add_edge(edge_key, weight=weight, metadata=metadata)
@@ -142,6 +145,9 @@ class Hypergraph(BaseHypergraph):
         ------
         ValueError
             If the hypergraph is weighted and no weights are provided or if the hypergraph is not weighted and weights are provided.
+        Notes
+        -----
+        Duplicate unweighted edges are ignored; duplicate weighted edges accumulate weights.
 
         """
         if edge_list is not None:
@@ -353,7 +359,7 @@ class Hypergraph(BaseHypergraph):
             If both orders and sizes are None or if both orders and sizes are specified.
         """
         if orders is None and sizes is None:
-            raise ValueError(
+            raise InvalidParameterError(
                 "At least one between orders and sizes should be specified"
             )
         if orders is not None and sizes is not None:

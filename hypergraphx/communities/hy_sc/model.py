@@ -1,5 +1,6 @@
 from typing import Optional, Tuple
 
+import logging
 import numpy as np
 from sklearn.cluster import KMeans
 
@@ -162,5 +163,6 @@ class HySC:
         """Save the results in a .npz file."""
         outfile = self.out_folder + "theta" + self.end_file
         np.savez_compressed(outfile + ".npz", u=self.u)
-        print(f'\nInferred parameters saved in: {outfile + ".npz"}')
-        print('To load: theta=np.load(filename), then e.g. theta["u"]')
+        logger = logging.getLogger(__name__)
+        logger.info("Inferred parameters saved in: %s", outfile + ".npz")
+        logger.info('To load: theta=np.load(filename), then e.g. theta["u"]')

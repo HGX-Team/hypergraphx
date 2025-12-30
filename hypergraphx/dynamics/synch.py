@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 from scipy.integrate import solve_ivp
 from scipy.linalg import eigh
@@ -10,6 +11,12 @@ from hypergraphx.dynamics.utils import (
 )
 from hypergraphx.linalg.linalg import compute_multiorder_laplacian
 
+logger = logging.getLogger(__name__)
+
+
+def _log(*args, **kwargs):
+    message = " ".join(str(a) for a in args)
+    logger.info(message)
 
 def MSF(
     F,
@@ -51,7 +58,7 @@ def MSF(
 
     # Here we make sure to be on the system attractor
     if verbose:
-        print("Getting to the attractor...")
+        _log("Getting to the attractor...")
     sol = solve_ivp(
         fun=F,
         t_span=[0.0, integration_time],
@@ -69,11 +76,11 @@ def MSF(
     Y0 = np.concatenate((X0, Eta0))
 
     if verbose:
-        print("Evaluating the Master Stability Function...")
+        _log("Evaluating the Master Stability Function...")
     MSF = np.zeros(shape=len(interval))
     for i, alpha in enumerate(interval):
         if verbose:
-            print("alpha = " + str(alpha))
+            _log("alpha = " + str(alpha))
         MSF[i] = sprott_algorithm(
             alpha,
             C,
@@ -135,7 +142,7 @@ def MSF_multi_coupling(
 
     # Here we make sure to be on the system attractor
     if verbose:
-        print("Getting to the attractor...")
+        _log("Getting to the attractor...")
     sol = solve_ivp(
         fun=F,
         t_span=[0.0, integration_time],
@@ -153,11 +160,11 @@ def MSF_multi_coupling(
     Y0 = np.concatenate((X0, Eta0))
 
     if verbose:
-        print("Evaluating the Master Stability Function...")
+        _log("Evaluating the Master Stability Function...")
     MSF = np.zeros(shape=len(interval))
     for i, alpha in enumerate(interval):
         if verbose:
-            print("alpha = " + str(alpha))
+            _log("alpha = " + str(alpha))
         MSF[i] = sprott_algorithm_multi(
             alpha,
             C,
@@ -204,7 +211,7 @@ def higher_order_MSF(
         spectrum = eigh(multiorder_laplacian.toarray(), eigvals_only=True)
 
         if verbose:
-            print("Starting the evaluation of the Master Stability Function...")
+            _log("Starting the evaluation of the Master Stability Function...")
         master_stability_function = MSF(
             F,
             JF,
@@ -219,7 +226,7 @@ def higher_order_MSF(
         )
 
         if verbose:
-            print(
+            _log(
                 "Starting the evaluation of the Lyapunov exponents for the Laplacian eigenvalues..."
             )
         hon_master_stability_function = MSF(
@@ -274,6 +281,6 @@ def higher_order_MSF(
         return master_stability_function, hon_master_stability_function, [sigmas[0] * N]
 
     # If the coupling is not natural and the hypergraph is not all-to-all, no MSF can be calculated
-    print("No Master Stability Function can be evaluated for this system.")
+    _log("No Master Stability Function can be evaluated for this system.")
 
     return None

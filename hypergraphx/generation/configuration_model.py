@@ -1,8 +1,10 @@
 from collections import Counter
+import logging
 
 import numpy as np
 
 from hypergraphx import Hypergraph
+from hypergraphx.exceptions import InvalidParameterError
 
 
 def _cm_MCMC(hypergraph, n_steps=1000, label="edge", n_clash=1, detailed=True):
@@ -56,8 +58,9 @@ def _cm_MCMC(hypergraph, n_steps=1000, label="edge", n_clash=1, detailed=True):
             elif len(g2) < len(f2):
                 g2.append(v)
         if len(g1) != len(f1):
-            print("oops")
-            print(f1, f2, g1, g2)
+            logger = logging.getLogger(__name__)
+            logger.warning("Inconsistent reshuffle sizes.")
+            logger.debug("%s %s %s %s", f1, f2, g1, g2)
         return tuple(sorted(g1)), tuple(sorted(g2))
 
     def stub_edge_mh(message=True):
@@ -87,7 +90,7 @@ def _cm_MCMC(hypergraph, n_steps=1000, label="edge", n_clash=1, detailed=True):
         mh_rounds += 1
 
         if message:
-            print(str(n_steps) + " steps completed.")
+            logging.getLogger(__name__).info("%s steps completed.", n_steps)
 
         return new_h
 
@@ -170,13 +173,11 @@ def _cm_MCMC(hypergraph, n_steps=1000, label="edge", n_clash=1, detailed=True):
             c.update(add)
             done = k - n_rejected >= n_steps
         if message:
-            print(
-                str(epoch_num)
-                + " epochs completed, "
-                + str(k - n_rejected)
-                + " steps taken, "
-                + str(n_rejected)
-                + " steps rejected."
+            logging.getLogger(__name__).info(
+                "%s epochs completed, %s steps taken, %s steps rejected.",
+                epoch_num,
+                k - n_rejected,
+                n_rejected,
             )
 
         new_h = Hypergraph()
@@ -190,7 +191,7 @@ def _cm_MCMC(hypergraph, n_steps=1000, label="edge", n_clash=1, detailed=True):
     elif label == "vertex":
         return vertex_labeled_mh()
     else:
-        print("not implemented")
+        logging.getLogger(__name__).warning("Not implemented")
 
 
 def configuration_model(
@@ -203,7 +204,7 @@ def configuration_model(
     detailed=True,
 ):
     if order is not None and size is not None:
-        raise ValueError("Only one of order and size can be specified.")
+        raise InvalidParameterError("Only one of order and size can be specified.")
     if order is None and size is None:
         return _cm_MCMC(
             hypergraph, n_steps=n_steps, label=label, n_clash=n_clash, detailed=detailed

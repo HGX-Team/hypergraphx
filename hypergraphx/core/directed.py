@@ -92,7 +92,10 @@ class DirectedHypergraph(BaseHypergraph):
 
     def _add_edge(self, edge_key, weight=None, metadata=None):
         weight = self._validate_weight(weight)
+        existed = edge_key in self._edge_list
         edge_id = self._add_edge_key(edge_key, weight=weight, metadata=metadata)
+        if existed:
+            return
         source, target = edge_key
         for node in source:
             self.add_node(node)
@@ -350,6 +353,9 @@ class DirectedHypergraph(BaseHypergraph):
         ------
         ValueError
             If the hypergraph is weighted and no weight is provided or if the hypergraph is not weighted and a weight is provided.
+        Notes
+        -----
+        Duplicate unweighted edges are ignored; duplicate weighted edges accumulate weights.
         """
         edge_key = self._normalize_edge(edge)
         self._add_edge(edge_key, weight=weight, metadata=metadata)
@@ -371,6 +377,9 @@ class DirectedHypergraph(BaseHypergraph):
         Returns
         -------
         None
+        Notes
+        -----
+        Duplicate unweighted edges are ignored; duplicate weighted edges accumulate weights.
         """
         if weights is not None and not self._weighted:
             warnings.warn(
