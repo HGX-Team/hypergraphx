@@ -11,7 +11,7 @@ To install from source:
 
 .. code:: bash
 
-   pip install -e .[all]
+   pip install -e .
 
 Optional dependencies
 ---------------------

@@ -48,12 +48,12 @@ Hypergraphx (HGX) is a Python library for higher-order network analysis.
 - Data: To appear soon
 
 Higher-order data repository
-==================
+============================
 
 To appear soon
 
 HGX Team
-============
+========
 
 Project coordinators:
 
@@ -71,7 +71,7 @@ Core members:
 * Nicolò Ruggeri
 
 Reference
-===================
+=========
 * Lotito, Quintino Francesco, et al. "Hypergraphx: a library for higher-order network analysis." Journal of Complex Networks 11.3 (2023): cnad019.
 
 Contributing
