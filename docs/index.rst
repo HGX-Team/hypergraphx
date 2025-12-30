@@ -16,7 +16,7 @@ Welcome to Hypergraphx's documentation!
    :caption: Tutorials
    :hidden:
 
-   Link to GitHub <https://github.com/HGX-Team/hypergraphx/tree/master/tutorials>
+   tutorials
 
 .. toctree::
    :maxdepth: 2
@@ -88,4 +88,3 @@ This project is licensed under the `BSD 3-Clause License
 <https://github.com/HGX-Team/hypergraphx/blob/main/LICENSE.md>`_.
 
 Copyright (C) 2023 HGX-Team
-

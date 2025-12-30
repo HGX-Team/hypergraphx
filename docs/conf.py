@@ -29,6 +29,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx.ext.mathjax",
+    "nbsphinx",
 ]
 
 templates_path = ["_templates"]
@@ -40,3 +41,6 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "furo"
 html_static_path = ["_static"]
+
+# Render notebooks without executing them on RTD.
+nbsphinx_execute = "never"
