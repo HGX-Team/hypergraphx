@@ -48,7 +48,15 @@ def plot_motifs(motifs: list, save_name: str = None):
         raise ValueError("Motifs must be a list of length 6.")
     motifs = _sort_for_visualization(motifs)
     cols = ["#cd3031" if (x < 0) else "#557fa3" for x in motifs]
-    g = sns.barplot(x=["I", "II", "III", "IV", "V", "VI"], y=motifs, palette=cols)
+    labels = ["I", "II", "III", "IV", "V", "VI"]
+    g = sns.barplot(
+        x=labels,
+        y=motifs,
+        hue=labels,
+        palette=cols,
+        dodge=False,
+        legend=False,
+    )
     g.axhline(0, color="black", linewidth=0.5)
     plt.ylim(-1, 1)
     plt.ylabel("Motif abundance score")

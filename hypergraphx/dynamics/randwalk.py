@@ -32,11 +32,8 @@ def transition_matrix(HG: Hypergraph) -> sparse.spmatrix:
             for j in range(i + 1, len(l)):
                 T[l[i], l[j]] += len(l) - 1
                 T[l[j], l[i]] += len(l) - 1
-    # cast t to numpy.matrix
-    # make it sparse
-
-    T = np.matrix(T)
-    T = T / T.sum(axis=1)
+    row_sums = T.sum(axis=1, keepdims=True)
+    T = T / row_sums
 
     T = sparse.csr_matrix(T)
     return T

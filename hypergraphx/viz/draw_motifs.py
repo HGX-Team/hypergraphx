@@ -63,7 +63,14 @@ def draw_motifs(patterns,
                 nx.draw_networkx_edges(G, pos, edgelist=[tuple(hedge)], ax=ax, edge_color=edge_color, width=2)
             else:
                 color = edge_size_colors[edge_size]
-                polygon = Polygon(hedge_pos, closed=True, fill=True, alpha=0.3, color=color, edgecolor=edge_color)
+                polygon = Polygon(
+                    hedge_pos,
+                    closed=True,
+                    fill=True,
+                    alpha=0.3,
+                    facecolor=color,
+                    edgecolor=edge_color,
+                )
                 ax.add_patch(polygon)
 
         ax.axis('off')
