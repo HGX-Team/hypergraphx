@@ -25,6 +25,14 @@ def read(*paths, **kwargs):
     return content
 
 
+def read_requirements(path="requirements.txt"):
+    return [
+        line.strip()
+        for line in read(path).splitlines()
+        if line.strip() and not line.strip().startswith("#")
+    ]
+
+
 setup(
     name="hypergraphx",
     version=read_version(),
@@ -37,24 +45,17 @@ setup(
     url="https://github.com/HGX-Team/hypergraphx",
     keywords=["hypergraphs", "networks"],
     packages=find_packages(exclude=["tests", ".github"]),
-    install_requires=[
-        "numpy",
-        "scipy",
-        "networkx",
-        "pandas",
-        "scikit-learn",
-        "pytest",
-        "matplotlib",
-        "seaborn",
-    ],
+    install_requires=read_requirements(),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Build Tools",
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
 )
