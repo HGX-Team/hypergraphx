@@ -4,10 +4,18 @@ hypergraphx.filters package
 Submodules
 ----------
 
-hypergraphx.filters.filters module
-----------------------------------
+hypergraphx.filters.metadata\_filters module
+--------------------------------------------
 
-.. automodule:: hypergraphx.filters.filters
+.. automodule:: hypergraphx.filters.metadata_filters
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+hypergraphx.filters.statistical\_filters module
+-----------------------------------------------
+
+.. automodule:: hypergraphx.filters.statistical_filters
    :members:
    :undoc-members:
    :show-inheritance:

@@ -4,10 +4,10 @@ hypergraphx.motifs package
 Submodules
 ----------
 
-hypergraphx.motifs.approx\_motifs module
-----------------------------------------
+hypergraphx.motifs.directed\_motifs module
+------------------------------------------
 
-.. automodule:: hypergraphx.motifs.approx_motifs
+.. automodule:: hypergraphx.motifs.directed_motifs
    :members:
    :undoc-members:
    :show-inheritance:

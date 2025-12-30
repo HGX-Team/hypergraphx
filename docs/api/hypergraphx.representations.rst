@@ -12,10 +12,10 @@ hypergraphx.representations.projections module
    :undoc-members:
    :show-inheritance:
 
-hypergraphx.representations.simplicial module
----------------------------------------------
+hypergraphx.representations.simplicial\_complex module
+------------------------------------------------------
 
-.. automodule:: hypergraphx.representations.simplicial
+.. automodule:: hypergraphx.representations.simplicial_complex
    :members:
    :undoc-members:
    :show-inheritance:
