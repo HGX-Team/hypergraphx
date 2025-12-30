@@ -3,26 +3,20 @@ Welcome to Hypergraphx's documentation!
 .. image:: ../logo/logo.png
   :width: 200
 
+Hypergraphx (HGX) is a Python library for higher-order network analysis.
+
 .. toctree::
    :maxdepth: 2
    :caption: Home
-   :hidden:
 
-   installation
    overview
+   installation
    quickstart
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Tutorials
-   :hidden:
-
    tutorials
 
 .. toctree::
    :maxdepth: 2
    :caption: API Reference
-   :hidden:
 
    Core <api/hypergraphx.core.rst>
    Communities <api/hypergraphx.communities.rst>
