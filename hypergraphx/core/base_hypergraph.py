@@ -216,6 +216,9 @@ class BaseHypergraph(SerializationMixin):
         edge_id = self._edge_list[edge_key]
         for node in self._edge_nodes(edge_key):
             self._remove_incidence(node, edge_id, edge_key)
+        for key in list(self._incidences_metadata):
+            if key[0] == edge_key:
+                del self._incidences_metadata[key]
         del self._reverse_edge_list[edge_id]
         if edge_id in self._weights:
             del self._weights[edge_id]

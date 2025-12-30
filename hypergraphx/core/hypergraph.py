@@ -145,6 +145,13 @@ class Hypergraph(BaseHypergraph):
             If the hypergraph is weighted and no weights are provided or if the hypergraph is not weighted and weights are provided.
 
         """
+        if edge_list is not None:
+            edge_list = list(edge_list)
+        if weights is not None:
+            weights = list(weights)
+        if metadata is not None:
+            metadata = list(metadata)
+
         if weights is not None and not self._weighted:
             warnings.warn(
                 "Weights are provided but the hypergraph is not weighted. The hypergraph will be weighted.",
@@ -153,11 +160,20 @@ class Hypergraph(BaseHypergraph):
             self._weighted = True
 
         if self._weighted and weights is not None:
-            if len(set(edge_list)) != len(list(edge_list)):
-                raise ValueError(
-                    "If weights are provided, the edge list must not contain repeated edges."
-                )
-            if len(list(edge_list)) != len(list(weights)):
+            try:
+                if len(set(edge_list)) != len(edge_list):
+                    raise ValueError(
+                        "If weights are provided, the edge list must not contain repeated edges."
+                    )
+            except TypeError:
+                seen = []
+                for edge in edge_list:
+                    if edge in seen:
+                        raise ValueError(
+                            "If weights are provided, the edge list must not contain repeated edges."
+                        )
+                    seen.append(edge)
+            if len(edge_list) != len(weights):
                 raise ValueError("The number of edges and weights must be the same.")
 
         if edge_list is not None:

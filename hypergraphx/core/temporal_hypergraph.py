@@ -265,10 +265,10 @@ class TemporalHypergraph(BaseHypergraph):
 
         Parameters
         ----------
-        edge_list: list
-            A list of edges to add.
-        time_list: list
-            A list of times corresponding to each edge in `edge_list`.
+        edge_list: iterable
+            An iterable of edges to add.
+        time_list: iterable
+            An iterable of times corresponding to each edge in `edge_list`.
         weights: list, optional
             A list of weights for each edge in `edge_list`. Must be provided if the hypergraph is weighted.
         metadata: list, optional
@@ -277,12 +277,19 @@ class TemporalHypergraph(BaseHypergraph):
         Raises
         ------
         TypeError
-            If `edge_list` and `time_list` are not lists.
+            If `edge_list` and `time_list` are not iterable.
         ValueError
             If `edge_list` and `time_list` have mismatched lengths.
         """
-        if not isinstance(edge_list, list) or not isinstance(time_list, list):
-            raise TypeError("Edge list and time list must be lists")
+        try:
+            edge_list = list(edge_list)
+            time_list = list(time_list)
+        except TypeError as exc:
+            raise TypeError("Edge list and time list must be iterable") from exc
+        if weights is not None:
+            weights = list(weights)
+        if metadata is not None:
+            metadata = list(metadata)
 
         if len(edge_list) != len(time_list):
             raise ValueError("Edge list and time list must have the same length")
@@ -295,11 +302,20 @@ class TemporalHypergraph(BaseHypergraph):
             self._weighted = True
 
         if self._weighted and weights is not None:
-            if len(set(edge_list)) != len(list(edge_list)):
-                raise ValueError(
-                    "If weights are provided, the edge list must not contain repeated edges."
-                )
-            if len(list(edge_list)) != len(list(weights)):
+            try:
+                if len(set(edge_list)) != len(edge_list):
+                    raise ValueError(
+                        "If weights are provided, the edge list must not contain repeated edges."
+                    )
+            except TypeError:
+                seen = []
+                for edge in edge_list:
+                    if edge in seen:
+                        raise ValueError(
+                            "If weights are provided, the edge list must not contain repeated edges."
+                        )
+                    seen.append(edge)
+            if len(edge_list) != len(weights):
                 raise ValueError("The number of edges and weights must be the same.")
 
         if edge_list is not None:
