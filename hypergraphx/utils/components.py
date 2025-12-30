@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from hypergraphx.utils.traversal import _bfs
+from hypergraphx.exceptions import InvalidParameterError
 
 if TYPE_CHECKING:
     from hypergraphx.core.directed import DirectedHypergraph
@@ -24,7 +25,7 @@ def connected_components(hg: Hypergraph, order=None, size=None):
     list. The connected components of the hypergraph.
     """
     if order is not None and size is not None:
-        raise ValueError("Order and size cannot be both specified.")
+        raise InvalidParameterError("Order and size cannot be both specified.")
     visited = []
     components = []
     for node in hg.get_nodes():
@@ -50,7 +51,7 @@ def node_connected_component(hg: Hypergraph, node, order=None, size=None):
     list. The nodes in the connected component of the input node.
     """
     if order is not None and size is not None:
-        raise ValueError("Order and size cannot be both specified.")
+        raise InvalidParameterError("Order and size cannot be both specified.")
     return _bfs(hg, node, size=None, order=None)
 
 
@@ -68,7 +69,7 @@ def num_connected_components(hg: Hypergraph, order=None, size=None):
     int. The number of connected components.
     """
     if order is not None and size is not None:
-        raise ValueError("Order and size cannot be both specified.")
+        raise InvalidParameterError("Order and size cannot be both specified.")
     return len(hg.connected_components(size=None, order=None))
 
 
@@ -86,7 +87,7 @@ def largest_component(hg: Hypergraph, order=None, size=None):
     list. The nodes in the largest connected component.
     """
     if order is not None and size is not None:
-        raise ValueError("Order and size cannot be both specified.")
+        raise InvalidParameterError("Order and size cannot be both specified.")
     components = hg.connected_components(size=None, order=None)
     return max(components, key=len)
 
@@ -105,7 +106,7 @@ def largest_component_size(hg: Hypergraph, order=None, size=None):
     int. The size of the largest connected component.
     """
     if order is not None and size is not None:
-        raise ValueError("Order and size cannot be both specified.")
+        raise InvalidParameterError("Order and size cannot be both specified.")
     return len(hg.largest_component(size=None, order=None))
 
 
@@ -125,7 +126,7 @@ def isolated_nodes(
     list. The isolated nodes.
     """
     if order is not None and size is not None:
-        raise ValueError("Order and size cannot be both specified.")
+        raise InvalidParameterError("Order and size cannot be both specified.")
     return [
         node
         for node in hg.get_nodes()
@@ -153,7 +154,7 @@ def is_isolated(
     bool. True if the node is isolated, False otherwise.
     """
     if order is not None and size is not None:
-        raise ValueError("Order and size cannot be both specified.")
+        raise InvalidParameterError("Order and size cannot be both specified.")
     return len(list(hg.get_neighbors(node, order=order, size=size))) == 0
 
 
@@ -171,5 +172,5 @@ def is_connected(hg: Hypergraph, order=None, size=None):
     bool. True if the hypergraph is connected, False otherwise.
     """
     if order is not None and size is not None:
-        raise ValueError("Order and size cannot be both specified.")
+        raise InvalidParameterError("Order and size cannot be both specified.")
     return len(hg.connected_components(order=order, size=size)) == 1

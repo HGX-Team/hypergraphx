@@ -20,3 +20,7 @@ class InvalidFileTypeError(ValueError, HypergraphxError):
 
 class ReadwriteError(RuntimeError, HypergraphxError):
     """Raised when read/write operations fail."""
+
+
+class InvalidParameterError(ValueError, HypergraphxError):
+    """Raised when invalid or conflicting parameters are provided."""

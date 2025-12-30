@@ -2,8 +2,11 @@
 Generate random hypergraphs
 """
 
-import random, numpy as np
+import random
+import numpy as np
+
 from hypergraphx import Hypergraph
+from hypergraphx.exceptions import InvalidParameterError
 
 
 def random_hypergraph(num_nodes: int, num_edges_by_size: dict, seed=None):
@@ -111,7 +114,7 @@ def random_shuffle(
         or if p is not between 0 and 1.
     """
     if order is not None and size is not None:
-        raise ValueError("Order and size cannot be both specified.")
+        raise InvalidParameterError("Order and size cannot be both specified.")
     if order is None and size is None:
         raise ValueError("Order or size must be specified.")
     if size is None:
@@ -256,7 +259,7 @@ def add_random_edge(hg: Hypergraph, order=None, size=None, inplace=True, seed=No
         If order and size are both specified or neither are specified.
     """
     if order is not None and size is not None:
-        raise ValueError("Order and size cannot be both specified.")
+        raise InvalidParameterError("Order and size cannot be both specified.")
     if order is None and size is None:
         raise ValueError("Order or size must be specified.")
     if size is None:
@@ -308,7 +311,7 @@ def add_random_edges(
         If order and size are both specified or neither are specified.
     """
     if order is not None and size is not None:
-        raise ValueError("Order and size cannot be both specified.")
+        raise InvalidParameterError("Order and size cannot be both specified.")
     if order is None and size is None:
         raise ValueError("Order or size must be specified.")
     if size is None:

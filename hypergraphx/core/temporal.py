@@ -3,6 +3,7 @@ import warnings
 
 from .undirected import Hypergraph
 from hypergraphx.core.base import BaseHypergraph
+from hypergraphx.exceptions import InvalidParameterError, MissingNodeError
 from hypergraphx.utils.edges import canon_edge
 
 
@@ -411,7 +412,7 @@ class TemporalHypergraph(BaseHypergraph):
             A list of edges in the hypergraph.
         """
         if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
+            raise InvalidParameterError("Order and size cannot be both specified.")
         # if not subhypergraph and keep_isolated_nodes:
         #    raise ValueError("Cannot keep nodes if not returning subhypergraphs.")
 
@@ -664,12 +665,12 @@ class TemporalHypergraph(BaseHypergraph):
 
     def set_node_metadata(self, node, metadata):
         if node not in self._node_metadata:
-            raise ValueError("Node {} not in hypergraph.".format(node))
+            raise MissingNodeError(f"Node {node} not in hypergraph.")
         self._node_metadata[node] = metadata
 
     def get_node_metadata(self, node):
         if node not in self._node_metadata:
-            raise ValueError("Node {} not in hypergraph.".format(node))
+            raise MissingNodeError(f"Node {node} not in hypergraph.")
         return self._node_metadata[node]
 
     def get_all_nodes_metadata(self):
@@ -702,7 +703,7 @@ class TemporalHypergraph(BaseHypergraph):
 
     def set_attr_to_node_metadata(self, node, field, value):
         if node not in self._node_metadata:
-            raise ValueError("Node {} not in hypergraph.".format(node))
+            raise MissingNodeError(f"Node {node} not in hypergraph.")
         self._node_metadata[node][field] = value
 
     def set_attr_to_edge_metadata(self, edge, time, field, value):
@@ -711,7 +712,7 @@ class TemporalHypergraph(BaseHypergraph):
 
     def remove_attr_from_node_metadata(self, node, field):
         if node not in self._node_metadata:
-            raise ValueError("Node {} not in hypergraph.".format(node))
+            raise MissingNodeError(f"Node {node} not in hypergraph.")
         del self._node_metadata[node][field]
 
     def remove_attr_from_edge_metadata(self, edge, time, field):

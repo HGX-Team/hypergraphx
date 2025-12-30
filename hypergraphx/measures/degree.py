@@ -6,6 +6,7 @@ from hypergraphx import (
     TemporalHypergraph,
     MultiplexHypergraph,
 )
+from hypergraphx.exceptions import InvalidParameterError
 
 
 def degree(
@@ -34,7 +35,7 @@ def degree(
         The degree of the node.
     """
     if order is not None and size is not None:
-        raise ValueError("Order and size cannot be both specified.")
+        raise InvalidParameterError("Order and size cannot be both specified.")
     if order is None and size is None:
         return len(hg.get_incident_edges(node))
     elif size is not None:
@@ -64,7 +65,7 @@ def degree_sequence(
         The degree sequence of the hypergraph. The keys are the nodes and the values are the degrees.
     """
     if order is not None and size is not None:
-        raise ValueError("Order and size cannot be both specified.")
+        raise InvalidParameterError("Order and size cannot be both specified.")
     if size is not None:
         order = size - 1
     if order is None:
@@ -123,7 +124,7 @@ def degree_distribution(
         The degree distribution of the hypergraph. The keys are the degrees and the values are the number of nodes with that degree.
     """
     if order is not None and size is not None:
-        raise ValueError("Order and size cannot be both specified.")
+        raise InvalidParameterError("Order and size cannot be both specified.")
     if size is not None:
         order = size - 1
     if order is None:

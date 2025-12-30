@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from hypergraphx.core.undirected import Hypergraph
 
+from hypergraphx.exceptions import MissingNodeError
+
 
 def _bfs(hg: Hypergraph, start, max_depth=None, order=None, size=None):
     """
@@ -27,7 +29,7 @@ def _bfs(hg: Hypergraph, start, max_depth=None, order=None, size=None):
     ValueError. If the start node is not in the hypergraph.
     """
     if not hg.check_node(start):
-        raise ValueError(f"Node {start} not in hypergraph.")
+        raise MissingNodeError(f"Node {start} not in hypergraph.")
     visited = set()
     queue = deque([(start, 0)])
 
@@ -65,7 +67,7 @@ def _dfs(hg: Hypergraph, start, max_depth=None, order=None, size=None):
     ValueError. If the start node is not in the hypergraph.
     """
     if not hg.check_node(start):
-        raise ValueError(f"Node {start} not in hypergraph.")
+        raise MissingNodeError(f"Node {start} not in hypergraph.")
     visited = set()
     stack = [(start, 0)]
 

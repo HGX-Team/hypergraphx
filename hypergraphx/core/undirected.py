@@ -1,6 +1,7 @@
 import warnings
 
 from hypergraphx.core.base import BaseHypergraph
+from hypergraphx.exceptions import InvalidParameterError, MissingEdgeError
 
 
 class Hypergraph(BaseHypergraph):
@@ -204,7 +205,7 @@ class Hypergraph(BaseHypergraph):
         """
         edge_key = self._normalize_edge(edge)
         if not self._edge_exists(edge_key):
-            raise KeyError("Edge {} not in hypergraph.".format(edge_key))
+            raise MissingEdgeError(f"Edge {edge_key} not in hypergraph.")
         self._remove_edge_key(edge_key)
 
     def remove_edges(self, edge_list):
@@ -356,7 +357,7 @@ class Hypergraph(BaseHypergraph):
                 "At least one between orders and sizes should be specified"
             )
         if orders is not None and sizes is not None:
-            raise ValueError("Order and size cannot be both specified.")
+            raise InvalidParameterError("Order and size cannot be both specified.")
         h = Hypergraph(weighted=self.is_weighted())
         if keep_nodes:
             h.add_nodes(node_list=list(self.get_nodes()))

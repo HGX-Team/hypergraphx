@@ -1,6 +1,7 @@
 import pytest
 
 from hypergraphx import Hypergraph
+from hypergraphx.exceptions import MissingEdgeError
 
 
 def test_hypergraph_initialization_with_metadata():
@@ -339,7 +340,7 @@ def test_remove_edge_nonexistent_edge():
     hg = Hypergraph()
     hg.add_edge((1, 2))
     assert (3, 4) not in hg._edge_list
-    with pytest.raises(KeyError):
+    with pytest.raises(MissingEdgeError):
         hg.remove_edge((3, 4))
 
 

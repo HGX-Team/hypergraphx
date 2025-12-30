@@ -2,6 +2,7 @@ import warnings
 from typing import List, Tuple
 
 from hypergraphx.core.base import BaseHypergraph
+from hypergraphx.exceptions import InvalidParameterError, MissingNodeError
 
 
 class DirectedHypergraph(BaseHypergraph):
@@ -249,11 +250,11 @@ class DirectedHypergraph(BaseHypergraph):
             If order and size are both specified or neither are specified.
         """
         if node not in self._adj_source.keys():
-            raise ValueError("Node {} not in hypergraph.".format(node))
+            raise MissingNodeError(f"Node {node} not in hypergraph.")
         if node not in self._adj_target.keys():
-            raise ValueError("Node {} not in hypergraph.".format(node))
+            raise MissingNodeError(f"Node {node} not in hypergraph.")
         if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
+            raise InvalidParameterError("Order and size cannot be both specified.")
         if order is None and size is None:
             neigh = set()
             edges = self.get_incident_edges(node)
@@ -294,7 +295,7 @@ class DirectedHypergraph(BaseHypergraph):
             The list of incident edges.
         """
         if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
+            raise InvalidParameterError("Order and size cannot be both specified.")
         if order is None and size is None:
             return self.get_source_edges(node) + self.get_target_edges(node)
         elif size is not None:
@@ -406,9 +407,9 @@ class DirectedHypergraph(BaseHypergraph):
             The list of incident in-edges.
         """
         if node not in self._adj_source:
-            raise ValueError(f"Node {node} not in hypergraph.")
+            raise MissingNodeError(f"Node {node} not in hypergraph.")
         if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
+            raise InvalidParameterError("Order and size cannot be both specified.")
         if order is None and size is None:
             return [self._reverse_edge_list[e_idx] for e_idx in self._adj_source[node]]
         if size is not None:
@@ -439,9 +440,9 @@ class DirectedHypergraph(BaseHypergraph):
             The list of incident out-edges.
         """
         if node not in self._adj_target:
-            raise ValueError(f"Node {node} not in hypergraph.")
+            raise MissingNodeError(f"Node {node} not in hypergraph.")
         if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
+            raise InvalidParameterError("Order and size cannot be both specified.")
         if order is None and size is None:
             return [self._reverse_edge_list[e_idx] for e_idx in self._adj_target[node]]
         if size is not None:

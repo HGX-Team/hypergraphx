@@ -52,10 +52,10 @@ hypergraphx.core.temporal module
    :undoc-members:
    :show-inheritance:
 
-hypergraphx.core.serialization module
+hypergraphx.core.base module
 -------------------------------------
 
-.. automodule:: hypergraphx.core.serialization
+.. automodule:: hypergraphx.core.base
    :members:
    :undoc-members:
    :show-inheritance:

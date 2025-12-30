@@ -1,6 +1,10 @@
 import copy
 
-from hypergraphx.exceptions import MissingNodeError, MissingEdgeError
+from hypergraphx.exceptions import (
+    InvalidParameterError,
+    MissingEdgeError,
+    MissingNodeError,
+)
 
 
 class SerializationMixin:
@@ -225,14 +229,14 @@ class BaseHypergraph(SerializationMixin):
         if node not in primary_adj:
             self._raise_missing_node(node)
         if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
+            raise InvalidParameterError("Order and size cannot be both specified.")
         edges = [self._reverse_edge_list[edge_id] for edge_id in primary_adj[node]]
         return self._filter_edges_by_order(edges, order=order, size=size)
 
     def get_neighbors(self, node, order=None, size=None):
         """Return the set of neighbors of a node via incident edges."""
         if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
+            raise InvalidParameterError("Order and size cannot be both specified.")
         edges = self.get_incident_edges(node, order=order, size=size)
         neighbors = set()
         for edge_key in edges:
@@ -460,7 +464,7 @@ class BaseHypergraph(SerializationMixin):
     # Query helpers
     def _filter_edges_by_order(self, edges, order=None, size=None, up_to=False):
         if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
+            raise InvalidParameterError("Order and size cannot be both specified.")
         if order is None and size is None:
             return list(edges)
         if size is not None:
@@ -479,7 +483,7 @@ class BaseHypergraph(SerializationMixin):
         metadata=False,
     ):
         if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
+            raise InvalidParameterError("Order and size cannot be both specified.")
         if not subhypergraph and keep_isolated_nodes:
             raise ValueError("Cannot keep nodes if not returning subhypergraphs.")
 
@@ -524,7 +528,7 @@ class BaseHypergraph(SerializationMixin):
         """Return edge weights, optionally filtered by order or size."""
         w = None
         if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
+            raise InvalidParameterError("Order and size cannot be both specified.")
         if order is None and size is None:
             w = {
                 edge: self._weights[self._edge_list[edge]] for edge in self._edge_list
@@ -553,7 +557,7 @@ class BaseHypergraph(SerializationMixin):
     def num_edges(self, order=None, size=None, up_to=False):
         """Return the number of edges, optionally filtered by order or size."""
         if order is not None and size is not None:
-            raise ValueError("Order and size cannot be both specified.")
+            raise InvalidParameterError("Order and size cannot be both specified.")
         if order is None and size is None:
             return len(self._edge_list)
         return len(
