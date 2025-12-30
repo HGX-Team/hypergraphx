@@ -1,5 +1,5 @@
-Quickstart
-==========
+🚀 Quickstart
+===========
 
 Common tasks and minimal examples. Copy and run.
 

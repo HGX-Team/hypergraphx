@@ -1,5 +1,7 @@
-Overview
-========
+🧭 Overview
+==========
+
+.. overview-start
 
 .. image:: ../logo/logo.png
   :width: 200
@@ -64,3 +66,5 @@ This project is licensed under the `BSD 3-Clause License
 <https://github.com/HGX-Team/hypergraphx/blob/main/LICENSE.md>`_.
 
 Copyright |copyright|
+
+.. overview-end

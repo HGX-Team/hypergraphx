@@ -1,5 +1,5 @@
-hypergraphx.linalg package
-==========================
+🧮 hypergraphx.linalg package
+=============================
 
 Submodules
 ----------

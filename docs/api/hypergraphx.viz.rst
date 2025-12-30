@@ -1,5 +1,5 @@
-hypergraphx.viz package
-=======================
+🎨 hypergraphx.viz package
+==========================
 
 Submodules
 ----------

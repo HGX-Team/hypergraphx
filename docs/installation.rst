@@ -1,5 +1,5 @@
-Installation
-============
+⚙️ Installation
+==============
 
 You can install HGX using pip:
 

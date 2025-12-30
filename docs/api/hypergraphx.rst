@@ -1,5 +1,5 @@
-hypergraphx package
-===================
+📦 hypergraphx package
+======================
 
 Subpackages
 -----------

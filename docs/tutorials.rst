@@ -1,5 +1,5 @@
-Tutorials
-=========
+📚 Tutorials
+===========
 
 Short, runnable notebooks covering core workflows and advanced analyses.
 

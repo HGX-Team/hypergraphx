@@ -1,5 +1,5 @@
-hypergraphx.core package
-========================
+🧩 hypergraphx.core package
+===========================
 
 Submodules
 ----------

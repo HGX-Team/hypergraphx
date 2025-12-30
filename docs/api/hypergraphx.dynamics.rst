@@ -1,5 +1,5 @@
-hypergraphx.dynamics package
-============================
+🌊 hypergraphx.dynamics package
+===============================
 
 Submodules
 ----------

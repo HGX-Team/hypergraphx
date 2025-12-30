@@ -1,5 +1,5 @@
-hypergraphx.generation package
-==============================
+🎲 hypergraphx.generation package
+================================
 
 Submodules
 ----------
