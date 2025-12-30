@@ -1,15 +1,10 @@
 Welcome to Hypergraphx's documentation!
 =======================================
 
-.. include:: overview.rst
-   :start-after: .. overview-start
-   :end-before: .. overview-end
-
 .. toctree::
    :maxdepth: 2
-   :caption: 🏠 Home
+   :caption: 🚀 Get Started
 
-   🧭 Overview <overview>
    ⚙️ Installation <installation>
    🚀 Quickstart <quickstart>
    📚 Tutorials <tutorials>
@@ -34,7 +29,4 @@ Welcome to Hypergraphx's documentation!
 
 ----
 
-.. include:: overview.rst
-   :start-after: .. overview-start
-   :end-before: .. overview-end
 Copyright |copyright|
