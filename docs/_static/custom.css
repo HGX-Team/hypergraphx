@@ -1,0 +1,16 @@
+/* Improve sidebar readability without changing the main content scale. */
+.sidebar-scroll,
+.sidebar-drawer {
+  font-size: 0.98rem;
+}
+
+.sidebar-tree .caption,
+.sidebar-tree .caption-text {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.sidebar-tree li a {
+  font-size: 0.95rem;
+}
