@@ -64,6 +64,7 @@ def test_calc_sizes_redundancies_and_props():
     np.fill_diagonal(avg_ord.values, 0)
     avg_ord.values[0, 1] = 3
     avg_ord.values[1, 0] = 3
+    # If only one boolean class appears, unstack drops the other column.
     props = calc_prop_true_dyad_paths_per_spl(spl.to_numpy(), avg_ord.to_numpy())
     assert "spl" in props.columns
     assert any(col in props.columns for col in ("prop_False", "prop_True"))
