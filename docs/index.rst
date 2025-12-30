@@ -1,7 +1,5 @@
 Welcome to Hypergraphx's documentation!
 =======================================
-.. image:: ../logo/logo.png
-  :width: 200
 
 .. include:: overview.rst
    :start-after: .. overview-start

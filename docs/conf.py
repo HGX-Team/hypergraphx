@@ -43,6 +43,7 @@ autosectionlabel_prefix_document = True
 
 html_theme = "furo"
 html_static_path = ["_static"]
+html_logo = "../logo/logo_cropped.png"
 
 # Render notebooks without executing them on RTD.
 nbsphinx_execute = "never"

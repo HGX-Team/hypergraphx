@@ -5,7 +5,7 @@ Submodules
 ----------
 
 hypergraphx.utils.components module
----------------------------
+-----------------------------------
 
 .. automodule:: hypergraphx.utils.components
    :members:
@@ -29,7 +29,7 @@ hypergraphx.utils.labeling module
    :show-inheritance:
 
 hypergraphx.utils.traversal module
--------------------------------
+----------------------------------
 
 .. automodule:: hypergraphx.utils.traversal
    :members:
