@@ -411,15 +411,11 @@ class TemporalHypergraph(BaseHypergraph):
                     edges.append((_t, _edge))
         else:
             raise ValueError("Time window must be a tuple of length 2 or None")
-        edges = self._filter_edges_by_order(
-            edges, order=order, size=size, up_to=up_to
-        )
+        edges = self._filter_edges_by_order(edges, order=order, size=size, up_to=up_to)
         return (
             edges
             if not metadata
-            else {
-                edge: self.get_edge_metadata(edge[1], edge[0]) for edge in edges
-            }
+            else {edge: self.get_edge_metadata(edge[1], edge[0]) for edge in edges}
         )
 
     def aggregate(self, time_window):

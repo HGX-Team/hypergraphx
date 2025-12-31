@@ -243,9 +243,7 @@ class HypergraphMT:
         )
         # List of list containing the indices of hyperedges with a given degree.
         edges_by_size = hypergraph.edges_by_size(index_by="position")
-        self.HyD2eId = [
-            edges_by_size.get(d, []) for d in range(2, self.D + 1)
-        ]
+        self.HyD2eId = [edges_by_size.get(d, []) for d in range(2, self.D + 1)]
         # Hyperedges' size.
         self.HyeId2D = np.array(
             hypergraph.get_sizes()
@@ -817,6 +815,8 @@ def func_lagrange_multiplier(lambda_i: float, num: np.array, den: float) -> floa
     """Return the objective function to find the lagrangian multiplier to enforce the constraint on the matrix u."""
     f = num / (lambda_i + den)
     return np.sum(f) - 1
+
+
 logger = logging.getLogger(__name__)
 
 

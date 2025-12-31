@@ -2,7 +2,11 @@ import numpy as np
 import pytest
 
 from hypergraphx import Hypergraph
-from hypergraphx.measures.eigen_centralities import CEC_centrality, ZEC_centrality, HEC_centrality
+from hypergraphx.measures.eigen_centralities import (
+    CEC_centrality,
+    ZEC_centrality,
+    HEC_centrality,
+)
 
 
 def _make_uniform_connected():

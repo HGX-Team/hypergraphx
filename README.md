@@ -235,5 +235,3 @@ our [license file](https://github.com/HGX-Team/hypergraphx/blob/master/LICENSE.m
 
 This project is supported by the Air Force Office of Scientific Research under award number FA8655-22-1-7025.
 
-
-

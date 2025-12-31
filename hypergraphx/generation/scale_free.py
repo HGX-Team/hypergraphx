@@ -40,7 +40,7 @@ def scale_free_hypergraph(
     Hypergraph
         Generated hypergraph.
     """
-    
+
     if num_nodes <= 0:
         raise ValueError("num_nodes must be positive")
     if not edges_by_size:
@@ -77,13 +77,17 @@ def scale_free_hypergraph(
         if s not in alpha_for:
             raise ValueError(f"Missing alpha for size {s} in alpha_by_size")
         if not (alpha_for[s] > 0):
-            raise ValueError(f"alpha must be > 0; got alpha_by_size[{s}]={alpha_for[s]}")
+            raise ValueError(
+                f"alpha must be > 0; got alpha_by_size[{s}]={alpha_for[s]}"
+            )
 
     # Correlation structure across size-layers
     if m_sizes > 1:
         lo = -1.0 / (m_sizes - 1)
         if not (lo <= rho <= 1.0):
-            raise ValueError(f"For {m_sizes} sizes, rho must be in [{lo}, 1]. Got {rho}.")
+            raise ValueError(
+                f"For {m_sizes} sizes, rho must be in [{lo}, 1]. Got {rho}."
+            )
         C = np.full((m_sizes, m_sizes), rho, dtype=float)
         np.fill_diagonal(C, 1.0)
         L = np.linalg.cholesky(C)

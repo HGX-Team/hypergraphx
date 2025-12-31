@@ -94,6 +94,7 @@ def draw_hypergraph(
     opt_dist: float = 0.5,
 ):
     """Visualize a hypergraph."""
+
     def _stable_color(order_value):
         rng = random.Random(order_value)
         return f"#{rng.randrange(0x1000000):06x}"

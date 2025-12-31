@@ -52,6 +52,17 @@ git checkout -b your-branch-name
 
 - Edit the files or add new files as required.
 - Once you've made your changes, save them.
+- Format Python code with Black before committing:
+
+```bash
+black .
+```
+
+- (Recommended) Install pre-commit so formatting happens automatically:
+
+```bash
+pre-commit install
+```
 
 ## 7. Commit Your Changes
 
@@ -94,4 +105,3 @@ Once your PR is approved, the maintainers will merge it into the main branch of 
 
 **Note:** Always follow the contribution guidelines provided by the repository maintainers, and always be respectful and
 constructive in your interactions.
-

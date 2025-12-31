@@ -8,7 +8,7 @@ def test_hyperedge_signature_vector_basic():
     """Test basic functionality of hyperedge signature vector calculation."""
     edges = [
         ((1, 2), (3, 4)),  # Hyperedge with source size 2, target size 2
-        ((5, ), (6, 7, 8)),  # Hyperedge with source size 1, target size 3
+        ((5,), (6, 7, 8)),  # Hyperedge with source size 1, target size 3
     ]
 
     hypergraph = DirectedHypergraph(edges)
@@ -18,6 +18,7 @@ def test_hyperedge_signature_vector_basic():
     print(result)
     expected = np.array([0, 0, 1, 0, 1, 0, 0, 0, 0])  # 3x3 matrix flattened
     assert np.array_equal(result, expected), f"Expected {expected}, got {result}"
+
 
 def test_hyperedge_signature_vector_with_max_size():
     """Test hyperedge signature vector with max_hyperedge_size specified."""
@@ -34,12 +35,14 @@ def test_hyperedge_signature_vector_with_max_size():
     expected = np.array([0])  # all edges exceed max size 2
     assert np.array_equal(result, expected), f"Expected {expected}, got {result}"
 
+
 def test_hyperedge_signature_vector_empty_hypergraph():
     """Test the function with an empty hypergraph."""
     hypergraph = DirectedHypergraph(edge_list=[])
     result = hyperedge_signature_vector(hypergraph)
     expected = np.array([])  # Expecting an empty array for an empty hypergraph
     assert np.array_equal(result, expected), f"Expected {expected}, got {result}"
+
 
 def test_hyperedge_signature_vector_large_edges_ignored():
     """Test that edges larger than max_hyperedge_size are ignored."""

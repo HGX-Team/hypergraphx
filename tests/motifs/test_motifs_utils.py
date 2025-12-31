@@ -1,4 +1,12 @@
-from hypergraphx.motifs.utils import diff_sum, norm_vector, avg, sigma, z_score, power_set, generate_motifs
+from hypergraphx.motifs.utils import (
+    diff_sum,
+    norm_vector,
+    avg,
+    sigma,
+    z_score,
+    power_set,
+    generate_motifs,
+)
 
 
 def test_diff_sum_and_norm_vector():

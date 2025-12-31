@@ -34,8 +34,12 @@ def test_intra_order_correlation_all_orders():
     """Test intra-order correlation for all orders returns dicts."""
     adj, annealed = _make_temporal_matrices()
 
-    mats = intra_order_correlation_matrices_all_orders(adj, annealed, max_order=2, tau=0)
-    funcs = intra_order_correlation_functions_all_orders(adj, annealed, max_order=2, tau=0)
+    mats = intra_order_correlation_matrices_all_orders(
+        adj, annealed, max_order=2, tau=0
+    )
+    funcs = intra_order_correlation_functions_all_orders(
+        adj, annealed, max_order=2, tau=0
+    )
 
     assert set(mats.keys()) == {1, 2}
     assert set(funcs.keys()) == {1, 2}
@@ -45,8 +49,12 @@ def test_cross_order_correlation_matrix_and_function():
     """Test cross-order correlation works for different orders."""
     adj, annealed = _make_temporal_matrices()
 
-    mat = cross_order_correlation_matrix_two_orders(adj, annealed, order1=1, order2=2, tau=0)
-    fun = cross_order_correlation_function_two_orders(adj, annealed, order1=1, order2=2, tau=0)
+    mat = cross_order_correlation_matrix_two_orders(
+        adj, annealed, order1=1, order2=2, tau=0
+    )
+    fun = cross_order_correlation_function_two_orders(
+        adj, annealed, order1=1, order2=2, tau=0
+    )
 
     assert mat.shape == (2, 2)
     assert np.isfinite(fun)

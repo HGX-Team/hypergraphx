@@ -11,7 +11,11 @@ from hypergraphx.exceptions import (
     MissingNodeError,
     ReadwriteError,
 )
-from hypergraphx.readwrite import load_hypergraph, load_hypergraph_from_server, save_hypergraph
+from hypergraphx.readwrite import (
+    load_hypergraph,
+    load_hypergraph_from_server,
+    save_hypergraph,
+)
 from . import readwrite
 
 import logging

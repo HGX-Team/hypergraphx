@@ -117,7 +117,6 @@ def test_incidence_all_orders(loaded_hypergraph: Hypergraph):
     inc_arr = hl.incidence_matrices_all_orders(loaded_hypergraph)
 
     for order_to_test in range(1, loaded_hypergraph.max_order() + 1):
-
         inc, mapping = hl.incidence_matrix_by_order(
             loaded_hypergraph, order=order_to_test, return_mapping=True
         )

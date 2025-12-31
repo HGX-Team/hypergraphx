@@ -25,8 +25,8 @@ def test_no_shuffle(dummy_hypergraph):
     original_edges = list(hg.get_edges(size=3))
     random_shuffle(hg, size=3, inplace=True, p=0.0, seed=42)
     new_edges = list(hg.get_edges(size=3))
-    assert (
-        set(new_edges) == set(original_edges)
+    assert set(new_edges) == set(
+        original_edges
     ), f"Expected edges unchanged for p=0, got {new_edges}"
 
 
@@ -42,8 +42,8 @@ def test_full_shuffle():
     random_shuffle(hg, size=3, inplace=True, p=1.0, seed=42)
     new_edges = list(hg.get_edges(size=3))
     # With p=1.0, all edges should be replaced with new random ones.
-    assert (
-        set(new_edges) != set(original_edges)
+    assert set(new_edges) != set(
+        original_edges
     ), f"Expected edges shuffled for p=1, got {new_edges}"
     assert len(new_edges) == len(
         original_edges

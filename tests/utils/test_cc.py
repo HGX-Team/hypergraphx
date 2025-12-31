@@ -95,15 +95,11 @@ def test_connected_components_size_equivalence():
 
     comps_order_1 = connected_components(hg, order=1)
     comps_size_2 = connected_components(hg, size=2)
-    assert {frozenset(c) for c in comps_order_1} == {
-        frozenset(c) for c in comps_size_2
-    }
+    assert {frozenset(c) for c in comps_order_1} == {frozenset(c) for c in comps_size_2}
 
     comps_order_2 = connected_components(hg, order=2)
     comps_size_3 = connected_components(hg, size=3)
-    assert {frozenset(c) for c in comps_order_2} == {
-        frozenset(c) for c in comps_size_3
-    }
+    assert {frozenset(c) for c in comps_order_2} == {frozenset(c) for c in comps_size_3}
 
 
 def test_connected_components_isolated_nodes_only():

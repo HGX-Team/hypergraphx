@@ -61,7 +61,9 @@ def _spearman_from_gaussian_rho(rho: float) -> float:
     return (6.0 / math.pi) * math.asin(rho / 2.0)
 
 
-def _activities_from_seed(num_nodes: int, sizes: list[int], alpha_by_size, rho: float, seed: int):
+def _activities_from_seed(
+    num_nodes: int, sizes: list[int], alpha_by_size, rho: float, seed: int
+):
     """
     Recompute the hidden-variable layer activities/fitness sequences w_{i,s} used by the generator.
     This isolates the inter-layer Spearman control from hyperedge sampling noise.
@@ -106,7 +108,7 @@ def basic_params():
         edges_by_size={2: 300, 3: 150, 4: 80},
         alpha_by_size=1.0,
         rho=0.6,
-        seed=42, 
+        seed=42,
     )
 
 
@@ -175,17 +177,23 @@ def test_different_seed_changes_realization(basic_params):
 
 def test_invalid_edges_by_size_empty():
     with pytest.raises(ValueError, match="edges_by_size must be a non-empty dict"):
-        scale_free_hypergraph(num_nodes=10, edges_by_size={}, alpha_by_size=1.0, rho=0.0, seed=0)
+        scale_free_hypergraph(
+            num_nodes=10, edges_by_size={}, alpha_by_size=1.0, rho=0.0, seed=0
+        )
 
 
 def test_invalid_hyperedge_size_exceeds_num_nodes():
     with pytest.raises(ValueError, match="cannot exceed num_nodes"):
-        scale_free_hypergraph(num_nodes=5, edges_by_size={6: 1}, alpha_by_size=1.0, rho=0.0, seed=0)
+        scale_free_hypergraph(
+            num_nodes=5, edges_by_size={6: 1}, alpha_by_size=1.0, rho=0.0, seed=0
+        )
 
 
 def test_invalid_negative_num_hyperedges():
     with pytest.raises(ValueError, match="nonnegative int"):
-        scale_free_hypergraph(num_nodes=10, edges_by_size={2: -1}, alpha_by_size=1.0, rho=0.0, seed=0)
+        scale_free_hypergraph(
+            num_nodes=10, edges_by_size={2: -1}, alpha_by_size=1.0, rho=0.0, seed=0
+        )
 
 
 def test_impossible_simple_hypergraph_raises():

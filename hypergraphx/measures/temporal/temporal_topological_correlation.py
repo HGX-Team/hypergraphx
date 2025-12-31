@@ -133,9 +133,7 @@ def get_mean_distance_events(H, order, edge_distance=None, cross_order=False):
     if cross_order:
         size = Counter([edge for edge in H.get_edges()])
         # events of order d
-        size_order = {
-            edge: size[edge] for edge in size.keys() if len(edge[1]) == order
-        }
+        size_order = {edge: size[edge] for edge in size.keys() if len(edge[1]) == order}
         # events of order d'
         size_other_order = {
             edge: size[edge] for edge in size.keys() if len(edge[1]) != order

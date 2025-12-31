@@ -261,6 +261,7 @@ class BaseHypergraph(SerializationMixin):
         node_order : list, optional
             If provided, return indices into this order instead of node labels.
         """
+
         def has_incidence(n):
             for adj in self._adjacency_maps().values():
                 if n in adj and adj[n]:
@@ -281,6 +282,7 @@ class BaseHypergraph(SerializationMixin):
         node_order : list, optional
             If provided, return indices into this order instead of node labels.
         """
+
         def has_incidence(n):
             for adj in self._adjacency_maps().values():
                 if n in adj and adj[n]:
@@ -547,9 +549,7 @@ class BaseHypergraph(SerializationMixin):
         if order is not None and size is not None:
             raise InvalidParameterError("Order and size cannot be both specified.")
         if order is None and size is None:
-            w = {
-                edge: self._weights[self._edge_list[edge]] for edge in self._edge_list
-            }
+            w = {edge: self._weights[self._edge_list[edge]] for edge in self._edge_list}
         if size is not None:
             order = size - 1
         if w is None:

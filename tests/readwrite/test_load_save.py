@@ -2,8 +2,17 @@ import gzip
 
 import pytest
 
-from hypergraphx import Hypergraph, DirectedHypergraph, MultiplexHypergraph, TemporalHypergraph
-from hypergraphx.readwrite.load import load, load_hypergraph, load_hypergraph_from_server
+from hypergraphx import (
+    Hypergraph,
+    DirectedHypergraph,
+    MultiplexHypergraph,
+    TemporalHypergraph,
+)
+from hypergraphx.readwrite.load import (
+    load,
+    load_hypergraph,
+    load_hypergraph_from_server,
+)
 from hypergraphx.readwrite.save import save_hypergraph
 
 

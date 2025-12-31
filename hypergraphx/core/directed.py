@@ -87,7 +87,10 @@ class DirectedHypergraph(BaseHypergraph):
 
     def _edge_key_without_node(self, edge_key, node):
         source, target = edge_key
-        return (tuple(n for n in source if n != node), tuple(n for n in target if n != node))
+        return (
+            tuple(n for n in source if n != node),
+            tuple(n for n in target if n != node),
+        )
 
     def _add_edge(self, edge_key, weight=None, metadata=None):
         weight = self._validate_weight(weight)
@@ -572,9 +575,7 @@ class DirectedHypergraph(BaseHypergraph):
             If both order and size are specified.
 
         """
-        return super().get_weights(
-            order=order, size=size, up_to=up_to, asdict=asdict
-        )
+        return super().get_weights(order=order, size=size, up_to=up_to, asdict=asdict)
 
     def set_weight(self, edge: Tuple[Tuple, Tuple], weight: float):
         """Sets the weight of the specified directed edge."""
@@ -669,11 +670,17 @@ class DirectedHypergraph(BaseHypergraph):
 
     def in_degree_sequence(self, order=None, size=None):
         """Return the in-degree for every node as a dict."""
-        return {node: self.in_degree(node, order=order, size=size) for node in self.get_nodes()}
+        return {
+            node: self.in_degree(node, order=order, size=size)
+            for node in self.get_nodes()
+        }
 
     def out_degree_sequence(self, order=None, size=None):
         """Return the out-degree for every node as a dict."""
-        return {node: self.out_degree(node, order=order, size=size) for node in self.get_nodes()}
+        return {
+            node: self.out_degree(node, order=order, size=size)
+            for node in self.get_nodes()
+        }
 
     def in_degree_distribution(self, order=None, size=None):
         """Return a histogram of in-degrees as a dict {degree: count}."""
@@ -688,7 +695,7 @@ class DirectedHypergraph(BaseHypergraph):
         for node, deg in self.out_degree_sequence(order=order, size=size).items():
             dist[deg] = dist.get(deg, 0) + 1
         return dist
-    
+
     # Utility
     def isolated_nodes(self, size=None, order=None):
         from hypergraphx.utils.components import isolated_nodes
@@ -734,7 +741,9 @@ class DirectedHypergraph(BaseHypergraph):
         for edge in self.get_edges():
             source, target = edge
             merged_edge = tuple(sorted(set(source).union(target)))
-            edge_weights[merged_edge] = edge_weights.get(merged_edge, 0) + self.get_weight(edge)
+            edge_weights[merged_edge] = edge_weights.get(
+                merged_edge, 0
+            ) + self.get_weight(edge)
             if keep_edge_metadata:
                 edge_metadata[merged_edge] = merge_metadata(
                     edge_metadata.get(merged_edge), self.get_edge_metadata(edge)

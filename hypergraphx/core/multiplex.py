@@ -358,7 +358,8 @@ class MultiplexHypergraph(BaseHypergraph):
         hg = Hypergraph(weighted=True)
         if keep_hypergraph_metadata:
             meta = merge_metadata(
-                self.get_hypergraph_metadata(), {"converted_from": "MultiplexHypergraph"}
+                self.get_hypergraph_metadata(),
+                {"converted_from": "MultiplexHypergraph"},
             )
             hg.set_hypergraph_metadata(meta)
 
@@ -369,7 +370,9 @@ class MultiplexHypergraph(BaseHypergraph):
         edge_weights = {}
         edge_metadata = {}
         for edge, layer in self.get_edges():
-            edge_weights[edge] = edge_weights.get(edge, 0) + self.get_weight(edge, layer)
+            edge_weights[edge] = edge_weights.get(edge, 0) + self.get_weight(
+                edge, layer
+            )
             if keep_edge_metadata:
                 edge_metadata[edge] = merge_metadata(
                     edge_metadata.get(edge), self.get_edge_metadata(edge, layer)

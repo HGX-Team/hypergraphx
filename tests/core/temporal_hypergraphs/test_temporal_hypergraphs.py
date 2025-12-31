@@ -505,6 +505,7 @@ def test_get_times_for_directed_edge():
         25,
     ], "Edge (('A', 'B'), ('C', 'D')) should be present at times 5 and 10."
 
+
 def test_degree_sequence():
     """
     Test getting the degree sequence of a temporal hypergraph.
@@ -547,4 +548,3 @@ def test_get_orders_returns_list():
     thg.add_edge(("A", "B"), time=5)
     thg.add_edge(("A", "B", "C"), time=1)
     assert thg.get_orders() == [1, 2]
-    

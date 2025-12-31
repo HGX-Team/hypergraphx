@@ -1,7 +1,9 @@
 import random
 
 from hypergraphx import DirectedHypergraph
-from hypergraphx.generation.directed_configuration_model import directed_configuration_model
+from hypergraphx.generation.directed_configuration_model import (
+    directed_configuration_model,
+)
 
 
 def test_directed_configuration_model_preserves_sizes():

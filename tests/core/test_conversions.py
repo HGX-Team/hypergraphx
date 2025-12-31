@@ -1,6 +1,11 @@
 import pytest
 
-from hypergraphx import DirectedHypergraph, Hypergraph, MultiplexHypergraph, TemporalHypergraph
+from hypergraphx import (
+    DirectedHypergraph,
+    Hypergraph,
+    MultiplexHypergraph,
+    TemporalHypergraph,
+)
 
 
 def test_directed_to_hypergraph_merges_weights_and_metadata():
@@ -61,7 +66,9 @@ def test_conversion_respects_keep_metadata_flags():
     mhg.add_edge(("A", "B"), layer="L1", weight=1.0, metadata={"tag": "x"})
 
     hg = mhg.to_hypergraph(
-        keep_node_metadata=False, keep_edge_metadata=False, keep_hypergraph_metadata=False
+        keep_node_metadata=False,
+        keep_edge_metadata=False,
+        keep_hypergraph_metadata=False,
     )
 
     assert hg.get_node_metadata("A") == {}

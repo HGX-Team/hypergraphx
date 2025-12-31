@@ -13,7 +13,10 @@ from hypergraphx.core.directed import DirectedHypergraph
 from hypergraphx.core.multiplex import MultiplexHypergraph
 from hypergraphx.core.temporal import TemporalHypergraph
 from hypergraphx.exceptions import InvalidFileTypeError, InvalidFormatError
-from hypergraphx.readwrite.io_json import _parse_json_bytes_to_hypergraph, load_json_file
+from hypergraphx.readwrite.io_json import (
+    _parse_json_bytes_to_hypergraph,
+    load_json_file,
+)
 from hypergraphx.readwrite.io_pickle import load_pickle
 
 _BASE = "https://cricca.disi.unitn.it/datasets/hypergraphx-data"

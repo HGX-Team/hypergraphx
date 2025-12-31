@@ -35,9 +35,7 @@ def _build_hypergraph_from_json_objects(data_list):
         "MultiplexHypergraph",
         "TemporalHypergraph",
     }:
-        raise InvalidFormatError(
-            f"Unsupported or missing 'hypergraph_type': {htype!r}"
-        )
+        raise InvalidFormatError(f"Unsupported or missing 'hypergraph_type': {htype!r}")
 
     weighted = bool(meta.get("weighted", False))
 
