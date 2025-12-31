@@ -144,6 +144,7 @@ def test_add_duplicate_edge_unweighted(directed_hypergraph):
     """
     Test adding a duplicate edge in an unweighted hypergraph.
     """
+    directed_hypergraph = DirectedHypergraph(weighted=False)
     source = ("A", "B")
     target = ("C",)
     edge = (source, target)
@@ -182,6 +183,15 @@ def test_add_edge_without_weight_in_weighted_hypergraph():
     assert (
         hg.get_weight(edge) == 1.0
     ), "Default weight should be set to 1.0 in a weighted hypergraph."
+
+
+def test_add_edges_weighted_without_weights():
+    """Test adding weighted directed edges without providing weights list."""
+    hg = DirectedHypergraph(weighted=True)
+    edge_list = [(("A",), ("B",)), (("B", "C"), ("D",))]
+    hg.add_edges(edge_list)
+    assert hg.get_weight(edge_list[0]) == 1
+    assert hg.get_weight(edge_list[1]) == 1
 
 
 def test_remove_edge_weighted_hypergraph():
@@ -483,3 +493,32 @@ def test_in_out_degree_missing_node_raises():
         hg.in_degree("missing")
     with pytest.raises(MissingNodeError):
         hg.out_degree("missing")
+
+
+def test_add_edges_unweighted_with_unit_weights():
+    hg = DirectedHypergraph(weighted=False)
+    edges = [(("A",), ("B",)), (("B",), ("C",))]
+    weights = [1, None]
+    hg.add_edges(edges, weights=weights)
+    assert not hg.is_weighted()
+    assert hg.get_weight(edges[0]) == 1
+    assert hg.get_weight(edges[1]) == 1
+
+
+def test_add_edges_unweighted_with_nonunit_weights():
+    hg = DirectedHypergraph(weighted=False)
+    edges = [(("A",), ("B",)), (("B",), ("C",))]
+    weights = [1, 2]
+    with pytest.raises(
+        ValueError, match="If the hypergraph is not weighted, weight can be 1 or None."
+    ):
+        hg.add_edges(edges, weights=weights)
+
+
+def test_add_edge_duplicate_metadata_preserved_when_none():
+    hg = DirectedHypergraph(weighted=True)
+    edge = (("A",), ("B",))
+    hg.add_edge(edge, weight=1.0, metadata={"kind": "a"})
+    hg.add_edge(edge, weight=2.0)
+    assert hg.get_edge_metadata(edge) == {"kind": "a"}
+    assert hg.get_weight(edge) == 3.0

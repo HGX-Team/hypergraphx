@@ -20,7 +20,7 @@ def test_is_natural_coupling_false():
 def test_is_all_to_all_true():
     """Test all-to-all detection on complete size-2 hypergraph."""
     edges = [(0, 1), (0, 2), (1, 2)]
-    hg = Hypergraph(edge_list=edges)
+    hg = Hypergraph(edge_list=edges, weighted=False)
 
     assert is_all_to_all(hg, verbose=False) is True
 
@@ -28,6 +28,6 @@ def test_is_all_to_all_true():
 def test_is_all_to_all_false():
     """Test all-to-all detection on incomplete hypergraph."""
     edges = [(0, 1), (0, 2)]
-    hg = Hypergraph(edge_list=edges)
+    hg = Hypergraph(edge_list=edges, weighted=False)
 
     assert is_all_to_all(hg, verbose=False) is False

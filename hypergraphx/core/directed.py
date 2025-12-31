@@ -1,4 +1,3 @@
-import warnings
 from typing import List, Tuple
 
 from hypergraphx.core.base import BaseHypergraph
@@ -14,7 +13,7 @@ class DirectedHypergraph(BaseHypergraph):
     def __init__(
         self,
         edge_list=None,
-        weighted=False,
+        weighted=True,
         weights=None,
         hypergraph_metadata=None,
         node_metadata=None,
@@ -29,7 +28,7 @@ class DirectedHypergraph(BaseHypergraph):
             A list of directed hyperedges represented as (source_nodes, target_nodes),
             where source_nodes and target_nodes are tuples of nodes.
         weighted : bool, optional
-            Indicates whether the hypergraph is weighted. Default is False.
+            Indicates whether the hypergraph is weighted. Default is True.
         weights : list of floats, optional
             A list of weights corresponding to the edges in `edge_list`. Required if `weighted` is True.
         hypergraph_metadata : dict, optional
@@ -381,17 +380,15 @@ class DirectedHypergraph(BaseHypergraph):
         -----
         Duplicate unweighted edges are ignored; duplicate weighted edges accumulate weights.
         """
-        if weights is not None and not self._weighted:
-            warnings.warn(
-                "Weights are provided but the hypergraph is not weighted. The hypergraph will be weighted.",
-                UserWarning,
-            )
-            self._weighted = True
-            self._hypergraph_metadata["weighted"] = True
-
-        if self._weighted and weights is not None:
+        if weights is not None:
             if len(edge_list) != len(weights):
                 raise ValueError("The number of edges and weights must be the same.")
+            if not self._weighted:
+                for weight in weights:
+                    if weight not in (None, 1):
+                        raise ValueError(
+                            "If the hypergraph is not weighted, weight can be 1 or None."
+                        )
 
         for i, edge in enumerate(edge_list):
             self.add_edge(

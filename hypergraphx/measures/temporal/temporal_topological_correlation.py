@@ -131,12 +131,14 @@ def get_mean_distance_events(H, order, edge_distance=None, cross_order=False):
     cnt_ev1 = Counter()
 
     if cross_order:
-        size = Counter([edge[1] for edge in H.get_edges()])
+        size = Counter([edge for edge in H.get_edges()])
         # events of order d
-        size_order = {edge: size[edge] for edge in size.keys() if len(edge) == order}
+        size_order = {
+            edge: size[edge] for edge in size.keys() if len(edge[1]) == order
+        }
         # events of order d'
         size_other_order = {
-            edge: size[edge] for edge in size.keys() if len(edge) != order
+            edge: size[edge] for edge in size.keys() if len(edge[1]) != order
         }
         for x, y in itertools.product(
             list(size_order.keys()), list(size_other_order.keys())
@@ -150,7 +152,7 @@ def get_mean_distance_events(H, order, edge_distance=None, cross_order=False):
         )
 
     else:
-        size = Counter([edge[1] for edge in H.get_edges() if len(edge[1]) == order])
+        size = Counter([edge for edge in H.get_edges() if len(edge[1]) == order])
         for x, y in itertools.combinations(list(size.keys()), 2):
             # Compute distances between hyperlinks of same order once and update counts with the product of their weights
             cnt_ev1.update({edge_distance[(x, y)]: size[x] * size[y]})

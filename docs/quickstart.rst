@@ -31,6 +31,11 @@ Create a hypergraph
    hg.add_edge((3, 4), weight=1.5, metadata={"kind": "tri"})
    print(hg)
 
+.. note::
+
+   Hypergraphs are weighted by default. If you want an unweighted hypergraph, pass
+   ``weighted=False`` (unweighted graphs only accept ``weight=None`` or ``weight=1``).
+
 Directed / temporal / multiplex
 -------------------------------
 

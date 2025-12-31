@@ -99,7 +99,7 @@ class BaseHypergraph(SerializationMixin):
 
     _missing_node_exc = MissingNodeError
 
-    def _init_base(self, weighted=False, hypergraph_metadata=None, node_metadata=None):
+    def _init_base(self, weighted=True, hypergraph_metadata=None, node_metadata=None):
         self._weighted = weighted
         self._hypergraph_metadata = hypergraph_metadata or {}
         self._node_metadata = {}
@@ -439,11 +439,14 @@ class BaseHypergraph(SerializationMixin):
             self._edge_list[edge_key] = edge_id
             self._reverse_edge_list[edge_id] = edge_key
             self._weights[edge_id] = 1 if not self._weighted else weight
-        elif self._weighted:
-            self._weights[self._edge_list[edge_key]] += weight
+            self._edge_metadata[edge_id] = metadata or {}
+            return edge_id
 
         edge_id = self._edge_list[edge_key]
-        self._edge_metadata[edge_id] = metadata or {}
+        if self._weighted:
+            self._weights[edge_id] += weight
+        if metadata is not None:
+            self._edge_metadata[edge_id] = metadata
         return edge_id
 
     def _add_edge(self, edge_key, weight=None, metadata=None):

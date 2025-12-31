@@ -55,8 +55,9 @@ def plot_motifs(motifs: list, save_name: str = None):
         hue=labels,
         palette=cols,
         dodge=False,
-        legend=False,
     )
+    if g.legend_ is not None:
+        g.legend_.remove()
     g.axhline(0, color="black", linewidth=0.5)
     plt.ylim(-1, 1)
     plt.ylabel("Motif abundance score")

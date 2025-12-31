@@ -9,7 +9,7 @@ from hypergraphx import (
 def test_initialization():
     h = MultiplexHypergraph()
     assert isinstance(h._hypergraph_metadata, dict)
-    assert h._hypergraph_metadata["weighted"] is False
+    assert h._hypergraph_metadata["weighted"] is True
     assert h.get_nodes() == []
 
 
@@ -31,7 +31,7 @@ def test_add_multiple_nodes():
 
 
 def test_add_edges_unweighted():
-    h = MultiplexHypergraph()
+    h = MultiplexHypergraph(weighted=False)
     edges = [("A", "B"), ("B", "C")]
     layers = ["layer1", "layer2"]
     h.add_edges(edges, edge_layer=layers)
@@ -50,6 +50,47 @@ def test_add_edges_weighted():
     assert h.is_weighted()
     for i, edge in enumerate(edges):
         assert h.get_weight(edges[i], layers[i]) == weights[i]
+
+
+def test_add_edges_unweighted_with_unit_weights():
+    h = MultiplexHypergraph(weighted=False)
+    edges = [("A", "B"), ("B", "C")]
+    layers = ["layer1", "layer2"]
+    weights = [1, None]
+    h.add_edges(edges, edge_layer=layers, weights=weights)
+    assert not h.is_weighted()
+    assert h.get_weight(("A", "B"), "layer1") == 1
+    assert h.get_weight(("B", "C"), "layer2") == 1
+
+
+def test_add_edges_unweighted_with_nonunit_weights():
+    h = MultiplexHypergraph(weighted=False)
+    edges = [("A", "B"), ("B", "C")]
+    layers = ["layer1", "layer2"]
+    weights = [1, 2]
+    with pytest.raises(
+        ValueError, match="If the hypergraph is not weighted, weight can be 1 or None."
+    ):
+        h.add_edges(edges, edge_layer=layers, weights=weights)
+
+
+def test_add_edges_weighted_duplicate_same_layer_accumulates():
+    h = MultiplexHypergraph(weighted=True)
+    edges = [("A", "B"), ("A", "B")]
+    layers = ["layer1", "layer1"]
+    weights = [0.5, 1.5]
+    h.add_edges(edges, edge_layer=layers, weights=weights)
+    assert h.get_weight(("A", "B"), "layer1") == 2.0
+
+
+def test_add_edges_weighted_duplicate_different_layers_isolated():
+    h = MultiplexHypergraph(weighted=True)
+    edges = [("A", "B"), ("A", "B")]
+    layers = ["layer1", "layer2"]
+    weights = [0.5, 1.5]
+    h.add_edges(edges, edge_layer=layers, weights=weights)
+    assert h.get_weight(("A", "B"), "layer1") == 0.5
+    assert h.get_weight(("A", "B"), "layer2") == 1.5
 
 
 def test_add_edges_metadata():
@@ -100,6 +141,16 @@ def test_add_edge_without_weight_in_weighted_hypergraph():
     assert (
         h.get_weight(("A", "B"), "layer1") == 1.0
     ), "Default weight should be 1.0 in a weighted hypergraph."
+
+
+def test_add_edges_weighted_without_weights():
+    """Test adding weighted multiplex edges without providing weights list."""
+    h = MultiplexHypergraph(weighted=True)
+    edges = [("A", "B"), ("B", "C")]
+    layers = ["layer1", "layer2"]
+    h.add_edges(edges, edge_layer=layers)
+    assert h.get_weight(("A", "B"), "layer1") == 1
+    assert h.get_weight(("B", "C"), "layer2") == 1
 
 
 def test_update_edge_weight():

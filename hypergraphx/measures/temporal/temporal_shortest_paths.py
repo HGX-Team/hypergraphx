@@ -21,6 +21,10 @@ def _log(*args, **kwargs):
     message = " ".join(str(a) for a in args)
     logger.info(message)
 
+def relabel(edges, mapping):
+    """Relabel edges using a dictionary mapping old labels to new labels."""
+    return relabel_edges_with_mapping(edges=edges, mapping=mapping)
+
 def get_ds_windowsize(nsamples):
     if nsamples < 500:
         return nsamples

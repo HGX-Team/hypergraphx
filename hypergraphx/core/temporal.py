@@ -1,6 +1,4 @@
 import math
-import warnings
-
 from .undirected import Hypergraph
 from hypergraphx.core.base import BaseHypergraph
 from hypergraphx.exceptions import InvalidParameterError, MissingNodeError
@@ -36,7 +34,7 @@ class TemporalHypergraph(BaseHypergraph):
         self,
         edge_list=None,
         time_list=None,
-        weighted=False,
+        weighted=True,
         weights=None,
         hypergraph_metadata=None,
         node_metadata=None,
@@ -55,7 +53,7 @@ class TemporalHypergraph(BaseHypergraph):
             A list of times corresponding to each edge in `edge_list`.
             Must be provided if `edge_list` does not include time information.
         weighted : bool, optional
-            Indicates whether the hypergraph is weighted. Default is False.
+            Indicates whether the hypergraph is weighted. Default is True.
         weights : list of float, optional
             A list of weights for each edge in `edge_list`. Must be provided if `weighted` is True.
         hypergraph_metadata : dict, optional
@@ -285,30 +283,15 @@ class TemporalHypergraph(BaseHypergraph):
         if len(edge_list) != len(time_list):
             raise ValueError("Edge list and time list must have the same length")
 
-        if weights is not None and not self._weighted:
-            warnings.warn(
-                "Weights are provided but the hypergraph is not weighted. The hypergraph will be weighted.",
-                UserWarning,
-            )
-            self._weighted = True
-            self._hypergraph_metadata["weighted"] = True
-
-        if self._weighted and weights is not None:
-            try:
-                if len(set(edge_list)) != len(edge_list):
-                    raise ValueError(
-                        "If weights are provided, the edge list must not contain repeated edges."
-                    )
-            except TypeError:
-                seen = []
-                for edge in edge_list:
-                    if edge in seen:
-                        raise ValueError(
-                            "If weights are provided, the edge list must not contain repeated edges."
-                        )
-                    seen.append(edge)
+        if weights is not None:
             if len(edge_list) != len(weights):
                 raise ValueError("The number of edges and weights must be the same.")
+            if not self._weighted:
+                for weight in weights:
+                    if weight not in (None, 1):
+                        raise ValueError(
+                            "If the hypergraph is not weighted, weight can be 1 or None."
+                        )
 
         if edge_list is not None:
             for i, edge in enumerate(edge_list):
