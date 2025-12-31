@@ -17,7 +17,7 @@ def draw_SC(
     HG,
     pos=None,
     link_color="black",
-    hyperlink_color_by_order={2: "r", 3: "orange", 4: "green"},
+    hyperlink_color_by_order=None,
     link_width=2,
     node_size=150,
     node_color="#5494DA",
@@ -25,8 +25,12 @@ def draw_SC(
     ax=None,
 ):
     G = clique_projection(HG, keep_isolated=True)
-    if pos == None:
+    if pos is None:
         pos = nx.spring_layout(G)
+    if hyperlink_color_by_order is None:
+        hyperlink_color_by_order = {2: "r", 3: "orange", 4: "green"}
+    else:
+        hyperlink_color_by_order = dict(hyperlink_color_by_order)
     for h_edge in HG.get_edges():
         if len(h_edge) > 2:
             order = len(h_edge) - 1

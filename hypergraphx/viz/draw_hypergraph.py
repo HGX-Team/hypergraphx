@@ -94,6 +94,10 @@ def draw_hypergraph(
     opt_dist: float = 0.5,
 ):
     """Visualize a hypergraph."""
+    def _stable_color(order_value):
+        rng = random.Random(order_value)
+        return f"#{rng.randrange(0x1000000):06x}"
+
     # Initialize figure.
     if ax is None:
         plt.figure(figsize=figsize)
@@ -113,8 +117,12 @@ def draw_hypergraph(
     # Set color hyperedges of size > 2 (order > 1).
     if hyperedge_color_by_order is None:
         hyperedge_color_by_order = {2: "#FFBC79", 3: "#79BCFF", 4: "#4C9F4C"}
+    else:
+        hyperedge_color_by_order = dict(hyperedge_color_by_order)
     if hyperedge_facecolor_by_order is None:
         hyperedge_facecolor_by_order = {2: "#FFBC79", 3: "#79BCFF", 4: "#4C9F4C"}
+    else:
+        hyperedge_facecolor_by_order = dict(hyperedge_facecolor_by_order)
 
     # Extract edges (hyperedges of size=2/order=1).
     edges = hypergraph.get_edges(order=1)
@@ -179,12 +187,10 @@ def draw_hypergraph(
             order = len(hye) - 1
 
             if order not in hyperedge_color_by_order.keys():
-                std_color = "#" + "%06x" % random.randint(0, 0xFFFFFF)
-                hyperedge_color_by_order[order] = std_color
+                hyperedge_color_by_order[order] = _stable_color(order)
 
             if order not in hyperedge_facecolor_by_order.keys():
-                std_face_color = "#" + "%06x" % random.randint(0, 0xFFFFFF)
-                hyperedge_facecolor_by_order[order] = std_face_color
+                hyperedge_facecolor_by_order[order] = _stable_color(order + 1000)
 
             color = hyperedge_color_by_order[order]
             facecolor = hyperedge_facecolor_by_order[order]

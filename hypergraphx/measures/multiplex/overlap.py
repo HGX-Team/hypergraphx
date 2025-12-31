@@ -1,4 +1,5 @@
 from hypergraphx import MultiplexHypergraph
+from hypergraphx.exceptions import MissingEdgeError
 
 
 def edge_overlap(h: MultiplexHypergraph, edge):
@@ -9,6 +10,6 @@ def edge_overlap(h: MultiplexHypergraph, edge):
         try:
             w = h.get_weight(edge, layer)
             overlap += w
-        except ValueError:
+        except MissingEdgeError:
             pass
     return overlap
