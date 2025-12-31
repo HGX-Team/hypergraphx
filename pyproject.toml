@@ -26,9 +26,6 @@ dependencies = [
   "networkx",
   "pandas",
   "scikit-learn",
-  "pytest",
-  "matplotlib",
-  "seaborn",
 ]
 dynamic = ["version"]
 
@@ -37,6 +34,7 @@ Homepage = "https://github.com/HGX-Team/hypergraphx"
 
 [project.optional-dependencies]
 dev = [
+  "pytest",
   "black>=24.3.0",
   "pre-commit",
 ]
@@ -44,6 +42,8 @@ docs = [
   "sphinx",
   "furo",
   "nbsphinx",
+  "matplotlib",
+  "seaborn",
 ]
 
 [tool.setuptools]
