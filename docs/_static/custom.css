@@ -26,6 +26,26 @@
   display: none;
 }
 
+/* Project links list with icons. */
+ul.project-links {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+}
+
+ul.project-links li {
+  align-items: center;
+  display: flex;
+  gap: 0.45rem;
+  margin: 0.35rem 0;
+}
+
+ul.project-links i {
+  color: #1a5f7a;
+  width: 1.1rem;
+  text-align: center;
+}
+
 /* Get Started list-table as light cards. */
 table.get-started {
   border: 0;
@@ -35,7 +55,7 @@ table.get-started {
 }
 
 table.get-started td {
-  background: #f7fbfd;
+  background: transparent;
   border: 0;
   box-shadow: 0 8px 20px rgba(26, 95, 122, 0.1);
   padding: 0.95rem 1.1rem;
@@ -70,12 +90,11 @@ table.get-started tr td:last-child {
 table.get-started a {
   color: #1a5f7a;
   text-decoration: none;
-  border-bottom: 1px solid rgba(26, 95, 122, 0.25);
   font-weight: 600;
 }
 
 table.get-started strong a {
-  border-bottom-width: 2px;
+  border-bottom: none;
 }
 
 table.get-started tr:hover td {
@@ -84,5 +103,5 @@ table.get-started tr:hover td {
 }
 
 table.get-started tr:hover a {
-  border-bottom-color: rgba(26, 95, 122, 0.6);
+  border-bottom: none;
 }

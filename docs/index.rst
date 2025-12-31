@@ -36,11 +36,33 @@ Hypergraphx (HGX) is a Python library for higher-order network analysis.
 Project links
 -------------
 
-- Arxiv: https://arxiv.org/pdf/2303.15356.pdf
-- GitHub: https://github.com/HGX-Team/hypergraphx
-- PyPI: https://pypi.org/project/hypergraphx/
-- Documentation: https://hypergraphx.readthedocs.io/
-- Data: To appear soon
+.. |fa-arxiv| raw:: html
+
+   <i class="fa-regular fa-file-lines"></i>
+
+.. |fa-github| raw:: html
+
+   <i class="fa-brands fa-github"></i>
+
+.. |fa-pypi| raw:: html
+
+   <i class="fa-brands fa-python"></i>
+
+.. |fa-docs| raw:: html
+
+   <i class="fa-solid fa-book-open"></i>
+
+.. |fa-data| raw:: html
+
+   <i class="fa-solid fa-database"></i>
+
+.. rst-class:: project-links
+
+- |fa-arxiv| `Arxiv <https://arxiv.org/pdf/2303.15356.pdf>`_
+- |fa-github| `GitHub <https://github.com/HGX-Team/hypergraphx>`_
+- |fa-pypi| `PyPI <https://pypi.org/project/hypergraphx/>`_
+- |fa-docs| `Documentation <https://hypergraphx.readthedocs.io/>`_
+- |fa-data| Data: To appear soon
 
 Get started
 -----------
@@ -62,6 +84,18 @@ Higher-order data repository
 
 To appear soon
 
+Reference
+---------
+
+* Lotito, Quintino Francesco, et al. "Hypergraphx: a library for higher-order network analysis." Journal of Complex Networks 11.3 (2023): cnad019.
+
+Contributing
+------------
+
+HGX is a collaborative project and we welcome suggestions and contributions.
+If you are interested in contributing to HGX or have any questions about our project, please do not hesitate to reach out to us.
+We look forward to hearing from you!
+
 HGX Team
 --------
 
@@ -79,18 +113,6 @@ Core members:
 * Alberto Montresor
 * Federico Musciotto
 * Nicolò Ruggeri
-
-Reference
----------
-
-* Lotito, Quintino Francesco, et al. "Hypergraphx: a library for higher-order network analysis." Journal of Complex Networks 11.3 (2023): cnad019.
-
-Contributing
-------------
-
-HGX is a collaborative project and we welcome suggestions and contributions.
-If you are interested in contributing to HGX or have any questions about our project, please do not hesitate to reach out to us.
-We look forward to hearing from you!
 
 License
 -------
