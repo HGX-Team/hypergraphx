@@ -116,7 +116,8 @@ API map
 Exceptions
 ----------
 
-All custom exceptions inherit from ``HypergraphxError`` and ``ValueError``.
+All custom exceptions inherit from ``HypergraphxError``. Most also inherit from
+``ValueError`` (``ReadwriteError`` inherits from ``RuntimeError``).
 
 .. code-block:: python
 

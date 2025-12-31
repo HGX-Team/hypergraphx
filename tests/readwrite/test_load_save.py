@@ -3,7 +3,7 @@ import gzip
 import pytest
 
 from hypergraphx import Hypergraph, DirectedHypergraph, MultiplexHypergraph, TemporalHypergraph
-from hypergraphx.readwrite.load import load_hypergraph, load_hypergraph_from_server
+from hypergraphx.readwrite.load import load, load_hypergraph, load_hypergraph_from_server
 from hypergraphx.readwrite.save import save_hypergraph
 
 
@@ -146,3 +146,23 @@ def test_load_hypergraph_from_server_binary(monkeypatch, tmp_path):
     loaded = load_hypergraph_from_server("toy", fmt="binary")
     assert isinstance(loaded, Hypergraph)
     assert set(loaded.get_edges()) == set(hg.get_edges())
+
+
+def test_load_accepts_hypergraph_instances():
+    hg = _make_weighted_hypergraph()
+    loaded = load(hg)
+    assert loaded is hg
+
+
+def test_load_accepts_dicts():
+    hg = _make_weighted_hypergraph()
+    data = hg.expose_data_structures()
+    loaded = load(data)
+    assert loaded == data
+
+
+def test_load_accepts_iterables_of_objects():
+    hg = _make_weighted_hypergraph()
+    dh = DirectedHypergraph(edge_list=[((0,), (1,))])
+    loaded = load([hg, dh])
+    assert loaded == [hg, dh]

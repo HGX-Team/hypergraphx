@@ -30,7 +30,7 @@ def connected_components(hg: Hypergraph, order=None, size=None):
     components = []
     for node in hg.get_nodes():
         if node not in visited:
-            component = _bfs(hg, node, size=order, order=size)
+            component = _bfs(hg, node, size=size, order=order)
             visited += component
             components.append(component)
     return components
@@ -52,7 +52,7 @@ def node_connected_component(hg: Hypergraph, node, order=None, size=None):
     """
     if order is not None and size is not None:
         raise InvalidParameterError("Order and size cannot be both specified.")
-    return _bfs(hg, node, size=None, order=None)
+    return _bfs(hg, node, size=size, order=order)
 
 
 def num_connected_components(hg: Hypergraph, order=None, size=None):
@@ -70,7 +70,7 @@ def num_connected_components(hg: Hypergraph, order=None, size=None):
     """
     if order is not None and size is not None:
         raise InvalidParameterError("Order and size cannot be both specified.")
-    return len(hg.connected_components(size=None, order=None))
+    return len(connected_components(hg, size=size, order=order))
 
 
 def largest_component(hg: Hypergraph, order=None, size=None):
@@ -88,7 +88,7 @@ def largest_component(hg: Hypergraph, order=None, size=None):
     """
     if order is not None and size is not None:
         raise InvalidParameterError("Order and size cannot be both specified.")
-    components = hg.connected_components(size=None, order=None)
+    components = connected_components(hg, size=size, order=order)
     return max(components, key=len)
 
 
@@ -107,7 +107,7 @@ def largest_component_size(hg: Hypergraph, order=None, size=None):
     """
     if order is not None and size is not None:
         raise InvalidParameterError("Order and size cannot be both specified.")
-    return len(hg.largest_component(size=None, order=None))
+    return len(largest_component(hg, size=size, order=order))
 
 
 def isolated_nodes(

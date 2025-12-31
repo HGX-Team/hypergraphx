@@ -154,6 +154,12 @@ def load(obj_or_path: str | Iterable):
     if isinstance(obj_or_path, str):
         return load_hypergraph(obj_or_path)
 
+    if isinstance(
+        obj_or_path,
+        (Hypergraph, DirectedHypergraph, MultiplexHypergraph, TemporalHypergraph, dict),
+    ):
+        return obj_or_path
+
     if isinstance(obj_or_path, Iterable):
         hgs = []
         for item in obj_or_path:
