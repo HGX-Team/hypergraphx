@@ -107,7 +107,7 @@ table.get-started tr:hover a {
 }
 
 /* Notebook-style admonition boxes for tutorials. */
-.admonition {
+.tutorial-callout {
   border-radius: 12px;
   border: 1px solid rgba(26, 95, 122, 0.18);
   box-shadow: 0 10px 24px rgba(26, 95, 122, 0.08);
@@ -115,7 +115,7 @@ table.get-started tr:hover a {
   margin: 1rem 0;
 }
 
-.admonition .admonition-title {
+.tutorial-callout__title {
   font-weight: 700;
   margin: 0 0 0.35rem 0;
   text-transform: uppercase;
@@ -123,33 +123,33 @@ table.get-started tr:hover a {
   font-size: 0.78rem;
 }
 
-.admonition p {
+.tutorial-callout__body {
   margin: 0;
 }
 
-.admonition.note {
+.tutorial-callout--definition {
   background: rgba(26, 95, 122, 0.08);
   border-color: rgba(26, 95, 122, 0.35);
 }
 
-.admonition.note .admonition-title {
+.tutorial-callout--definition .tutorial-callout__title {
   color: #1a5f7a;
 }
 
-.admonition.tip {
+.tutorial-callout--learn {
   background: rgba(18, 117, 80, 0.08);
   border-color: rgba(18, 117, 80, 0.35);
 }
 
-.admonition.tip .admonition-title {
+.tutorial-callout--learn .tutorial-callout__title {
   color: #127550;
 }
 
-.admonition.seealso {
+.tutorial-callout--source {
   background: rgba(173, 92, 20, 0.08);
   border-color: rgba(173, 92, 20, 0.35);
 }
 
-.admonition.seealso .admonition-title {
+.tutorial-callout--source .tutorial-callout__title {
   color: #ad5c14;
 }
