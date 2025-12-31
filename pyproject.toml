@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "hypergraphx"
 description = "HGX is a multi-purpose, open-source Python library for higher-order network analysis"
-readme = "Readme2.md"
+readme = "README.md"
 requires-python = ">=3.10"
 license = {file = "LICENSE.md"}
 authors = [{name = "HGX-Team", email = "lotitoqf@gmail.com"}]
