@@ -25,7 +25,7 @@ def read(*paths, **kwargs):
     return content
 
 
-def read_requirements(path="requirements.txt"):
+def read_requirements(path="requirements/runtime.txt"):
     return [
         line.strip()
         for line in read(path).splitlines()

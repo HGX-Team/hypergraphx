@@ -24,6 +24,6 @@ If you only need core functionality, the base install is enough. For docs or not
 
 .. code:: bash
 
-   pip install -r requirements_docs.txt
+   pip install -r requirements/docs.txt
 
-Check the repository ``requirements.txt`` for the required runtime dependencies.
+Check the repository ``requirements/runtime.txt`` for the required runtime dependencies.
