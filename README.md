@@ -1,4 +1,4 @@
-<img src="logo/logo.png" width="500" title="HGX logo">
+<img src="assets/logo/logo.png" width="500" title="HGX logo">
 
 :page_facing_up: **[Paper](https://arxiv.org/pdf/2303.15356.pdf)** | :paperclip:
 *[Docs](https://hypergraphx.readthedocs.io/en/latest/#)* | :computer: 
@@ -50,7 +50,7 @@ human and animal face-to-face interactions, and collaboration networks. These hi
 described by alternative mathematical structures such as hypergraphs, where hyperedges connect groups of nodes of
 arbitrary size.
 
-<img src="images/hypergraph.png" width="350" title="Hypergraph example">
+<img src="assets/images/hypergraph.png" width="350" title="Hypergraph example">
 
 ## What is hypergraphx?
 HGX aims to provide, as a single source, a comprehensive suite of tools and algorithms for constructing, storing, analysing and visualizing systems with
@@ -234,4 +234,3 @@ our [license file](https://github.com/HGX-Team/hypergraphx/blob/master/LICENSE.m
 ## Acknowledgments
 
 This project is supported by the Air Force Office of Scientific Research under award number FA8655-22-1-7025.
-

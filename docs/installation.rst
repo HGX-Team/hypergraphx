@@ -27,3 +27,5 @@ If you only need core functionality, the base install is enough. For docs or not
    pip install -r requirements/docs.txt
 
 Check the repository ``requirements/runtime.txt`` for the required runtime dependencies.
+Development and documentation dependencies live in ``requirements/dev.txt`` and
+``requirements/docs.txt`` respectively.
