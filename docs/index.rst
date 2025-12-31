@@ -1,5 +1,5 @@
 Welcome to Hypergraphx's docs!
-==============================
+========================================
 
 .. image:: ../assets/logo/logo.png
   :width: 160
@@ -20,18 +20,7 @@ Hypergraphx (HGX) is a Python library for higher-order network analysis.
    :caption: 📖 API Reference
    :class: index-toc
 
-   api/hypergraphx.core
-   api/hypergraphx.communities
-   api/hypergraphx.dynamics
-   api/hypergraphx.filters
-   api/hypergraphx.generation
-   api/hypergraphx.measures
-   api/hypergraphx.motifs
-   api/hypergraphx.linalg
-   api/hypergraphx.viz
-   api/hypergraphx.readwrite
-   api/hypergraphx.representations
-   api/hypergraphx.utils
+   api/hypergraphx
 
 Project links
 -------------

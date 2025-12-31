@@ -241,15 +241,16 @@ class HyMMSBM:
         .. math::
             \sum_{i < j \in e} u_i^T w u_j
 
-
         Parameters
         ----------
         binary_incidence: the binary incidence matrix
         return_edge_sum: whether to return the edge sums.
             These quantities are computed as an intermediate value.
             For a single hyperedge e they are defined as
+
             .. math::
                 \sum_{i \in e} u_i
+
             and are collected in a vector of length E.
 
         Returns

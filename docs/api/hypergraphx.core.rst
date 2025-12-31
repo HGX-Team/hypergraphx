@@ -1,5 +1,5 @@
 🧩 Core
-======
+========================================
 
 Submodules
 ----------
@@ -40,14 +40,6 @@ hypergraphx.core.temporal module
 --------------------------------------------
 
 .. automodule:: hypergraphx.core.temporal
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: hypergraphx.core
    :members:
    :undoc-members:
    :show-inheritance:

@@ -88,7 +88,7 @@ class BaseHypergraph(SerializationMixin):
     - overriding incidence handling where needed (e.g., directed edges)
 
     Hook contract:
-    - _normalize_edge(edge, **kwargs) -> edge_key
+    - _normalize_edge(edge, ``**kwargs``) -> edge_key
     - _edge_nodes(edge_key) -> iterable of nodes
     - _edge_size(edge_key) -> int (uses _edge_nodes by default)
     - _edge_key_without_node(edge_key, node) -> edge_key with node removed

@@ -642,6 +642,7 @@ class TemporalHypergraph(BaseHypergraph):
     ) -> dict[int, Hypergraph]:
         """
         Create an hypergraph for each time of the Temporal Hypergraph.
+
         Parameters
         ----------
         time_window : tuple[int,int]|None, optional
@@ -650,6 +651,7 @@ class TemporalHypergraph(BaseHypergraph):
         add_all_nodes : bool, optional
             If True, the hypergraphs will have all the nodes of the Temporal Hypergraph even if they are not present
             in their corresponding time.
+
         Returns
         -------
         dict: dict[int, Hypergraph]
