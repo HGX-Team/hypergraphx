@@ -1,3 +1,62 @@
+[build-system]
+requires = ["setuptools>=68", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hypergraphx"
+description = "HGX is a multi-purpose, open-source Python library for higher-order network analysis"
+readme = "Readme2.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE.md"}
+authors = [{name = "HGX-Team", email = "lotitoqf@gmail.com"}]
+keywords = ["hypergraphs", "networks"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Build Tools",
+  "License :: OSI Approved :: BSD License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+  "numpy",
+  "scipy",
+  "networkx",
+  "pandas",
+  "scikit-learn",
+  "pytest",
+  "matplotlib",
+  "seaborn",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/HGX-Team/hypergraphx"
+
+[project.optional-dependencies]
+dev = [
+  "black>=24.3.0",
+  "pre-commit",
+]
+docs = [
+  "sphinx",
+  "furo",
+  "nbsphinx",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+exclude = ["tests", ".github"]
+
+[tool.setuptools_scm]
+tag_regex = "^v(?P<version>.*)$"
+version_scheme = "post-release"
+local_scheme = "dirty-tag"
+
 [tool.black]
 line-length = 88
 target-version = ["py310"]

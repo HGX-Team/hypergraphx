@@ -4,6 +4,8 @@
 *.ipynb_checkpoints/
 *__pycache__/
 .pytest_cache/
+.eggs/
+MANIFEST
 .cache/pre-commit/
 .DS_Store
 *.egg-info/
