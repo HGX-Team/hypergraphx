@@ -1,5 +1,5 @@
-hypergraphx.communities.hypergraph\_mt package
-==============================================
+🧑‍🤝‍🧑 Hypergraph-MT
+===================
 
 Submodules
 ----------

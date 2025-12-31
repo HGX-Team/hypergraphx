@@ -1,5 +1,5 @@
-🧬 hypergraphx.motifs package
-=============================
+🧬 Motifs
+========
 
 Submodules
 ----------

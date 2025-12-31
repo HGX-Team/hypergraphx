@@ -1,5 +1,5 @@
-hypergraphx.communities.hy\_sc package
-======================================
+🧑‍🤝‍🧑 Hy-SC
+===========
 
 Submodules
 ----------

@@ -1,5 +1,5 @@
-🧰 hypergraphx.utils package
-============================
+🧰 Utilities
+===========
 
 Submodules
 ----------

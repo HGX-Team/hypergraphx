@@ -1,5 +1,5 @@
-hypergraphx.communities.hy\_mmsbm package
-=========================================
+🧑‍🤝‍🧑 Hy-MMSBM
+==============
 
 Submodules
 ----------

@@ -1,5 +1,5 @@
-hypergraphx
-===========
+📚 API Modules
+=============
 
 .. toctree::
    :maxdepth: 4

@@ -1,5 +1,5 @@
-📏 hypergraphx.measures package
-===============================
+📏 Measures
+==========
 
 Submodules
 ----------

@@ -1,5 +1,5 @@
-hypergraphx.communities.core\_periphery package
-===============================================
+🧑‍🤝‍🧑 Core-Periphery
+====================
 
 Submodules
 ----------

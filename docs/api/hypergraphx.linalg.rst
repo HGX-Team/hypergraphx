@@ -1,5 +1,5 @@
-🧮 hypergraphx.linalg package
-=============================
+🧮 Linear Algebra
+================
 
 Submodules
 ----------

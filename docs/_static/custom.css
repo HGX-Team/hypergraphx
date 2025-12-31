@@ -20,3 +20,69 @@
   --color-brand-primary: #1a5f7a;
   --color-brand-content: #1a5f7a;
 }
+
+/* Hide index toctrees while keeping them for sidebar navigation. */
+.index-toc {
+  display: none;
+}
+
+/* Get Started list-table as light cards. */
+table.get-started {
+  border: 0;
+  border-collapse: separate;
+  border-spacing: 0 0.9rem;
+  width: 100%;
+}
+
+table.get-started td {
+  background: #f7fbfd;
+  border: 0;
+  box-shadow: 0 8px 20px rgba(26, 95, 122, 0.1);
+  padding: 0.95rem 1.1rem;
+  vertical-align: middle;
+}
+
+.table-wrapper,
+.table-wrapper table.get-started,
+.table-wrapper table.get-started tbody,
+.table-wrapper table.get-started tr {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+table.get-started tr td:first-child {
+  border-right: 0;
+  border-left: 4px solid #1a5f7a;
+  border-radius: 12px 0 0 12px;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+table.get-started tr td:last-child {
+  border-left: 0;
+  border-radius: 0 12px 12px 0;
+  color: #445563;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+table.get-started a {
+  color: #1a5f7a;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(26, 95, 122, 0.25);
+  font-weight: 600;
+}
+
+table.get-started strong a {
+  border-bottom-width: 2px;
+}
+
+table.get-started tr:hover td {
+  box-shadow: 0 12px 28px rgba(26, 95, 122, 0.14);
+  transform: translateY(-1px);
+}
+
+table.get-started tr:hover a {
+  border-bottom-color: rgba(26, 95, 122, 0.6);
+}

@@ -1,5 +1,5 @@
-🧹 hypergraphx.filters package
-==============================
+🧹 Filters
+=========
 
 Submodules
 ----------

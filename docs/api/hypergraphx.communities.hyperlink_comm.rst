@@ -1,5 +1,5 @@
-hypergraphx.communities.hyperlink\_comm package
-===============================================
+🧑‍🤝‍🧑 Hyperlink-Comm
+====================
 
 Submodules
 ----------

@@ -1,5 +1,5 @@
-🔗 hypergraphx.representations package
-=====================================
+🔗 Representations
+=================
 
 Submodules
 ----------

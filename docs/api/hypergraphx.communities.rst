@@ -1,5 +1,5 @@
-🧑‍🤝‍🧑 hypergraphx.communities package
-=====================================
+🧑‍🤝‍🧑 Communities
+=================
 
 Subpackages
 -----------

@@ -1,5 +1,5 @@
-💾 hypergraphx.readwrite package
-===============================
+💾 Read & Write
+==============
 
 Submodules
 ----------

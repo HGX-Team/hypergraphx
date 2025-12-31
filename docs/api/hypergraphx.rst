@@ -1,5 +1,5 @@
-📦 hypergraphx package
-======================
+📦 API Reference
+===============
 
 Subpackages
 -----------

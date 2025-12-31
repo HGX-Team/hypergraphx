@@ -1,7 +1,37 @@
-Welcome to Hypergraphx's documentation!
-=======================================
+Welcome to Hypergraphx's docs!
+==============================
+
+.. image:: ../logo/logo.png
+  :width: 160
 
 Hypergraphx (HGX) is a Python library for higher-order network analysis.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: 🚀 Get Started
+   :class: index-toc
+
+   installation
+   quickstart
+   tutorials
+
+.. toctree::
+   :maxdepth: 2
+   :caption: 📖 API Reference
+   :class: index-toc
+
+   api/hypergraphx.core
+   api/hypergraphx.communities
+   api/hypergraphx.dynamics
+   api/hypergraphx.filters
+   api/hypergraphx.generation
+   api/hypergraphx.measures
+   api/hypergraphx.motifs
+   api/hypergraphx.linalg
+   api/hypergraphx.viz
+   api/hypergraphx.readwrite
+   api/hypergraphx.representations
+   api/hypergraphx.utils
 
 Project links
 -------------
@@ -15,9 +45,17 @@ Project links
 Get started
 -----------
 
-- :doc:`installation`
-- :doc:`quickstart`
-- :doc:`tutorials`
+.. list-table::
+   :widths: 28 72
+   :header-rows: 0
+   :class: get-started
+
+   * - :doc:`⚙️ Installation <installation>`
+     - Install HGX from PyPI or source, then verify it works.
+   * - :doc:`🚀 Quickstart <quickstart>`
+     - Create your first hypergraph and compute basic measures.
+   * - :doc:`📚 Tutorials <tutorials>`
+     - Notebook-driven examples for workflows and models.
 
 Higher-order data repository
 ----------------------------
@@ -59,33 +97,5 @@ License
 
 This project is licensed under the `BSD 3-Clause License
 <https://github.com/HGX-Team/hypergraphx/blob/main/LICENSE.md>`_.
-
-.. toctree::
-   :maxdepth: 2
-   :caption: 🚀 Get Started
-
-   ⚙️ Installation <installation>
-   🚀 Quickstart <quickstart>
-   📚 Tutorials <tutorials>
-
-----
-
-.. toctree::
-   :maxdepth: 2
-   :caption: 📖 API Reference
-
-   🧩 Core <api/hypergraphx.core.rst>
-   🧑‍🤝‍🧑 Communities <api/hypergraphx.communities.rst>
-   🌊 Dynamics <api/hypergraphx.dynamics.rst>
-   🧹 Filters <api/hypergraphx.filters.rst>
-   🎲 Generation <api/hypergraphx.generation.rst>
-   📏 Measures <api/hypergraphx.measures.rst>
-   🧬 Motifs <api/hypergraphx.motifs.rst>
-   🧮 Linear algebra <api/hypergraphx.linalg.rst>
-   🎨 Visualization <api/hypergraphx.viz.rst>
-   💾 Data loading <api/hypergraphx.readwrite.rst>
-   🔗 Representations <api/hypergraphx.representations.rst>
-
-----
 
 Copyright |copyright|
