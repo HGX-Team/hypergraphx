@@ -105,3 +105,51 @@ table.get-started tr:hover td {
 table.get-started tr:hover a {
   border-bottom: none;
 }
+
+/* Notebook-style admonition boxes for tutorials. */
+.admonition {
+  border-radius: 12px;
+  border: 1px solid rgba(26, 95, 122, 0.18);
+  box-shadow: 0 10px 24px rgba(26, 95, 122, 0.08);
+  padding: 0.9rem 1rem;
+  margin: 1rem 0;
+}
+
+.admonition .admonition-title {
+  font-weight: 700;
+  margin: 0 0 0.35rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.78rem;
+}
+
+.admonition p {
+  margin: 0;
+}
+
+.admonition.note {
+  background: rgba(26, 95, 122, 0.08);
+  border-color: rgba(26, 95, 122, 0.35);
+}
+
+.admonition.note .admonition-title {
+  color: #1a5f7a;
+}
+
+.admonition.tip {
+  background: rgba(18, 117, 80, 0.08);
+  border-color: rgba(18, 117, 80, 0.35);
+}
+
+.admonition.tip .admonition-title {
+  color: #127550;
+}
+
+.admonition.seealso {
+  background: rgba(173, 92, 20, 0.08);
+  border-color: rgba(173, 92, 20, 0.35);
+}
+
+.admonition.seealso .admonition-title {
+  color: #ad5c14;
+}
