@@ -705,6 +705,46 @@ class DirectedHypergraph(BaseHypergraph):
 
         return directed_line_graph(self, distance, s, weighted)
 
+    def to_hypergraph(
+        self,
+        keep_node_metadata: bool = True,
+        keep_edge_metadata: bool = True,
+        keep_hypergraph_metadata: bool = True,
+    ):
+        """Convert to an undirected Hypergraph by merging sources and targets.
+
+        Duplicate hyperedges are merged by summing weights and merging metadata.
+        """
+        from hypergraphx.core.undirected import Hypergraph
+        from hypergraphx.utils.metadata import merge_metadata
+
+        hg = Hypergraph(weighted=True)
+        if keep_hypergraph_metadata:
+            meta = merge_metadata(
+                self.get_hypergraph_metadata(), {"converted_from": "DirectedHypergraph"}
+            )
+            hg.set_hypergraph_metadata(meta)
+
+        if keep_node_metadata:
+            for node, metadata in self.get_all_nodes_metadata().items():
+                hg.add_node(node, metadata=metadata)
+
+        edge_weights = {}
+        edge_metadata = {}
+        for edge in self.get_edges():
+            source, target = edge
+            merged_edge = tuple(sorted(set(source).union(target)))
+            edge_weights[merged_edge] = edge_weights.get(merged_edge, 0) + self.get_weight(edge)
+            if keep_edge_metadata:
+                edge_metadata[merged_edge] = merge_metadata(
+                    edge_metadata.get(merged_edge), self.get_edge_metadata(edge)
+                )
+
+        for edge, weight in edge_weights.items():
+            hg.add_edge(edge, weight=weight, metadata=edge_metadata.get(edge))
+
+        return hg
+
     # Metadata
     def get_all_nodes_metadata(self):
         return self._node_metadata

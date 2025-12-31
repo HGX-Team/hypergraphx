@@ -75,6 +75,20 @@ Common patterns
    seq = degree_sequence(hg)
    hgx.save_hypergraph(hg, "graph.json")
 
+Conversions
+-----------
+
+.. code-block:: python
+
+   # Drop direction, time, or layer information
+   dh = hgx.DirectedHypergraph(edge_list=[((0, 1), (2,))], weighted=True, weights=[2.0])
+   th = hgx.TemporalHypergraph(edge_list=[(0, (0, 1)), (1, (0, 1))], weighted=True, weights=[1.0, 2.0])
+   mx = hgx.MultiplexHypergraph(edge_list=[(0, 1), (0, 1)], edge_layer=["L1", "L2"], weighted=True, weights=[1.0, 2.0])
+
+   dh.to_hypergraph()  # merges source/target, sums weights
+   th.to_hypergraph()  # drops time, sums weights
+   mx.to_hypergraph()  # drops layer, sums weights
+
 Load and save
 -------------
 

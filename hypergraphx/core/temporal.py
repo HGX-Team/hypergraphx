@@ -603,6 +603,44 @@ class TemporalHypergraph(BaseHypergraph):
 
         return adjacency_factor(self, t)
 
+    def to_hypergraph(
+        self,
+        keep_node_metadata: bool = True,
+        keep_edge_metadata: bool = True,
+        keep_hypergraph_metadata: bool = True,
+    ):
+        """Convert to an undirected Hypergraph by dropping time information.
+
+        Duplicate hyperedges are merged by summing weights and merging metadata.
+        """
+        from hypergraphx.core.undirected import Hypergraph
+        from hypergraphx.utils.metadata import merge_metadata
+
+        hg = Hypergraph(weighted=True)
+        if keep_hypergraph_metadata:
+            meta = merge_metadata(
+                self.get_hypergraph_metadata(), {"converted_from": "TemporalHypergraph"}
+            )
+            hg.set_hypergraph_metadata(meta)
+
+        if keep_node_metadata:
+            for node, metadata in self.get_all_nodes_metadata().items():
+                hg.add_node(node, metadata=metadata)
+
+        edge_weights = {}
+        edge_metadata = {}
+        for time, edge in self.get_edges():
+            edge_weights[edge] = edge_weights.get(edge, 0) + self.get_weight(edge, time)
+            if keep_edge_metadata:
+                edge_metadata[edge] = merge_metadata(
+                    edge_metadata.get(edge), self.get_edge_metadata(edge, time)
+                )
+
+        for edge, weight in edge_weights.items():
+            hg.add_edge(edge, weight=weight, metadata=edge_metadata.get(edge))
+
+        return hg
+
     def subhypergraph(
         self, time_window=None, add_all_nodes: bool = False
     ) -> dict[int, Hypergraph]:

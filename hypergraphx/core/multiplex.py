@@ -341,19 +341,44 @@ class MultiplexHypergraph(BaseHypergraph):
         self._hypergraph_metadata = metadata
 
     def aggregated_hypergraph(self):
-        h = Hypergraph(
-            weighted=self._weighted, hypergraph_metadata=self._hypergraph_metadata
-        )
-        for node in self.get_nodes():
-            h.add_node(node, metadata=self._node_metadata[node])
-        for edge in self.get_edges():
-            _edge, layer = edge
-            h.add_edge(
-                _edge,
-                weight=self.get_weight(_edge, layer),
-                metadata=self.get_edge_metadata(_edge, layer),
+        return self.to_hypergraph()
+
+    def to_hypergraph(
+        self,
+        keep_node_metadata: bool = True,
+        keep_edge_metadata: bool = True,
+        keep_hypergraph_metadata: bool = True,
+    ):
+        """Convert to an undirected Hypergraph by dropping layer information.
+
+        Duplicate hyperedges are merged by summing weights and merging metadata.
+        """
+        from hypergraphx.utils.metadata import merge_metadata
+
+        hg = Hypergraph(weighted=True)
+        if keep_hypergraph_metadata:
+            meta = merge_metadata(
+                self.get_hypergraph_metadata(), {"converted_from": "MultiplexHypergraph"}
             )
-        return h
+            hg.set_hypergraph_metadata(meta)
+
+        if keep_node_metadata:
+            for node, metadata in self.get_all_nodes_metadata().items():
+                hg.add_node(node, metadata=metadata)
+
+        edge_weights = {}
+        edge_metadata = {}
+        for edge, layer in self.get_edges():
+            edge_weights[edge] = edge_weights.get(edge, 0) + self.get_weight(edge, layer)
+            if keep_edge_metadata:
+                edge_metadata[edge] = merge_metadata(
+                    edge_metadata.get(edge), self.get_edge_metadata(edge, layer)
+                )
+
+        for edge, weight in edge_weights.items():
+            hg.add_edge(edge, weight=weight, metadata=edge_metadata.get(edge))
+
+        return hg
 
     def set_attr_to_hypergraph_metadata(self, field, value):
         self._hypergraph_metadata[field] = value
