@@ -1,6 +1,7 @@
 import pytest
 
 from hypergraphx import DirectedHypergraph
+from hypergraphx.exceptions import MissingNodeError
 
 
 @pytest.fixture
@@ -421,3 +422,64 @@ def test_get_edges_order_and_size_specified():
         dhg.get_source_edges("A", order=1, size=3)
     with pytest.raises(ValueError, match="Order and size cannot be both specified."):
         dhg.get_target_edges("B", order=1, size=3)
+
+
+def _make_directed_for_degree():
+    hg = DirectedHypergraph()
+    hg.add_edge(((0, 1), (2,)))  # size 3
+    hg.add_edge(((2,), (0,)))  # size 2
+    hg.add_edge(((0,), (1, 2)))  # size 3
+    hg.add_edge(((3,), (0, 2)))  # size 3
+    hg.add_edge(((4,), (5,)))  # size 2
+    hg.add_node(6)
+    return hg
+
+
+def test_in_out_degree_basic_counts():
+    hg = _make_directed_for_degree()
+
+    assert hg.out_degree(0) == 2
+    assert hg.in_degree(0) == 2
+    assert hg.out_degree(2) == 1
+    assert hg.in_degree(2) == 3
+
+    assert hg.out_degree(0, order=1) == 0
+    assert hg.in_degree(0, order=1) == 1
+    assert hg.out_degree(2, order=1) == 1
+    assert hg.in_degree(2, order=1) == 0
+
+    assert hg.out_degree(0, order=2) == 2
+    assert hg.in_degree(2, order=2) == 3
+
+
+def test_in_out_degree_sequences_and_distributions():
+    hg = _make_directed_for_degree()
+
+    assert hg.in_degree_sequence() == {
+        0: 2,
+        1: 1,
+        2: 3,
+        3: 0,
+        4: 0,
+        5: 1,
+        6: 0,
+    }
+    assert hg.out_degree_sequence() == {
+        0: 2,
+        1: 1,
+        2: 1,
+        3: 1,
+        4: 1,
+        5: 0,
+        6: 0,
+    }
+    assert hg.in_degree_distribution() == {2: 1, 1: 2, 3: 1, 0: 3}
+    assert hg.out_degree_distribution() == {2: 1, 1: 4, 0: 2}
+
+
+def test_in_out_degree_missing_node_raises():
+    hg = _make_directed_for_degree()
+    with pytest.raises(MissingNodeError):
+        hg.in_degree("missing")
+    with pytest.raises(MissingNodeError):
+        hg.out_degree("missing")

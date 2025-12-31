@@ -641,6 +641,56 @@ class DirectedHypergraph(BaseHypergraph):
         from hypergraphx.measures.degree import degree_distribution
 
         return degree_distribution(self, order=order, size=size)
+
+    def in_degree(self, node, order=None, size=None):
+        """Return the in-degree of a node, counting incident edges where the node is a target.
+
+        Parameters
+        ----------
+        node : object
+            The node of interest.
+        order : int, optional
+            The order of the hyperedges to consider.
+        size : int, optional
+            The size of the hyperedges to consider.
+        """
+        return len(self.get_target_edges(node, order=order, size=size))
+
+    def out_degree(self, node, order=None, size=None):
+        """Return the out-degree of a node, counting incident edges where the node is a source.
+
+        Parameters
+        ----------
+        node : object
+            The node of interest.
+        order : int, optional
+            The order of the hyperedges to consider.
+        size : int, optional
+            The size of the hyperedges to consider.
+        """
+        return len(self.get_source_edges(node, order=order, size=size))
+
+    def in_degree_sequence(self, order=None, size=None):
+        """Return the in-degree for every node as a dict."""
+        return {node: self.in_degree(node, order=order, size=size) for node in self.get_nodes()}
+
+    def out_degree_sequence(self, order=None, size=None):
+        """Return the out-degree for every node as a dict."""
+        return {node: self.out_degree(node, order=order, size=size) for node in self.get_nodes()}
+
+    def in_degree_distribution(self, order=None, size=None):
+        """Return a histogram of in-degrees as a dict {degree: count}."""
+        dist = {}
+        for node, deg in self.in_degree_sequence(order=order, size=size).items():
+            dist[deg] = dist.get(deg, 0) + 1
+        return dist
+
+    def out_degree_distribution(self, order=None, size=None):
+        """Return a histogram of out-degrees as a dict {degree: count}."""
+        dist = {}
+        for node, deg in self.out_degree_sequence(order=order, size=size).items():
+            dist[deg] = dist.get(deg, 0) + 1
+        return dist
     
     # Utility
     def isolated_nodes(self, size=None, order=None):

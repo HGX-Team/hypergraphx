@@ -40,6 +40,10 @@ Directed / temporal / multiplex
    th = hgx.TemporalHypergraph(edge_list=[(0, (0, 1)), (1, (1, 2))])
    mx = hgx.MultiplexHypergraph(edge_list=[(0, 1), (1, 2)], edge_layer=["L1", "L2"])
 
+   # Directed in/out degrees
+   dh.in_degree(2)
+   dh.out_degree(2)
+
 Common queries
 --------------
 
