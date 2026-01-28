@@ -44,6 +44,14 @@ hypergraphx.measures.sub\_hypergraph\_centrality module
    :undoc-members:
    :show-inheritance:
 
+hypergraphx.measures.reducibility module
+----------------------------------------
+
+.. automodule:: hypergraphx.measures.reducibility
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

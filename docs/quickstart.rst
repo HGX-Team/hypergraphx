@@ -118,7 +118,6 @@ Measures
 
    from hypergraphx.measures.degree import degree_sequence
    from hypergraphx.measures.shortest_paths import calc_ho_shortest_paths
-
    seq = degree_sequence(hg)
    paths = calc_ho_shortest_paths(hg)
 
