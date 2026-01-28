@@ -10,7 +10,7 @@ from hypergraphx.exceptions import InvalidParameterError
 
 
 def reducibility(
-    hg: Hypergraph, partition=None, optimization="exact", ent_method="count"
+    hg: Hypergraph, partition=None, optimization="exact", entropy_method="count"
 ):
     """
     Compute hypergraph reducibility and the representative set of layers.
@@ -25,7 +25,7 @@ def reducibility(
         If dict, it must map every node to a group.
     optimization : {"exact", "greedy"}, optional
         Optimization method for selecting representatives.
-    ent_method : {"count", "project"}, optional
+    entropy_method : {"count", "project"}, optional
         Entropy computation method.
 
     Returns
@@ -46,14 +46,16 @@ def reducibility(
     >>> hg = Hypergraph()
     >>> hg.add_nodes([0, 1, 2, 3])
     >>> hg.add_edges([(0, 1), (1, 2), (2, 3), (0, 1, 2)])
-    >>> eta, reps = reducibility(hg, ent_method="count", optimization="exact")
+    >>> eta, reps = reducibility(hg, entropy_method="count", optimization="exact")
     """
-    if ent_method not in {"count", "project"}:
-        raise InvalidParameterError('ent_method must be either "count" or "project".')
+    if entropy_method not in {"count", "project"}:
+        raise InvalidParameterError(
+            'entropy_method must be either "count" or "project".'
+        )
     if optimization not in {"exact", "greedy"}:
         raise InvalidParameterError('optimization must be either "exact" or "greedy".')
 
-    if ent_method == "project":
+    if entropy_method == "project":
         M, Q = _get_entropies_project(hg, partition)
     else:
         M, Q = _get_entropies_count(hg, partition)
@@ -110,7 +112,7 @@ def reducibility(
     return (H0 - Hstar) / (H0 - Q[max_layer]), Rstar
 
 
-def layer_reducibility(hg: Hypergraph, partition=None, ent_method="count"):
+def layer_reducibility(hg: Hypergraph, partition=None, entropy_method="count"):
     """
     Compute layer-wise reducibility.
 
@@ -120,7 +122,7 @@ def layer_reducibility(hg: Hypergraph, partition=None, ent_method="count"):
         The hypergraph of interest.
     partition : list or dict, optional
         Node partition for multiscale reducibility.
-    ent_method : {"count", "project"}, optional
+    entropy_method : {"count", "project"}, optional
         Entropy computation method.
 
     Returns
@@ -141,11 +143,13 @@ def layer_reducibility(hg: Hypergraph, partition=None, ent_method="count"):
     >>> hg = Hypergraph()
     >>> hg.add_nodes([0, 1, 2, 3])
     >>> hg.add_edges([(0, 1), (1, 2), (2, 3), (0, 1, 2)])
-    >>> etas = layer_reducibility(hg, ent_method="count")
+    >>> etas = layer_reducibility(hg, entropy_method="count")
     """
-    if ent_method not in {"count", "project"}:
-        raise InvalidParameterError('ent_method must be either "count" or "project".')
-    if ent_method == "project":
+    if entropy_method not in {"count", "project"}:
+        raise InvalidParameterError(
+            'entropy_method must be either "count" or "project".'
+        )
+    if entropy_method == "project":
         M, Q = _get_entropies_project(hg, partition)
     else:
         M, Q = _get_entropies_count(hg, partition)
@@ -415,7 +419,7 @@ def _get_entropies_count(hg: Hypergraph, partition=None):
 
 
 def reducibility(
-    hg: Hypergraph, partition=None, optimization="exact", ent_method="count"
+    hg: Hypergraph, partition=None, optimization="exact", entropy_method="count"
 ):
     """
     Compute hypergraph reducibility and the representative set of layers.
@@ -430,7 +434,7 @@ def reducibility(
         If dict, it must map every node to a group.
     optimization : {"exact", "greedy"}, optional
         Optimization method for selecting representatives.
-    ent_method : {"count", "project"}, optional
+    entropy_method : {"count", "project"}, optional
         Entropy computation method.
 
     Returns
@@ -451,14 +455,16 @@ def reducibility(
     >>> hg = Hypergraph()
     >>> hg.add_nodes([0, 1, 2, 3])
     >>> hg.add_edges([(0, 1), (1, 2), (2, 3), (0, 1, 2)])
-    >>> eta, reps = reducibility(hg, ent_method="count", optimization="exact")
+    >>> eta, reps = reducibility(hg, entropy_method="count", optimization="exact")
     """
-    if ent_method not in {"count", "project"}:
-        raise InvalidParameterError('ent_method must be either "count" or "project".')
+    if entropy_method not in {"count", "project"}:
+        raise InvalidParameterError(
+            'entropy_method must be either "count" or "project".'
+        )
     if optimization not in {"exact", "greedy"}:
         raise InvalidParameterError('optimization must be either "exact" or "greedy".')
 
-    if ent_method == "project":
+    if entropy_method == "project":
         M, Q = _get_entropies_project(hg, partition)
     else:
         M, Q = _get_entropies_count(hg, partition)
@@ -515,7 +521,7 @@ def reducibility(
     return (H0 - Hstar) / (H0 - Q[max_layer]), Rstar
 
 
-def layer_reducibility(hg: Hypergraph, partition=None, ent_method="count"):
+def layer_reducibility(hg: Hypergraph, partition=None, entropy_method="count"):
     """
     Compute layer-wise reducibility.
 
@@ -525,7 +531,7 @@ def layer_reducibility(hg: Hypergraph, partition=None, ent_method="count"):
         The hypergraph of interest.
     partition : list or dict, optional
         Node partition for multiscale reducibility.
-    ent_method : {"count", "project"}, optional
+    entropy_method : {"count", "project"}, optional
         Entropy computation method.
 
     Returns
@@ -546,11 +552,13 @@ def layer_reducibility(hg: Hypergraph, partition=None, ent_method="count"):
     >>> hg = Hypergraph()
     >>> hg.add_nodes([0, 1, 2, 3])
     >>> hg.add_edges([(0, 1), (1, 2), (2, 3), (0, 1, 2)])
-    >>> etas = layer_reducibility(hg, ent_method="count")
+    >>> etas = layer_reducibility(hg, entropy_method="count")
     """
-    if ent_method not in {"count", "project"}:
-        raise InvalidParameterError('ent_method must be either "count" or "project".')
-    if ent_method == "project":
+    if entropy_method not in {"count", "project"}:
+        raise InvalidParameterError(
+            'entropy_method must be either "count" or "project".'
+        )
+    if entropy_method == "project":
         M, Q = _get_entropies_project(hg, partition)
     else:
         M, Q = _get_entropies_count(hg, partition)
