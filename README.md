@@ -2,9 +2,18 @@
 
 **Hypergraphx** (HGX) is a Python library for the analysis of real-world complex systems with **group interactions**. It provides a comprehensive suite of tools to construct, visualize, and analyze **hypergraphs** with weighted, directed, temporal, and multiplex interactions. HGX aims to provide, as a single source, a wide range of tools for higher‑order data: conversions across representations, measures of higher‑order organization, filtering and sparsification, generative models, and dynamical processes from contagion to synchronization. The framework is general and designed to be user‑friendly and accessible.
 
-[![Paper](https://img.shields.io/badge/Paper-arXiv-b31b1b)](https://arxiv.org/abs/2303.15356) ![PyPI](https://img.shields.io/pypi/v/hypergraphx?label=PyPI&color=1f8b4c) ![Python](https://img.shields.io/pypi/pyversions/hypergraphx?label=Python&color=2b5797) ![License](https://img.shields.io/badge/License-BSD%203--Clause-3d3d3d) ![Docs](https://img.shields.io/readthedocs/hypergraphx?label=Docs&color=4b9ce2) ![Code style](https://img.shields.io/badge/code%20style-black-000000) ![Downloads](https://img.shields.io/pypi/dm/hypergraphx?label=Downloads&color=6c5ce7)
+[![Paper](https://img.shields.io/badge/Paper-arXiv-b31b1b)](https://arxiv.org/abs/2303.15356) ![PyPI](https://img.shields.io/pypi/v/hypergraphx?label=PyPI&color=1f8b4c) ![License](https://img.shields.io/badge/License-BSD%203--Clause-3d3d3d) [![Docs](https://img.shields.io/readthedocs/hypergraphx?label=Read%20the%20Docs&color=4b9ce2&logo=readthedocs&logoColor=white)](https://hypergraphx.readthedocs.io/) [![Tutorials](https://img.shields.io/badge/Tutorials-GitHub-24292f)](https://github.com/HGX-Team/hypergraphx/tree/master/tutorials) [![Issues](https://img.shields.io/badge/Issues-GitHub-24292f)](https://github.com/HGX-Team/hypergraphx/issues) ![Code style](https://img.shields.io/badge/code%20style-black-000000) ![Downloads](https://img.shields.io/pypi/dm/hypergraphx?label=Downloads&color=6c5ce7)
 
-📄 [Paper](https://arxiv.org/pdf/2303.15356.pdf) · 📚 [Docs](https://hypergraphx.readthedocs.io/en/latest/#) · 🧪 [Tutorials](https://github.com/HGX-Team/hypergraphx/tree/master/tutorials) · 🗃️ [Data](https://github.com/HGX-Team/data) · 🐛 [Issues](https://github.com/HGX-Team/hypergraphx/issues) · ✉️ [Contact](mailto:quintino.lotito@unitn.it)
+## ⚡ Quick links
+
+<p>
+  <a href="https://hypergraphx.readthedocs.io/" style="display:inline-block; padding:6px 12px; margin:4px 6px 4px 0; border:1px solid #4b9ce2; border-radius:999px; text-decoration:none;">Docs</a>
+  <a href="https://github.com/HGX-Team/hypergraphx/tree/master/tutorials" style="display:inline-block; padding:6px 12px; margin:4px 6px 4px 0; border:1px solid #24292f; border-radius:999px; text-decoration:none;">Tutorials</a>
+  <a href="https://arxiv.org/abs/2303.15356" style="display:inline-block; padding:6px 12px; margin:4px 6px 4px 0; border:1px solid #b31b1b; border-radius:999px; text-decoration:none;">Paper</a>
+  <a href="https://github.com/HGX-Team/data" style="display:inline-block; padding:6px 12px; margin:4px 6px 4px 0; border:1px solid #24292f; border-radius:999px; text-decoration:none;">Data</a>
+  <a href="https://github.com/HGX-Team/hypergraphx/issues" style="display:inline-block; padding:6px 12px; margin:4px 6px 4px 0; border:1px solid #24292f; border-radius:999px; text-decoration:none;">Issues</a>
+  <a href="mailto:quintino.lotito@unitn.it" style="display:inline-block; padding:6px 12px; margin:4px 6px 4px 0; border:1px solid #6c5ce7; border-radius:999px; text-decoration:none;">Contact</a>
+</p>
 
 ## 🧭 Menu
 
