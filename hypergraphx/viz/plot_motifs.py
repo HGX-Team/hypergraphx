@@ -8,7 +8,7 @@ from hypergraphx.motifs.utils import generate_motifs
 
 _POS_COLOR = "#4C72B0"
 _NEG_COLOR = "#C44E52"
-_DEFAULT_BLOB_COLORS = {3: _POS_COLOR, 4: "#DD8452", "default": "#55A868"}
+_DEFAULT_BLOB_COLORS = {3: "#9BB8E8", 4: "#F3C7A6", "default": "#A8D5BA"}
 
 
 def _sort_for_visualization(motifs: list):
@@ -93,14 +93,14 @@ def _draw_motif_icon(
     ax,
     events,
     center_x: float,
-    icon_width: float = 0.7,
+    icon_width: float = 0.85,
     aggregate: bool = False,
     y_center: float = 0.9,
     y_scale: float = 0.3,
     blob_colors: dict | None = None,
     node_color: str = "#222222",
     node_edge: str = "white",
-    node_size: float = 22,
+    node_size: float = 30,
     edge_color: str = "#333333",
 ):
     if not events:
@@ -110,6 +110,8 @@ def _draw_motif_icon(
     if k == 0:
         return
     base_coords = _node_layout(k)
+    jitter = {node: (0.0, 0.0) for node in node_ids}
+    icon_width = icon_width * (3 / max(3, k)) ** 0.25
     node_to_xy_local = {node_ids[i]: base_coords[i] for i in range(k)}
     L = len(events)
     if L == 0:
@@ -121,8 +123,9 @@ def _draw_motif_icon(
         xs_all, ys_all = [], []
         for node in node_ids:
             x_local, y_local = node_to_xy_local[node]
-            x_scaled = center_x + (x_local - 0.5) * icon_width
-            y_scaled = y_center + (y_local - 0.5) * y_scale
+            jx, jy = jitter[node]
+            x_scaled = center_x + (x_local + jx - 0.5) * icon_width
+            y_scaled = y_center + (y_local + jy - 0.5) * y_scale
             xs_all.append(x_scaled)
             ys_all.append(y_scaled)
 
@@ -132,8 +135,9 @@ def _draw_motif_icon(
             for node in node_ids:
                 if node in ev_set:
                     x_local, y_local = node_to_xy_local[node]
-                    x_scaled = center_x + (x_local - 0.5) * icon_width
-                    y_scaled = y_center + (y_local - 0.5) * y_scale
+                    jx, jy = jitter[node]
+                    x_scaled = center_x + (x_local + jx - 0.5) * icon_width
+                    y_scaled = y_center + (y_local + jy - 0.5) * y_scale
                     xs_present.append(x_scaled)
                     ys_present.append(y_scaled)
 
@@ -150,7 +154,8 @@ def _draw_motif_icon(
                             closed=True,
                             facecolor=color,
                             alpha=0.22,
-                            edgecolor="none",
+                            edgecolor="#FFFFFF",
+                            linewidth=0.4,
                         )
                     )
             elif ev_size == 2:
@@ -166,6 +171,15 @@ def _draw_motif_icon(
                 )
 
         if xs_all:
+            ax.scatter(
+                xs_all,
+                ys_all,
+                s=node_size * 2.2,
+                color=node_edge,
+                alpha=0.25,
+                linewidths=0,
+                zorder=2,
+            )
             ax.scatter(
                 xs_all,
                 ys_all,
@@ -233,13 +247,13 @@ def plot_motifs(
     pos_color: str = _POS_COLOR,
     neg_color: str = _NEG_COLOR,
     blob_colors: dict | None = None,
-    icon_width: float = 0.7,
-    icon_y: float = 0.9,
-    icon_scale: float = 0.3,
+    icon_width: float = 0.85,
+    icon_y: float = 0.86,
+    icon_scale: float = 0.95,
     icon_row_ylim: tuple | None = None,
     node_color: str = "#222222",
     node_edge: str = "white",
-    node_size: float = 22,
+    node_size: float = 30,
     edge_color: str = "#333333",
     show_motif_labels: bool = False,
     motif_labels: list | None = None,
