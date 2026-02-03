@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import networkx as nx
 
 from hypergraphx.representations.projections import clique_projection
@@ -37,6 +36,13 @@ def draw_simplicial(
     matplotlib.axes.Axes
         The axes the plot was drawn on.
     """
+    try:
+        import matplotlib.pyplot as plt  # type: ignore
+    except ImportError as exc:  # pragma: no cover
+        raise ImportError(
+            "draw_simplicial requires matplotlib. Install with `pip install hypergraphx[viz]`."
+        ) from exc
+
     G = clique_projection(HG, keep_isolated=True)
     if pos is None:
         pos = nx.spring_layout(G)

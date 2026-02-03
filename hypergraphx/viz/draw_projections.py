@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import networkx as nx
 
 from hypergraphx import Hypergraph
@@ -33,6 +32,13 @@ def draw_bipartite(
     ax : matplotlib.axes.Axes.
         The axes the graph was drawn on.
     """
+    try:
+        import matplotlib.pyplot as plt  # type: ignore
+    except ImportError as exc:  # pragma: no cover
+        raise ImportError(
+            "draw_bipartite requires matplotlib. Install with `pip install hypergraphx[viz]`."
+        ) from exc
+
     g, _ = bipartite_projection(h)
 
     if pos is None:
@@ -77,6 +83,13 @@ def draw_clique(h: Hypergraph, pos=None, ax=None, show: bool = False, **kwargs):
     -------
     ax : matplotlib.axes.Axes. The axes the graph was drawn on.
     """
+    try:
+        import matplotlib.pyplot as plt  # type: ignore
+    except ImportError as exc:  # pragma: no cover
+        raise ImportError(
+            "draw_clique requires matplotlib. Install with `pip install hypergraphx[viz]`."
+        ) from exc
+
     g = clique_projection(h)
 
     if pos is None:

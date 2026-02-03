@@ -1,6 +1,5 @@
 from typing import Optional, Tuple, Union
 
-import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
@@ -13,7 +12,7 @@ def draw_communities(
     u: np.array,
     col: dict,
     figsize: tuple = (7, 7),
-    ax: Optional[plt.Axes] = None,
+    ax: Optional["plt.Axes"] = None,
     pos: Optional[dict] = None,
     edge_color: str = "lightgrey",
     edge_width: float = 0.3,
@@ -33,6 +32,13 @@ def draw_communities(
     opt_dist: float = 0.2,
     show: bool = False,
 ):
+    try:
+        import matplotlib.pyplot as plt  # type: ignore
+    except ImportError as exc:  # pragma: no cover
+        raise ImportError(
+            "draw_communities requires matplotlib. Install with `pip install hypergraphx[viz]`."
+        ) from exc
+
     """Visualize the node memberships of a hypergraph. Nodes are colored according to their memberships,
     which can be either hard- or soft-membership, and the node size is proportional to the degree in the hypergraph.
     Edges are the pairwise interactions of the hypergraph clique projection.

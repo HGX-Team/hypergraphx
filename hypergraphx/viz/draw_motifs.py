@@ -1,7 +1,5 @@
-import matplotlib.pyplot as plt
 import networkx as nx
 import itertools
-from matplotlib.patches import Polygon
 
 
 def draw_motifs(
@@ -37,6 +35,14 @@ def draw_motifs(
     fig : matplotlib.figure.Figure
     axes : list[matplotlib.axes.Axes]
     """
+    try:
+        import matplotlib.pyplot as plt  # type: ignore
+        from matplotlib.patches import Polygon  # type: ignore
+    except ImportError as exc:  # pragma: no cover
+        raise ImportError(
+            "draw_motifs requires matplotlib. Install with `pip install hypergraphx[viz]`."
+        ) from exc
+
     # Collect all unique nodes across all patterns
     all_nodes = set(
         itertools.chain.from_iterable(itertools.chain.from_iterable(patterns))

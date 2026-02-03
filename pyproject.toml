@@ -37,12 +37,21 @@ dev = [
   "black>=24.3.0",
   "pre-commit",
 ]
+temporal = [
+  "tqdm",
+]
+viz = [
+  "matplotlib",
+  # optional interactive hover labels in plot_motifs
+  "mplcursors",
+]
 docs = [
   "sphinx",
   "furo",
   "nbsphinx",
   "matplotlib",
   "seaborn",
+  "tqdm",
 ]
 ml = [
   "scikit-learn",

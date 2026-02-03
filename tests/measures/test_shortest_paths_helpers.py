@@ -59,13 +59,13 @@ def test_calc_sizes_redundancies_and_props():
     assert "avg_size" in sample
     assert len(sample["sizes"]) == len(sample["sp"]) - 1
 
-    avg_ord = spl.copy()
-    avg_ord.values[:] = 2
-    np.fill_diagonal(avg_ord.values, 0)
-    avg_ord.values[0, 1] = 3
-    avg_ord.values[1, 0] = 3
+    # Avoid mutating DataFrame .values directly (can be read-only under some pandas modes).
+    avg_ord = np.full_like(spl.to_numpy(), 2.0)
+    np.fill_diagonal(avg_ord, 0)
+    avg_ord[0, 1] = 3
+    avg_ord[1, 0] = 3
     # If only one boolean class appears, unstack drops the other column.
-    props = calc_prop_true_dyad_paths_per_spl(spl.to_numpy(), avg_ord.to_numpy())
+    props = calc_prop_true_dyad_paths_per_spl(spl.to_numpy(), avg_ord)
     assert "spl" in props.columns
     assert any(col in props.columns for col in ("prop_False", "prop_True"))
 

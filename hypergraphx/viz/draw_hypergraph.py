@@ -1,7 +1,6 @@
 import random
 from typing import Optional, Union
 
-import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
@@ -74,7 +73,7 @@ class Object:
 def draw_hypergraph(
     hypergraph: Hypergraph,
     figsize: tuple = (12, 7),
-    ax: Optional[plt.Axes] = None,
+    ax: Optional["plt.Axes"] = None,
     pos: Optional[dict] = None,
     edge_color: str = "lightgrey",
     hyperedge_color_by_order: Optional[dict] = None,
@@ -106,6 +105,12 @@ def draw_hypergraph(
     matplotlib.axes.Axes
         The axes the plot was drawn on.
     """
+    try:
+        import matplotlib.pyplot as plt  # type: ignore
+    except ImportError as exc:  # pragma: no cover
+        raise ImportError(
+            "draw_hypergraph requires matplotlib. Install with `pip install hypergraphx[viz]`."
+        ) from exc
 
     def _stable_color(order_value):
         rng = random.Random(order_value)

@@ -1,8 +1,5 @@
 import math
 
-import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
-
 from hypergraphx.motifs.utils import generate_motifs
 
 
@@ -105,6 +102,14 @@ def _draw_motif_icon(
 ):
     if not events:
         return
+    # Lazy import of Polygon to keep this module import-safe without matplotlib.
+    try:
+        from matplotlib.patches import Polygon  # type: ignore
+    except ImportError as exc:  # pragma: no cover
+        raise ImportError(
+            "plot_motifs requires matplotlib. Install with `pip install hypergraphx[viz]`."
+        ) from exc
+
     node_ids = sorted({n for ev in events for n in ev})
     k = len(node_ids)
     if k == 0:
@@ -261,6 +266,14 @@ def plot_motifs(
     annotate_fmt: str = "{:+.2f}",
     hover_labels: bool = False,
 ):
+    try:
+        import matplotlib.pyplot as plt  # type: ignore
+        from matplotlib.patches import Polygon  # type: ignore
+    except ImportError as exc:  # pragma: no cover
+        raise ImportError(
+            "plot_motifs requires matplotlib. Install with `pip install hypergraphx[viz]`."
+        ) from exc
+
     """
     Plot motifs. Motifs are sorted in such a way to show first lower order motifs, then higher order motifs.
 
