@@ -22,24 +22,41 @@ def transition_matrix(HG: Hypergraph) -> sparse.spmatrix:
     ----------
     [1] Timoteo Carletti, Federico Battiston, Giulia Cencetti, and Duccio Fanelli, Random walks on hypergraphs, Phys. Rev. E 96, 012308 (2017)
     """
-    N = HG.num_nodes()
-    # assert if HG i connected
-    assert HG.is_connected(), "The hypergraph is not connected"
-    hedge_list = HG.get_edges()
-    T = np.zeros((N, N))
-    for l in hedge_list:
-        for i in range(len(l)):
-            for j in range(i + 1, len(l)):
-                T[l[i], l[j]] += len(l) - 1
-                T[l[j], l[i]] += len(l) - 1
-    row_sums = T.sum(axis=1, keepdims=True)
-    T = T / row_sums
+    if not HG.is_connected():
+        raise ValueError("The hypergraph is not connected")
 
-    T = sparse.csr_matrix(T)
+    # Build a sparse transition matrix using the binary incidence matrix B.
+    # For each hyperedge e of size s, contribute (s-1) to every off-diagonal pair in e.
+    # This corresponds to: M = B * diag(s_e - 1) * B^T, then zero the diagonal, then row-normalize.
+    B, idx_to_node = HG.binary_incidence_matrix(return_mapping=True)
+    _ = idx_to_node  # mapping is relevant for callers; matrix is in index space.
+
+    edges = HG.get_edges()
+    if len(edges) == 0:
+        raise ValueError("Cannot compute a random walk on an empty hypergraph.")
+
+    w = np.asarray([len(e) - 1 for e in edges], dtype=float)
+    if np.any(w < 0):
+        raise ValueError("Invalid hyperedge size encountered.")
+
+    M = B @ sparse.diags(w, offsets=0, format="csr") @ B.T
+    M = M.tocsr()
+    M.setdiag(0)
+    M.eliminate_zeros()
+
+    row_sums = np.asarray(M.sum(axis=1)).ravel()
+    if np.any(row_sums == 0):
+        # This can happen with isolated nodes (or empty edges), which contradicts connectivity anyway.
+        raise ValueError(
+            "Random-walk transition undefined: a node has no outgoing probability mass."
+        )
+
+    inv_row = sparse.diags(1.0 / row_sums, offsets=0, format="csr")
+    T = (inv_row @ M).tocsr()
     return T
 
 
-def random_walk(HG: Hypergraph, s: int, time: int) -> list:
+def random_walk(HG: Hypergraph, s, time: int) -> list:
     """Compute the random walk on the hypergraph.
 
     Parameters
@@ -56,15 +73,33 @@ def random_walk(HG: Hypergraph, s: int, time: int) -> list:
     nodes : list
         The list of nodes visited by the random walk.
     """
-    K = np.array(transition_matrix(HG).todense())
-    nodes = [s]
-    for t in range(time):
-        next_node = np.random.choice(K.shape[0], p=K[nodes[-1], :])
-        nodes.append(next_node)
-    return nodes
+    if time < 0:
+        raise ValueError("time must be non-negative.")
+
+    T, mapping = HG.binary_incidence_matrix(return_mapping=True)
+    node_to_idx = {node: idx for idx, node in mapping.items()}
+    if s not in node_to_idx:
+        raise ValueError("Starting node is not in the hypergraph.")
+    start_idx = node_to_idx[s]
+
+    P = transition_matrix(HG).tocsr()
+    path_idx = [start_idx]
+    for _ in range(time):
+        cur = path_idx[-1]
+        row = P.getrow(cur)
+        if row.nnz == 0:
+            # This should not happen for connected hypergraphs, but keep a safe fallback.
+            path_idx.append(cur)
+            continue
+        next_idx = int(np.random.choice(row.indices, p=row.data))
+        path_idx.append(next_idx)
+
+    return [mapping[i] for i in path_idx]
 
 
-def RW_stationary_state(HG: Hypergraph) -> np.ndarray:
+def RW_stationary_state(
+    HG: Hypergraph, *, tol: float = 1e-12, max_iter: int = 10000
+) -> np.ndarray:
     """Compute the stationary state of the random walk on the hypergraph.
 
     Parameters
@@ -77,10 +112,29 @@ def RW_stationary_state(HG: Hypergraph) -> np.ndarray:
     stationary_state : np.ndarray
         The stationary state of the random walk on the hypergraph.
     """
-    K = np.array(transition_matrix(HG).todense())
-    stationary_state = np.linalg.solve(np.eye(K.shape[0]) - K.T, np.ones(K.shape[0]))
-    stationary_state = stationary_state / np.sum(stationary_state)
-    return stationary_state
+    if tol <= 0:
+        raise ValueError("tol must be positive.")
+    if max_iter <= 0:
+        raise ValueError("max_iter must be positive.")
+
+    P = transition_matrix(HG).tocsr()
+    n = P.shape[0]
+    pi = np.full(n, 1.0 / n, dtype=float)
+
+    # Power iteration on row-stochastic P: pi_{k+1} = pi_k P.
+    for _ in range(max_iter):
+        pi_next = pi @ P
+        # L1 distance is natural for distributions.
+        if np.linalg.norm(pi_next - pi, ord=1) < tol:
+            pi = pi_next
+            break
+        pi = pi_next
+
+    total = pi.sum()
+    if total == 0 or not np.isfinite(total):
+        raise RuntimeError("Failed to compute a valid stationary distribution.")
+    pi = pi / total
+    return np.asarray(pi).ravel()
 
 
 def random_walk_density(HG: Hypergraph, s: np.ndarray, time: int) -> list:
@@ -98,12 +152,15 @@ def random_walk_density(HG: Hypergraph, s: np.ndarray, time: int) -> list:
     nodes : list
         The list of density vectors over time.
     """
-    assert np.isclose(np.sum(s), 1), "The vector is not a probability density"
+    if not np.isclose(np.sum(s), 1):
+        raise ValueError("The vector is not a probability density")
+    if time < 0:
+        raise ValueError("time must be non-negative.")
 
-    K = np.array(transition_matrix(HG).todense())
-    starting_density = s
+    P = transition_matrix(HG).tocsr()
+    starting_density = np.asarray(s, dtype=float)
     density_list = [starting_density]
-    for t in range(time):
-        s = s @ K
-        density_list.append(s)
+    for _ in range(time):
+        starting_density = starting_density @ P
+        density_list.append(np.asarray(starting_density).ravel())
     return density_list

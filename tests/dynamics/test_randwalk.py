@@ -32,10 +32,11 @@ def test_random_walk_length():
 
 
 def test_stationary_state_properties():
-    """Test stationary state raises on singular system for small graphs."""
+    """Test stationary state is a valid distribution."""
     hg = _make_connected_hypergraph()
-    with pytest.raises(np.linalg.LinAlgError):
-        RW_stationary_state(hg)
+    pi = RW_stationary_state(hg)
+    assert np.all(pi >= 0)
+    assert np.isclose(pi.sum(), 1.0)
 
 
 def test_random_walk_density_normalization():
@@ -48,7 +49,19 @@ def test_random_walk_density_normalization():
 
 
 def test_random_walk_density_invalid():
-    """Test invalid density vector raises assertion."""
+    """Test invalid density vector raises."""
     hg = _make_connected_hypergraph()
-    with pytest.raises(AssertionError, match="probability"):
+    with pytest.raises(ValueError, match="probability"):
         random_walk_density(hg, np.array([0.2, 0.2, 0.2]), time=1)
+
+
+def test_transition_matrix_large_sparse_chain():
+    """Smoke test: large N should remain sparse and fast enough."""
+    N = 10_000
+    edges = [(i, i + 1) for i in range(N - 1)]
+    hg = Hypergraph(edge_list=edges)
+    T = transition_matrix(hg).tocsr()
+    assert T.shape == (N, N)
+    assert T.nnz == 2 * (N - 1)
+    rowsum = np.asarray(T.sum(axis=1)).ravel()
+    assert np.allclose(rowsum, 1.0)
