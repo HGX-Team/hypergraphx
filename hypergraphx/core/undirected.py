@@ -218,7 +218,9 @@ class Hypergraph(BaseHypergraph):
             self.remove_edge(edge)
 
     def set_edge_list(self, edge_list):
+        self._guard_unsafe_setter("Hypergraph.set_edge_list")
         self._edge_list = edge_list
+        self._maybe_validate_invariants()
 
     def get_edge_list(self):
         return self._edge_list
@@ -278,7 +280,9 @@ class Hypergraph(BaseHypergraph):
         return self._adj
 
     def set_adj_dict(self, adj):
+        self._guard_unsafe_setter("Hypergraph.set_adj_dict")
         self._adj = adj
+        self._maybe_validate_invariants()
 
     def subhypergraph(self, nodes: list):
         """

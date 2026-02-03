@@ -1,4 +1,6 @@
 import copy
+import os
+import warnings
 
 from hypergraphx.exceptions import (
     InvalidParameterError,
@@ -45,6 +47,10 @@ class SerializationMixin:
             self._empty_edges = data.get("empty_edges", {})
         self._populate_adjacency_data(data)
         self._populate_extra_data(data)
+        # If the implementation provides invariant validation, run it optionally.
+        maybe_validate = getattr(self, "_maybe_validate_invariants", None)
+        if callable(maybe_validate):
+            maybe_validate()
 
     def expose_attributes_for_hashing(self):
         edges = []
@@ -164,6 +170,107 @@ class BaseHypergraph(SerializationMixin):
             return
         if not isinstance(metadata, dict):
             raise InvalidParameterError(f"{label} metadata must be a dict.")
+
+    # Invariants / debug helpers
+    def _debug_invariants_enabled(self) -> bool:
+        """
+        Invariant checks can be expensive. Enable them explicitly via:
+        - running Python without -O (i.e. __debug__ is True) AND
+        - setting HGX_DEBUG_INVARIANTS=1/true/yes/on.
+        """
+        if not __debug__:
+            return False
+        val = os.getenv("HGX_DEBUG_INVARIANTS", "")
+        return val.strip().lower() in {"1", "true", "yes", "on"}
+
+    def validate_invariants(self) -> None:
+        """Public hook to validate internal consistency (useful in debugging)."""
+        self._validate_invariants()
+
+    def _validate_invariants(self) -> None:
+        """
+        Validate internal data-structure consistency.
+
+        This is intended for debugging and test/dev environments.
+        """
+        # Edge id <-> edge key bijection.
+        if len(self._edge_list) != len(self._reverse_edge_list):
+            raise RuntimeError(
+                "Invariant violated: edge_list and reverse_edge_list size mismatch."
+            )
+        for edge_key, edge_id in self._edge_list.items():
+            if self._reverse_edge_list.get(edge_id) != edge_key:
+                raise RuntimeError(
+                    "Invariant violated: edge_id <-> edge_key mapping is not a bijection."
+                )
+
+        valid_edge_ids = set(self._reverse_edge_list.keys())
+
+        # Weights and edge metadata must align to existing edge_ids.
+        for edge_id in self._weights.keys():
+            if edge_id not in valid_edge_ids:
+                raise RuntimeError(
+                    "Invariant violated: weights contain unknown edge_id."
+                )
+        for edge_id in self._edge_metadata.keys():
+            if edge_id not in valid_edge_ids:
+                raise RuntimeError(
+                    "Invariant violated: edge_metadata contain unknown edge_id."
+                )
+
+        # Adjacency lists contain only valid edge_ids and only reference known nodes.
+        for name, adj in self._adjacency_maps().items():
+            for node, edge_ids in adj.items():
+                if node not in self._node_metadata:
+                    raise RuntimeError(
+                        f"Invariant violated: adjacency map {name!r} references unknown node."
+                    )
+                for edge_id in edge_ids:
+                    if edge_id not in valid_edge_ids:
+                        raise RuntimeError(
+                            f"Invariant violated: adjacency map {name!r} contains unknown edge_id."
+                        )
+
+        # Incidence metadata should refer to existing edges/nodes.
+        for (edge_key, node), meta in self._incidences_metadata.items():
+            if edge_key not in self._edge_list:
+                raise RuntimeError(
+                    "Invariant violated: incidence metadata references unknown edge_key."
+                )
+            if node not in self._node_metadata:
+                raise RuntimeError(
+                    "Invariant violated: incidence metadata references unknown node."
+                )
+            if meta is not None and not isinstance(meta, dict):
+                raise RuntimeError(
+                    "Invariant violated: incidence metadata must be a dict."
+                )
+
+    def _maybe_validate_invariants(self) -> None:
+        if self._debug_invariants_enabled():
+            self._validate_invariants()
+
+    def _allow_unsafe_setters(self) -> bool:
+        val = os.getenv("HGX_ALLOW_UNSAFE_SETTERS", "")
+        return val.strip().lower() in {"1", "true", "yes", "on"}
+
+    def _guard_unsafe_setter(self, name: str) -> None:
+        """
+        Guard "invariant grenade" setters that can put the object into an inconsistent state.
+
+        By default they are blocked. Set HGX_ALLOW_UNSAFE_SETTERS=1 to bypass.
+        """
+        if not self._allow_unsafe_setters():
+            raise InvalidParameterError(
+                f"{name} is an unsafe operation and is disabled by default. "
+                "Use populate_from_dict()/load_* APIs instead, or set "
+                "HGX_ALLOW_UNSAFE_SETTERS=1 if you really know what you are doing."
+            )
+        warnings.warn(
+            f"{name} is unsafe and deprecated; it may be removed in a future release.",
+            DeprecationWarning,
+            stacklevel=3,
+        )
 
     # Core node methods
     def add_node(self, node, metadata=None):

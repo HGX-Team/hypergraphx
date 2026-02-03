@@ -113,7 +113,9 @@ class MultiplexHypergraph(BaseHypergraph):
         return self._adj
 
     def set_adj_dict(self, adj_dict):
+        self._guard_unsafe_setter("MultiplexHypergraph.set_adj_dict")
         self._adj = adj_dict
+        self._maybe_validate_invariants()
 
     def get_incident_edges(self, node):
         return super().get_incident_edges(node)
@@ -139,7 +141,9 @@ class MultiplexHypergraph(BaseHypergraph):
         return self._edge_list
 
     def set_edge_list(self, edge_list):
+        self._guard_unsafe_setter("MultiplexHypergraph.set_edge_list")
         self._edge_list = edge_list
+        self._maybe_validate_invariants()
 
     def get_existing_layers(self):
         return self._existing_layers

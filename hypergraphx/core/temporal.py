@@ -347,7 +347,9 @@ class TemporalHypergraph(BaseHypergraph):
         return self._edge_list
 
     def set_edge_list(self, edge_list):
+        self._guard_unsafe_setter("TemporalHypergraph.set_edge_list")
         self._edge_list = edge_list
+        self._maybe_validate_invariants()
 
     def check_edge(self, edge, time):
         """Checks if the specified edge is in the hypergraph.
@@ -555,7 +557,9 @@ class TemporalHypergraph(BaseHypergraph):
         return self._adj
 
     def set_adj_dict(self, adj_dict):
+        self._guard_unsafe_setter("TemporalHypergraph.set_adj_dict")
         self._adj = adj_dict
+        self._maybe_validate_invariants()
 
     # Degree
     def degree(self, node, order=None, size=None):

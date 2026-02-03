@@ -520,7 +520,9 @@ class DirectedHypergraph(BaseHypergraph):
             self.remove_edge(edge)
 
     def set_edge_list(self, edge_list):
+        self._guard_unsafe_setter("DirectedHypergraph.set_edge_list")
         self._edge_list = edge_list
+        self._maybe_validate_invariants()
 
     def get_edge_list(self):
         return self._edge_list
@@ -615,6 +617,7 @@ class DirectedHypergraph(BaseHypergraph):
             )
 
     def set_adj_dict(self, adj_dict, source_target):
+        self._guard_unsafe_setter("DirectedHypergraph.set_adj_dict")
         if source_target == "source":
             self._adj_source = adj_dict
         elif source_target == "target":
@@ -623,6 +626,7 @@ class DirectedHypergraph(BaseHypergraph):
             raise ValueError(
                 "Invalid value for source_target. Must be 'source' or 'target'."
             )
+        self._maybe_validate_invariants()
 
     # Degree
     def degree(self, node, order=None, size=None):
