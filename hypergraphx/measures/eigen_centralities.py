@@ -2,9 +2,23 @@ import logging
 import numpy as np
 
 
-def power_method(W, max_iter=1000, tol=1e-7):
+def power_method(
+    W,
+    max_iter=1000,
+    tol=1e-7,
+    *,
+    seed: int | None = None,
+    rng: np.random.Generator | None = None,
+    x0=None,
+):
+    if rng is not None and seed is not None:
+        raise ValueError("Provide only one of seed= or rng=.")
+    rng = rng if rng is not None else np.random.default_rng(seed)
     # initialize x
-    x = np.random.rand(len(W))
+    if x0 is None:
+        x = rng.random(len(W))
+    else:
+        x = np.asarray(x0, dtype=float)
     x = x / np.linalg.norm(x)
     # initialize the residual
     res = np.inf
@@ -24,7 +38,7 @@ def power_method(W, max_iter=1000, tol=1e-7):
     return x
 
 
-def CEC_centrality(HG, tol=1e-7, max_iter=1000):
+def CEC_centrality(HG, tol=1e-7, max_iter=1000, *, seed=None, rng=None):
     """
     Compute the CEC centrality for uniform hypergraphs.
 
@@ -66,11 +80,11 @@ def CEC_centrality(HG, tol=1e-7, max_iter=1000):
             for j in range(i + 1, order):
                 W[edge[i], edge[j]] += 1
                 W[edge[j], edge[i]] += 1
-    dominant_eig = power_method(W, tol=tol, max_iter=max_iter)
+    dominant_eig = power_method(W, tol=tol, max_iter=max_iter, seed=seed, rng=rng)
     return {node: dominant_eig[node] for node in range(HG.num_nodes())}
 
 
-def ZEC_centrality(HG, max_iter=1000, tol=1e-7):
+def ZEC_centrality(HG, max_iter=1000, tol=1e-7, *, seed=None, rng=None):
     """
     Compute the ZEC centrality for uniform hypergraphs.
 
@@ -104,7 +118,10 @@ def ZEC_centrality(HG, max_iter=1000, tol=1e-7):
 
     g = lambda v, e: np.prod(v[list(e)])
 
-    x = np.random.uniform(size=(HG.num_nodes()))
+    if rng is not None and seed is not None:
+        raise ValueError("Provide only one of seed= or rng=.")
+    rng = rng if rng is not None else np.random.default_rng(seed)
+    x = rng.uniform(size=(HG.num_nodes()))
     x = x / np.linalg.norm(x, 1)
 
     for iter in range(max_iter):
@@ -119,7 +136,7 @@ def ZEC_centrality(HG, max_iter=1000, tol=1e-7):
     return {node: x[node] for node in range(HG.num_nodes())}
 
 
-def HEC_centrality(HG, max_iter=100, tol=1e-6):
+def HEC_centrality(HG, max_iter=100, tol=1e-6, *, seed=None, rng=None):
     """
 
     Compute the HEC centrality for uniform hypergraphs.
@@ -157,7 +174,10 @@ def HEC_centrality(HG, max_iter=100, tol=1e-6):
     f = lambda v, m: np.power(v, 1.0 / m)
     g = lambda v, x: np.prod(v[list(x)])
 
-    x = np.random.uniform(size=(HG.num_nodes()))
+    if rng is not None and seed is not None:
+        raise ValueError("Provide only one of seed= or rng=.")
+    rng = rng if rng is not None else np.random.default_rng(seed)
+    x = rng.uniform(size=(HG.num_nodes()))
     x = x / np.linalg.norm(x, 1)
 
     for iter in range(max_iter):

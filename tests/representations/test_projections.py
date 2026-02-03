@@ -19,6 +19,15 @@ def test_bipartite_projection_structure():
     assert any(node.startswith("E") for node in g.nodes)
     assert len(id_to_obj) == g.number_of_nodes()
 
+    g2, id_to_obj2, obj_to_id2 = bipartite_projection(
+        hg,
+        node_order=[0, 1, 2, 3],
+        edge_order=[(0, 1), (1, 2, 3)],
+        return_obj_to_id=True,
+    )
+    assert isinstance(obj_to_id2, dict)
+    assert id_to_obj2[obj_to_id2[0]] == 0
+
 
 def test_clique_projection_edges():
     """Test clique projection adds pairwise edges for hyperedges."""
@@ -36,7 +45,14 @@ def test_line_graph_mapping():
     g, id_to_edge = line_graph(hg, distance="intersection", s=1, weighted=True)
 
     assert g.number_of_nodes() == len(hg.get_edges())
-    assert set(id_to_edge.values()) == set(tuple(sorted(e)) for e in hg.get_edges())
+    assert set(id_to_edge.values()) == set(hg.get_edges())
+
+    # Deterministic mapping with explicit order.
+    g2, id_to_edge2 = line_graph(
+        hg, distance="intersection", s=1, weighted=True, edge_order=[(1, 2), (0, 1)]
+    )
+    assert id_to_edge2[0] == (1, 2)
+    assert id_to_edge2[1] == (0, 1)
 
 
 def test_directed_line_graph():

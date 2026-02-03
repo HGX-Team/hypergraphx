@@ -17,6 +17,8 @@ class Hypergraph(BaseHypergraph):
         hypergraph_metadata=None,
         node_metadata=None,
         edge_metadata=None,
+        duplicate_policy=None,
+        metadata_policy=None,
     ):
         """
         Initialize a Hypergraph.
@@ -50,6 +52,8 @@ class Hypergraph(BaseHypergraph):
             weighted=weighted,
             hypergraph_metadata=metadata,
             node_metadata=node_metadata,
+            duplicate_policy=duplicate_policy,
+            metadata_policy=metadata_policy,
         )
 
         if edge_list:
@@ -116,7 +120,12 @@ class Hypergraph(BaseHypergraph):
             If the hypergraph is weighted and no weight is provided or if the hypergraph is not weighted and a weight is provided.
         Notes
         -----
-        Duplicate unweighted edges are ignored; duplicate weighted edges accumulate weights.
+        No multi-edges: duplicates never create a new edge. Control behavior via the
+        hypergraph-level policies:
+        - `set_duplicate_policy(...)`
+        - `set_metadata_policy(...)`
+
+        Incidence metadata is not modified by duplicate adds; use incidence-metadata APIs explicitly.
         """
         edge_key = self._normalize_edge(edge)
         self._add_edge(edge_key, weight=weight, metadata=metadata)
@@ -145,7 +154,7 @@ class Hypergraph(BaseHypergraph):
             If the hypergraph is weighted and no weights are provided or if the hypergraph is not weighted and weights are provided.
         Notes
         -----
-        Duplicate unweighted edges are ignored; duplicate weighted edges accumulate weights.
+        No multi-edges: duplicates never create a new edge. See `add_edge()` for policies.
 
         """
         if edge_list is not None:

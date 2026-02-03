@@ -7,6 +7,7 @@ import pandas as pd
 import networkx as nx
 from hypergraphx.readwrite import load_hypergraph
 import time
+import warnings
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +54,13 @@ def calc_HO_shortest_paths(
 
     if root is None:
         _log("No root directory provided, will not save any intermediate results")
+    else:
+        warnings.warn(
+            "calc_HO_shortest_paths(..., root=...) performs file I/O. "
+            "Prefer root=None for library usage; use io_* helpers for file workflows.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
     assert option in [
         "min",
@@ -123,6 +131,20 @@ def calc_HO_shortest_paths(
 
 
 def calc_HO_shortest_paths_from_file(fnameho, option="min", root=None, verbose=False):
+    warnings.warn(
+        "calc_HO_shortest_paths_from_file(...) is deprecated; use "
+        "io_calc_HO_shortest_paths_from_file(...).",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return io_calc_HO_shortest_paths_from_file(
+        fnameho, option=option, root=root, verbose=verbose
+    )
+
+
+def io_calc_HO_shortest_paths_from_file(
+    fnameho, option="min", root=None, verbose=False
+):
     """
     Calculate shortest paths in a hypergraph and analyze the orders of hyperedges along these paths.
 
@@ -275,6 +297,13 @@ def calc_sizes_redundancies_of_shortest_paths(
                 }
 
     """
+    if root is not None:
+        warnings.warn(
+            "calc_sizes_redundancies_of_shortest_paths(..., root=...) performs file I/O. "
+            "Prefer root=None for library usage.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
     for ctr, (node_i, dicto) in enumerate(shortest_paths_ho.items()):
         _log(f"{ctr}\t/{len(shortest_paths_ho)}", end="\r")

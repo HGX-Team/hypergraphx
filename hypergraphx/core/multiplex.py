@@ -19,6 +19,8 @@ class MultiplexHypergraph(BaseHypergraph):
         hypergraph_metadata=None,
         node_metadata=None,
         edge_metadata=None,
+        duplicate_policy=None,
+        metadata_policy=None,
     ):
         """
         Initialize a Multiplex Hypergraph with optional edges, layers, weights, and metadata.
@@ -28,7 +30,7 @@ class MultiplexHypergraph(BaseHypergraph):
         edge_list : list of tuples, optional
             A list of edges where each edge is represented as a tuple of nodes.
             If `edge_layer` is not provided, each tuple in `edge_list` should have
-            the format `(edge, layer)`, where `edge` is itself a tuple of nodes.
+            the format `(layer, edge)`, where `edge` is itself a tuple of nodes.
         edge_layer : list of str, optional
             A list of layer names corresponding to each edge in `edge_list`.
         weighted : bool, optional
@@ -56,17 +58,35 @@ class MultiplexHypergraph(BaseHypergraph):
             weighted=weighted,
             hypergraph_metadata=metadata,
             node_metadata=node_metadata,
+            duplicate_policy=duplicate_policy,
+            metadata_policy=metadata_policy,
         )
 
         # Handle edge and layer consistency
         if edge_list is not None and edge_layer is None:
             # Extract layers from edge_list if layer information is embedded
-            if all(isinstance(edge, tuple) and len(edge) == 2 for edge in edge_list):
-                edge_layer = [edge[1] for edge in edge_list]
-                edge_list = [edge[0] for edge in edge_list]
+            if all(
+                isinstance(e, tuple)
+                and len(e) == 2
+                and isinstance(e[0], str)
+                and isinstance(e[1], (tuple, list))
+                for e in edge_list
+            ):
+                edge_layer = [e[0] for e in edge_list]
+                edge_list = [e[1] for e in edge_list]
+            elif all(
+                isinstance(e, tuple)
+                and len(e) == 2
+                and isinstance(e[0], (tuple, list))
+                and isinstance(e[1], str)
+                for e in edge_list
+            ):
+                # Backward compatible: (edge, layer)
+                edge_layer = [e[1] for e in edge_list]
+                edge_list = [e[0] for e in edge_list]
             else:
                 raise ValueError(
-                    "If edge_layer is not provided, edge_list must contain tuples of the form (edge, layer)."
+                    "If edge_layer is not provided, edge_list must contain tuples of the form (layer, edge)."
                 )
 
         if edge_list is not None:
@@ -80,19 +100,40 @@ class MultiplexHypergraph(BaseHypergraph):
             )
 
     def _normalize_edge(self, edge, layer=None, **kwargs):
+        """
+        Normalize multiplex edges to a canonical edge key: (layer, canon_edge(edge)).
+
+        Public API convention: multiplex edges are represented as an edge key
+        `(layer, edge)` at boundaries. Most methods accept either:
+        - separate arguments: `edge=<tuple>, layer=<str>`
+        - a packed edge key: `edge=(<tuple>, <str>)` and `layer=None`
+
+        Note: to avoid ambiguity with 2-node hyperedges, a packed edge key is
+        only inferred when the first element looks like a layer (string).
+        """
         if layer is None:
-            if isinstance(edge, tuple) and len(edge) == 2:
+            if isinstance(edge, tuple) and len(edge) == 2 and isinstance(edge[0], str):
+                layer, edge = edge
+            elif (
+                isinstance(edge, tuple)
+                and len(edge) == 2
+                and isinstance(edge[1], str)
+                and isinstance(edge[0], (tuple, list))
+            ):
+                # Backward compatible: packed (edge, layer)
                 edge, layer = edge
             else:
-                raise ValueError("Multiplex edges must include a layer.")
-        return (canon_edge(edge), layer)
+                raise ValueError(
+                    "Multiplex edges must include a layer: pass `layer=...` or a packed `(layer, edge)` tuple."
+                )
+        return (layer, canon_edge(edge))
 
     def _edge_nodes(self, edge_key):
-        return edge_key[0]
+        return edge_key[1]
 
     def _edge_key_without_node(self, edge_key, node):
-        edge, layer = edge_key
-        return (tuple(n for n in edge if n != node), layer)
+        layer, edge = edge_key
+        return (layer, tuple(n for n in edge if n != node))
 
     def _allow_empty_edge(self):
         return False
@@ -101,7 +142,8 @@ class MultiplexHypergraph(BaseHypergraph):
         return MultiplexHypergraph(weighted=self._weighted)
 
     def _hash_edge_nodes(self, edge_key):
-        return (tuple(sorted(edge_key[0])), edge_key[1])
+        layer, edge = edge_key
+        return (tuple(sorted(edge)), layer)
 
     def _extra_data_structures(self):
         return {"existing_layers": self._existing_layers}
@@ -130,7 +172,7 @@ class MultiplexHypergraph(BaseHypergraph):
 
         return degree_sequence(self, order=order, size=size)
 
-    def get_edge_metadata(self, edge, layer):
+    def get_edge_metadata(self, edge, layer=None):
         edge_key = self._normalize_edge(edge, layer=layer)
         return super().get_edge_metadata(edge_key)
 
@@ -184,7 +226,13 @@ class MultiplexHypergraph(BaseHypergraph):
         """
         super().add_nodes(node_list, metadata=node_metadata)
 
-    def add_edges(self, edge_list, edge_layer, weights=None, metadata=None):
+    def add_edges(
+        self,
+        edge_list,
+        edge_layer=None,
+        weights=None,
+        metadata=None,
+    ):
         """Add a list of hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.
 
         Parameters
@@ -192,8 +240,9 @@ class MultiplexHypergraph(BaseHypergraph):
         edge_list : list
             The list of hyperedges to add.
 
-        edge_layer : list
-            The list of layers to which the hyperedges belong.
+        edge_layer : list, optional
+            The list of layers to which the hyperedges belong. If not provided,
+            `edge_list` must contain packed `(edge, layer)` tuples.
 
         weights : list, optional
             The list of weights of the hyperedges. If the hypergraph is weighted, this must be provided.
@@ -213,6 +262,30 @@ class MultiplexHypergraph(BaseHypergraph):
         """
         if edge_list is not None:
             edge_list = list(edge_list)
+        if edge_layer is None and edge_list is not None:
+            if all(
+                isinstance(e, tuple)
+                and len(e) == 2
+                and isinstance(e[0], str)
+                and isinstance(e[1], (tuple, list))
+                for e in edge_list
+            ):
+                edge_layer = [e[0] for e in edge_list]
+                edge_list = [e[1] for e in edge_list]
+            elif all(
+                isinstance(e, tuple)
+                and len(e) == 2
+                and isinstance(e[0], (tuple, list))
+                and isinstance(e[1], str)
+                for e in edge_list
+            ):
+                # Backward compatible: packed (edge, layer)
+                edge_layer = [e[1] for e in edge_list]
+                edge_list = [e[0] for e in edge_list]
+            else:
+                raise ValueError(
+                    "If edge_layer is not provided, edge_list must contain tuples of the form (layer, edge)."
+                )
         if edge_layer is not None:
             edge_layer = list(edge_layer)
         if weights is not None:
@@ -241,15 +314,22 @@ class MultiplexHypergraph(BaseHypergraph):
                     metadata=metadata[i] if metadata is not None else None,
                 )
 
-    def add_edge(self, edge, layer, weight=None, metadata=None):
+    def add_edge(
+        self,
+        edge,
+        layer=None,
+        weight=None,
+        metadata=None,
+    ):
         """Add a hyperedge to the hypergraph. If the hyperedge is already in the hypergraph, its weight is updated.
 
         Parameters
         ----------
         edge : tuple
             The hyperedge to add.
-        layer : str
-            The layer to which the hyperedge belongs.
+        layer : str, optional
+            The layer to which the hyperedge belongs. If not provided, `edge`
+            must be a packed `(edge, layer)` tuple.
         weight : float, optional
             The weight of the hyperedge. If the hypergraph is weighted, this must be provided.
         metadata : dict, optional
@@ -265,27 +345,33 @@ class MultiplexHypergraph(BaseHypergraph):
             If the hypergraph is weighted and no weight is provided or if the hypergraph is not weighted and a weight is provided.
         Notes
         -----
-        Duplicate unweighted edges are ignored; duplicate weighted edges accumulate weights.
+        No multi-edges: duplicates never create a new edge. Control behavior via:
+        - duplicate_policy: 'error' | 'ignore' | 'accumulate_weight' | 'replace_weight'
+        - metadata_policy: 'replace' | 'merge' | 'ignore'
+
+        Incidence metadata is not modified by duplicate adds; use incidence-metadata APIs explicitly.
         """
-        self._existing_layers.add(layer)
         edge_key = self._normalize_edge(edge, layer=layer)
+        self._existing_layers.add(edge_key[0])
         self._add_edge(edge_key, weight=weight, metadata=metadata)
 
-    def remove_edge(self, edge):
+    def remove_edge(self, edge, layer=None):
         """
         Remove an edge from the multiplex hypergraph.
 
         Parameters
         ----------
         edge : tuple
-            The edge to remove. Should be of the form ((nodes...), layer).
+            The edge to remove. Can be passed as:
+            - `edge=(nodes...)` with `layer=<str>`
+            - packed `(layer, edge)` tuple with `layer=None`
 
         Raises
         ------
         ValueError
             If the edge is not in the hypergraph.
         """
-        edge_key = self._normalize_edge(edge)
+        edge_key = self._normalize_edge(edge, layer=layer)
         self._remove_edge_key(edge_key)
 
     def remove_node(self, node, keep_edges=False):
@@ -307,20 +393,84 @@ class MultiplexHypergraph(BaseHypergraph):
         """
         super().remove_node(node, keep_edges=keep_edges)
 
-    def get_edges(self, metadata=False):
-        if metadata:
-            return {
-                self._reverse_edge_list[k]: self._edge_metadata[k]
-                for k in self._edge_metadata.keys()
-            }
-        else:
-            return list(self._edge_list.keys())
+    def get_edges(
+        self,
+        *,
+        layer: str | None = None,
+        order: int | None = None,
+        size: int | None = None,
+        up_to: bool = False,
+        metadata: bool = False,
+    ):
+        """
+        Get multiplex edges (edge keys).
 
-    def get_weight(self, edge, layer):
+        Parameters
+        ----------
+        layer : str, optional
+            If provided, return only edges in this layer.
+        order : int, optional
+            Edge order filter (order = size - 1). Mutually exclusive with `size`.
+        size : int, optional
+            Edge size filter (cardinality). Mutually exclusive with `order`.
+        up_to : bool, optional
+            If True, include edges with order <= `order` (or size <= `size`).
+        metadata : bool, optional
+            If True, return a dict mapping edge key -> edge metadata.
+
+        Returns
+        -------
+        list | dict
+            List of edge keys `(layer, edge)` or a dict `{edge_key: metadata}`.
+        """
+        if order is not None and size is not None:
+            raise InvalidParameterError("Order and size cannot be both specified.")
+
+        edges = list(self._edge_list.keys())
+        if layer is not None:
+            edges = [
+                e
+                for e in edges
+                if isinstance(e, tuple) and len(e) == 2 and e[0] == layer
+            ]
+
+        edges = self._filter_edges_by_order(edges, order=order, size=size, up_to=up_to)
+
+        if metadata:
+            return {edge: self.get_edge_metadata(edge) for edge in edges}
+        return edges
+
+    def get_weight(self, edge, layer=None):
         edge_key = self._normalize_edge(edge, layer=layer)
         return super().get_weight(edge_key)
 
-    def set_weight(self, edge, layer, weight):
+    def set_weight(self, edge, layer=None, weight=None):
+        """
+        Set edge weight.
+
+        Accepts:
+        - `set_weight(edge, layer, weight)` (legacy, explicit layer)
+        - `set_weight((layer, edge), weight=<...>)` (packed edge key)
+        - `set_weight((layer, edge), <weight>)` (packed edge key, positional weight)
+        - `set_weight((edge, layer), <weight>)` (legacy packed edge key, positional weight)
+        """
+        if weight is None:
+            if layer is None:
+                raise TypeError("set_weight() missing required argument: 'weight'")
+            # Support set_weight((edge, layer), weight) with positional weight
+            if (
+                isinstance(edge, tuple)
+                and len(edge) == 2
+                and not isinstance(layer, str)
+                and (
+                    (isinstance(edge[0], str) and isinstance(edge[1], (tuple, list)))
+                    or (isinstance(edge[1], str) and isinstance(edge[0], (tuple, list)))
+                )
+            ):
+                weight = layer
+                layer = None
+            else:
+                raise TypeError("set_weight() missing required argument: 'weight'")
         edge_key = self._normalize_edge(edge, layer=layer)
         super().set_weight(edge_key, weight)
 
@@ -373,7 +523,7 @@ class MultiplexHypergraph(BaseHypergraph):
 
         edge_weights = {}
         edge_metadata = {}
-        for edge, layer in self.get_edges():
+        for layer, edge in self.get_edges():
             edge_weights[edge] = edge_weights.get(edge, 0) + self.get_weight(
                 edge, layer
             )
@@ -403,6 +553,35 @@ class MultiplexHypergraph(BaseHypergraph):
     def remove_attr_from_edge_metadata(self, edge, layer, field):
         edge_key = self._normalize_edge(edge, layer=layer)
         super().remove_attr_from_edge_metadata(edge_key, field)
+
+    # Edge-key convenience for metadata attribute helpers
+    def set_attr_to_edge_metadata_key(self, edge_key, field, value):
+        edge_key = self._normalize_edge(edge_key, layer=None)
+        super().set_attr_to_edge_metadata(edge_key, field, value)
+
+    def remove_attr_from_edge_metadata_key(self, edge_key, field):
+        edge_key = self._normalize_edge(edge_key, layer=None)
+        super().remove_attr_from_edge_metadata(edge_key, field)
+
+    def __repr__(self):
+        return "{}(nodes={}, edges={}, layers={}, weighted={})".format(
+            self._type_name(),
+            self.num_nodes(),
+            self.num_edges(),
+            len(self._existing_layers),
+            self._weighted,
+        )
+
+    def summary(
+        self, *, include_size_distribution: bool = True, max_size_bins: int = 20
+    ):
+        base = super().summary(
+            include_size_distribution=include_size_distribution,
+            max_size_bins=max_size_bins,
+        )
+        base["layers"] = sorted(self._existing_layers)
+        base["num_layers"] = len(self._existing_layers)
+        return base
 
     def populate_from_dict(self, data):
         """

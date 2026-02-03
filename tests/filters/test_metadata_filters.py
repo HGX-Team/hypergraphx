@@ -53,6 +53,18 @@ def test_filter_nodes_keep(sample_hypergraph):
     assert hg.get_edges() == [("A", "C")]  # Edges updated with remaining nodes
 
 
+def test_filter_hypergraph_not_inplace_returns_copy(sample_hypergraph):
+    hg = sample_hypergraph
+    node_criteria = {"type": ["person"]}
+
+    out = filter_hypergraph(hg, node_criteria=node_criteria, mode="keep", inplace=False)
+    assert out is not None
+    assert out is not hg
+    assert set(out.get_nodes()) == {"A", "C"}
+    # Original remains unchanged
+    assert set(hg.get_nodes()) == {"A", "B", "C"}
+
+
 def test_filter_nodes_remove(sample_hypergraph):
     """Test removing nodes that match the criteria."""
     hg = sample_hypergraph
@@ -76,6 +88,20 @@ def test_filter_edges_remove(sample_hypergraph):
     edge_criteria = {"type": ["interaction"]}
     filter_hypergraph(hg, edge_criteria=edge_criteria, mode="remove")
     assert hg.get_edges() == [("A", "C")]  # "interaction" edge removed
+
+
+def test_filter_criteria_callable_and_any_mode(sample_hypergraph):
+    hg = sample_hypergraph
+    # Match nodes where age >= 30 OR type is location (any-mode)
+    node_criteria = {"age": lambda v: (v is not None and v >= 30), "type": ["location"]}
+    out = filter_hypergraph(
+        hg,
+        node_criteria=node_criteria,
+        node_criteria_mode="any",
+        mode="keep",
+        inplace=False,
+    )
+    assert set(out.get_nodes()) == {"B", "C"}
 
 
 def test_filter_nodes_and_edges(sample_hypergraph):
@@ -155,7 +181,6 @@ def test_combined_node_and_edge_filter_remove(sample_hypergraph):
     assert hg.get_edges() == [("A", "C")]  # "interaction" edge removed
 
 
-"""
 def test_temporal_hypergraph_filter_remove(sample_temporal_hypergraph):
     # Test removing edges from a TemporalHypergraph based on metadata criteria.
     thg = sample_temporal_hypergraph
@@ -172,12 +197,12 @@ def test_multiplex_hypergraph_filter_layers(sample_multiplex_hypergraph):
     filter_hypergraph(mhg, edge_criteria=edge_criteria, mode="remove")
     assert set(mhg.get_nodes()) == {"A", "B", "C"}  # Nodes remain unchanged
     assert mhg.get_edges() == [
-        (("A", "B"), "social")
+        ("social", ("A", "B"))
     ]  # Only "friendship" in "social" layer remains
 
 
 def test_multiplex_hypergraph_filter_nodes_keep_edges():
-    #Test removing nodes from a MultiplexHypergraph while keeping edges updated.
+    # Test removing nodes from a MultiplexHypergraph while keeping edges updated.
     mhg = MultiplexHypergraph()
     mhg.add_node("A", metadata={"type": "person"})
     mhg.add_node("B", metadata={"type": "location"})
@@ -188,5 +213,4 @@ def test_multiplex_hypergraph_filter_nodes_keep_edges():
     node_criteria = {"type": ["location"]}
     filter_hypergraph(mhg, node_criteria=node_criteria, mode="remove", keep_edges=True)
     assert set(mhg.get_nodes()) == {"A", "C", "D"}
-    assert mhg.get_edges() == [(("A", "C"), "work"), (("A", "D"), "social")]
-"""
+    assert set(mhg.get_edges()) == {("social", ("A", "D")), ("work", ("A", "C"))}

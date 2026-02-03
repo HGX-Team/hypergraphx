@@ -33,8 +33,9 @@ def relabel_nodes(d, w):
     return len(N), node2id, new_d, new_w
 
 
-def sample_params():
-    return np.random.uniform(0, 1), np.random.uniform(0, 1)
+def sample_params(*, rng: np.random.Generator | None = None):
+    rng = rng if rng is not None else np.random.default_rng()
+    return rng.uniform(0, 1), rng.uniform(0, 1)
 
 
 def transition_function(i, N_nodes, a, b):
@@ -91,7 +92,14 @@ def sort_by_degree(d):
     return deg_list
 
 
-def core_periphery(hypergraph: Hypergraph, greedy_start=False, N_ITER=1000):
+def core_periphery(
+    hypergraph: Hypergraph,
+    greedy_start=False,
+    N_ITER=1000,
+    *,
+    seed: int | None = None,
+    rng: np.random.Generator | None = None,
+):
     """
     Implementation of the core-periphery model described in: https://arxiv.org/pdf/2202.12769.pdf
 
@@ -109,6 +117,10 @@ def core_periphery(hypergraph: Hypergraph, greedy_start=False, N_ITER=1000):
     dict
         Dictionary with coreness scores for each node
     """
+    if rng is not None and seed is not None:
+        raise ValueError("Provide only one of seed= or rng=.")
+    rng = rng if rng is not None else np.random.default_rng(seed)
+    pyrand = random.Random(None if seed is None else int(seed))
 
     if hypergraph.is_weighted():
         w = {}
@@ -131,7 +143,7 @@ def core_periphery(hypergraph: Hypergraph, greedy_start=False, N_ITER=1000):
     NUM_SWITCH = N_nodes * 10
 
     for n_iter in range(N_ITER):
-        a, b = sample_params()
+        a, b = sample_params(rng=rng)
         local_core_values = {}
 
         for i in range(1, N_nodes + 1):
@@ -145,7 +157,7 @@ def core_periphery(hypergraph: Hypergraph, greedy_start=False, N_ITER=1000):
                 order[k[1]] = i
         else:
             tmp = [i for i in range(N_nodes)]
-            random.shuffle(tmp)
+            pyrand.shuffle(tmp)
             for i in range(N_nodes):
                 order[i] = tmp[i]
 
@@ -153,7 +165,7 @@ def core_periphery(hypergraph: Hypergraph, greedy_start=False, N_ITER=1000):
 
         # label switching
         for _ in range(NUM_SWITCH):
-            i, j = random.sample(range(N_nodes), 2)
+            i, j = pyrand.sample(range(N_nodes), 2)
 
             new_R = R
 

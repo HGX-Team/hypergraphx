@@ -7,6 +7,7 @@ from hypergraphx.exceptions import (
     MissingEdgeError,
     MissingNodeError,
 )
+from hypergraphx.utils.metadata import merge_metadata
 
 
 class SerializationMixin:
@@ -99,11 +100,24 @@ class BaseHypergraph(SerializationMixin):
     - _add_edge(edge_key, weight, metadata) for custom incidence behavior
     - _new_like() -> new instance of the same class
     - _hash_edge_nodes(edge_key) -> node representation for hashing/serialization
+
+    Duplicate edges / multi-edges:
+    - Core hypergraphs do *not* support multi-edges: adding the same edge key twice never creates a new edge.
+    - Duplicate handling is controlled via `duplicate_policy` and `metadata_policy` (per instance defaults, overridable per call).
+    - If you need multiple distinct “instances” of the same interaction, model them explicitly:
+      use a TemporalHypergraph (different `time`) or MultiplexHypergraph (different `layer`).
     """
 
     _missing_node_exc = MissingNodeError
 
-    def _init_base(self, weighted=True, hypergraph_metadata=None, node_metadata=None):
+    def _init_base(
+        self,
+        weighted=True,
+        hypergraph_metadata=None,
+        node_metadata=None,
+        duplicate_policy=None,
+        metadata_policy=None,
+    ):
         self._weighted = weighted
         self._hypergraph_metadata = hypergraph_metadata or {}
         self._node_metadata = {}
@@ -113,6 +127,17 @@ class BaseHypergraph(SerializationMixin):
         self._reverse_edge_list = {}
         self._weights = {}
         self._next_edge_id = 0
+        # Duplicate-edge policies (no multi-edges: duplicates never create new edges).
+        # Defaults:
+        # - Unweighted: ignore duplicates
+        # - Weighted: accumulate weights on duplicates
+        self._duplicate_policy = (
+            ("accumulate_weight" if weighted else "ignore")
+            if duplicate_policy is None
+            else duplicate_policy
+        )
+        # Metadata default: merge on duplicates to avoid silent overwrite surprises.
+        self._metadata_policy = "merge" if metadata_policy is None else metadata_policy
         if node_metadata:
             for node, metadata in node_metadata.items():
                 self.add_node(node, metadata=metadata)
@@ -170,6 +195,30 @@ class BaseHypergraph(SerializationMixin):
             return
         if not isinstance(metadata, dict):
             raise InvalidParameterError(f"{label} metadata must be a dict.")
+
+    def set_duplicate_policy(self, policy: str) -> None:
+        self._duplicate_policy = policy
+
+    def get_duplicate_policy(self) -> str:
+        return self._duplicate_policy
+
+    def set_metadata_policy(self, policy: str) -> None:
+        self._metadata_policy = policy
+
+    def get_metadata_policy(self) -> str:
+        return self._metadata_policy
+
+    @property
+    def nodes(self):
+        from hypergraphx.core.views import NodeView
+
+        return NodeView(self)
+
+    @property
+    def edges(self):
+        from hypergraphx.core.views import EdgeView
+
+        return EdgeView(self)
 
     # Invariants / debug helpers
     def _debug_invariants_enabled(self) -> bool:
@@ -549,11 +598,46 @@ class BaseHypergraph(SerializationMixin):
             self._edge_metadata[edge_id] = metadata or {}
             return edge_id
 
+        duplicate_policy = self._duplicate_policy
+        metadata_policy = self._metadata_policy
+
+        if not self._weighted and duplicate_policy in {
+            "accumulate_weight",
+            "replace_weight",
+        }:
+            raise InvalidParameterError(
+                "duplicate_policy must be 'ignore' or 'error' for unweighted hypergraphs."
+            )
+
         edge_id = self._edge_list[edge_key]
-        if self._weighted:
-            self._weights[edge_id] += weight
+        if duplicate_policy == "error":
+            raise InvalidParameterError(f"Duplicate edge {edge_key} not allowed.")
+        if duplicate_policy == "ignore":
+            pass
+        elif duplicate_policy == "accumulate_weight":
+            if self._weighted:
+                self._weights[edge_id] += weight
+        elif duplicate_policy == "replace_weight":
+            if self._weighted:
+                self._weights[edge_id] = weight
+        else:
+            raise InvalidParameterError(
+                "duplicate_policy must be one of: 'error', 'ignore', 'accumulate_weight', 'replace_weight'."
+            )
+
         if metadata is not None:
-            self._edge_metadata[edge_id] = metadata
+            if metadata_policy == "replace":
+                self._edge_metadata[edge_id] = metadata
+            elif metadata_policy == "merge":
+                self._edge_metadata[edge_id] = merge_metadata(
+                    self._edge_metadata.get(edge_id), metadata
+                )
+            elif metadata_policy == "ignore":
+                pass
+            else:
+                raise InvalidParameterError(
+                    "metadata_policy must be one of: 'replace', 'merge', 'ignore'."
+                )
         return edge_id
 
     def _add_edge(self, edge_key, weight=None, metadata=None):
@@ -814,6 +898,33 @@ class BaseHypergraph(SerializationMixin):
         )
         return title + details
 
+    def summary(
+        self, *, include_size_distribution: bool = True, max_size_bins: int = 20
+    ):
+        """
+        Lightweight summary for quick inspection.
+
+        Returns a small dict suitable for printing/logging.
+        """
+        out = {
+            "type": self._type_name(),
+            "weighted": self._weighted,
+            "num_nodes": self.num_nodes(),
+            "num_edges": self.num_edges(),
+            "uniform": self.is_uniform() if self.num_edges() else True,
+        }
+
+        if include_size_distribution and self.num_edges():
+            dist = self.distribution_sizes()
+            if len(dist) <= max_size_bins:
+                out["size_distribution"] = dict(sorted(dist.items()))
+            else:
+                sizes = self.get_sizes()
+                out["min_size"] = min(sizes) if sizes else None
+                out["max_size"] = max(sizes) if sizes else None
+                out["size_bins"] = len(dist)
+        return out
+
     def __repr__(self):
         return "{}(nodes={}, edges={}, weighted={})".format(
             self._type_name(), self.num_nodes(), self.num_edges(), self._weighted
@@ -823,7 +934,27 @@ class BaseHypergraph(SerializationMixin):
         return len(self._edge_list)
 
     def __iter__(self):
+        """
+        Iterate over internal edge storage.
+
+        Notes
+        -----
+        This yields `(edge_key, edge_id)` pairs for backward compatibility with
+        older code that relied on iterating the internal edge dictionary.
+
+        For user-facing iteration, prefer:
+        - `for node in H.nodes` / `H.iter_nodes()`
+        - `for edge in H.edges` / `H.iter_edges()`
+        """
         return iter(self._edge_list.items())
+
+    def iter_nodes(self):
+        """Iterate over node labels (user-facing)."""
+        return iter(self.get_nodes())
+
+    def iter_edges(self):
+        """Iterate over edge keys (user-facing)."""
+        return iter(self._edge_list.keys())
 
     def _expose_adjacency_data(self):
         adj_maps = self._adjacency_maps()

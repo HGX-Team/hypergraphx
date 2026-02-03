@@ -65,7 +65,7 @@ def test_adj_mapping_maps_back_all_and_only_nodes_in_hypergraph(
 # Method Hypergraph.dual_random_walk_adjacency
 def test_rw_walk_adjacency_type(loaded_hypergraph: Hypergraph):
     adj = loaded_hypergraph.dual_random_walk_adjacency()
-    assert isinstance(adj, sparse.csc_array)
+    assert isinstance(adj, sparse.csr_array)
 
 
 def test_rw_walk_adjacency_shape(loaded_hypergraph: Hypergraph):
@@ -102,17 +102,17 @@ def test_rw_adj_mapping_type(loaded_hypergraph: Hypergraph):
     assert isinstance(mapping, dict)
 
 
-def test_rw_adj_mapping_has_values_only_nodes_in_hypergraph(
+def test_rw_adj_mapping_has_values_only_edges_in_hypergraph(
     loaded_hypergraph: Hypergraph,
 ):
     _, mapping = loaded_hypergraph.dual_random_walk_adjacency(return_mapping=True)
-    assert set(mapping.values()).issubset(set(loaded_hypergraph.get_nodes()))
+    assert set(mapping.values()).issubset(set(loaded_hypergraph.get_edges()))
 
 
-def test_rw_adj_mapping_maps_back_all_and_only_nodes_in_hypergraph(
+def test_rw_adj_mapping_maps_back_all_and_only_edges_in_hypergraph(
     loaded_hypergraph: Hypergraph,
 ):
     _, mapping = loaded_hypergraph.dual_random_walk_adjacency(return_mapping=True)
-    back_mapped_nodes = {mapping[i] for i in range(loaded_hypergraph.num_nodes())}
-    hypergraph_nodes = set(loaded_hypergraph.get_nodes())
-    assert back_mapped_nodes == hypergraph_nodes
+    back_mapped_edges = {mapping[i] for i in range(loaded_hypergraph.num_edges())}
+    hypergraph_edges = set(loaded_hypergraph.get_edges())
+    assert back_mapped_edges == hypergraph_edges

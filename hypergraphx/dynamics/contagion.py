@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
+def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu, *, seed=None, rng=None):
     """
     Simulates the contagion process on a simplicial hypergraph.
     The process is run for T time steps.
@@ -28,12 +28,20 @@ def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
 
     mu : float
         The recovery rate.
+    seed : int, optional (keyword-only)
+        Seed for reproducibility. Ignored if `rng` is provided.
+    rng : numpy.random.Generator, optional (keyword-only)
+        Random number generator to use. If provided, makes the simulation reproducible without
+        touching global RNG state.
 
     Returns
     -------
     numpy.ndarray
         The fraction of infected nodes at each time step.
     """
+    if rng is not None and seed is not None:
+        raise ValueError("Provide only one of seed= or rng=.")
+    rng = rng if rng is not None else np.random.default_rng(seed)
 
     numberInf = np.linspace(0, 0, T)
     Infected = sum(I_0.values())
@@ -55,7 +63,7 @@ def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
                 # we first run the two-body infections
                 neighbors = hypergraph.get_neighbors(node, order=1)
                 for neigh in neighbors:
-                    if I_old[neigh] == 1 and np.random.random() < beta:
+                    if I_old[neigh] == 1 and rng.random() < beta:
                         I_new[node] = 1
                         break  # if the susceptile node gets infected, we stop iterating over its neighbors
                 if I_new[node] == 1:
@@ -69,12 +77,12 @@ def simplicial_contagion(hypergraph, I_0, T, beta, beta_D, mu):
                     if (
                         I_old[neigh1] == 1
                         and I_old[neigh2] == 1
-                        and np.random.random() < beta_D
+                        and rng.random() < beta_D
                     ):
                         I_new[node] = 1
                         break  # if the susceptile node gets infected, we stop iterating over the triplets
             # if the node is infected, we run the recovery process
-            elif np.random.random() < mu:
+            elif rng.random() < mu:
                 I_new[node] = 0
 
         I_old = I_new.copy()

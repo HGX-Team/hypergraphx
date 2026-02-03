@@ -56,7 +56,14 @@ def transition_matrix(HG: Hypergraph) -> sparse.spmatrix:
     return T
 
 
-def random_walk(HG: Hypergraph, s, time: int) -> list:
+def random_walk(
+    HG: Hypergraph,
+    s,
+    time: int,
+    *,
+    seed: int | None = None,
+    rng: np.random.Generator | None = None,
+) -> list:
     """Compute the random walk on the hypergraph.
 
     Parameters
@@ -67,12 +74,30 @@ def random_walk(HG: Hypergraph, s, time: int) -> list:
         The starting node of the random walk.
     time : int
         The number of steps of the random walk.
+    seed : int, optional (keyword-only)
+        Seed for reproducibility (does not touch global RNG state).
+    rng : numpy.random.Generator, optional (keyword-only)
+        Random number generator to use. If provided, `seed` must be None.
 
     Returns
     -------
     nodes : list
         The list of nodes visited by the random walk.
     """
+    return _random_walk_impl(HG, s, time, seed=seed, rng=rng)
+
+
+def _random_walk_impl(
+    HG: Hypergraph,
+    s,
+    time: int,
+    *,
+    seed: int | None = None,
+    rng: np.random.Generator | None = None,
+) -> list:
+    if rng is not None and seed is not None:
+        raise ValueError("Provide only one of seed= or rng=.")
+    rng = rng if rng is not None else np.random.default_rng(seed)
     if time < 0:
         raise ValueError("time must be non-negative.")
 
@@ -91,7 +116,7 @@ def random_walk(HG: Hypergraph, s, time: int) -> list:
             # This should not happen for connected hypergraphs, but keep a safe fallback.
             path_idx.append(cur)
             continue
-        next_idx = int(np.random.choice(row.indices, p=row.data))
+        next_idx = int(rng.choice(row.indices, p=row.data))
         path_idx.append(next_idx)
 
     return [mapping[i] for i in path_idx]

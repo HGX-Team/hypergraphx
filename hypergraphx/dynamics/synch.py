@@ -30,6 +30,9 @@ def MSF(
     integration_step=0.01,
     C=5,
     verbose=True,
+    *,
+    seed: int | None = None,
+    rng: np.random.Generator | None = None,
 ):
     """
     Evaluates the Master Stability Function
@@ -56,6 +59,9 @@ def MSF(
     -------
     MSF: MSF evaluated over the interval of values selected.
     """
+    if rng is not None and seed is not None:
+        raise ValueError("Provide only one of seed= or rng=.")
+    rng = rng if rng is not None else np.random.default_rng(seed)
 
     # Here we make sure to be on the system attractor
     if verbose:
@@ -72,7 +78,7 @@ def MSF(
 
     # Integrating the dynamics of the perturbation using Sprott's algorithm
     dim = len(X0)
-    Eta0 = np.random.random(size=(dim,)) * 1e-9
+    Eta0 = rng.random(size=(dim,)) * 1e-9
     Eta0_norm = np.linalg.norm(Eta0)
     Y0 = np.concatenate((X0, Eta0))
 
@@ -111,6 +117,9 @@ def MSF_multi_coupling(
     integration_step=0.01,
     C=5,
     verbose=True,
+    *,
+    seed: int | None = None,
+    rng: np.random.Generator | None = None,
 ):
     """
     Evaluates the Master Stability Function for the higher-order all-to-all network
@@ -140,6 +149,9 @@ def MSF_multi_coupling(
     -------
     MSF: MSF evaluated over the interval of values selected.
     """
+    if rng is not None and seed is not None:
+        raise ValueError("Provide only one of seed= or rng=.")
+    rng = rng if rng is not None else np.random.default_rng(seed)
 
     # Here we make sure to be on the system attractor
     if verbose:
@@ -156,7 +168,7 @@ def MSF_multi_coupling(
 
     # Integrating the dynamics of the perturbation using Sprott's algorithm
     dim = len(X0)
-    Eta0 = np.random.random(size=(dim,)) * 1e-9
+    Eta0 = rng.random(size=(dim,)) * 1e-9
     Eta0_norm = np.linalg.norm(Eta0)
     Y0 = np.concatenate((X0, Eta0))
 
@@ -200,11 +212,17 @@ def higher_order_MSF(
     integration_step=0.01,
     C=5,
     verbose=True,
+    *,
+    seed: int | None = None,
+    rng: np.random.Generator | None = None,
 ):
     N = hypergraph.num_nodes()
+    if rng is not None and seed is not None:
+        raise ValueError("Provide only one of seed= or rng=.")
+    rng = rng if rng is not None else np.random.default_rng(seed)
 
     # If the coupling is natural, we evaluate a single-parameter MSF for this scenario
-    natural_coupling = is_natural_coupling(JHs, dim, verbose)
+    natural_coupling = is_natural_coupling(JHs, dim, verbose, rng=rng)
     if natural_coupling and diffusive_like:
         multiorder_laplacian = compute_multiorder_laplacian(
             hypergraph, sigmas, order_weighted=True, degree_weighted=False
@@ -224,6 +242,7 @@ def higher_order_MSF(
             integration_step,
             C,
             verbose,
+            rng=rng,
         )
 
         if verbose:
@@ -241,6 +260,7 @@ def higher_order_MSF(
             integration_step,
             C,
             verbose,
+            rng=rng,
         )
 
         return master_stability_function, hon_master_stability_function, spectrum
@@ -262,6 +282,7 @@ def higher_order_MSF(
             integration_step,
             C,
             verbose,
+            rng=rng,
         )
 
         hon_master_stability_function = MSF_multi_coupling(
@@ -277,6 +298,7 @@ def higher_order_MSF(
             integration_step,
             C,
             verbose,
+            rng=rng,
         )
 
         return master_stability_function, hon_master_stability_function, [sigmas[0] * N]

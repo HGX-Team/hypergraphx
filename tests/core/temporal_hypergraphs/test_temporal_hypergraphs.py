@@ -8,6 +8,8 @@ def test_initialization():
     assert isinstance(h._hypergraph_metadata, dict)
     assert h._hypergraph_metadata["weighted"] is True
     assert h.get_nodes() == []
+    assert isinstance(repr(h), str)
+    assert isinstance(h.summary(), dict)
 
 
 def test_add_single_node():
@@ -38,12 +40,32 @@ def test_add_edge_unweighted():
     assert h.get_edge_metadata(("A", "B"), 1) == {}
 
 
+def test_temporal_edge_key_roundtrip_api():
+    h = TemporalHypergraph(weighted=True)
+    edge_key = (3, ("A", "B", "C"))
+    h.add_edge(edge_key, weight=2.5)
+    assert edge_key in h.get_edges()
+    assert h.get_weight(edge_key) == 2.5
+    assert h.get_edge_metadata(edge_key) == {}
+
+    h.set_edge_metadata(edge_key, {"kind": "event"})
+    assert h.get_edge_metadata(edge_key) == {"kind": "event"}
+
+
 def test_add_edge_weighted():
     h = TemporalHypergraph(weighted=True)
     h.add_edge(("A", "B"), time=1, weight=2.0, metadata={"relationship": "friendship"})
     assert (1, ("A", "B")) in h.get_edges()
     assert h.get_weight(("A", "B"), 1) == 2.0
     assert h.get_edge_metadata(("A", "B"), 1) == {"relationship": "friendship"}
+
+
+def test_duplicate_edge_metadata_default_merge_temporal():
+    h = TemporalHypergraph(weighted=True)
+    h.add_edge(("A", "B"), time=1, weight=1.0, metadata={"kind": "a"})
+    h.add_edge(("A", "B"), time=1, weight=2.0, metadata={"kind": "b"})
+    assert h.get_weight(("A", "B"), 1) == 3.0
+    assert h.get_edge_metadata(("A", "B"), 1) == {"kind": ["a", "b"]}
 
 
 def test_add_edge_weighted_without_weight():
@@ -76,6 +98,13 @@ def test_add_edges():
     times = [1, 2]
     h.add_edges(edges, times)
     assert set(h.get_edges()) == {(1, ("A", "B")), (2, ("B", "C"))}
+
+
+def test_add_edges_from_edge_keys():
+    h = TemporalHypergraph()
+    edge_keys = [(1, ("A", "B")), (2, ("B", "C", "D"))]
+    h.add_edges(edge_keys)
+    assert set(h.get_edges()) == set(edge_keys)
 
 
 def test_add_edges_weighted():

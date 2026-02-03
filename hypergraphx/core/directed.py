@@ -18,6 +18,8 @@ class DirectedHypergraph(BaseHypergraph):
         hypergraph_metadata=None,
         node_metadata=None,
         edge_metadata=None,
+        duplicate_policy=None,
+        metadata_policy=None,
     ):
         """
         Initialize a Directed Hypergraph.
@@ -53,6 +55,8 @@ class DirectedHypergraph(BaseHypergraph):
             weighted=weighted,
             hypergraph_metadata=metadata,
             node_metadata=node_metadata,
+            duplicate_policy=duplicate_policy,
+            metadata_policy=metadata_policy,
         )
 
         if edge_list is not None:
@@ -92,7 +96,12 @@ class DirectedHypergraph(BaseHypergraph):
             tuple(n for n in target if n != node),
         )
 
-    def _add_edge(self, edge_key, weight=None, metadata=None):
+    def _add_edge(
+        self,
+        edge_key,
+        weight=None,
+        metadata=None,
+    ):
         weight = self._validate_weight(weight)
         existed = edge_key in self._edge_list
         edge_id = self._add_edge_key(edge_key, weight=weight, metadata=metadata)
@@ -335,7 +344,12 @@ class DirectedHypergraph(BaseHypergraph):
         return [edge[1] for edge in self._edge_list.keys()]
 
     # Edges
-    def add_edge(self, edge: Tuple[Tuple, Tuple], weight=None, metadata=None):
+    def add_edge(
+        self,
+        edge: Tuple[Tuple, Tuple],
+        weight=None,
+        metadata=None,
+    ):
         """Add a directed hyperedge to the hypergraph. If the hyperedge already exists, its weight is updated.
 
         Parameters
@@ -357,13 +371,21 @@ class DirectedHypergraph(BaseHypergraph):
             If the hypergraph is weighted and no weight is provided or if the hypergraph is not weighted and a weight is provided.
         Notes
         -----
-        Duplicate unweighted edges are ignored; duplicate weighted edges accumulate weights.
+        No multi-edges: duplicates never create a new edge. Control behavior via the
+        hypergraph-level policies:
+        - `set_duplicate_policy(...)`
+        - `set_metadata_policy(...)`
+
+        Incidence metadata is not modified by duplicate adds; use incidence-metadata APIs explicitly.
         """
         edge_key = self._normalize_edge(edge)
         self._add_edge(edge_key, weight=weight, metadata=metadata)
 
     def add_edges(
-        self, edge_list: List[Tuple[Tuple, Tuple]], weights=None, metadata=None
+        self,
+        edge_list: List[Tuple[Tuple, Tuple]],
+        weights=None,
+        metadata=None,
     ):
         """Add a list of directed hyperedges to the hypergraph. If a hyperedge is already in the hypergraph, its weight is updated.
 
@@ -381,7 +403,7 @@ class DirectedHypergraph(BaseHypergraph):
         None
         Notes
         -----
-        Duplicate unweighted edges are ignored; duplicate weighted edges accumulate weights.
+        No multi-edges: duplicates never create a new edge. See `add_edge()` for policies.
         """
         if weights is not None:
             if len(edge_list) != len(weights):

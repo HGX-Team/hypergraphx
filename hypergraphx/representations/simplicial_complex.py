@@ -34,7 +34,7 @@ def simplicial_complex(h: Hypergraph):
     for edge in h.get_edges():
         subsets = get_all_subsets(edge)
         for subset in subsets:
-            subset = tuple(sorted(subset))
-            s_edges.add(subset)
+            subset_key = h._normalize_edge(subset)
+            s_edges.add(subset_key)
     S = Hypergraph(s_edges)
     return S

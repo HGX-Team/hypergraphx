@@ -39,6 +39,8 @@ class TemporalHypergraph(BaseHypergraph):
         hypergraph_metadata=None,
         node_metadata=None,
         edge_metadata=None,
+        duplicate_policy=None,
+        metadata_policy=None,
     ):
         """
         Initialize a Temporal Hypergraph with optional edges, times, weights, and metadata.
@@ -77,13 +79,19 @@ class TemporalHypergraph(BaseHypergraph):
             weighted=weighted,
             hypergraph_metadata=metadata,
             node_metadata=node_metadata,
+            duplicate_policy=duplicate_policy,
+            metadata_policy=metadata_policy,
         )
 
         # Handle edge and time list consistency
         if edge_list is not None and time_list is None:
             # Extract times from the edge list if time information is embedded
             if not all(
-                isinstance(edge, tuple) and len(edge) == 2 for edge in edge_list
+                isinstance(e, tuple)
+                and len(e) == 2
+                and isinstance(e[0], int)
+                and isinstance(e[1], (tuple, list))
+                for e in edge_list
             ):
                 raise ValueError(
                     "If time_list is not provided, edge_list must contain tuples of the form (time, edge)."
@@ -214,17 +222,25 @@ class TemporalHypergraph(BaseHypergraph):
         return super().get_incident_edges(node, order=order, size=size)
 
     # Edge
-    def add_edge(self, edge, time, weight=None, metadata=None):
+    def add_edge(
+        self,
+        edge,
+        time=None,
+        weight=None,
+        metadata=None,
+    ):
         """
         Add an edge to the temporal hypergraph. If the edge already exists, the weight is updated.
 
         Parameters
         ----------
         edge : tuple
-            The edge to add. If the hypergraph is undirected, should be a tuple.
-            If the hypergraph is directed, should be a tuple of two tuples.
-        time: int
-            The time at which the edge occurs.
+            The edge to add, or a packed temporal edge key `(time, edge)`.
+            If the hypergraph is undirected, `edge` should be a tuple of nodes.
+            If the hypergraph is directed, `edge` should be a tuple of two tuples.
+        time: int, optional
+            The time at which the edge occurs. If not provided, `edge` must be a packed
+            `(time, edge)` tuple (or `(edge, time)`).
         weight: float, optional
             The weight of the edge. Default is None.
 
@@ -241,22 +257,30 @@ class TemporalHypergraph(BaseHypergraph):
         -----
         Duplicate unweighted edges are ignored; duplicate weighted edges accumulate weights.
         """
+        edge_key = self._normalize_edge(edge, time=time)
+        time = edge_key[0]
         if not isinstance(time, int):
             raise TypeError("Time must be an integer.")
         if time < 0:
             raise ValueError("Time must be a non-negative integer.")
-        edge_key = self._normalize_edge(edge, time=time)
         self._add_edge(edge_key, weight=weight, metadata=metadata)
 
-    def add_edges(self, edge_list, time_list, weights=None, metadata=None):
+    def add_edges(
+        self,
+        edge_list,
+        time_list=None,
+        weights=None,
+        metadata=None,
+    ):
         """
         Add multiple edges to the temporal hypergraph.
 
         Parameters
         ----------
         edge_list: iterable
-            An iterable of edges to add.
-        time_list: iterable
+            An iterable of edges to add. If `time_list` is not provided, it must contain
+            packed `(time, edge)` tuples.
+        time_list: iterable, optional
             An iterable of times corresponding to each edge in `edge_list`.
         weights: list, optional
             A list of weights for each edge in `edge_list`. Must be provided if the hypergraph is weighted.
@@ -272,13 +296,28 @@ class TemporalHypergraph(BaseHypergraph):
         """
         try:
             edge_list = list(edge_list)
-            time_list = list(time_list)
+            if time_list is not None:
+                time_list = list(time_list)
         except TypeError as exc:
             raise TypeError("Edge list and time list must be iterable") from exc
         if weights is not None:
             weights = list(weights)
         if metadata is not None:
             metadata = list(metadata)
+
+        if time_list is None:
+            if not all(
+                isinstance(e, tuple)
+                and len(e) == 2
+                and isinstance(e[0], int)
+                and isinstance(e[1], (tuple, list))
+                for e in edge_list
+            ):
+                raise ValueError(
+                    "If time_list is not provided, edge_list must contain tuples of the form (time, edge)."
+                )
+            time_list = [e[0] for e in edge_list]
+            edge_list = [e[1] for e in edge_list]
 
         if len(edge_list) != len(time_list):
             raise ValueError("Edge list and time list must have the same length")
@@ -351,15 +390,15 @@ class TemporalHypergraph(BaseHypergraph):
         self._edge_list = edge_list
         self._maybe_validate_invariants()
 
-    def check_edge(self, edge, time):
+    def check_edge(self, edge, time=None):
         """Checks if the specified edge is in the hypergraph.
 
         Parameters
         ----------
         edge : tuple
             The edge to check.
-        time : int
-            The time to check.
+        time : int, optional
+            The time to check. If not provided, `edge` must be a packed `(time, edge)` tuple.
         Returns
         -------
         bool
@@ -417,7 +456,7 @@ class TemporalHypergraph(BaseHypergraph):
         return (
             edges
             if not metadata
-            else {edge: self.get_edge_metadata(edge[1], edge[0]) for edge in edges}
+            else {edge: self.get_edge_metadata(edge) for edge in edges}
         )
 
     def aggregate(self, time_window):
@@ -499,11 +538,23 @@ class TemporalHypergraph(BaseHypergraph):
         return times
 
     # Weight
-    def set_weight(self, edge, time, weight):
+    def set_weight(self, edge, time=None, weight=None):
+        # Support set_weight((time, edge), weight) with positional weight
+        if weight is None and time is not None:
+            if (
+                isinstance(edge, tuple)
+                and len(edge) == 2
+                and isinstance(edge[0], int)
+                and isinstance(edge[1], (tuple, list))
+            ):
+                weight = time
+                time = None
+        if weight is None:
+            raise TypeError("set_weight() missing required argument: 'weight'")
         edge_key = self._normalize_edge(edge, time=time)
         super().set_weight(edge_key, weight)
 
-    def get_weight(self, edge, time):
+    def get_weight(self, edge, time=None):
         edge_key = self._normalize_edge(edge, time=time)
         return super().get_weight(edge_key)
 
@@ -702,11 +753,15 @@ class TemporalHypergraph(BaseHypergraph):
     def get_all_nodes_metadata(self):
         return self._node_metadata
 
-    def set_edge_metadata(self, edge, time, metadata):
+    def set_edge_metadata(self, edge, time=None, metadata=None):
+        # Support set_edge_metadata((time, edge), metadata) with positional metadata
+        if metadata is None and isinstance(time, dict):
+            metadata = time
+            time = None
         edge_key = self._normalize_edge(edge, time=time)
         super().set_edge_metadata(edge_key, metadata)
 
-    def get_edge_metadata(self, edge, time):
+    def get_edge_metadata(self, edge, time=None):
         edge_key = self._normalize_edge(edge, time=time)
         return super().get_edge_metadata(edge_key)
 
@@ -744,6 +799,32 @@ class TemporalHypergraph(BaseHypergraph):
     def remove_attr_from_edge_metadata(self, edge, time, field):
         edge_key = self._normalize_edge(edge, time=time)
         super().remove_attr_from_edge_metadata(edge_key, field)
+
+    def __repr__(self):
+        if not self._edge_list:
+            time_info = "times=0"
+        else:
+            time_info = "time_range=[{}, {}]".format(self.min_time(), self.max_time())
+        return "{}(nodes={}, edges={}, {}, weighted={})".format(
+            self._type_name(),
+            self.num_nodes(),
+            self.num_edges(),
+            time_info,
+            self._weighted,
+        )
+
+    def summary(
+        self, *, include_size_distribution: bool = True, max_size_bins: int = 20
+    ):
+        base = super().summary(
+            include_size_distribution=include_size_distribution,
+            max_size_bins=max_size_bins,
+        )
+        times = self.get_times()
+        base["num_times"] = len(set(times)) if times else 0
+        base["min_time"] = self.min_time() if times else None
+        base["max_time"] = self.max_time() if times else None
+        return base
 
     # Basic Functions
     def clear(self):

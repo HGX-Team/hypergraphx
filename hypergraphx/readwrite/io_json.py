@@ -120,7 +120,7 @@ def save_json_hypergraph(hypergraph, file_name):
         elif hypergraph_type == "MultiplexHypergraph":
             for edge, metadata in hypergraph.get_edges(metadata=True).items():
                 metadata = dict(metadata)
-                edge, layer = edge
+                layer, edge = edge
                 metadata["layer"] = layer
                 if weighted:
                     metadata["weight"] = hypergraph.get_weight(edge, layer)

@@ -13,7 +13,12 @@ from hypergraphx.motifs.utils import (
 
 
 def compute_directed_motifs(
-    hypergraph: DirectedHypergraph, order=3, runs_config_model=10
+    hypergraph: DirectedHypergraph,
+    order=3,
+    runs_config_model=10,
+    *,
+    seed: int | None = None,
+    rng=None,
 ):
     """
     Compute the number of motifs of a given order in a directed hypergraph.
@@ -35,6 +40,11 @@ def compute_directed_motifs(
         'config_model' reports the number of occurrences of each motif in each sample of the configuration model
         'norm_delta' reports the norm of the difference between the observed and the configuration model
     """
+    if rng is not None and seed is not None:
+        raise ValueError("Provide only one of seed= or rng=.")
+    import numpy as np
+
+    rng = rng if rng is not None else np.random.default_rng(seed)
 
     def _motifs_order_3(edges):
         full, visited = _directed_motifs_ho_full(edges, 3)
@@ -83,7 +93,8 @@ def compute_directed_motifs(
 
     for i in range(ROUNDS):
         logger.info("Computing config model motifs of order %s. Step: %s", order, i + 1)
-        e1 = directed_configuration_model(hypergraph).get_edges()
+        sub_seed = int(rng.integers(0, 2**32 - 1, dtype=np.uint32))
+        e1 = directed_configuration_model(hypergraph, seed=sub_seed).get_edges()
 
         if order == 3:
             m1 = _motifs_order_3(e1)

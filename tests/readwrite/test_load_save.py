@@ -1,6 +1,7 @@
 import gzip
 
 import pytest
+from urllib.error import URLError
 
 from hypergraphx import (
     Hypergraph,
@@ -29,7 +30,7 @@ def _make_weighted_hypergraph():
 
 def _roundtrip_json(tmp_path, hypergraph, name="hg.json"):
     path = tmp_path / name
-    save_hypergraph(hypergraph, str(path), binary=False)
+    save_hypergraph(hypergraph, str(path), fmt="json")
     return load_hypergraph(str(path))
 
 
@@ -91,7 +92,7 @@ def test_save_load_binary_hypergraph(tmp_path):
     """Test binary (hgx) roundtrip using pickle serialization."""
     hg = _make_weighted_hypergraph()
     path = tmp_path / "hg.hgx"
-    save_hypergraph(hg, str(path), binary=True)
+    save_hypergraph(hg, str(path), fmt="pickle")
     loaded = load_hypergraph(str(path))
 
     assert isinstance(loaded, Hypergraph)
@@ -122,11 +123,21 @@ def test_load_hypergraph_invalid_extension(tmp_path):
         load_hypergraph(str(bogus))
 
 
+def test_load_hypergraph_fmt_override(tmp_path):
+    hg = _make_weighted_hypergraph()
+    path = tmp_path / "data.unknown"
+    save_hypergraph(hg, str(path), fmt="json")
+
+    loaded = load_hypergraph(str(path), fmt="json")
+    assert isinstance(loaded, Hypergraph)
+    assert set(loaded.get_edges()) == set(hg.get_edges())
+
+
 def test_load_hypergraph_from_server_json(monkeypatch, tmp_path):
     """Test JSON loading from server using a mocked downloader."""
     hg = _make_weighted_hypergraph()
     json_path = tmp_path / "hg.json"
-    save_hypergraph(hg, str(json_path), binary=False)
+    save_hypergraph(hg, str(json_path), fmt="json")
     payload = json_path.read_bytes()
     gz_payload = gzip.compress(payload)
 
@@ -135,7 +146,7 @@ def test_load_hypergraph_from_server_json(monkeypatch, tmp_path):
 
     monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
 
-    loaded = load_hypergraph_from_server("toy", fmt="json")
+    loaded = load_hypergraph_from_server("toy", fmt="json", allow_network=True)
     assert isinstance(loaded, Hypergraph)
     assert set(loaded.get_edges()) == set(hg.get_edges())
 
@@ -144,7 +155,7 @@ def test_load_hypergraph_from_server_binary(monkeypatch, tmp_path):
     """Test binary loading from server using a mocked downloader."""
     hg = _make_weighted_hypergraph()
     hgx_path = tmp_path / "hg.hgx"
-    save_hypergraph(hg, str(hgx_path), binary=True)
+    save_hypergraph(hg, str(hgx_path), fmt="pickle")
     gz_payload = gzip.compress(hgx_path.read_bytes())
 
     def fake_download(url, timeout=30):
@@ -152,9 +163,34 @@ def test_load_hypergraph_from_server_binary(monkeypatch, tmp_path):
 
     monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
 
-    loaded = load_hypergraph_from_server("toy", fmt="binary")
+    loaded = load_hypergraph_from_server("toy", fmt="binary", allow_network=True)
     assert isinstance(loaded, Hypergraph)
     assert set(loaded.get_edges()) == set(hg.get_edges())
+
+
+def test_load_hypergraph_from_server_requires_opt_in(monkeypatch):
+    called = False
+
+    def fake_download(url, timeout=30):
+        nonlocal called
+        called = True
+        raise AssertionError("Should not download without explicit opt-in.")
+
+    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+
+    with pytest.raises(PermissionError, match="Network loading is disabled by default"):
+        load_hypergraph_from_server("toy", fmt="json")
+    assert called is False
+
+
+def test_load_hypergraph_from_server_offline_error_is_actionable(monkeypatch):
+    def fake_download(url, timeout=30):
+        raise URLError("offline")
+
+    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+
+    with pytest.raises(ConnectionError, match="Are you offline\\?"):
+        load_hypergraph_from_server("toy", fmt="json", allow_network=True)
 
 
 def test_load_accepts_hypergraph_instances():

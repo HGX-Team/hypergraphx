@@ -35,10 +35,34 @@ def test_add_edges_unweighted():
     edges = [("A", "B"), ("B", "C")]
     layers = ["layer1", "layer2"]
     h.add_edges(edges, edge_layer=layers)
-    assert ("A", "B") in [edge[0] for edge in h.get_edges()]
-    assert ("B", "C") in [edge[0] for edge in h.get_edges()]
+    assert ("A", "B") in [edge[1] for edge in h.get_edges()]
+    assert ("B", "C") in [edge[1] for edge in h.get_edges()]
     assert "layer1" in h._existing_layers
     assert "layer2" in h._existing_layers
+
+
+def test_multiplex_edge_key_roundtrip_api():
+    h = MultiplexHypergraph(weighted=True)
+    edge_key = ("layer1", ("A", "B"))
+    h.add_edge(edge_key, weight=2.0)
+    assert edge_key in h.get_edges()
+    assert h.get_weight(edge_key) == 2.0
+    assert h.get_edge_metadata(edge_key) == {}
+
+
+def test_add_edges_from_edge_keys():
+    h = MultiplexHypergraph(weighted=False)
+    edge_keys = [("layer1", ("A", "B")), ("layer2", ("B", "C", "D"))]
+    h.add_edges(edge_keys)
+    assert set(h.get_edges()) == set(edge_keys)
+
+
+def test_summary_and_repr():
+    h = MultiplexHypergraph()
+    assert isinstance(repr(h), str)
+    s = h.summary()
+    assert isinstance(s, dict)
+    assert s["type"] == "MultiplexHypergraph"
 
 
 def test_add_edges_weighted():
@@ -81,6 +105,14 @@ def test_add_edges_weighted_duplicate_same_layer_accumulates():
     weights = [0.5, 1.5]
     h.add_edges(edges, edge_layer=layers, weights=weights)
     assert h.get_weight(("A", "B"), "layer1") == 2.0
+
+
+def test_duplicate_edge_metadata_default_merge_multiplex():
+    h = MultiplexHypergraph(weighted=True)
+    h.add_edge(("A", "B"), layer="layer1", weight=1.0, metadata={"kind": "a"})
+    h.add_edge(("A", "B"), layer="layer1", weight=2.0, metadata={"kind": "b"})
+    assert h.get_weight(("A", "B"), "layer1") == 3.0
+    assert h.get_edge_metadata(("A", "B"), "layer1") == {"kind": ["a", "b"]}
 
 
 def test_add_edges_weighted_duplicate_different_layers_isolated():
@@ -298,7 +330,7 @@ def test_get_incident_edges_single_edge():
     mhg.add_edge(("A", "B"), layer="layer1")
     incident_edges = mhg.get_incident_edges("A")
     assert len(incident_edges) == 1, "Node A should have 1 incident edge."
-    assert ((("A", "B"), "layer1")) in incident_edges
+    assert ("layer1", ("A", "B")) in incident_edges
 
 
 def test_get_incident_edges_multiple_edges():
@@ -311,9 +343,9 @@ def test_get_incident_edges_multiple_edges():
     mhg.add_edge(("D", "A"), layer="layer3")
     incident_edges = mhg.get_incident_edges("A")
     assert len(incident_edges) == 3, "Node A should have 3 incident edges."
-    assert ((("A", "B"), "layer1")) in incident_edges
-    assert ((("A", "C"), "layer2")) in incident_edges
-    assert ((("A", "D"), "layer3")) in incident_edges
+    assert ("layer1", ("A", "B")) in incident_edges
+    assert ("layer2", ("A", "C")) in incident_edges
+    assert ("layer3", ("A", "D")) in incident_edges
 
 
 def test_get_incident_edges_node_not_in_hypergraph():
@@ -350,8 +382,8 @@ def test_get_incident_edges_across_layers():
     assert (
         len(incident_edges) == 2
     ), "Node A should have 2 incident edges across layers."
-    assert (("A", "B"), "layer1") in incident_edges
-    assert (("A", "C"), "layer2") in incident_edges
+    assert ("layer1", ("A", "B")) in incident_edges
+    assert ("layer2", ("A", "C")) in incident_edges
 
 
 def test_get_existing_layers_returns_set():
@@ -365,4 +397,4 @@ def test_get_edges_metadata_returns_mapping():
     mhg = MultiplexHypergraph()
     mhg.add_edge(("A", "B"), layer="layer1", metadata={"kind": "pair"})
     edges = mhg.get_edges(metadata=True)
-    assert edges[(("A", "B"), "layer1")] == {"kind": "pair"}
+    assert edges[("layer1", ("A", "B"))] == {"kind": "pair"}

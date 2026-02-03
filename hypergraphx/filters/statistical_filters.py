@@ -38,11 +38,31 @@ def _approximated_pvalue(t):
 
 
 def _get_bipartite_representation(hypergraph):
+    def _as_int_multiplicity(w):
+        if w is None:
+            return 1
+        if isinstance(w, bool):
+            return int(w)
+        if isinstance(w, (int, np.integer)):
+            if w < 0:
+                raise ValueError("Edge weights must be non-negative.")
+            return int(w)
+        if isinstance(w, (float, np.floating)):
+            if w < 0:
+                raise ValueError("Edge weights must be non-negative.")
+            if float(w).is_integer():
+                return int(w)
+        raise ValueError(
+            "Statistical filters require integer edge weights (multiplicity). "
+            "If your hypergraph is weighted with real-valued weights, provide an unweighted hypergraph "
+            "or integer-valued multiplicities."
+        )
+
     edge_index = 0
     bipartite_list = []
     for edge in hypergraph.get_edges():
-        w = hypergraph.get_weight(edge)
-        for _ in range(w):
+        w = hypergraph.get_weight(edge) if hypergraph.is_weighted() else 1
+        for _ in range(_as_int_multiplicity(w)):
             for node in edge:
                 bipartite_list.append((node, edge_index))
             edge_index += 1
@@ -50,7 +70,14 @@ def _get_bipartite_representation(hypergraph):
     return bipartite_df
 
 
-def get_svh(hypergraph, max_order=10, alpha=0.01, mp=False):
+def get_svh(
+    hypergraph,
+    max_order=10,
+    alpha=0.01,
+    mp: bool = False,
+    n_jobs: int | None = None,
+    max_tests_per_order: int | None = None,
+):
     """
     Extract the Statistically Validated Hypergraph.
 
@@ -65,8 +92,12 @@ def get_svh(hypergraph, max_order=10, alpha=0.01, mp=False):
     alpha:		float
         Threshold of statistical significance for FDR validation.
 
-    mp:			Bool (default: True)
-        Specify whether to use multithreading or not. If True, it will use all available cores.
+    mp:			Bool (default: False)
+        Specify whether to use multiprocessing or not.
+    n_jobs:      int, optional
+        Number of worker processes to use when `mp=True`. Defaults to `cpu_count()`.
+    max_tests_per_order: int, optional
+        Guardrail: maximum number of hypothesis tests per order. If exceeded, raises a ValueError.
 
     Returns
     -------------
@@ -113,9 +144,14 @@ def get_svh(hypergraph, max_order=10, alpha=0.01, mp=False):
             + tuple([len(neigh_set_a_sub[node]) for node in edge])
             for edge in tuples_order
         ]
+        if max_tests_per_order is not None and len(tuples_params) > max_tests_per_order:
+            raise ValueError(
+                f"Too many hypothesis tests (order={order}): {len(tuples_params)} > {max_tests_per_order}. "
+                "Reduce max_order, pre-filter your hypergraph, or increase max_tests_per_order."
+            )
 
         if mp:
-            p = Pool(processes=cpu_count())
+            p = Pool(processes=cpu_count() if n_jobs is None else n_jobs)
             pvalues[order] = dict(
                 zip(tuples_order, p.map(_approximated_pvalue, tuples_params))
             )
@@ -131,7 +167,7 @@ def get_svh(hypergraph, max_order=10, alpha=0.01, mp=False):
     for order in sorted(pvalues):
         n_a = len(set(np.concatenate(list(pvalues[order].keys()))))
         n_possible = binom(n_a, order)
-        bonf = 0.01 / n_possible
+        bonf = alpha / n_possible
 
         temp_df = pd.DataFrame(pvalues[order].items())
         temp_df.columns = ["edge", "pvalue"]
@@ -147,7 +183,15 @@ def get_svh(hypergraph, max_order=10, alpha=0.01, mp=False):
     return svh
 
 
-def get_svc(hypergraph, min_order=2, max_order=None, alpha=0.01):
+def get_svc(
+    hypergraph,
+    min_order=2,
+    max_order=None,
+    alpha=0.01,
+    mp: bool = False,
+    n_jobs: int | None = None,
+    max_groups: int | None = None,
+):
     """
     Extract the Statistically Validated Cores.
 
@@ -164,6 +208,12 @@ def get_svc(hypergraph, min_order=2, max_order=None, alpha=0.01):
 
     alpha:		float
         Threshold of statistical significance for FDR validation.
+    mp:         bool (default: False)
+        Specify whether to use multiprocessing or not.
+    n_jobs:     int, optional
+        Number of worker processes to use when `mp=True`. Defaults to `cpu_count()`.
+    max_groups: int, optional
+        Guardrail: maximum number of groups tested per order. If exceeded, raises a ValueError.
 
     Returns
     -------------
@@ -204,24 +254,23 @@ def get_svc(hypergraph, min_order=2, max_order=None, alpha=0.01):
                 if g not in drop:
                     groups[g] += 1
 
-        p = Pool(processes=cpu_count())
-        pvalues = dict(
-            zip(
-                groups,
-                p.map(
-                    _approximated_pvalue,
-                    [
-                        tuple([groups[i], N]) + tuple([deg_a[ii] for ii in i])
-                        for i in groups
-                    ],
-                ),
+        tuples_params = [
+            tuple([groups[i], N]) + tuple([deg_a[ii] for ii in i]) for i in groups
+        ]
+        if max_groups is not None and len(tuples_params) > max_groups:
+            raise ValueError(
+                f"Too many groups to test (order={order}): {len(tuples_params)} > {max_groups}. "
+                "Increase max_groups, reduce max_order, or pre-filter your hypergraph."
             )
-        )
-
-        p.close()
+        if mp:
+            p = Pool(processes=cpu_count() if n_jobs is None else n_jobs)
+            pvalues = dict(zip(groups, p.map(_approximated_pvalue, tuples_params)))
+            p.close()
+        else:
+            pvalues = dict(zip(groups, map(_approximated_pvalue, tuples_params)))
 
         n_possible = binom(na, order)
-        bonf = 0.01 / n_possible
+        bonf = alpha / n_possible
 
         temp_df = pd.DataFrame(pvalues.items())
         try:

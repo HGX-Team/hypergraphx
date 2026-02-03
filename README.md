@@ -69,6 +69,27 @@ line_graph = H.to_line_graph()
 print(line_graph.number_of_nodes())
 ```
 
+### Linear algebra (matrices)
+
+```python
+from hypergraphx.linalg import laplacian_matrix_by_order
+
+# Node-indexed incidence + node mapping (row index -> node label)
+B, node_map = H.binary_incidence_matrix(return_mapping=True)
+
+# Node-indexed adjacency (CSR by default)
+A = H.adjacency_matrix()
+
+# Order-specific Laplacian + mapping
+L2, node_map = laplacian_matrix_by_order(H, order=2, return_mapping=True)
+
+# Example: a few smallest eigenvalues
+from scipy.sparse.linalg import eigsh
+
+eigs = eigsh(L2, k=5, which="SM", return_eigenvectors=False)
+print(eigs)
+```
+
 ### Temporal interactions (at a glance)
 
 ```python

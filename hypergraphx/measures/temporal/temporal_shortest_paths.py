@@ -11,6 +11,7 @@ import pickle as pk
 import networkx as nx
 import pandas as pd
 from copy import deepcopy
+import warnings
 
 try:
     from tqdm import tqdm  # type: ignore
@@ -449,6 +450,20 @@ def P6_calc_avg_orders(
 
 
 def embed_time_series_for_dataset(temporal_network, dataset_name, root, verbose=False):
+    warnings.warn(
+        "embed_time_series_for_dataset(...) performs file I/O and is deprecated; "
+        "use io_embed_time_series_for_dataset(...) instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return io_embed_time_series_for_dataset(
+        temporal_network, dataset_name, root, verbose=verbose
+    )
+
+
+def io_embed_time_series_for_dataset(
+    temporal_network, dataset_name, root, verbose=False
+):
     """
     Calculate the supra-adjacency representation of a temporal network
 
@@ -748,6 +763,22 @@ def calc_redundancy_info(SQ_ARR):
 
 
 def save_redundancy_info(redundancy_df_S, redundancy_df_F, regime, dataset, root):
+    warnings.warn(
+        "save_redundancy_info(...) performs file I/O and is deprecated; "
+        "use io_save_redundancy_info(...) instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return io_save_redundancy_info(
+        redundancy_df_S=redundancy_df_S,
+        redundancy_df_F=redundancy_df_F,
+        regime=regime,
+        dataset=dataset,
+        root=root,
+    )
+
+
+def io_save_redundancy_info(redundancy_df_S, redundancy_df_F, regime, dataset, root):
     """
     Function to save redundancy information dataframes
 
@@ -830,6 +861,16 @@ def P7_construct_square_arrays(SHORTEST_PATH_DATA, V, Vt0):
 
 
 def P8_save_square_arrays(outputs, option, regime, verbose, dsdir):
+    warnings.warn(
+        "P8_save_square_arrays(...) performs file I/O and is deprecated; "
+        "use io_P8_save_square_arrays(...) instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return io_P8_save_square_arrays(outputs, option, regime, verbose, dsdir)
+
+
+def io_P8_save_square_arrays(outputs, option, regime, verbose, dsdir):
     (
         PATH_LEN_ARRAY_HO,
         AVG_ORD_ARRAY_HO,
@@ -875,6 +916,24 @@ def P8_save_square_arrays(outputs, option, regime, verbose, dsdir):
 
 
 def calc_shortest_fastest_paths_temporal_hypergraphs(
+    root=None, dataset_name=None, verbose=False, option="min", regime="HO"
+):
+    warnings.warn(
+        "calc_shortest_fastest_paths_temporal_hypergraphs(...) performs extensive file I/O and is deprecated; "
+        "use io_calc_shortest_fastest_paths_temporal_hypergraphs(...) instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return io_calc_shortest_fastest_paths_temporal_hypergraphs(
+        root=root,
+        dataset_name=dataset_name,
+        verbose=verbose,
+        option=option,
+        regime=regime,
+    )
+
+
+def io_calc_shortest_fastest_paths_temporal_hypergraphs(
     root=None, dataset_name=None, verbose=False, option="min", regime="HO"
 ):
     assert option in [
@@ -970,7 +1029,7 @@ def calc_shortest_fastest_paths_temporal_hypergraphs(
     if verbose:
         _log(f"6.5. CALCULATE REDUNDANCY INFO")
     redundancy_df_S, redundancy_df_F = calc_redundancy_info(SHORTEST_PATH_DATA_after_P6)
-    save_redundancy_info(
+    io_save_redundancy_info(
         redundancy_df_S=redundancy_df_S,
         redundancy_df_F=redundancy_df_F,
         dataset=dataset_name,
@@ -990,7 +1049,7 @@ def calc_shortest_fastest_paths_temporal_hypergraphs(
         _log(f"8. SAVE SQUARE ARRAYS using {option.upper()} selection strategy")
     if verbose:
         _log(f"{option}")
-    P8_save_square_arrays(
+    io_P8_save_square_arrays(
         processed_path_data_square_array,
         option="min",
         regime=regime,

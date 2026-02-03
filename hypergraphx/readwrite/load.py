@@ -51,7 +51,17 @@ def _download(url: str, *, timeout: int = 30) -> bytes:
     except HTTPError as exc:
         raise FileNotFoundError(f"Not found at {url} (HTTP {exc.code}).") from exc
     except URLError as exc:
-        raise ConnectionError(f"Network error reaching {url}: {exc.reason}") from exc
+        raise ConnectionError(
+            f"Network error reaching {url}: {exc.reason}. "
+            "Are you offline? For offline use, download the dataset and use load_hypergraph(...) on a local file."
+        ) from exc
+
+
+def _network_opt_in_allowed(allow_network: bool) -> bool:
+    if allow_network:
+        return True
+    env = os.environ.get("HYPERGRAPHX_ALLOW_NETWORK", "").strip().lower()
+    return env in {"1", "true", "yes", "y", "on"}
 
 
 def _load_hgr_file(file_name: str):
@@ -95,7 +105,28 @@ def _load_hgr_file(file_name: str):
         return h
 
 
-def load_hypergraph(file_name: str):
+def load_hypergraph(file_name: str, *, fmt: str | None = None):
+    """
+    Load a hypergraph from disk.
+
+    Parameters
+    ----------
+    file_name : str
+        Input file path.
+    fmt : {"json", "pickle", "hgr"} | None
+        Optional override for the input format. If None (default), infer format
+        from the file extension.
+    """
+    if fmt is not None:
+        fmt = fmt.lower()
+        if fmt in {"pickle", "pkl", "binary", "hgx"}:
+            return load_pickle(file_name)
+        if fmt in {"json"}:
+            return load_json_file(file_name)
+        if fmt in {"hgr"}:
+            return _load_hgr_file(file_name)
+        raise InvalidFormatError("fmt must be one of {'json', 'pickle', 'hgr'}")
+
     ext = os.path.splitext(file_name)[1].lower()
     if ext in {".pkl", ".pickle", ".hgx"}:
         return load_pickle(file_name)
@@ -111,7 +142,16 @@ def load_hypergraph_from_server(
     *,
     fmt: str | None = None,
     as_dict: bool = False,
+    allow_network: bool = False,
+    timeout: int = 30,
 ):
+    if not _network_opt_in_allowed(allow_network):
+        raise PermissionError(
+            "Network loading is disabled by default. "
+            "Pass allow_network=True to load datasets from the network, "
+            "or set HYPERGRAPHX_ALLOW_NETWORK=1 to enable it for this process."
+        )
+
     url_json = f"{_BASE}/{dataset_name}.json"
     url_pkl = f"{_BASE}/{dataset_name}.pkl"
 
@@ -127,7 +167,7 @@ def load_hypergraph_from_server(
 
     for url in url_list:
         try:
-            payload = _decompress_gzip_if_needed(_download(url))
+            payload = _decompress_gzip_if_needed(_download(url, timeout=timeout))
             if url.endswith(".json"):
                 obj = _parse_json_bytes_to_hypergraph(payload)
             else:
@@ -148,9 +188,15 @@ def load_hypergraph_from_server(
                     pass
 
     urls = ", ".join(url_list)
+    if isinstance(last_error, (ConnectionError, URLError)):
+        raise ConnectionError(
+            f"Failed to load '{dataset_name}' from server (network error). "
+            f"Tried: {urls}. Last error: {last_error}. "
+            "Are you offline? For offline use, download the dataset and use load_hypergraph(...) on a local file."
+        ) from last_error
     raise FileNotFoundError(
         f"Failed to load '{dataset_name}' from server. Tried: {urls}. Last error: {last_error}"
-    )
+    ) from last_error
 
 
 def load(obj_or_path: str | Iterable):

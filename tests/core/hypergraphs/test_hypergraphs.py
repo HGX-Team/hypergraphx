@@ -339,8 +339,37 @@ def test_add_edge_duplicate_metadata_overwritten():
     hg = Hypergraph(weighted=True)
     edge = (1, 2, 3)
     hg.add_edge(edge, weight=1.0, metadata={"kind": "a"})
+    hg.set_metadata_policy("replace")
     hg.add_edge(edge, weight=2.0, metadata={"kind": "b"})
     assert hg.get_edge_metadata(edge) == {"kind": "b"}
+
+
+def test_add_edge_duplicate_metadata_default_merge():
+    """Default duplicate metadata policy merges to avoid silent overwrite."""
+    hg = Hypergraph(weighted=True)
+    edge = (1, 2, 3)
+    hg.add_edge(edge, weight=1.0, metadata={"kind": "a"})
+    hg.add_edge(edge, weight=2.0, metadata={"kind": "b"})
+    assert hg.get_edge_metadata(edge) == {"kind": ["a", "b"]}
+    assert hg.get_weight(edge) == 3.0
+
+
+def test_duplicate_policy_replace_weight():
+    hg = Hypergraph(weighted=True)
+    edge = (1, 2, 3)
+    hg.add_edge(edge, weight=1.0)
+    hg.set_duplicate_policy("replace_weight")
+    hg.add_edge(edge, weight=5.0)
+    assert hg.get_weight(edge) == 5.0
+
+
+def test_duplicate_policy_error_unweighted():
+    hg = Hypergraph(weighted=False)
+    edge = (1, 2, 3)
+    hg.add_edge(edge)
+    hg.set_duplicate_policy("error")
+    with pytest.raises(ValueError):
+        hg.add_edge(edge)
 
 
 def test_add_edges_mismatch_weights_and_edges():

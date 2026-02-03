@@ -98,7 +98,8 @@ Load and save
    hg2 = hgx.load_hypergraph("graph.json")
 
    # Server datasets
-   hg3 = hgx.load_hypergraph_from_server("toy", fmt="json")
+   # Network loading is opt-in (so offline / sandboxed environments don't surprise you)
+   hg3 = hgx.load_hypergraph_from_server("toy", fmt="json", allow_network=True)
 
 Projections and matrices
 ------------------------

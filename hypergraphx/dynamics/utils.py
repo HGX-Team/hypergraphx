@@ -201,10 +201,13 @@ def sprott_algorithm_multi(
     return np.mean(lyap)
 
 
-def is_natural_coupling(JHs, dim, verbose=True):
+def is_natural_coupling(JHs, dim, verbose=True, *, seed: int | None = None, rng=None):
     orders = len(JHs)
 
-    X = np.random.random(size=(dim,))
+    if rng is not None and seed is not None:
+        raise ValueError("Provide only one of seed= or rng=.")
+    rng = rng if rng is not None else np.random.default_rng(seed)
+    X = rng.random(size=(dim,))
     for d in range(orders - 1):
         JH1 = JHs[d]
         JH2 = JHs[d + 1]

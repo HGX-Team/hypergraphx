@@ -8,7 +8,19 @@ from scipy.spatial.distance import squareform, pdist
 
 
 class GroupAttractivenessModel:
-    def __init__(self, n=200, balance=1, h_1_ii=1, h_2_iii=1, d=1.0, v=1.0, L=100):
+    def __init__(
+        self,
+        n=200,
+        balance=1,
+        h_1_ii=1,
+        h_2_iii=1,
+        d=1.0,
+        v=1.0,
+        L=100,
+        *,
+        seed: int | None = None,
+        rng: np.random.Generator | None = None,
+    ):
         """
         Run the Group Attractiveness Model described in
 
@@ -27,6 +39,9 @@ class GroupAttractivenessModel:
 
         When balanace = 1, h_1_ii = 1 and h_2_iii = 1, the algorithm runs the standard Group Attractiveness Model without homophily.
         """
+        if rng is not None and seed is not None:
+            raise ValueError("Provide only one of seed= or rng=.")
+        self._rng = rng if rng is not None else np.random.default_rng(seed)
         self.n = n
         self.n0 = int(self.n * balance)
         self.n1 = self.n - self.n0
@@ -34,18 +49,23 @@ class GroupAttractivenessModel:
         self.v = v
         self.L = L
 
-        self.a = np.random.rand(self.n)
+        self.a = self._rng.random(self.n)
 
         self.positions = np.array(
-            list(zip(np.random.rand(self.n) * self.L, np.random.rand(self.n) * self.L))
+            list(
+                zip(
+                    self._rng.random(self.n) * self.L,
+                    self._rng.random(self.n) * self.L,
+                )
+            )
         )
 
-        self.active = np.random.randint(0, 2, self.n) == 1
+        self.active = self._rng.integers(0, 2, self.n) == 1
 
-        self.r = np.random.rand(self.n)
+        self.r = self._rng.random(self.n)
 
         self.attribute = np.array(["0"] * self.n0 + ["1"] * self.n1)
-        np.random.shuffle(self.attribute)
+        self._rng.shuffle(self.attribute)
 
         if type(h_1_ii) != tuple:
             h_00, h_11 = (
@@ -119,7 +139,7 @@ class GroupAttractivenessModel:
                     0 if isolated else self.calculate_attractiveness_neighborhood(i)
                 )
                 p_i = 1 - max_a_j
-                to_move = p_i > np.random.rand()
+                to_move = p_i > self._rng.random()
                 if to_move:
                     self.move(i)
                 else:
@@ -166,21 +186,21 @@ class GroupAttractivenessModel:
                         self.edges.add(edge)
 
     def move(self, i):
-        angle = np.random.rand() * 2 * np.pi
+        angle = self._rng.random() * 2 * np.pi
         self.positions[i] += [self.v * np.sin(angle), self.v * np.cos(angle)]
         self.positions[i] %= self.L
 
         self.to_isolated(i)
 
     def to_inactive(self, i):
-        if np.random.rand() < 1 - self.r[i]:
+        if self._rng.random() < 1 - self.r[i]:
             self.active[i] = 0
             self.groups[i] = set()
         else:
             self.to_isolated(i)
 
     def to_active(self, i):
-        if np.random.rand() < self.r[i]:
+        if self._rng.random() < self.r[i]:
             self.active[i] = 1
             self.to_isolated(i)
 
@@ -254,7 +274,7 @@ class GroupAttractivenessModel:
             h_ig.append((self.h[idx][conf], group))
 
         for h, group in h_ig:
-            if np.random.random() < h:
+            if self._rng.random() < h:
                 interacting_groups.add(group)
 
         return interacting_groups
