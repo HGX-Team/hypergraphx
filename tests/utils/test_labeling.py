@@ -1,4 +1,4 @@
-from sklearn.preprocessing import LabelEncoder
+from hypergraphx.utils.labeling import LabelEncoder
 
 from hypergraphx.utils.labeling import (
     relabel_edge,

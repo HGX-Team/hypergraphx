@@ -1,6 +1,46 @@
-from typing import List, Tuple
+from __future__ import annotations
 
-from sklearn.preprocessing import LabelEncoder
+from dataclasses import dataclass
+from typing import Any, Iterable, List, Sequence, Tuple
+
+import numpy as np
+
+
+@dataclass
+class LabelEncoder:
+    """
+    Minimal drop-in replacement for sklearn's LabelEncoder, used throughout HypergraphX
+    to map arbitrary node labels to dense integer ids.
+
+    This exists to avoid forcing scikit-learn as a hard dependency.
+    """
+
+    classes_: List[Any] | None = None
+    _to_int: dict[Any, int] | None = None
+
+    def fit(self, y: Sequence[Any]) -> "LabelEncoder":
+        # Keep first-seen order to preserve a stable mapping based on the input.
+        classes: List[Any] = []
+        to_int: dict[Any, int] = {}
+        for item in y:
+            if item in to_int:
+                continue
+            to_int[item] = len(classes)
+            classes.append(item)
+        self.classes_ = classes
+        self._to_int = to_int
+        return self
+
+    def transform(self, y: Iterable[Any]) -> np.ndarray:
+        if self._to_int is None:
+            raise ValueError("LabelEncoder is not fitted. Call fit() first.")
+        return np.array([self._to_int[item] for item in y], dtype=int)
+
+    def inverse_transform(self, y: Iterable[int]) -> np.ndarray:
+        if self.classes_ is None:
+            raise ValueError("LabelEncoder is not fitted. Call fit() first.")
+        classes = self.classes_
+        return np.array([classes[int(i)] for i in y], dtype=object)
 
 
 def relabel_edge(mapping: LabelEncoder, edge: Tuple):
@@ -150,7 +190,9 @@ def get_inverse_mapping(mapping: LabelEncoder):
     dict
         The inverse mapping
     """
-    return dict(zip(mapping.transform(mapping.classes_), mapping.classes_))
+    if mapping.classes_ is None:
+        raise ValueError("LabelEncoder is not fitted. Call fit() first.")
+    return {i: node for i, node in enumerate(mapping.classes_)}
 
 
 def relabel_edges_with_mapping(edges: List[Tuple], mapping: dict):

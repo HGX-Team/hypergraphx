@@ -25,7 +25,6 @@ dependencies = [
   "scipy",
   "networkx",
   "pandas",
-  "scikit-learn",
 ]
 dynamic = ["version"]
 
@@ -44,6 +43,9 @@ docs = [
   "nbsphinx",
   "matplotlib",
   "seaborn",
+]
+ml = [
+  "scikit-learn",
 ]
 
 [tool.setuptools]

@@ -2,7 +2,11 @@ from typing import Optional, Tuple
 
 import logging
 import numpy as np
-from sklearn.cluster import KMeans
+
+try:
+    from sklearn.cluster import KMeans  # type: ignore
+except ImportError:  # pragma: no cover
+    KMeans = None
 
 from hypergraphx import Hypergraph
 from hypergraphx.linalg.linalg import binary_incidence_matrix, incidence_matrix
@@ -151,6 +155,11 @@ class HySC:
         -------
         X_pred: membership matrix.
         """
+        if KMeans is None:
+            raise ImportError(
+                "HySC requires scikit-learn. Install hypergraphx with the appropriate extra "
+                "(e.g. `pip install hypergraphx[ml]`) or install scikit-learn manually."
+            )
         y_pred = KMeans(
             n_clusters=self.K, random_state=seed, n_init=self.n_realizations
         ).fit_predict(X)

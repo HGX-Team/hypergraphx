@@ -71,11 +71,9 @@ class SerializationMixin:
         }
 
     def get_mapping(self):
-        from sklearn.preprocessing import LabelEncoder
+        from hypergraphx.utils.labeling import LabelEncoder
 
-        encoder = LabelEncoder()
-        encoder.fit(self.get_nodes())
-        return encoder
+        return LabelEncoder().fit(self.get_nodes())
 
 
 class BaseHypergraph(SerializationMixin):
