@@ -9,21 +9,21 @@ from hypergraphx import Hypergraph
 from hypergraphx.representations.projections import clique_projection
 
 
-def Sum_points(P1, P2):
-    x1, y1 = P1
-    x2, y2 = P2
+def sum_points(point1, point2):
+    x1, y1 = point1
+    x2, y2 = point2
     return x1 + x2, y1 + y2
 
 
-def Multiply_point(multiplier, P):
-    x, y = P
+def multiply_point(multiplier, point):
+    x, y = point
     return float(x) * float(multiplier), float(y) * float(multiplier)
 
 
-def Check_if_object_is_polygon(Cartesian_coords_list):
+def is_polygon(cartesian_coords_list):
     if (
-        Cartesian_coords_list[0]
-        == Cartesian_coords_list[len(Cartesian_coords_list) - 1]
+        cartesian_coords_list[0]
+        == cartesian_coords_list[len(cartesian_coords_list) - 1]
     ):
         return True
     else:
@@ -31,24 +31,24 @@ def Check_if_object_is_polygon(Cartesian_coords_list):
 
 
 class Object:
-    def __init__(self, Cartesian_coords_list):
-        self.Cartesian_coords_list = Cartesian_coords_list
+    def __init__(self, cartesian_coords_list):
+        self.Cartesian_coords_list = cartesian_coords_list
 
     def Find_Q_point_position(self, P1, P2):
-        Summand1 = Multiply_point(float(3) / float(4), P1)
-        Summand2 = Multiply_point(float(1) / float(4), P2)
-        Q = Sum_points(Summand1, Summand2)
+        Summand1 = multiply_point(float(3) / float(4), P1)
+        Summand2 = multiply_point(float(1) / float(4), P2)
+        Q = sum_points(Summand1, Summand2)
         return Q
 
     def Find_R_point_position(self, P1, P2):
-        Summand1 = Multiply_point(float(1) / float(4), P1)
-        Summand2 = Multiply_point(float(3) / float(4), P2)
-        R = Sum_points(Summand1, Summand2)
+        Summand1 = multiply_point(float(1) / float(4), P1)
+        Summand2 = multiply_point(float(3) / float(4), P2)
+        R = sum_points(Summand1, Summand2)
         return R
 
     def Smooth_by_Chaikin(self, number_of_refinements):
         refinement = 1
-        copy_first_coord = Check_if_object_is_polygon(self.Cartesian_coords_list)
+        copy_first_coord = is_polygon(self.Cartesian_coords_list)
         obj = Object(self.Cartesian_coords_list)
         while refinement <= number_of_refinements:
             self.New_cartesian_coords_list = []
@@ -92,8 +92,20 @@ def draw_hypergraph(
     scale: int = 1,
     iterations: int = 100,
     opt_dist: float = 0.5,
+    show: bool = False,
 ):
-    """Visualize a hypergraph."""
+    """Visualize a hypergraph.
+
+    Parameters
+    ----------
+    show : bool
+        If True, call plt.show().
+
+    Returns
+    -------
+    matplotlib.axes.Axes
+        The axes the plot was drawn on.
+    """
 
     def _stable_color(order_value):
         rng = random.Random(order_value)
@@ -114,6 +126,10 @@ def draw_hypergraph(
             scale=scale,
             k=opt_dist,
         )
+    else:
+        missing_nodes = set(hypergraph.get_nodes()) - set(pos.keys())
+        if missing_nodes:
+            raise ValueError("pos is missing positions for some nodes.")
 
     # Set color hyperedges of size > 2 (order > 1).
     if hyperedge_color_by_order is None:
@@ -134,18 +150,41 @@ def draw_hypergraph(
     for e in edges:
         G.add_edge(e[0], e[1])
 
-    # Plot the graph.
-    if type(node_shape) == str:
-        node_shape = {n: node_shape for n in G.nodes()}
-    for nid, n in enumerate(list(G.nodes())):
+    nodes = list(G.nodes())
+    if isinstance(node_shape, str):
+        node_shape = {n: node_shape for n in nodes}
+    if isinstance(node_shape, dict):
+        missing_shapes = set(nodes) - set(node_shape.keys())
+        if missing_shapes:
+            raise ValueError("node_shape is missing entries for some nodes.")
+    if isinstance(node_size, np.ndarray):
+        if len(node_size) != len(nodes):
+            raise ValueError("node_size length must match number of nodes.")
+        node_size = {n: node_size[i] for i, n in enumerate(nodes)}
+    elif not isinstance(node_size, dict):
+        node_size = {n: node_size for n in nodes}
+    if isinstance(node_color, np.ndarray):
+        if len(node_color) != len(nodes):
+            raise ValueError("node_color length must match number of nodes.")
+        node_color = {n: node_color[i] for i, n in enumerate(nodes)}
+    elif not isinstance(node_color, dict):
+        node_color = {n: node_color for n in nodes}
+    if isinstance(node_facecolor, np.ndarray):
+        if len(node_facecolor) != len(nodes):
+            raise ValueError("node_facecolor length must match number of nodes.")
+        node_facecolor = {n: node_facecolor[i] for i, n in enumerate(nodes)}
+    elif not isinstance(node_facecolor, dict):
+        node_facecolor = {n: node_facecolor for n in nodes}
+
+    for n in nodes:
         nx.draw_networkx_nodes(
             G,
             pos,
             [n],
-            node_size=node_size,
+            node_size=node_size[n],
             node_shape=node_shape[n],
-            node_color=node_color,
-            edgecolors=node_facecolor,
+            node_color=node_color[n],
+            edgecolors=node_facecolor[n],
             ax=ax,
         )
         if with_node_labels:
@@ -201,3 +240,6 @@ def draw_hypergraph(
 
     ax.axis("equal")
     plt.axis("equal")
+    if show:
+        plt.show()
+    return ax

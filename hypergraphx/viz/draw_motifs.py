@@ -1,5 +1,3 @@
-from hypergraphx import Hypergraph
-
 import matplotlib.pyplot as plt
 import networkx as nx
 import itertools
@@ -14,7 +12,31 @@ def draw_motifs(
     node_color="lightblue",
     edge_color="black",
     save_path=None,
+    axes=None,
+    figsize=None,
+    tight_layout: bool = True,
+    show: bool = False,
 ):
+    """Draw a list of motif patterns side by side.
+
+    Parameters
+    ----------
+    patterns : list
+        List of motif hypergraphs, each expressed as a list of hyperedges.
+    axes : matplotlib.axes.Axes or list, optional
+        Axes to draw on. If provided, its length must match the number of patterns.
+    figsize : tuple, optional
+        Figure size used only when axes is None.
+    tight_layout : bool
+        If True, call plt.tight_layout().
+    show : bool
+        If True, call plt.show().
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+    axes : list[matplotlib.axes.Axes]
+    """
     # Collect all unique nodes across all patterns
     all_nodes = set(
         itertools.chain.from_iterable(itertools.chain.from_iterable(patterns))
@@ -33,13 +55,20 @@ def draw_motifs(
         if size not in edge_size_colors:
             edge_size_colors[size] = default_color
 
-    # Set up plots
     num_graphs = len(patterns)
-    fig, axes = plt.subplots(1, num_graphs, figsize=(5 * num_graphs, 5))
-    if num_graphs == 1:
-        axes = [axes]
+    if axes is None:
+        if figsize is None:
+            figsize = (5 * num_graphs, 5)
+        fig, axes = plt.subplots(1, num_graphs, figsize=figsize)
+        if num_graphs == 1:
+            axes = [axes]
+    else:
+        if num_graphs == 1 and not isinstance(axes, (list, tuple)):
+            axes = [axes]
+        if len(axes) != num_graphs:
+            raise ValueError("axes length must match number of patterns.")
+        fig = axes[0].figure
 
-    # Plot each hypergraph
     for idx, (hypergraph, ax) in enumerate(zip(patterns, axes)):
         G = nx.Graph()
         nodes = set(itertools.chain.from_iterable(hypergraph))
@@ -91,8 +120,10 @@ def draw_motifs(
 
         ax.axis("off")
 
-    plt.tight_layout()
+    if tight_layout:
+        plt.tight_layout()
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches="tight")
-    else:
+    if show:
         plt.show()
+    return fig, axes

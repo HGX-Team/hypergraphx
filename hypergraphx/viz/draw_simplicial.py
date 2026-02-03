@@ -13,7 +13,7 @@ def find_triplets(list):
     return triplets
 
 
-def draw_SC(
+def draw_simplicial(
     HG,
     pos=None,
     link_color="black",
@@ -23,10 +23,27 @@ def draw_SC(
     node_color="#5494DA",
     with_labels=False,
     ax=None,
+    show: bool = False,
 ):
+    """Draw a simplicial-complex-style visualization for a hypergraph.
+
+    Parameters
+    ----------
+    show : bool
+        If True, call plt.show().
+
+    Returns
+    -------
+    matplotlib.axes.Axes
+        The axes the plot was drawn on.
+    """
     G = clique_projection(HG, keep_isolated=True)
     if pos is None:
         pos = nx.spring_layout(G)
+    else:
+        missing_nodes = set(G.nodes()) - set(pos.keys())
+        if missing_nodes:
+            raise ValueError("pos is missing positions for some nodes.")
     if hyperlink_color_by_order is None:
         hyperlink_color_by_order = {2: "r", 3: "orange", 4: "green"}
     else:
@@ -65,3 +82,10 @@ def draw_SC(
         node_size=node_size,
         ax=ax,
     )
+    if show:
+        plt.show()
+    return ax
+
+
+def draw_SC(*args, **kwargs):
+    return draw_simplicial(*args, **kwargs)
