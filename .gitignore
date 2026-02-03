@@ -11,3 +11,4 @@ MANIFEST
 .DS_Store
 *.egg-info/
 docs/_build/
+TODO.md

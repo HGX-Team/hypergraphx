@@ -26,12 +26,12 @@ def connected_components(hg: Hypergraph, order=None, size=None):
     """
     if order is not None and size is not None:
         raise InvalidParameterError("Order and size cannot be both specified.")
-    visited = []
+    visited = set()
     components = []
     for node in hg.get_nodes():
         if node not in visited:
             component = _bfs(hg, node, size=size, order=order)
-            visited += component
+            visited |= component
             components.append(component)
     return components
 

@@ -1,7 +1,6 @@
 import hypergraphx as hgx
 import json
 import logging
-from tqdm import tqdm
 from datetime import datetime
 from hypergraphx.representations.projections import clique_projection
 from hypergraphx.utils.labeling import relabel_edges_with_mapping
@@ -12,7 +11,19 @@ import pickle as pk
 import networkx as nx
 import pandas as pd
 from copy import deepcopy
-import matplotlib.pyplot as plt
+
+try:
+    from tqdm import tqdm  # type: ignore
+except ImportError:  # pragma: no cover
+
+    def tqdm(it, **kwargs):
+        return it
+
+
+try:
+    import matplotlib.pyplot as plt  # type: ignore
+except ImportError:  # pragma: no cover
+    plt = None
 
 logger = logging.getLogger(__name__)
 

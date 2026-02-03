@@ -6,7 +6,14 @@ from time import sleep
 import networkx as nx
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
+
+try:
+    from tqdm import tqdm  # type: ignore
+except ImportError:  # pragma: no cover
+
+    def tqdm(it, **kwargs):
+        return it
+
 
 from hypergraphx.representations import projections
 

@@ -1,7 +1,7 @@
 import random
 
 from hypergraphx.core.temporal import TemporalHypergraph
-from hypergraphx.dynamics.randwalk import *
+import numpy as np
 
 
 def rnd_pwl(xmin, xmax, g, size=1):
