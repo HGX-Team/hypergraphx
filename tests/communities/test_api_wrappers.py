@@ -1,5 +1,7 @@
 import warnings
 
+import pytest
+
 from hypergraphx import Hypergraph
 from hypergraphx.communities.api import fit_hysc, run_core_periphery
 
@@ -12,6 +14,10 @@ def test_run_core_periphery_result_shape():
 
 
 def test_fit_hysc_returns_labels():
+    pytest.importorskip(
+        "sklearn",
+        reason="HySC requires scikit-learn; skip when optional dependency is missing.",
+    )
     warnings.filterwarnings(
         "ignore",
         message="Could not find the number of physical cores*",

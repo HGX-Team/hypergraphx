@@ -2,7 +2,6 @@ import networkx as nx
 import pytest
 
 pytest.importorskip("tqdm")
-pytest.importorskip("requests")
 
 from hypergraphx import Hypergraph
 from hypergraphx.measures.temporal.temporal_shortest_paths import (
