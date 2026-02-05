@@ -110,6 +110,14 @@ def test_get_incident_edges_filters_by_size():
     assert incident_edges == [(("A", "C"), ("D",))]
 
 
+def test_get_incident_edges_deduplicates_source_and_target_overlap():
+    hg = DirectedHypergraph()
+    edge = (("A",), ("A", "B"))
+    hg.add_edge(edge)
+    incident_edges = hg.get_incident_edges("A")
+    assert incident_edges == [edge]
+
+
 def test_get_neighbors_undirected_union():
     hg = DirectedHypergraph()
     hg.add_edge((("A",), ("B",)))

@@ -752,9 +752,17 @@ class BaseHypergraph(SerializationMixin):
 
     # Info
     def max_order(self):
+        if not self._edge_list:
+            raise InvalidParameterError(
+                "Cannot compute max order of an empty hypergraph."
+            )
         return self.max_size() - 1
 
     def max_size(self):
+        if not self._edge_list:
+            raise InvalidParameterError(
+                "Cannot compute max size of an empty hypergraph."
+            )
         return max(self.get_sizes())
 
     def num_nodes(self):
@@ -881,6 +889,9 @@ class BaseHypergraph(SerializationMixin):
             adj.clear()
         self._weights.clear()
         self._hypergraph_metadata.clear()
+        self._hypergraph_metadata.update(
+            {"weighted": self._weighted, "type": self._type_name()}
+        )
         self._incidences_metadata.clear()
         self._node_metadata.clear()
         self._edge_metadata.clear()

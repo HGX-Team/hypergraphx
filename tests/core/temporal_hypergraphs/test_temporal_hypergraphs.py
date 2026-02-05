@@ -267,6 +267,17 @@ def test_aggregate_single_window():
     assert window_0.get_edge_metadata((3, 4)) == {"type": "B"}
 
 
+def test_subhypergraph_add_all_nodes_adds_missing_nodes_to_each_snapshot():
+    thg = TemporalHypergraph(weighted=False)
+    thg.add_edges([("A", "B"), ("B", "C")], [0, 1])
+
+    snapshots = thg.subhypergraph(add_all_nodes=True)
+
+    assert set(snapshots.keys()) == {0, 1}
+    assert set(snapshots[0].get_nodes()) == {"A", "B", "C"}
+    assert set(snapshots[1].get_nodes()) == {"A", "B", "C"}
+
+
 def test_aggregate_with_isolated_nodes():
     """Test aggregation ensures isolated nodes are preserved."""
     thg = TemporalHypergraph(weighted=True)

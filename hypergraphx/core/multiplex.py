@@ -106,7 +106,7 @@ class MultiplexHypergraph(BaseHypergraph):
         Public API convention: multiplex edges are represented as an edge key
         `(layer, edge)` at boundaries. Most methods accept either:
         - separate arguments: `edge=<tuple>, layer=<str>`
-        - a packed edge key: `edge=(<tuple>, <str>)` and `layer=None`
+        - a packed edge key: `edge=(<str>, <tuple>)` and `layer=None`
 
         Note: to avoid ambiguity with 2-node hyperedges, a packed edge key is
         only inferred when the first element looks like a layer (string).
@@ -242,7 +242,7 @@ class MultiplexHypergraph(BaseHypergraph):
 
         edge_layer : list, optional
             The list of layers to which the hyperedges belong. If not provided,
-            `edge_list` must contain packed `(edge, layer)` tuples.
+            `edge_list` must contain packed `(layer, edge)` tuples.
 
         weights : list, optional
             The list of weights of the hyperedges. If the hypergraph is weighted, this must be provided.
@@ -329,7 +329,7 @@ class MultiplexHypergraph(BaseHypergraph):
             The hyperedge to add.
         layer : str, optional
             The layer to which the hyperedge belongs. If not provided, `edge`
-            must be a packed `(edge, layer)` tuple.
+            must be a packed `(layer, edge)` tuple.
         weight : float, optional
             The weight of the hyperedge. If the hypergraph is weighted, this must be provided.
         metadata : dict, optional
@@ -449,7 +449,7 @@ class MultiplexHypergraph(BaseHypergraph):
         Set edge weight.
 
         Accepts:
-        - `set_weight(edge, layer, weight)` (legacy, explicit layer)
+        - `set_weight(edge, layer, weight)` (explicit layer argument)
         - `set_weight((layer, edge), weight=<...>)` (packed edge key)
         - `set_weight((layer, edge), <weight>)` (packed edge key, positional weight)
         - `set_weight((edge, layer), <weight>)` (legacy packed edge key, positional weight)

@@ -1,7 +1,7 @@
 import pytest
 
 from hypergraphx import Hypergraph
-from hypergraphx.exceptions import MissingEdgeError
+from hypergraphx.exceptions import InvalidParameterError, MissingEdgeError
 
 
 def test_hypergraph_initialization_with_metadata():
@@ -41,6 +41,28 @@ def test_is_uniform_empty_hypergraph():
     """Test `is_uniform` method on an empty hypergraph."""
     hg = Hypergraph()
     assert hg.is_uniform() is True  # An empty hypergraph is trivially uniform
+
+
+def test_max_size_and_order_on_empty_hypergraph_raise_invalid_parameter():
+    hg = Hypergraph()
+    with pytest.raises(
+        InvalidParameterError, match="Cannot compute max size of an empty hypergraph."
+    ):
+        hg.max_size()
+    with pytest.raises(
+        InvalidParameterError, match="Cannot compute max order of an empty hypergraph."
+    ):
+        hg.max_order()
+
+
+def test_clear_preserves_core_metadata_invariants():
+    hg = Hypergraph(weighted=False, hypergraph_metadata={"name": "demo"})
+    hg.add_edge((1, 2))
+    hg.clear()
+
+    metadata = hg.get_hypergraph_metadata()
+    assert metadata["weighted"] is False
+    assert metadata["type"] == "Hypergraph"
 
 
 def test_is_uniform_single_edge():

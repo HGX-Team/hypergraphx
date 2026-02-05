@@ -728,7 +728,7 @@ class TemporalHypergraph(BaseHypergraph):
         if add_all_nodes:
             for node in self.get_nodes():
                 for k, v in res.items():
-                    if v.check_node(node):
+                    if not v.check_node(node):
                         v.add_node(node)
 
         return res

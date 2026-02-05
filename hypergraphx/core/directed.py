@@ -311,15 +311,24 @@ class DirectedHypergraph(BaseHypergraph):
         if order is not None and size is not None:
             raise InvalidParameterError("Order and size cannot be both specified.")
         if order is None and size is None:
-            return self.get_source_edges(node) + self.get_target_edges(node)
+            edges = self.get_source_edges(node) + self.get_target_edges(node)
         elif size is not None:
-            return self.get_source_edges(node, size=size) + self.get_target_edges(
+            edges = self.get_source_edges(node, size=size) + self.get_target_edges(
                 node, size=size
             )
-        elif order is not None:
-            return self.get_source_edges(node, order=order) + self.get_target_edges(
+        else:
+            edges = self.get_source_edges(node, order=order) + self.get_target_edges(
                 node, order=order
             )
+
+        seen = set()
+        unique_edges = []
+        for edge in edges:
+            if edge in seen:
+                continue
+            seen.add(edge)
+            unique_edges.append(edge)
+        return unique_edges
 
     def get_sources(self):
         """Returns the list of sources of the hyperedges in the hypergraph.
