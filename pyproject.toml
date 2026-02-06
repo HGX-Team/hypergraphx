@@ -25,6 +25,7 @@ dependencies = [
   "scipy",
   "networkx",
   "pandas",
+  "tqdm",
 ]
 dynamic = ["version"]
 
@@ -35,10 +36,11 @@ Homepage = "https://github.com/HGX-Team/hypergraphx"
 dev = [
   "pytest",
   "black>=24.3.0",
+  "ruff>=0.6.0",
+  "mypy>=1.10.0",
+  "build>=1.2.1",
+  "twine>=5.1.1",
   "pre-commit",
-]
-temporal = [
-  "tqdm",
 ]
 viz = [
   "matplotlib",
@@ -71,3 +73,16 @@ local_scheme = "dirty-tag"
 [tool.black]
 line-length = 88
 target-version = ["py310"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E9", "F63", "F7", "F82"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+warn_unused_configs = true
+files = ["hypergraphx"]

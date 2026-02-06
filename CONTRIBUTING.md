@@ -1,107 +1,68 @@
-# Contributing to Hypergraphx on GitHub
+# Contributing to Hypergraphx
 
-Follow this step-by-step guide to contribute to Hypergraphx.
+Thanks for contributing to Hypergraphx.
 
-## 1. Set Up Your GitHub Account
+## Development Setup
 
-If you haven't already, create a GitHub account at [GitHub.com](https://github.com/).
-
-## 2. Fork the Repository
-
-- Go to the main page of the Hypergraphx repository.
-- In the top-right corner of the page, click on the "Fork" button. This will create a copy of the repository in your
-  GitHub account.
-
-## 3. Clone Your Forked Repository
-
-- Navigate to your forked repository in your GitHub account.
-- Click the "Code" button and copy the URL.
-- Open your terminal and navigate to the directory where you want to clone the repository.
-- Run the following command:
+1. Fork the repository and clone your fork.
+2. Create and activate a virtual environment.
+3. Install the package in editable mode with development dependencies:
 
 ```bash
-git clone [URL]
-```
-
-Replace `[URL]` with the URL you copied.
-
-## 4. Set Upstream Remote
-
-To keep your forked repository updated with the changes from the original repository, you need to set an upstream
-remote:
-
-- Navigate to the directory of your cloned repository in the terminal.
-- Run the following command:
-
-```bash
-git remote add upstream https://github.com/HGX-Team/hypergraphx.git
-```
-
-## 5. Create a New Branch
-
-Before making any changes, it's a good practice to create a new branch:
-
-- Navigate to the directory of your cloned repository in the terminal.
-- Run the following command to create and switch to a new branch:
-
-```bash
-git checkout -b your-branch-name
-```
-
-## 6. Make Your Changes
-
-- Edit the files or add new files as required.
-- Once you've made your changes, save them.
-- Format Python code with Black before committing:
-
-```bash
-black .
-```
-
-- (Recommended) Install pre-commit so formatting happens automatically:
-
-```bash
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev,viz,temporal]"
 pre-commit install
 ```
 
-## 7. Commit Your Changes
+## Local Quality Checks
 
-- In the terminal, navigate to the directory of your cloned repository.
-- Run the following commands to add and commit your changes:
-
-```bash
-git add .
-git commit -m "Your commit message here"
-```
-
-## 8. Push Your Changes to GitHub
-
-- Push your changes to your forked repository on GitHub:
+Run these before opening a pull request:
 
 ```bash
-git push origin your-branch-name
+black --check .
+ruff check .
+mypy
+pytest
+python -m build
+twine check dist/*
 ```
 
-## 9. Create a Pull Request (PR)
+If you want to run pre-commit hooks across the repository:
 
-- Go to your forked repository on GitHub.
-- Click on the "Pull requests" tab and then click on the "New pull request" button.
-- Ensure the base repository is the original Hypergraphx repository and the base branch is the branch you want to merge
-  your changes into (usually `main`).
-- Ensure the head repository is your forked repository and the compare branch is the branch you made your changes in.
-- Click on the "Create pull request" button.
-- Fill in the PR title and description, explaining your changes.
-- Click on the "Create pull request" button to submit your PR.
+```bash
+pre-commit run --all-files
+```
 
-## 10. Wait for Review
+## Documentation
 
-- The maintainers of the Hypergraphx repository will review your PR.
-- They might request some changes or improvements. If so, make the required changes in your branch, commit them, and
-  push them to GitHub. Your PR will be automatically updated.
+Build docs locally when your change affects docs, APIs, or tutorials:
 
-## 11. PR Gets Merged
+```bash
+python -m pip install -e ".[docs]"
+make -C docs html
+```
 
-Once your PR is approved, the maintainers will merge it into the main branch of the Hypergraphx repository.
+## Branch and Commit Guidelines
 
-**Note:** Always follow the contribution guidelines provided by the repository maintainers, and always be respectful and
-constructive in your interactions.
+- Create a focused branch from `main`.
+- Keep pull requests small and scoped to one change.
+- Write clear commit messages in imperative mood (for example: `Add temporal centrality regression test`).
+- Add or update tests for behavioral changes.
+- Update docs when user-facing behavior changes.
+
+## Pull Request Checklist
+
+- Tests added/updated for new behavior.
+- Local quality checks pass.
+- Docs updated (if relevant).
+- PR description explains motivation, approach, and impact.
+
+## Reporting Bugs and Requesting Features
+
+- Use GitHub Issues for bugs and feature requests.
+- Include a minimal reproducible example for bugs.
+- For security issues, do not open a public issue. See `SECURITY.md`.
+
+## Code of Conduct
+
+By participating in this project, you agree to follow the Code of Conduct in `CODE_OF_CONDUCT.md`.
