@@ -1,5 +1,6 @@
 from .undirected import Hypergraph
 from hypergraphx.core.base import BaseHypergraph
+from hypergraphx.exceptions import InvalidParameterError
 from hypergraphx.utils.edges import canon_edge
 
 

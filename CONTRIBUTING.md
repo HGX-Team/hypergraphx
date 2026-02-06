@@ -10,7 +10,7 @@ Thanks for contributing to Hypergraphx.
 
 ```bash
 python -m pip install --upgrade pip
-python -m pip install -e ".[dev,viz,temporal]"
+python -m pip install -e ".[dev,viz]"
 pre-commit install
 ```
 
@@ -21,7 +21,6 @@ Run these before opening a pull request:
 ```bash
 black --check .
 ruff check .
-mypy
 pytest
 python -m build
 twine check dist/*

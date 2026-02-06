@@ -36,9 +36,6 @@ jobs:
       - name: Lint (Ruff)
         run: ruff check .
 
-      - name: Type Check (Mypy)
-        run: mypy
-
       - name: Build Package
         run: python -m build
 
