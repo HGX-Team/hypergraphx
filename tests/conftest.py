@@ -13,7 +13,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from hypergraphx import Hypergraph
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "test_data"
+DATA_DIR = Path(__file__).resolve().parent / "test_data"
 ALL_SMALL_NUMERICAL_DATASETS = (
     "small_hypergraph1",
     "small_hypergraph2",

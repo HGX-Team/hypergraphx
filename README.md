@@ -171,30 +171,8 @@ Contributors
 HGX is a collaborative project and we welcome suggestions and contributions. If you are interested in contributing to
 HGX or have any questions about our project, please do not hesitate to reach out to us.
 
-:running: **I only have 1 minute**
-
-- Tweet about our library and spread the voice!
-- Give the project a star on GitHub :star:!
-
-:hourglass_flowing_sand: **I've got 10 minutes**
-
-- Are you interested in higher-order motif analysis or community detection in hypergraphs? Try out
-  our [tutorials](https://github.com/HGX-Team/hypergraphx/tree/main/tutorials)!
-- [Suggest](https://github.com/HGX-Team/hypergraphx/issues) ideas and engage in discussions
-- [Help](https://github.com/HGX-Team/hypergraphx/issues) someone with a problem
-- [Report a bug](https://github.com/HGX-Team/hypergraphx/issues)
-
-:computer: **I've got a few hours to work on this**
-
-- Create new tools for the community
-- Help solving bugs reported in the [issues](https://github.com/HGX-Team/hypergraphx/issues)
-- Please read the more detailed [contributing guidelines](CONTRIBUTING.md)
-
-:tada: **I want to help grow the community**
-
-- Spread the voice!
-- Talk about how HGX has been useful for your research problem
-- Engage in a discussion with the core members of the library
+For setup instructions, local checks, and pull-request guidelines, see
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## 📜 License
 
