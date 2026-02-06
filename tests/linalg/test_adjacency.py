@@ -4,7 +4,6 @@ from scipy import sparse
 from hypergraphx import Hypergraph
 from hypergraphx.linalg.linalg import adjacency_matrix
 
-
 # Fixture loaded_hypergraph defined inside the package-level conftest.py
 
 

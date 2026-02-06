@@ -4,7 +4,6 @@ from scipy import sparse
 import hypergraphx.linalg as hl
 from hypergraphx import Hypergraph
 
-
 # Fixture loaded_hypergraph defined inside the package-level conftest.py
 
 

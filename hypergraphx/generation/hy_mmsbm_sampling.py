@@ -8,6 +8,7 @@ In this view, the sampler only takes care of any sampling-related operation,
 and refers back to the model to retrieve any probability-related value
 (e.g. Poisson probabilities, expected degree, etc.).
 """
+
 import logging
 import warnings
 from typing import Dict, Iterable, Iterator, List, Optional, Set, Tuple, Union

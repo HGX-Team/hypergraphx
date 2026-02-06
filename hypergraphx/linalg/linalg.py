@@ -8,7 +8,6 @@ from scipy.special import factorial
 from hypergraphx import Hypergraph, TemporalHypergraph
 from hypergraphx.utils.labeling import get_inverse_mapping
 
-
 SparseFormat = Literal["csr", "csc"]
 
 

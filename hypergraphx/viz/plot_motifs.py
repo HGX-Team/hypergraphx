@@ -2,7 +2,6 @@ import math
 
 from hypergraphx.motifs.utils import generate_motifs
 
-
 _POS_COLOR = "#4C72B0"
 _NEG_COLOR = "#C44E52"
 _DEFAULT_BLOB_COLORS = {3: "#9BB8E8", 4: "#F3C7A6", "default": "#A8D5BA"}
@@ -373,7 +372,7 @@ def plot_motifs(
             try:
                 import mplcursors
 
-                labels = motif_labels or [f"M{i+1}" for i in range(len(motifs))]
+                labels = motif_labels or [f"M{i + 1}" for i in range(len(motifs))]
                 cursor = mplcursors.cursor(bars, hover=True)
 
                 @cursor.connect("add")
@@ -421,7 +420,7 @@ def plot_motifs(
             try:
                 import mplcursors
 
-                labels = motif_labels or [f"M{i+1}" for i in range(len(motifs))]
+                labels = motif_labels or [f"M{i + 1}" for i in range(len(motifs))]
                 cursor = mplcursors.cursor(bars, hover=True)
 
                 @cursor.connect("add")
@@ -465,7 +464,7 @@ def plot_motifs(
                 edge_color=edge_color,
             )
         if show_motif_labels:
-            labels = motif_labels or [f"M{i+1}" for i in range(len(motifs))]
+            labels = motif_labels or [f"M{i + 1}" for i in range(len(motifs))]
             label_y = icon_row_ylim[0] + 0.02
             for i, label in enumerate(labels):
                 ax_icon.text(

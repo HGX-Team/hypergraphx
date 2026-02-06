@@ -4,7 +4,6 @@ import pytest
 from hypergraphx import Hypergraph
 from hypergraphx.measures.sub_hypergraph_centrality import subhypergraph_centrality
 
-
 # Fixture loaded_hypergraph defined inside the package-level conftest.py
 
 
