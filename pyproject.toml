@@ -7,14 +7,14 @@ name = "hypergraphx"
 description = "HGX is a multi-purpose, open-source Python library for higher-order network analysis"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {file = "LICENSE.md"}
+license = "BSD-3-Clause"
+license-files = ["LICENSE.md"]
 authors = [{name = "HGX-Team", email = "lotitoqf@gmail.com"}]
 keywords = ["hypergraphs", "networks"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
-  "Topic :: Software Development :: Build Tools",
-  "License :: OSI Approved :: BSD License",
+  "Topic :: Scientific/Engineering :: Information Analysis",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -31,6 +31,10 @@ dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://github.com/HGX-Team/hypergraphx"
+Repository = "https://github.com/HGX-Team/hypergraphx"
+Documentation = "https://hypergraphx.readthedocs.io/"
+Issues = "https://github.com/HGX-Team/hypergraphx/issues"
+Changelog = "https://github.com/HGX-Team/hypergraphx/releases"
 
 [project.optional-dependencies]
 dev = [
