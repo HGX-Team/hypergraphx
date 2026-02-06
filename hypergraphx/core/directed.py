@@ -135,14 +135,7 @@ class DirectedHypergraph(BaseHypergraph):
         -------
         None
         """
-        if metadata is None:
-            metadata = {}
-        if node not in self._adj_source:
-            self._adj_source[node] = []
-            self._adj_target[node] = []
-            self._node_metadata[node] = {}
-        if self._node_metadata[node] == {}:
-            self._node_metadata[node] = metadata
+        super().add_node(node, metadata=metadata)
 
     def add_nodes(self, node_list: list, metadata=None):
         """

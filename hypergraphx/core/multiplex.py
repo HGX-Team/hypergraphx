@@ -564,6 +564,10 @@ class MultiplexHypergraph(BaseHypergraph):
         edge_key = self._normalize_edge(edge_key, layer=None)
         super().remove_attr_from_edge_metadata(edge_key, field)
 
+    def clear(self):
+        super().clear()
+        self._existing_layers.clear()
+
     def __repr__(self):
         return "{}(nodes={}, edges={}, layers={}, weighted={})".format(
             self._type_name(),
