@@ -112,6 +112,30 @@ Projections and matrices
    A = adjacency_matrix(hg)
    G = clique_projection(hg)
 
+Configuration model
+-------------------
+
+Use ``configuration_model`` to randomize a hypergraph with a
+configuration-model-style MCMC sampler.
+
+.. code-block:: python
+
+   from hypergraphx.generation import configuration_model
+
+   hg_rand = configuration_model(hg, n_steps=500, label="edge", seed=0)
+
+The ``duplicate_output`` parameter controls how repeated sampled hyperedges are
+handled:
+
+- ``"merge"`` (default): collapse duplicates into a simple hypergraph
+- ``"count"``: return a weighted hypergraph whose edge weights equal sampled multiplicities
+- ``"error"``: raise an error if repeated sampled hyperedges occur
+
+.. code-block:: python
+
+   hg_rand = configuration_model(hg, n_steps=500, duplicate_output="merge", seed=0)
+   hg_counts = configuration_model(hg, n_steps=500, duplicate_output="count", seed=0)
+
 Measures
 --------
 

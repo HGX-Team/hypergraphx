@@ -91,7 +91,7 @@ def compute_motifs(
     for i in range(ROUNDS):
         logger.info("Computing config model motifs of order %s. Step: %s", order, i + 1)
         sub_seed = int(rng.integers(0, 2**32 - 1, dtype=np.uint32))
-        e1 = configuration_model(hypergraph, label="stub", n_steps=STEPS, seed=sub_seed)
+        e1 = configuration_model(hypergraph, label="edge", n_steps=STEPS, seed=sub_seed)
         if order == 3:
             m1 = _motifs_order_3(e1.get_edges())
         elif order == 4:
