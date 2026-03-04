@@ -746,6 +746,13 @@ def test_get_mapping_roundtrip():
     assert set(encoder.inverse_transform(mapped)) == set(hg.get_nodes())
 
 
+def test_get_mapping_uses_deterministic_sorted_node_order():
+    hg = Hypergraph(edge_list=[("b", "a"), ("c", "b")])
+    encoder = hg.get_mapping()
+
+    assert list(encoder.classes_) == ["a", "b", "c"]
+
+
 def test_remove_node_keep_edges_updates_edges():
     hg = Hypergraph(weighted=True)
     hg.add_edge((1, 2, 3), weight=2.0, metadata={"kind": "tri"})

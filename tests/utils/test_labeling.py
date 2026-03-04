@@ -5,6 +5,7 @@ from hypergraphx.utils.labeling import (
     relabel_edges,
     inverse_relabel_edge,
     inverse_relabel_edges,
+    fit_node_encoder,
     map_node,
     map_nodes,
     inverse_map_nodes,
@@ -58,3 +59,9 @@ def test_get_inverse_mapping():
 
     assert inv[0] == "a"
     assert inv[2] == "c"
+
+
+def test_fit_node_encoder_sorts_deterministically():
+    enc = fit_node_encoder(["b", "a", "c"])
+
+    assert list(enc.classes_) == ["a", "b", "c"]

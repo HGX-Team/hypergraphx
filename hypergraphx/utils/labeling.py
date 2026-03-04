@@ -43,6 +43,20 @@ class LabelEncoder:
         return np.array([classes[int(i)] for i in y], dtype=object)
 
 
+def _stable_label_sort_key(value: Any) -> tuple[str, str]:
+    return (type(value).__name__, repr(value))
+
+
+def fit_node_encoder(nodes: Iterable[Any]) -> LabelEncoder:
+    """
+    Fit a LabelEncoder on a deterministic node order.
+
+    Nodes are sorted by type name and repr() so the mapping is stable even when
+    the underlying node iteration order is not.
+    """
+    return LabelEncoder().fit(sorted(nodes, key=_stable_label_sort_key))
+
+
 def relabel_edge(mapping: LabelEncoder, edge: Tuple):
     """
     Relabel an edge using a mapping.
