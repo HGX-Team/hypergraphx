@@ -109,8 +109,8 @@ def compute_directed_motifs(
 
     output["config_model"] = results
 
-    delta = list(directed_diff_sum(output["observed"], output["config_model"]))
-    norm_delta = list(norm_vector(delta))
+    delta = directed_diff_sum(output["observed"], output["config_model"])
+    norm_delta = norm_vector(delta)
     output["norm_delta"] = []
 
     for i in range(len(delta)):

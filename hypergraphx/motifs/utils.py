@@ -72,7 +72,7 @@ def _motifs_ho_not_full(edges, N, visited):
 
         out.append((motif, count))
 
-    out = list(sorted(out))
+    out = sorted(out)
 
     D = {}
     for i in range(len(out)):
@@ -181,7 +181,7 @@ def _motifs_standard(edges, N, visited):
 
         out.append((motif, count))
 
-    out = list(sorted(out))
+    out = sorted(out)
 
     D = {}
     for i in range(len(out)):
@@ -246,7 +246,7 @@ def _motifs_ho_full(edges, N):
 
         out.append((motif, count))
 
-    out = list(sorted(out))
+    out = sorted(out)
 
     D = {}
     for i in range(len(out)):
@@ -314,6 +314,20 @@ def norm_vector(a):
 
 
 def avg(motifs):
+    """
+    Compute the average motif frequencies across multiple models.
+
+    Parameters
+    ----------
+    motifs : list of list of tuples
+        Motif data from multiple models. Each model is a list of tuples where
+        each tuple is (motif_id, frequency).
+
+    Returns
+    -------
+    list of float
+        Average frequency for each motif position across all models.
+    """
     result = []
     for i in range(len(motifs[0])):
         s = 0
@@ -325,6 +339,20 @@ def avg(motifs):
 
 
 def sigma(motifs):
+    """
+    Compute the standard deviation of motif frequencies across multiple models.
+
+    Parameters
+    ----------
+    motifs : list of list of tuples
+        Motif data from multiple models. Each model is a list of tuples where
+        each tuple is (motif_id, frequency).
+
+    Returns
+    -------
+    list of float
+        Standard deviation of frequency for each motif position across all models.
+    """
     u = avg(motifs)
 
     result = []
@@ -603,7 +631,7 @@ def _directed_motifs_ho_full(edges, N):
     for motif, count in mapping.items():
         out.append((motif, count))
 
-    out = list(sorted(out))
+    out = sorted(out)
 
     D = {}
     for i in range(len(out)):
@@ -715,7 +743,7 @@ def _directed_motifs_ho_not_full(edges, N, visited):
     for motif, count in mapping.items():
         out.append((motif, count))
 
-    out = list(sorted(out))
+    out = sorted(out)
 
     D = {}
     for i in range(len(out)):
@@ -724,36 +752,36 @@ def _directed_motifs_ho_not_full(edges, N, visited):
     return out, visited
 
 
-def _all_directed_hyperedges(nodi):
+def _all_directed_hyperedges(nodes):
     """
     Compute all directed hyperedges
 
     Parameters
     ----------
-    A : list
-        Set
+    nodes : list
+        Set of nodes
 
     Returns
     -------
-    list
-        Power set of the set
+    set
+        All directed hyperedges (ordered pairs of non-empty disjoint node subsets)
     """
-    iperarchi = set()
+    hyperedges = set()
 
-    # Genera iperarchi con nodi di partenza e di arrivo
-    for lunghezza_partenza in range(1, len(nodi)):
-        for nodi_partenza in combinations(nodi, lunghezza_partenza):
-            for lunghezza_arrivo in range(1, len(nodi) - lunghezza_partenza + 1):
-                for nodi_arrivo in combinations(
-                    set(nodi) - set(nodi_partenza), lunghezza_arrivo
+    # Generate directed hyperedges with source nodes and target nodes
+    for source_size in range(1, len(nodes)):
+        for source_nodes in combinations(nodes, source_size):
+            for target_size in range(1, len(nodes) - source_size + 1):
+                for target_nodes in combinations(
+                    set(nodes) - set(source_nodes), target_size
                 ):
-                    iperarco = (
-                        tuple(sorted(nodi_partenza)),
-                        tuple(sorted(nodi_arrivo)),
+                    edge = (
+                        tuple(sorted(source_nodes)),
+                        tuple(sorted(target_nodes)),
                     )
-                    iperarchi.add(iperarco)
+                    hyperedges.add(edge)
 
-    return iperarchi
+    return hyperedges
 
 
 def directed_diff_sum(observed: list, null_models: list):
