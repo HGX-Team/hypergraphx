@@ -6,14 +6,14 @@ from itertools import combinations, permutations
 
 def _motifs_ho_not_full(edges, N, visited):
     mapping, labeling = generate_motifs(N)
+    T = set()
 
-    T = {}
     graph = {}
     for e in edges:
         if len(e) >= N:
             continue
 
-        T[tuple(sorted(e))] = 1
+        T.add(tuple(sorted(e)))
 
         for e_i in e:
             if e_i in graph:
@@ -86,18 +86,12 @@ def _motifs_ho_not_full(edges, N, visited):
 
 def _motifs_standard(edges, N, visited):
     mapping, labeling = generate_motifs(N)
+    T = set()
 
     graph = {}
-    T = {}
-
-    z = set()
-    for e in edges:
-        for n in e:
-            z.add(n)
-
     for e in edges:
         if len(e) == 2:
-            T[tuple(sorted(e))] = 1
+            T.add(tuple(sorted(e)))
             a, b = e
             if a in graph:
                 graph[a].append(b)
@@ -195,10 +189,7 @@ def _motifs_standard(edges, N, visited):
 
 def _motifs_ho_full(edges, N):
     mapping, labeling = generate_motifs(N)
-
-    T = {}
-    for e in edges:
-        T[tuple(sorted(e))] = 1
+    T = {tuple(sorted(e)) for e in edges}
 
     visited = {}
 
@@ -534,12 +525,11 @@ def generate_motifs(N):
                     break
             if not found:
                 isom_classes.add(tuple(edges))
-    isom_classes = {item: 1 for item in isom_classes}
 
     mapping = {}
     labeling = {}
 
-    for k in isom_classes.keys():
+    for k in isom_classes:
         mapping[k] = set()
         for relabeling in relabeling_list:
             relabeling_i = relabel(k, relabeling)
@@ -552,9 +542,7 @@ def generate_motifs(N):
 
 def _directed_motifs_ho_full(edges, N):
     mapping = {}
-    T = {}
-    for e in edges:
-        T[tuple((tuple(sorted(e[0])), tuple(sorted(e[1]))))] = 1
+    T = {(tuple(sorted(e[0])), tuple(sorted(e[1]))) for e in edges}
 
     visited = {}
 
@@ -642,10 +630,11 @@ def _directed_motifs_ho_full(edges, N):
 
 def _directed_motifs_ho_not_full(edges, N, visited):
     mapping = {}
-    T = {}
+    T = set()
+
     graph = {}
     for e in edges:
-        T[tuple((tuple(sorted(e[0])), tuple(sorted(e[1]))))] = 1
+        T.add(tuple((tuple(sorted(e[0])), tuple(sorted(e[1])))))
         for e_i in e[0]:
             if e_i in graph:
                 graph[e_i].append(e)
