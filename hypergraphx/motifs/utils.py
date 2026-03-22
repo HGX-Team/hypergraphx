@@ -66,10 +66,10 @@ def _motifs_ho_not_full(edges, N, visited):
 
     out = sorted(out)
 
-    D = {}
-    for i in range(len(out)):
-        D[i] = out[i][0]
-
+    # D = {}
+    # for i in range(len(out)):
+    #     D[i] = out[i][0]
+    #
     # with open('motifs_{}.pickle'.format(N), 'wb') as handle:
     # pickle.dump(D, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -135,18 +135,12 @@ def _motifs_standard(edges, N, visited):
             new_n_sub = set(n_sub).union(set(graph[w]))
             graph_extend(new_sub, tmp, v, new_n_sub)
 
-    c = 0
-
-    k = 0
     for v in graph.keys():
         v_ext = set()
         for u in graph[v]:
             if u > v:
                 v_ext.add(u)
-        k += 1
-
         graph_extend(set([v]), v_ext, v, set(graph[v]))
-        c += 1
 
     out = []
 
@@ -159,10 +153,10 @@ def _motifs_standard(edges, N, visited):
 
     out = sorted(out)
 
-    D = {}
-    for i in range(len(out)):
-        D[i] = out[i][0]
-
+    # D = {}
+    # for i in range(len(out)):
+    #     D[i] = out[i][0]
+    #
     # with open('motifs_{}.pickle'.format(N), 'wb') as handle:
     # pickle.dump(D, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -215,10 +209,10 @@ def _motifs_ho_full(edges, N):
 
     out = sorted(out)
 
-    D = {}
-    for i in range(len(out)):
-        D[i] = out[i][0]
-
+    # D = {}
+    # for i in range(len(out)):
+    #     D[i] = out[i][0]
+    #
     # with open('motifs_{}.pickle'.format(N), 'wb') as handle:
     # pickle.dump(D, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -583,9 +577,9 @@ def _directed_motifs_ho_full(edges, N):
 
     out = sorted(out)
 
-    D = {}
-    for i in range(len(out)):
-        D[i] = out[i][0]
+    # D = {}
+    # for i in range(len(out)):
+    #     D[i] = out[i][0]
 
     return out, visited
 
@@ -682,9 +676,9 @@ def _directed_motifs_ho_not_full(edges, N, visited):
 
     out = sorted(out)
 
-    D = {}
-    for i in range(len(out)):
-        D[i] = out[i][0]
+    # D = {}
+    # for i in range(len(out)):
+    #     D[i] = out[i][0]
 
     return out, visited
 
