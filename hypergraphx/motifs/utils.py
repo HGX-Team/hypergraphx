@@ -25,24 +25,18 @@ def _motifs_ho_not_full(edges, N, visited):
         nodes = tuple(sorted(tuple(nodes)))
         p_nodes = power_set(nodes)
 
-        motif = []
-        for edge in p_nodes:
-            if len(edge) >= 2:
-                edge = tuple(sorted(list(edge)))
-                if edge in T:
-                    motif.append(edge)
+        motif = [
+            edge_key
+            for edge in p_nodes
+            if len(edge) >= 2
+            if (edge_key := tuple(sorted(edge))) in T
+        ]
 
-        m = {}
-        idx = 1
-        for i in nodes:
-            m[i] = idx
-            idx += 1
+        m = {i: idx + 1 for idx, i in enumerate(nodes)}
 
         labeled_motif = []
         for e in motif:
-            new_e = []
-            for node in e:
-                new_e.append(m[node])
+            new_e = [m[node] for node in e]
             new_e = tuple(sorted(new_e))
             labeled_motif.append(new_e)
         labeled_motif = tuple(sorted(labeled_motif))
@@ -111,23 +105,13 @@ def _motifs_standard(edges, N, visited):
 
         p_nodes = power_set(nodes)
 
-        motif = []
-        for edge in p_nodes:
-            edge = tuple(sorted(list(edge)))
-            if edge in T:
-                motif.append(edge)
+        motif = [edge_key for edge in p_nodes if (edge_key := tuple(sorted(edge))) in T]
 
-        m = {}
-        idx = 1
-        for i in nodes:
-            m[i] = idx
-            idx += 1
+        m = {i: idx + 1 for idx, i in enumerate(nodes)}
 
         labeled_motif = []
         for e in motif:
-            new_e = []
-            for node in e:
-                new_e.append(m[node])
+            new_e = [m[node] for node in e]
             new_e = tuple(sorted(new_e))
             labeled_motif.append(new_e)
         labeled_motif = tuple(sorted(labeled_motif))
@@ -197,24 +181,18 @@ def _motifs_ho_full(edges, N):
         nodes = tuple(sorted(tuple(nodes)))
         p_nodes = power_set(nodes)
 
-        motif = []
-        for edge in p_nodes:
-            if len(edge) >= 2:
-                edge = tuple(sorted(list(edge)))
-                if edge in T:
-                    motif.append(edge)
+        motif = [
+            edge_key
+            for edge in p_nodes
+            if len(edge) >= 2
+            if (edge_key := tuple(sorted(edge))) in T
+        ]
 
-        m = {}
-        idx = 1
-        for i in nodes:
-            m[i] = idx
-            idx += 1
+        m = {i: idx + 1 for idx, i in enumerate(nodes)}
 
         labeled_motif = []
         for e in motif:
-            new_e = []
-            for node in e:
-                new_e.append(m[node])
+            new_e = [m[node] for node in e]
             new_e = tuple(sorted(new_e))
             labeled_motif.append(new_e)
         labeled_motif = tuple(sorted(labeled_motif))
@@ -504,13 +482,10 @@ def generate_motifs(N):
     assert n >= 2
 
     isom_classes = set()
-    relabeling_list = list(itertools.permutations([i for i in range(1, n + 1)]))
+    relabeling_list = list(itertools.permutations(range(1, n + 1)))
 
-    h = [i for i in range(1, n + 1)]
-    A = []
-
-    for r in range(n, 1, -1):
-        A.extend(list(itertools.combinations(h, r)))
+    h = range(1, n + 1)
+    A = [comb for r in range(n, 1, -1) for comb in itertools.combinations(h, r)]
 
     B = power_set(A)
 
@@ -550,34 +525,23 @@ def _directed_motifs_ho_full(edges, N):
         nodes = tuple(sorted(tuple(nodes)))
         p_nodes = _all_directed_hyperedges(nodes)
 
-        motif = []
-        for edge in p_nodes:
-            if edge in T:
-                motif.append(edge)
+        motif = [edge for edge in p_nodes if edge in T]
 
-        m = {}
-        idx = 1
-        for i in nodes:
-            m[i] = idx
-            idx += 1
+        m = {i: idx + 1 for idx, i in enumerate(nodes)}
 
         labeled_motif = []
         for e in motif:
-            new_e0 = []
-            for node in e[0]:
-                new_e0.append(m[node])
-            new_e1 = []
-            for node in e[1]:
-                new_e1.append(m[node])
+            new_e0 = [m[node] for node in e[0]]
+            new_e1 = [m[node] for node in e[1]]
 
             new_e = tuple((tuple(sorted(new_e0)), tuple(sorted(new_e1))))
             labeled_motif.append(new_e)
         labeled_motif = tuple(sorted(labeled_motif))
 
+        l_perm = []
         vector = list(range(1, N + 1))
         vector_permutations = permutations(vector)
         m = {}
-        l_perm = []
         for permutation in vector_permutations:
             i = 1
             for x in permutation:
@@ -650,25 +614,14 @@ def _directed_motifs_ho_not_full(edges, N, visited):
         nodes = tuple(sorted(tuple(nodes)))
         p_nodes = _all_directed_hyperedges(nodes)
 
-        motif = []
-        for edge in p_nodes:
-            if edge in T:
-                motif.append(edge)
+        motif = [edge for edge in p_nodes if edge in T]
 
-        m = {}
-        idx = 1
-        for i in nodes:
-            m[i] = idx
-            idx += 1
+        m = {i: idx + 1 for idx, i in enumerate(nodes)}
 
         labeled_motif = []
         for e in motif:
-            new_e0 = []
-            for node in e[0]:
-                new_e0.append(m[node])
-            new_e1 = []
-            for node in e[1]:
-                new_e1.append(m[node])
+            new_e0 = [m[node] for node in e[0]]
+            new_e1 = [m[node] for node in e[1]]
 
             new_e = tuple((tuple(sorted(new_e0)), tuple(sorted(new_e1))))
             labeled_motif.append(new_e)
