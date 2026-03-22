@@ -586,27 +586,27 @@ def _directed_motifs_ho_full(edges, N):
             labeled_motif.append(new_e)
         labeled_motif = tuple(sorted(labeled_motif))
 
-        vettore = list(range(1, N + 1))
-        permutazioni_vettore = permutations(vettore)
+        vector = list(range(1, N + 1))
+        vector_permutations = permutations(vector)
         m = {}
         l_perm = []
-        for permutazione in permutazioni_vettore:
+        for permutation in vector_permutations:
             i = 1
-            for x in permutazione:
+            for x in permutation:
                 m[i] = x
                 i += 1
 
             new_comb = []
             for x in labeled_motif:
-                arco = []
+                edge = []
                 for y in x:
-                    parte_arco = []
+                    tmp_edge = []
                     for j in y:
-                        parte_arco.append(m[j])
-                    arco.append(tuple(sorted(parte_arco)))
+                        tmp_edge.append(m[j])
+                    edge.append(tuple(sorted(tmp_edge)))
 
-                arco = tuple(arco)
-                new_comb.append(arco)
+                edge = tuple(edge)
+                new_comb.append(edge)
             new_comb = tuple(sorted(new_comb))
             l_perm.append(new_comb)
 
@@ -686,26 +686,26 @@ def _directed_motifs_ho_not_full(edges, N, visited):
         labeled_motif = tuple(sorted(labeled_motif))
 
         l_perm = []
-        vettore = list(range(1, N + 1))
-        permutazioni_vettore = permutations(vettore)
+        vector = list(range(1, N + 1))
+        vector_permutations = permutations(vector)
         m = {}
-        for permutazione in permutazioni_vettore:
+        for permutation in vector_permutations:
             i = 1
-            for x in permutazione:
+            for x in permutation:
                 m[i] = x
                 i += 1
 
             new_comb = []
             for x in labeled_motif:
-                arco = []
+                edge = []
                 for y in x:
-                    parte_arco = []
+                    tmp_edge = []
                     for j in y:
-                        parte_arco.append(m[j])
-                    arco.append(tuple(sorted(parte_arco)))
+                        tmp_edge.append(m[j])
+                    edge.append(tuple(sorted(tmp_edge)))
 
-                arco = tuple(arco)
-                new_comb.append(arco)
+                edge = tuple(edge)
+                new_comb.append(edge)
             new_comb = tuple(sorted(new_comb))
             l_perm.append(new_comb)
 
