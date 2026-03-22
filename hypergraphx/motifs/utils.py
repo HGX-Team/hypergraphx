@@ -50,9 +50,7 @@ def _motifs_ho_not_full(edges, N, visited):
 
             for n in nodes:
                 for e_i in graph[n]:
-                    tmp = list(nodes)
-                    tmp.extend(e_i)
-                    tmp = list(set(tmp))
+                    tmp = list(set(nodes) | set(e_i))
                     if len(tmp) == N and not (tuple(sorted(tmp)) in visited):
                         visited[tuple(sorted(tmp))] = 1
                         count_motif(tmp)
@@ -667,10 +665,7 @@ def _directed_motifs_ho_not_full(edges, N, visited):
 
             for n in nodes:
                 for e_i in graph[n]:
-                    tmp = nodes.copy()
-                    tmp.extend(e_i[0])
-                    tmp.extend(e_i[1])
-                    tmp = set(tmp)
+                    tmp = set(nodes) | set(e_i[0]) | set(e_i[1])
                     if (
                         len(set(list(e_i[0]) + list(e_i[1])))
                         == len(list(e_i[0]) + list(e_i[1]))
