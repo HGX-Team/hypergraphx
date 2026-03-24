@@ -6,14 +6,14 @@ from itertools import combinations, permutations
 
 def _motifs_ho_not_full(edges, N, visited):
     mapping, labeling = generate_motifs(N)
+    T = set()
 
-    T = {}
     graph = {}
     for e in edges:
         if len(e) >= N:
             continue
 
-        T[tuple(sorted(e))] = 1
+        T.add(tuple(sorted(e)))
 
         for e_i in e:
             if e_i in graph:
@@ -25,24 +25,18 @@ def _motifs_ho_not_full(edges, N, visited):
         nodes = tuple(sorted(tuple(nodes)))
         p_nodes = power_set(nodes)
 
-        motif = []
-        for edge in p_nodes:
-            if len(edge) >= 2:
-                edge = tuple(sorted(list(edge)))
-                if edge in T:
-                    motif.append(edge)
+        motif = [
+            edge_key
+            for edge in p_nodes
+            if len(edge) >= 2
+            if (edge_key := tuple(sorted(edge))) in T
+        ]
 
-        m = {}
-        idx = 1
-        for i in nodes:
-            m[i] = idx
-            idx += 1
+        m = {i: idx + 1 for idx, i in enumerate(nodes)}
 
         labeled_motif = []
         for e in motif:
-            new_e = []
-            for node in e:
-                new_e.append(m[node])
+            new_e = [m[node] for node in e]
             new_e = tuple(sorted(new_e))
             labeled_motif.append(new_e)
         labeled_motif = tuple(sorted(labeled_motif))
@@ -56,9 +50,7 @@ def _motifs_ho_not_full(edges, N, visited):
 
             for n in nodes:
                 for e_i in graph[n]:
-                    tmp = list(nodes)
-                    tmp.extend(e_i)
-                    tmp = list(set(tmp))
+                    tmp = list(set(nodes) | set(e_i))
                     if len(tmp) == N and not (tuple(sorted(tmp)) in visited):
                         visited[tuple(sorted(tmp))] = 1
                         count_motif(tmp)
@@ -72,12 +64,12 @@ def _motifs_ho_not_full(edges, N, visited):
 
         out.append((motif, count))
 
-    out = list(sorted(out))
+    out = sorted(out)
 
-    D = {}
-    for i in range(len(out)):
-        D[i] = out[i][0]
-
+    # D = {}
+    # for i in range(len(out)):
+    #     D[i] = out[i][0]
+    #
     # with open('motifs_{}.pickle'.format(N), 'wb') as handle:
     # pickle.dump(D, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -86,18 +78,12 @@ def _motifs_ho_not_full(edges, N, visited):
 
 def _motifs_standard(edges, N, visited):
     mapping, labeling = generate_motifs(N)
+    T = set()
 
     graph = {}
-    T = {}
-
-    z = set()
-    for e in edges:
-        for n in e:
-            z.add(n)
-
     for e in edges:
         if len(e) == 2:
-            T[tuple(sorted(e))] = 1
+            T.add(tuple(sorted(e)))
             a, b = e
             if a in graph:
                 graph[a].append(b)
@@ -117,23 +103,13 @@ def _motifs_standard(edges, N, visited):
 
         p_nodes = power_set(nodes)
 
-        motif = []
-        for edge in p_nodes:
-            edge = tuple(sorted(list(edge)))
-            if edge in T:
-                motif.append(edge)
+        motif = [edge_key for edge in p_nodes if (edge_key := tuple(sorted(edge))) in T]
 
-        m = {}
-        idx = 1
-        for i in nodes:
-            m[i] = idx
-            idx += 1
+        m = {i: idx + 1 for idx, i in enumerate(nodes)}
 
         labeled_motif = []
         for e in motif:
-            new_e = []
-            for node in e:
-                new_e.append(m[node])
+            new_e = [m[node] for node in e]
             new_e = tuple(sorted(new_e))
             labeled_motif.append(new_e)
         labeled_motif = tuple(sorted(labeled_motif))
@@ -159,18 +135,12 @@ def _motifs_standard(edges, N, visited):
             new_n_sub = set(n_sub).union(set(graph[w]))
             graph_extend(new_sub, tmp, v, new_n_sub)
 
-    c = 0
-
-    k = 0
     for v in graph.keys():
         v_ext = set()
         for u in graph[v]:
             if u > v:
                 v_ext.add(u)
-        k += 1
-
         graph_extend(set([v]), v_ext, v, set(graph[v]))
-        c += 1
 
     out = []
 
@@ -181,12 +151,12 @@ def _motifs_standard(edges, N, visited):
 
         out.append((motif, count))
 
-    out = list(sorted(out))
+    out = sorted(out)
 
-    D = {}
-    for i in range(len(out)):
-        D[i] = out[i][0]
-
+    # D = {}
+    # for i in range(len(out)):
+    #     D[i] = out[i][0]
+    #
     # with open('motifs_{}.pickle'.format(N), 'wb') as handle:
     # pickle.dump(D, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -195,10 +165,7 @@ def _motifs_standard(edges, N, visited):
 
 def _motifs_ho_full(edges, N):
     mapping, labeling = generate_motifs(N)
-
-    T = {}
-    for e in edges:
-        T[tuple(sorted(e))] = 1
+    T = {tuple(sorted(e)) for e in edges}
 
     visited = {}
 
@@ -206,24 +173,18 @@ def _motifs_ho_full(edges, N):
         nodes = tuple(sorted(tuple(nodes)))
         p_nodes = power_set(nodes)
 
-        motif = []
-        for edge in p_nodes:
-            if len(edge) >= 2:
-                edge = tuple(sorted(list(edge)))
-                if edge in T:
-                    motif.append(edge)
+        motif = [
+            edge_key
+            for edge in p_nodes
+            if len(edge) >= 2
+            if (edge_key := tuple(sorted(edge))) in T
+        ]
 
-        m = {}
-        idx = 1
-        for i in nodes:
-            m[i] = idx
-            idx += 1
+        m = {i: idx + 1 for idx, i in enumerate(nodes)}
 
         labeled_motif = []
         for e in motif:
-            new_e = []
-            for node in e:
-                new_e.append(m[node])
+            new_e = [m[node] for node in e]
             new_e = tuple(sorted(new_e))
             labeled_motif.append(new_e)
         labeled_motif = tuple(sorted(labeled_motif))
@@ -246,12 +207,12 @@ def _motifs_ho_full(edges, N):
 
         out.append((motif, count))
 
-    out = list(sorted(out))
+    out = sorted(out)
 
-    D = {}
-    for i in range(len(out)):
-        D[i] = out[i][0]
-
+    # D = {}
+    # for i in range(len(out)):
+    #     D[i] = out[i][0]
+    #
     # with open('motifs_{}.pickle'.format(N), 'wb') as handle:
     # pickle.dump(D, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -314,6 +275,20 @@ def norm_vector(a):
 
 
 def avg(motifs):
+    """
+    Compute the average motif frequencies across multiple models.
+
+    Parameters
+    ----------
+    motifs : list of list of tuples
+        Motif data from multiple models. Each model is a list of tuples where
+        each tuple is (motif_id, frequency).
+
+    Returns
+    -------
+    list of float
+        Average frequency for each motif position across all models.
+    """
     result = []
     for i in range(len(motifs[0])):
         s = 0
@@ -325,6 +300,20 @@ def avg(motifs):
 
 
 def sigma(motifs):
+    """
+    Compute the standard deviation of motif frequencies across multiple models.
+
+    Parameters
+    ----------
+    motifs : list of list of tuples
+        Motif data from multiple models. Each model is a list of tuples where
+        each tuple is (motif_id, frequency).
+
+    Returns
+    -------
+    list of float
+        Standard deviation of frequency for each motif position across all models.
+    """
     u = avg(motifs)
 
     result = []
@@ -485,13 +474,10 @@ def generate_motifs(N):
     assert n >= 2
 
     isom_classes = set()
-    relabeling_list = list(itertools.permutations([i for i in range(1, n + 1)]))
+    relabeling_list = list(itertools.permutations(range(1, n + 1)))
 
-    h = [i for i in range(1, n + 1)]
-    A = []
-
-    for r in range(n, 1, -1):
-        A.extend(list(itertools.combinations(h, r)))
+    h = range(1, n + 1)
+    A = [comb for r in range(n, 1, -1) for comb in itertools.combinations(h, r)]
 
     B = power_set(A)
 
@@ -506,12 +492,11 @@ def generate_motifs(N):
                     break
             if not found:
                 isom_classes.add(tuple(edges))
-    isom_classes = {item: 1 for item in isom_classes}
 
     mapping = {}
     labeling = {}
 
-    for k in isom_classes.keys():
+    for k in isom_classes:
         mapping[k] = set()
         for relabeling in relabeling_list:
             relabeling_i = relabel(k, relabeling)
@@ -524,9 +509,7 @@ def generate_motifs(N):
 
 def _directed_motifs_ho_full(edges, N):
     mapping = {}
-    T = {}
-    for e in edges:
-        T[tuple((tuple(sorted(e[0])), tuple(sorted(e[1]))))] = 1
+    T = {(tuple(sorted(e[0])), tuple(sorted(e[1]))) for e in edges}
 
     visited = {}
 
@@ -534,51 +517,40 @@ def _directed_motifs_ho_full(edges, N):
         nodes = tuple(sorted(tuple(nodes)))
         p_nodes = _all_directed_hyperedges(nodes)
 
-        motif = []
-        for edge in p_nodes:
-            if edge in T:
-                motif.append(edge)
+        motif = [edge for edge in p_nodes if edge in T]
 
-        m = {}
-        idx = 1
-        for i in nodes:
-            m[i] = idx
-            idx += 1
+        m = {i: idx + 1 for idx, i in enumerate(nodes)}
 
         labeled_motif = []
         for e in motif:
-            new_e0 = []
-            for node in e[0]:
-                new_e0.append(m[node])
-            new_e1 = []
-            for node in e[1]:
-                new_e1.append(m[node])
+            new_e0 = [m[node] for node in e[0]]
+            new_e1 = [m[node] for node in e[1]]
 
             new_e = tuple((tuple(sorted(new_e0)), tuple(sorted(new_e1))))
             labeled_motif.append(new_e)
         labeled_motif = tuple(sorted(labeled_motif))
 
-        vettore = list(range(1, N + 1))
-        permutazioni_vettore = permutations(vettore)
-        m = {}
         l_perm = []
-        for permutazione in permutazioni_vettore:
+        vector = list(range(1, N + 1))
+        vector_permutations = permutations(vector)
+        m = {}
+        for permutation in vector_permutations:
             i = 1
-            for x in permutazione:
+            for x in permutation:
                 m[i] = x
                 i += 1
 
             new_comb = []
             for x in labeled_motif:
-                arco = []
+                edge = []
                 for y in x:
-                    parte_arco = []
+                    tmp_edge = []
                     for j in y:
-                        parte_arco.append(m[j])
-                    arco.append(tuple(sorted(parte_arco)))
+                        tmp_edge.append(m[j])
+                    edge.append(tuple(sorted(tmp_edge)))
 
-                arco = tuple(arco)
-                new_comb.append(arco)
+                edge = tuple(edge)
+                new_comb.append(edge)
             new_comb = tuple(sorted(new_comb))
             l_perm.append(new_comb)
 
@@ -603,21 +575,22 @@ def _directed_motifs_ho_full(edges, N):
     for motif, count in mapping.items():
         out.append((motif, count))
 
-    out = list(sorted(out))
+    out = sorted(out)
 
-    D = {}
-    for i in range(len(out)):
-        D[i] = out[i][0]
+    # D = {}
+    # for i in range(len(out)):
+    #     D[i] = out[i][0]
 
     return out, visited
 
 
 def _directed_motifs_ho_not_full(edges, N, visited):
     mapping = {}
-    T = {}
+    T = set()
+
     graph = {}
     for e in edges:
-        T[tuple((tuple(sorted(e[0])), tuple(sorted(e[1]))))] = 1
+        T.add(tuple((tuple(sorted(e[0])), tuple(sorted(e[1])))))
         for e_i in e[0]:
             if e_i in graph:
                 graph[e_i].append(e)
@@ -633,51 +606,40 @@ def _directed_motifs_ho_not_full(edges, N, visited):
         nodes = tuple(sorted(tuple(nodes)))
         p_nodes = _all_directed_hyperedges(nodes)
 
-        motif = []
-        for edge in p_nodes:
-            if edge in T:
-                motif.append(edge)
+        motif = [edge for edge in p_nodes if edge in T]
 
-        m = {}
-        idx = 1
-        for i in nodes:
-            m[i] = idx
-            idx += 1
+        m = {i: idx + 1 for idx, i in enumerate(nodes)}
 
         labeled_motif = []
         for e in motif:
-            new_e0 = []
-            for node in e[0]:
-                new_e0.append(m[node])
-            new_e1 = []
-            for node in e[1]:
-                new_e1.append(m[node])
+            new_e0 = [m[node] for node in e[0]]
+            new_e1 = [m[node] for node in e[1]]
 
             new_e = tuple((tuple(sorted(new_e0)), tuple(sorted(new_e1))))
             labeled_motif.append(new_e)
         labeled_motif = tuple(sorted(labeled_motif))
 
         l_perm = []
-        vettore = list(range(1, N + 1))
-        permutazioni_vettore = permutations(vettore)
+        vector = list(range(1, N + 1))
+        vector_permutations = permutations(vector)
         m = {}
-        for permutazione in permutazioni_vettore:
+        for permutation in vector_permutations:
             i = 1
-            for x in permutazione:
+            for x in permutation:
                 m[i] = x
                 i += 1
 
             new_comb = []
             for x in labeled_motif:
-                arco = []
+                edge = []
                 for y in x:
-                    parte_arco = []
+                    tmp_edge = []
                     for j in y:
-                        parte_arco.append(m[j])
-                    arco.append(tuple(sorted(parte_arco)))
+                        tmp_edge.append(m[j])
+                    edge.append(tuple(sorted(tmp_edge)))
 
-                arco = tuple(arco)
-                new_comb.append(arco)
+                edge = tuple(edge)
+                new_comb.append(edge)
             new_comb = tuple(sorted(new_comb))
             l_perm.append(new_comb)
 
@@ -697,10 +659,7 @@ def _directed_motifs_ho_not_full(edges, N, visited):
 
             for n in nodes:
                 for e_i in graph[n]:
-                    tmp = nodes.copy()
-                    tmp.extend(e_i[0])
-                    tmp.extend(e_i[1])
-                    tmp = set(tmp)
+                    tmp = set(nodes) | set(e_i[0]) | set(e_i[1])
                     if (
                         len(set(list(e_i[0]) + list(e_i[1])))
                         == len(list(e_i[0]) + list(e_i[1]))
@@ -715,45 +674,45 @@ def _directed_motifs_ho_not_full(edges, N, visited):
     for motif, count in mapping.items():
         out.append((motif, count))
 
-    out = list(sorted(out))
+    out = sorted(out)
 
-    D = {}
-    for i in range(len(out)):
-        D[i] = out[i][0]
+    # D = {}
+    # for i in range(len(out)):
+    #     D[i] = out[i][0]
 
     return out, visited
 
 
-def _all_directed_hyperedges(nodi):
+def _all_directed_hyperedges(nodes):
     """
     Compute all directed hyperedges
 
     Parameters
     ----------
-    A : list
-        Set
+    nodes : list
+        Set of nodes
 
     Returns
     -------
-    list
-        Power set of the set
+    set
+        All directed hyperedges (ordered pairs of non-empty disjoint node subsets)
     """
-    iperarchi = set()
+    hyperedges = set()
 
-    # Genera iperarchi con nodi di partenza e di arrivo
-    for lunghezza_partenza in range(1, len(nodi)):
-        for nodi_partenza in combinations(nodi, lunghezza_partenza):
-            for lunghezza_arrivo in range(1, len(nodi) - lunghezza_partenza + 1):
-                for nodi_arrivo in combinations(
-                    set(nodi) - set(nodi_partenza), lunghezza_arrivo
+    # Generate directed hyperedges with source nodes and target nodes
+    for source_size in range(1, len(nodes)):
+        for source_nodes in combinations(nodes, source_size):
+            for target_size in range(1, len(nodes) - source_size + 1):
+                for target_nodes in combinations(
+                    set(nodes) - set(source_nodes), target_size
                 ):
-                    iperarco = (
-                        tuple(sorted(nodi_partenza)),
-                        tuple(sorted(nodi_arrivo)),
+                    edge = (
+                        tuple(sorted(source_nodes)),
+                        tuple(sorted(target_nodes)),
                     )
-                    iperarchi.add(iperarco)
+                    hyperedges.add(edge)
 
-    return iperarchi
+    return hyperedges
 
 
 def directed_diff_sum(observed: list, null_models: list):
