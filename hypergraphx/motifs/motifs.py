@@ -104,8 +104,8 @@ def compute_motifs(
 
     output["config_model"] = results
 
-    delta = list(diff_sum(output["observed"], output["config_model"]))
-    norm_delta = list(norm_vector(delta))
+    delta = diff_sum(output["observed"], output["config_model"])
+    norm_delta = norm_vector(delta)
     output["norm_delta"] = []
 
     for i in range(len(delta)):
