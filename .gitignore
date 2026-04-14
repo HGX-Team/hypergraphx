@@ -12,3 +12,4 @@ MANIFEST
 *.egg-info/
 docs/_build/
 TODO.md
+viz_todo.md
