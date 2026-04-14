@@ -253,7 +253,9 @@ def test_remove_edges_mismatched_time_list_raises():
     h = TemporalHypergraph(weighted=False)
     h.add_edges([("A", "B"), ("B", "C")], [1, 2])
 
-    with pytest.raises(ValueError, match="Edge list and time list must have the same length"):
+    with pytest.raises(
+        ValueError, match="Edge list and time list must have the same length"
+    ):
         h.remove_edges([("A", "B"), ("B", "C")], [1])
 
 
