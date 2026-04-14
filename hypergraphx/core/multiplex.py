@@ -356,6 +356,12 @@ class MultiplexHypergraph(BaseHypergraph):
         self._existing_layers.add(edge_key[0])
         self._add_edge(edge_key, weight=weight, metadata=metadata)
 
+    def _remove_edge_key(self, edge_key):
+        layer = edge_key[0]
+        super()._remove_edge_key(edge_key)
+        if not any(existing_layer == layer for existing_layer, _ in self._edge_list):
+            self._existing_layers.discard(layer)
+
     def remove_edge(self, edge, layer=None):
         """
         Remove an edge from the multiplex hypergraph.

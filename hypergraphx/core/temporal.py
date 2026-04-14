@@ -362,14 +362,17 @@ class TemporalHypergraph(BaseHypergraph):
         edge_key = self._normalize_edge(edge, time=time)
         self._remove_edge_key(edge_key)
 
-    def remove_edges(self, edge_list):
+    def remove_edges(self, edge_list, time_list=None):
         """
         Remove a list of edges from the hypergraph.
 
         Parameters
         ----------
-        edge_list : list
-            The list of edges to remove.
+        edge_list : iterable
+            The list of edges to remove. If `time_list` is not provided, this must contain
+            packed `(time, edge)` tuples.
+        time_list : iterable, optional
+            The list of times corresponding to each edge in `edge_list`.
 
         Returns
         -------
@@ -379,8 +382,23 @@ class TemporalHypergraph(BaseHypergraph):
         ------
         KeyError
         """
-        for edge in edge_list:
-            self.remove_edge(edge)
+        try:
+            edge_list = list(edge_list)
+            if time_list is not None:
+                time_list = list(time_list)
+        except TypeError as exc:
+            raise TypeError("Edge list and time list must be iterable") from exc
+
+        if time_list is None:
+            for edge in edge_list:
+                self.remove_edge(edge)
+            return
+
+        if len(edge_list) != len(time_list):
+            raise ValueError("Edge list and time list must have the same length")
+
+        for i, edge in enumerate(edge_list):
+            self.remove_edge(edge, time=time_list[i])
 
     def get_edge_list(self):
         return self._edge_list

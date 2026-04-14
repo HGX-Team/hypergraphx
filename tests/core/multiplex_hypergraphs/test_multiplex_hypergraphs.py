@@ -4,6 +4,7 @@ from hypergraphx import Hypergraph
 from hypergraphx import (
     MultiplexHypergraph,
 )  # Replace 'your_module' with the module name containing your class
+from hypergraphx.exceptions import MissingEdgeError
 
 
 def test_initialization():
@@ -398,3 +399,86 @@ def test_get_edges_metadata_returns_mapping():
     mhg.add_edge(("A", "B"), layer="layer1", metadata={"kind": "pair"})
     edges = mhg.get_edges(metadata=True)
     assert edges[("layer1", ("A", "B"))] == {"kind": "pair"}
+
+
+def test_remove_edge_existing_edge():
+    mhg = MultiplexHypergraph(weighted=False)
+    mhg.add_edge(("A", "B", "C"), layer="layer1")
+
+    assert ("layer1", ("A", "B", "C")) in mhg._edge_list
+    mhg.remove_edge(("A", "B", "C"), layer="layer1")
+
+    assert ("layer1", ("A", "B", "C")) not in mhg._edge_list
+    with pytest.raises(MissingEdgeError):
+        mhg.get_weight(("A", "B", "C"), "layer1")
+
+
+def test_remove_edge_nonexistent_edge():
+    mhg = MultiplexHypergraph(weighted=False)
+    mhg.add_edge(("A", "B"), layer="layer1")
+
+    assert ("layer1", ("C", "D")) not in mhg._edge_list
+    with pytest.raises(MissingEdgeError):
+        mhg.remove_edge(("C", "D"), layer="layer1")
+
+
+def test_remove_edge_updates_adj():
+    mhg = MultiplexHypergraph(weighted=False)
+    mhg.add_edge(("A", "B", "C"), layer="layer1")
+
+    edge_id = mhg._edge_list[("layer1", ("A", "B", "C"))]
+    assert edge_id in mhg._adj["A"]
+    assert edge_id in mhg._adj["B"]
+    assert edge_id in mhg._adj["C"]
+
+    mhg.remove_edge(("A", "B", "C"), layer="layer1")
+
+    assert edge_id not in mhg._adj["A"]
+    assert edge_id not in mhg._adj["B"]
+    assert edge_id not in mhg._adj["C"]
+
+
+def test_remove_edge_weighted_hypergraph():
+    mhg = MultiplexHypergraph(weighted=True)
+    mhg.add_edge(("A", "B", "C"), layer="layer1", weight=2.5)
+
+    edge_key = ("layer1", ("A", "B", "C"))
+    assert edge_key in mhg._edge_list
+    assert mhg._weights[mhg._edge_list[edge_key]] == 2.5
+
+    mhg.remove_edge(("A", "B", "C"), layer="layer1")
+
+    assert edge_key not in mhg._edge_list
+    assert mhg._weights == {}
+
+
+def test_remove_edge_packed_key():
+    mhg = MultiplexHypergraph(weighted=False)
+    edge_key = ("layer1", ("A", "B", "C"))
+    mhg.add_edge(edge_key)
+
+    assert edge_key in mhg._edge_list
+    mhg.remove_edge(edge_key)
+
+    assert edge_key not in mhg._edge_list
+
+
+def test_remove_edge_drops_empty_layer():
+    mhg = MultiplexHypergraph(weighted=False)
+    mhg.add_edge(("A", "B"), layer="layer1")
+
+    mhg.remove_edge(("A", "B"), layer="layer1")
+
+    assert mhg.get_edges() == []
+    assert mhg.get_existing_layers() == set()
+
+
+def test_remove_node_drops_empty_layers():
+    mhg = MultiplexHypergraph(weighted=False)
+    mhg.add_edge(("A", "B"), layer="layer1")
+    mhg.add_edge(("A", "C"), layer="layer2")
+
+    mhg.remove_node("A", keep_edges=False)
+
+    assert mhg.get_edges() == []
+    assert mhg.get_existing_layers() == set()

@@ -1,6 +1,7 @@
 import pytest
 
 from hypergraphx import Hypergraph, TemporalHypergraph
+from hypergraphx.exceptions import MissingEdgeError
 
 
 def test_initialization():
@@ -174,6 +175,86 @@ def test_get_edges_in_time_window():
     h.add_edges(edges, times)
     result = h.get_edges(time_window=(2, 4))
     assert set(result) == {(2, ("B", "C")), (3, ("C", "D"))}
+
+
+def test_remove_edge_existing_edge():
+    h = TemporalHypergraph(weighted=False)
+    h.add_edge(("A", "B", "C"), time=1)
+
+    assert (1, ("A", "B", "C")) in h._edge_list
+    h.remove_edge(("A", "B", "C"), time=1)
+
+    assert (1, ("A", "B", "C")) not in h._edge_list
+    with pytest.raises(MissingEdgeError):
+        h.get_weight(("A", "B", "C"), 1)
+
+
+def test_remove_edge_nonexistent_edge():
+    h = TemporalHypergraph(weighted=False)
+    h.add_edge(("A", "B"), time=1)
+
+    assert (2, ("C", "D")) not in h._edge_list
+    with pytest.raises(MissingEdgeError):
+        h.remove_edge(("C", "D"), time=2)
+
+
+def test_remove_edge_updates_adj():
+    h = TemporalHypergraph(weighted=False)
+    h.add_edge(("A", "B", "C"), time=1)
+
+    edge_id = h._edge_list[(1, ("A", "B", "C"))]
+    assert edge_id in h._adj["A"]
+    assert edge_id in h._adj["B"]
+    assert edge_id in h._adj["C"]
+
+    h.remove_edge(("A", "B", "C"), time=1)
+
+    assert edge_id not in h._adj["A"]
+    assert edge_id not in h._adj["B"]
+    assert edge_id not in h._adj["C"]
+
+
+def test_remove_edge_weighted_hypergraph():
+    h = TemporalHypergraph(weighted=True)
+    h.add_edge(("A", "B", "C"), time=1, weight=2.5)
+
+    assert (1, ("A", "B", "C")) in h._edge_list
+    assert h._weights[h._edge_list[(1, ("A", "B", "C"))]] == 2.5
+
+    h.remove_edge(("A", "B", "C"), time=1)
+
+    assert (1, ("A", "B", "C")) not in h._edge_list
+    assert h._weights == {}
+
+
+def test_remove_edge_packed_key():
+    h = TemporalHypergraph(weighted=False)
+    edge_key = (1, ("A", "B", "C"))
+    h.add_edge(edge_key)
+
+    assert edge_key in h._edge_list
+    h.remove_edge(edge_key)
+
+    assert edge_key not in h._edge_list
+
+
+def test_remove_edges_with_explicit_time_list():
+    h = TemporalHypergraph(weighted=False)
+    edges = [("A", "B"), ("B", "C")]
+    times = [1, 2]
+    h.add_edges(edges, times)
+
+    h.remove_edges(edges, times)
+
+    assert h.get_edges() == []
+
+
+def test_remove_edges_mismatched_time_list_raises():
+    h = TemporalHypergraph(weighted=False)
+    h.add_edges([("A", "B"), ("B", "C")], [1, 2])
+
+    with pytest.raises(ValueError, match="Edge list and time list must have the same length"):
+        h.remove_edges([("A", "B"), ("B", "C")], [1])
 
 
 def test_get_edges_invalid_time_window():
