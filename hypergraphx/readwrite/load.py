@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import gzip
+import json
 import os
+import re
+import ssl
 import tempfile
 
 from typing import Any, Iterable, List, Tuple
+from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 
@@ -20,8 +24,18 @@ from hypergraphx.readwrite.io_json import (
 from hypergraphx.readwrite.io_pickle import load_pickle
 
 _BASE = "https://cricca.disi.unitn.it/datasets/hypergraphx-data"
+_CATALOG_URL = (
+    "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/"
+    "main/dist/static/js/related-data.js"
+)
 
-__all__ = ["load", "load_hypergraph", "load_hypergraph_from_server"]
+__all__ = [
+    "iter_remote_hypergraphs",
+    "list_remote_datasets",
+    "load",
+    "load_hypergraph",
+    "load_hypergraph_from_server",
+]
 
 
 def _decompress_gzip_if_needed(raw: bytes) -> bytes:
@@ -43,10 +57,20 @@ def _ensure_hypergraph_obj(obj: Any):
         raise TypeError(f"Object has type {type(obj)!r}, expected one of {allowed}.")
 
 
-def _download(url: str, *, timeout: int = 30) -> bytes:
+def _download(url: str, *, timeout: int = 30, verify_ssl: bool = True) -> bytes:
     try:
+        if verify_ssl:
+            context = ssl.create_default_context()
+            try:
+                import certifi  # type: ignore
+
+                context = ssl.create_default_context(cafile=certifi.where())
+            except Exception:
+                pass
+        else:
+            context = ssl._create_unverified_context()  # noqa: SLF001
         req = Request(url, headers={"User-Agent": "hypergraphx-loader/1.0"})
-        with urlopen(req, timeout=timeout) as resp:
+        with urlopen(req, timeout=timeout, context=context) as resp:
             return resp.read()
     except HTTPError as exc:
         raise FileNotFoundError(f"Not found at {url} (HTTP {exc.code}).") from exc
@@ -62,6 +86,177 @@ def _network_opt_in_allowed(allow_network: bool) -> bool:
         return True
     env = os.environ.get("HYPERGRAPHX_ALLOW_NETWORK", "").strip().lower()
     return env in {"1", "true", "yes", "y", "on"}
+
+
+def _server_urls(dataset_name: str, fmt: str | None):
+    urls = {
+        "json": (
+            f"{_BASE}/{dataset_name}/{dataset_name}.json.gz",
+            f"{_BASE}/{dataset_name}/{dataset_name}.json",
+            f"{_BASE}/{dataset_name}.json.gz",
+            f"{_BASE}/{dataset_name}.json",
+        ),
+        "binary": (
+            f"{_BASE}/{dataset_name}/{dataset_name}.hgx.gz",
+            f"{_BASE}/{dataset_name}/{dataset_name}.hgx",
+            f"{_BASE}/{dataset_name}.hgx.gz",
+            f"{_BASE}/{dataset_name}.hgx",
+            f"{_BASE}/{dataset_name}.pkl",
+        ),
+    }
+    if fmt is None:
+        return urls["json"] + urls["binary"]
+    if fmt in {"json"}:
+        return urls["json"]
+    if fmt in {"binary", "pickle", "pkl", "hgx"}:
+        return urls["binary"]
+    raise InvalidFormatError("fmt must be one of {'json', 'binary', 'hgx'}")
+
+
+def _remote_payload_format(url: str):
+    path = urlparse(url).path
+    if path.endswith(".gz"):
+        path = path[:-3]
+    if path.endswith(".json"):
+        return "json"
+    if path.endswith((".hgx", ".pkl", ".pickle")):
+        return "binary"
+    raise InvalidFormatError(f"Cannot infer remote payload format from URL: {url}")
+
+
+def _parse_remote_dataset_catalog(payload: bytes):
+    text = payload.decode("utf-8")
+    text = text.strip()
+
+    if text.startswith("window.RELATED_DATASETS"):
+        match = re.match(r"window\.RELATED_DATASETS\s*=\s*(.*?);?\s*$", text, re.S)
+        if not match:
+            raise InvalidFormatError("Could not parse remote dataset catalog.")
+        text = match.group(1)
+
+    try:
+        items = json.loads(text)
+    except Exception as exc:
+        raise InvalidFormatError("Remote dataset catalog is not valid JSON.") from exc
+
+    if not isinstance(items, list):
+        raise InvalidFormatError("Remote dataset catalog must be a list.")
+
+    datasets = []
+    for item in items:
+        if not isinstance(item, dict) or "name" not in item:
+            raise InvalidFormatError(
+                "Remote dataset catalog entries must contain names."
+            )
+        tags = list(item.get("tags") or item.get("categories") or [])
+        datasets.append(
+            {
+                "name": item["name"],
+                "tags": tags,
+                "categories": tags,
+                "vertices": item.get("vertices"),
+                "edges": item.get("edges"),
+            }
+        )
+    return datasets
+
+
+def list_remote_datasets(
+    *,
+    allow_network: bool = False,
+    timeout: int = 30,
+    verify_ssl: bool = True,
+    catalog_url: str | None = None,
+):
+    """
+    List datasets advertised by the remote Hypergraphx-data catalog.
+
+    Returns a list of dictionaries with at least:
+    - ``name``
+    - ``tags`` / ``categories``
+    - ``vertices``
+    - ``edges``
+
+    Network access is opt-in, matching ``load_hypergraph_from_server``.
+    ``catalog_url`` can point either to a JSON list or to the generated
+    ``related-data.js`` file used by the Hypergraphx-data website.
+    """
+    if not _network_opt_in_allowed(allow_network):
+        raise PermissionError(
+            "Network loading is disabled by default. "
+            "Pass allow_network=True to list remote datasets, "
+            "or set HYPERGRAPHX_ALLOW_NETWORK=1 to enable it for this process."
+        )
+
+    url = catalog_url or os.environ.get("HYPERGRAPHX_DATA_CATALOG_URL") or _CATALOG_URL
+    payload = _download(url, timeout=timeout, verify_ssl=verify_ssl)
+    return _parse_remote_dataset_catalog(payload)
+
+
+def iter_remote_hypergraphs(
+    attributes,
+    *,
+    match_all: bool = True,
+    fmt: str = "hgx",
+    allow_network: bool = False,
+    timeout: int = 30,
+    verify_ssl: bool = True,
+    catalog_url: str | None = None,
+    include_metadata: bool = False,
+):
+    """
+    Yield remote hypergraphs whose catalog tags/categories match ``attributes``.
+
+    Parameters
+    ----------
+    attributes : str | Iterable[str]
+        Tag/category names to match, such as ``"Undirected"`` or
+        ``["Undirected", "Temporal"]``. Matching is case-insensitive.
+    match_all : bool, default=True
+        If True, a dataset must contain all requested attributes. If False,
+        any requested attribute is enough.
+    fmt : {"hgx", "binary", "json"}, default="hgx"
+        Remote format to load for each matching dataset.
+    include_metadata : bool, default=False
+        If True, yield ``(hypergraph, dataset_info)`` pairs. Otherwise yield
+        only the hypergraph object.
+
+    Notes
+    -----
+    This is a generator: datasets are downloaded and loaded lazily as the
+    iterator advances.
+    """
+    if isinstance(attributes, str):
+        requested = {attributes.casefold()}
+    else:
+        requested = {str(attr).casefold() for attr in attributes}
+    if not requested:
+        raise ValueError("At least one attribute must be provided.")
+
+    datasets = list_remote_datasets(
+        allow_network=allow_network,
+        timeout=timeout,
+        verify_ssl=verify_ssl,
+        catalog_url=catalog_url,
+    )
+
+    for dataset in datasets:
+        tags = {str(tag).casefold() for tag in dataset.get("tags", [])}
+        matched = requested.issubset(tags) if match_all else bool(requested & tags)
+        if not matched:
+            continue
+
+        hypergraph = load_hypergraph_from_server(
+            dataset["name"],
+            fmt=fmt,
+            allow_network=allow_network,
+            timeout=timeout,
+            verify_ssl=verify_ssl,
+        )
+        if include_metadata:
+            yield hypergraph, dataset
+        else:
+            yield hypergraph
 
 
 def _load_hgr_file(file_name: str):
@@ -144,6 +339,7 @@ def load_hypergraph_from_server(
     as_dict: bool = False,
     allow_network: bool = False,
     timeout: int = 30,
+    verify_ssl: bool = True,
 ):
     if not _network_opt_in_allowed(allow_network):
         raise PermissionError(
@@ -152,23 +348,15 @@ def load_hypergraph_from_server(
             "or set HYPERGRAPHX_ALLOW_NETWORK=1 to enable it for this process."
         )
 
-    url_json = f"{_BASE}/{dataset_name}.json"
-    url_pkl = f"{_BASE}/{dataset_name}.pkl"
-
     last_error = None
-    if fmt is None:
-        url_list = (url_json, url_pkl)
-    elif fmt == "json":
-        url_list = (url_json,)
-    elif fmt == "binary":
-        url_list = (url_pkl,)
-    else:
-        raise InvalidFormatError("fmt must be one of {'json', 'binary'}")
+    url_list = _server_urls(dataset_name, fmt)
 
     for url in url_list:
         try:
-            payload = _decompress_gzip_if_needed(_download(url, timeout=timeout))
-            if url.endswith(".json"):
+            payload = _decompress_gzip_if_needed(
+                _download(url, timeout=timeout, verify_ssl=verify_ssl)
+            )
+            if _remote_payload_format(url) == "json":
                 obj = _parse_json_bytes_to_hypergraph(payload)
             else:
                 with tempfile.NamedTemporaryFile(delete=False) as tmp:

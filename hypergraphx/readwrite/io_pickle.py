@@ -45,6 +45,6 @@ def save_pickle(obj, file_name):
         data = obj.expose_data_structures()
 
         with open(file_name, "wb") as f:
-            pickle.dump(data, f)
+            pickle.dump(data, f, protocol=pickle.HIGHEST_PROTOCOL)
     except Exception as exc:
         raise ReadwriteError(f"Failed to save object to {file_name}: {exc}") from exc

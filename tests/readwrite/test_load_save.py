@@ -1,4 +1,5 @@
 import gzip
+import json
 
 import pytest
 from urllib.error import URLError
@@ -10,6 +11,8 @@ from hypergraphx import (
     TemporalHypergraph,
 )
 from hypergraphx.readwrite.load import (
+    iter_remote_hypergraphs,
+    list_remote_datasets,
     load,
     load_hypergraph,
     load_hypergraph_from_server,
@@ -88,6 +91,38 @@ def test_save_load_json_temporal(tmp_path):
     assert loaded.get_weight((1, 2, 3), 1) == 2.0
 
 
+def test_load_json_temporal_directed_edge_lists(tmp_path):
+    """JSON directed edge parts are lists after serialization."""
+    path = tmp_path / "temporal_directed.json"
+    path.write_text(
+        json.dumps(
+            [
+                {
+                    "hypergraph_type": "TemporalHypergraph",
+                    "hypergraph_metadata": {
+                        "weighted": False,
+                        "type": "TemporalHypergraph",
+                    },
+                },
+                {"type": "node", "idx": 0, "metadata": {}},
+                {"type": "node", "idx": 1, "metadata": {}},
+                {"type": "node", "idx": 2, "metadata": {}},
+                {
+                    "type": "edge",
+                    "interaction": [[0], [1, 2]],
+                    "metadata": {"time": 123},
+                },
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    loaded = load_hypergraph(str(path), fmt="json")
+
+    assert isinstance(loaded, TemporalHypergraph)
+    assert loaded.get_edges() == [(123, ((0,), (1, 2)))]
+
+
 def test_save_load_binary_hypergraph(tmp_path):
     """Test binary (hgx) roundtrip using pickle serialization."""
     hg = _make_weighted_hypergraph()
@@ -141,14 +176,25 @@ def test_load_hypergraph_from_server_json(monkeypatch, tmp_path):
     payload = json_path.read_bytes()
     gz_payload = gzip.compress(payload)
 
-    def fake_download(url, timeout=30):
+    requested = []
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        requested.append((url, verify_ssl))
         return gz_payload
 
     monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
 
-    loaded = load_hypergraph_from_server("toy", fmt="json", allow_network=True)
+    loaded = load_hypergraph_from_server(
+        "toy", fmt="json", allow_network=True, verify_ssl=False
+    )
     assert isinstance(loaded, Hypergraph)
     assert set(loaded.get_edges()) == set(hg.get_edges())
+    assert requested == [
+        (
+            "https://cricca.disi.unitn.it/datasets/hypergraphx-data/toy/toy.json.gz",
+            False,
+        )
+    ]
 
 
 def test_load_hypergraph_from_server_binary(monkeypatch, tmp_path):
@@ -158,7 +204,10 @@ def test_load_hypergraph_from_server_binary(monkeypatch, tmp_path):
     save_hypergraph(hg, str(hgx_path), fmt="pickle")
     gz_payload = gzip.compress(hgx_path.read_bytes())
 
-    def fake_download(url, timeout=30):
+    requested = []
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        requested.append((url, verify_ssl))
         return gz_payload
 
     monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
@@ -166,12 +215,182 @@ def test_load_hypergraph_from_server_binary(monkeypatch, tmp_path):
     loaded = load_hypergraph_from_server("toy", fmt="binary", allow_network=True)
     assert isinstance(loaded, Hypergraph)
     assert set(loaded.get_edges()) == set(hg.get_edges())
+    assert requested == [
+        (
+            "https://cricca.disi.unitn.it/datasets/hypergraphx-data/toy/toy.hgx.gz",
+            True,
+        )
+    ]
+
+
+def test_load_hypergraph_from_server_hgx_alias(monkeypatch, tmp_path):
+    hg = _make_weighted_hypergraph()
+    hgx_path = tmp_path / "hg.hgx"
+    save_hypergraph(hg, str(hgx_path), fmt="pickle")
+    gz_payload = gzip.compress(hgx_path.read_bytes())
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        return gz_payload
+
+    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+
+    loaded = load_hypergraph_from_server("toy", fmt="hgx", allow_network=True)
+
+    assert isinstance(loaded, Hypergraph)
+    assert set(loaded.get_edges()) == set(hg.get_edges())
+
+
+def test_list_remote_datasets(monkeypatch):
+    payload = b"""window.RELATED_DATASETS = [
+        {"name":"zoo","tags":["Undirected","Biology"],"vertices":100,"edges":41},
+        {"name":"email-Enron","tags":["Directed","Temporal"],"vertices":84172,"edges":235395}
+    ];"""
+    requested = []
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        requested.append((url, verify_ssl))
+        return payload
+
+    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+
+    datasets = list_remote_datasets(allow_network=True, verify_ssl=False)
+
+    assert datasets == [
+        {
+            "name": "zoo",
+            "tags": ["Undirected", "Biology"],
+            "categories": ["Undirected", "Biology"],
+            "vertices": 100,
+            "edges": 41,
+        },
+        {
+            "name": "email-Enron",
+            "tags": ["Directed", "Temporal"],
+            "categories": ["Directed", "Temporal"],
+            "vertices": 84172,
+            "edges": 235395,
+        },
+    ]
+    assert requested == [
+        (
+            "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/main/dist/static/js/related-data.js",
+            False,
+        )
+    ]
+
+
+def test_list_remote_datasets_requires_opt_in(monkeypatch):
+    called = False
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        nonlocal called
+        called = True
+        return b"[]"
+
+    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+
+    with pytest.raises(PermissionError, match="Network loading is disabled by default"):
+        list_remote_datasets()
+    assert called is False
+
+
+def test_iter_remote_hypergraphs_filters_and_loads_lazily(monkeypatch):
+    catalog = [
+        {
+            "name": "contacts-hospital",
+            "tags": ["Undirected", "Temporal", "Social"],
+            "categories": ["Undirected", "Temporal", "Social"],
+            "vertices": 75,
+            "edges": 27835,
+        },
+        {
+            "name": "zoo",
+            "tags": ["Undirected", "Biology"],
+            "categories": ["Undirected", "Biology"],
+            "vertices": 100,
+            "edges": 41,
+        },
+    ]
+    loaded_names = []
+
+    def fake_list_remote_datasets(**kwargs):
+        return catalog
+
+    def fake_load_hypergraph_from_server(name, **kwargs):
+        loaded_names.append(name)
+        return Hypergraph(edge_list=[(0, 1)], weighted=False)
+
+    monkeypatch.setattr(
+        "hypergraphx.readwrite.load.list_remote_datasets",
+        fake_list_remote_datasets,
+    )
+    monkeypatch.setattr(
+        "hypergraphx.readwrite.load.load_hypergraph_from_server",
+        fake_load_hypergraph_from_server,
+    )
+
+    iterator = iter_remote_hypergraphs(["Undirected", "Temporal"], allow_network=True)
+
+    assert loaded_names == []
+    first = next(iterator)
+    assert isinstance(first, Hypergraph)
+    assert loaded_names == ["contacts-hospital"]
+    with pytest.raises(StopIteration):
+        next(iterator)
+
+
+def test_iter_remote_hypergraphs_match_any_and_include_metadata(monkeypatch):
+    catalog = [
+        {
+            "name": "contacts-hospital",
+            "tags": ["Undirected", "Temporal", "Social"],
+            "categories": ["Undirected", "Temporal", "Social"],
+            "vertices": 75,
+            "edges": 27835,
+        },
+        {
+            "name": "zoo",
+            "tags": ["Undirected", "Biology"],
+            "categories": ["Undirected", "Biology"],
+            "vertices": 100,
+            "edges": 41,
+        },
+    ]
+
+    monkeypatch.setattr(
+        "hypergraphx.readwrite.load.list_remote_datasets",
+        lambda **kwargs: catalog,
+    )
+    monkeypatch.setattr(
+        "hypergraphx.readwrite.load.load_hypergraph_from_server",
+        lambda name, **kwargs: Hypergraph(edge_list=[(name,)], weighted=False),
+    )
+
+    results = list(
+        iter_remote_hypergraphs(
+            ["Temporal", "Biology"],
+            match_all=False,
+            allow_network=True,
+            include_metadata=True,
+        )
+    )
+
+    assert [metadata["name"] for _, metadata in results] == [
+        "contacts-hospital",
+        "zoo",
+    ]
+    assert all(isinstance(hypergraph, Hypergraph) for hypergraph, _ in results)
+
+
+def test_iter_remote_hypergraphs_requires_attributes():
+    with pytest.raises(ValueError, match="At least one attribute"):
+        list(iter_remote_hypergraphs([], allow_network=True))
 
 
 def test_load_hypergraph_from_server_requires_opt_in(monkeypatch):
     called = False
 
-    def fake_download(url, timeout=30):
+    def fake_download(url, timeout=30, verify_ssl=True):
         nonlocal called
         called = True
         raise AssertionError("Should not download without explicit opt-in.")
@@ -184,7 +403,7 @@ def test_load_hypergraph_from_server_requires_opt_in(monkeypatch):
 
 
 def test_load_hypergraph_from_server_offline_error_is_actionable(monkeypatch):
-    def fake_download(url, timeout=30):
+    def fake_download(url, timeout=30, verify_ssl=True):
         raise URLError("offline")
 
     monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
