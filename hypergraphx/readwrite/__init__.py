@@ -4,6 +4,7 @@ from .load import (
     list_remote_datasets,
     load_hypergraph,
     load_hypergraph_from_server,
+    search_remote_datasets,
 )
 from .load import load as load_any
 from .save import save_hypergraph
@@ -17,6 +18,7 @@ __all__ = [
     "list_remote_datasets",
     "load_hypergraph",
     "load_hypergraph_from_server",
+    "search_remote_datasets",
     "save_hypergraph",
     "read_hif",
     "write_hif",

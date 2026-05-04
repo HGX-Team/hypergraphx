@@ -97,9 +97,55 @@ Load and save
    hgx.save_hypergraph(hg, "graph.json")
    hg2 = hgx.load_hypergraph("graph.json")
 
-   # Server datasets
-   # Network loading is opt-in (so offline / sandboxed environments don't surprise you)
-   hg3 = hgx.load_hypergraph_from_server("toy", fmt="json", allow_network=True)
+   # Prefer the compact HGX format for larger local files.
+   hgx.save_hypergraph(hg, "graph.hgx", fmt="pickle")
+   hg3 = hgx.load_hypergraph("graph.hgx")
+
+Remote datasets
+---------------
+
+Hypergraphx can load datasets from the Hypergraphx-data catalog by name.
+Remote datasets are downloaded and cached locally by default under
+``~/.cache/hypergraphx/datasets``; set ``store=False`` to load without keeping
+a local copy, or pass ``cache_dir=...`` to choose a different cache location.
+
+.. code-block:: python
+
+   import hypergraphx as hgx
+
+   # List catalog entries with tags/categories and basic sizes.
+   datasets = hgx.list_remote_datasets()
+   print(datasets[0]["name"], datasets[0]["tags"])
+
+   # Search without downloading hypergraphs.
+   biology = hgx.search_remote_datasets(
+       query="biology",
+       tags=["Undirected"],
+   )
+
+   # Load a dataset by name. The compact ``"hgx"`` format is the default.
+   H = hgx.load_hypergraph_from_server("zoo")
+
+   # Override the cache directory or force a fresh download.
+   H = hgx.load_hypergraph_from_server(
+       "zoo",
+       cache_dir="./hgx_datasets",
+       overwrite=True,
+   )
+
+   # Iterate lazily over matching remote datasets.
+   for H, info in hgx.iter_remote_hypergraphs(
+       ["Undirected", "Temporal"],
+       include_metadata=True,
+   ):
+       print(info["name"], H.num_nodes(), H.num_edges())
+
+.. note::
+
+   The current dataset server may require ``verify_ssl=False`` because of its
+   certificate chain. This is the default for the remote dataset helpers. If the
+   server certificate is fixed, pass ``verify_ssl=True`` to enforce normal TLS
+   verification.
 
 Projections and matrices
 ------------------------

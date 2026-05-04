@@ -6,6 +6,7 @@ import os
 import re
 import ssl
 import tempfile
+from pathlib import Path
 
 from typing import Any, Iterable, List, Tuple
 from urllib.parse import urlparse
@@ -35,6 +36,7 @@ __all__ = [
     "load",
     "load_hypergraph",
     "load_hypergraph_from_server",
+    "search_remote_datasets",
 ]
 
 
@@ -81,13 +83,6 @@ def _download(url: str, *, timeout: int = 30, verify_ssl: bool = True) -> bytes:
         ) from exc
 
 
-def _network_opt_in_allowed(allow_network: bool) -> bool:
-    if allow_network:
-        return True
-    env = os.environ.get("HYPERGRAPHX_ALLOW_NETWORK", "").strip().lower()
-    return env in {"1", "true", "yes", "y", "on"}
-
-
 def _server_urls(dataset_name: str, fmt: str | None):
     urls = {
         "json": (
@@ -122,6 +117,34 @@ def _remote_payload_format(url: str):
     if path.endswith((".hgx", ".pkl", ".pickle")):
         return "binary"
     raise InvalidFormatError(f"Cannot infer remote payload format from URL: {url}")
+
+
+def _default_dataset_cache_dir():
+    return Path(
+        os.environ.get(
+            "HYPERGRAPHX_DATA_CACHE",
+            os.path.join("~", ".cache", "hypergraphx", "datasets"),
+        )
+    ).expanduser()
+
+
+def _remote_cache_path(dataset_name: str, url: str, cache_dir=None):
+    root = (
+        Path(cache_dir).expanduser()
+        if cache_dir is not None
+        else _default_dataset_cache_dir()
+    )
+    path = urlparse(url).path
+    filename = os.path.basename(path)
+    if filename.endswith(".gz"):
+        filename = filename[:-3]
+    return root / dataset_name / filename
+
+
+def _load_remote_payload_from_path(path: Path, payload_format: str):
+    if payload_format == "json":
+        return load_json_file(str(path))
+    return load_pickle(str(path))
 
 
 def _parse_remote_dataset_catalog(payload: bytes):
@@ -163,9 +186,8 @@ def _parse_remote_dataset_catalog(payload: bytes):
 
 def list_remote_datasets(
     *,
-    allow_network: bool = False,
     timeout: int = 30,
-    verify_ssl: bool = True,
+    verify_ssl: bool = False,
     catalog_url: str | None = None,
 ):
     """
@@ -177,17 +199,22 @@ def list_remote_datasets(
     - ``vertices``
     - ``edges``
 
-    Network access is opt-in, matching ``load_hypergraph_from_server``.
+    Parameters
+    ----------
+    timeout : int, default=30
+        Download timeout in seconds.
+    verify_ssl : bool, default=False
+        Whether to verify TLS certificates when downloading the catalog.
+        Defaults to False for compatibility with the current dataset server.
+    catalog_url : str, optional
+        Catalog metadata URL. Defaults to the Hypergraphx-data GitHub raw URL,
+        or ``HYPERGRAPHX_DATA_CATALOG_URL`` if set.
+
+    Notes
+    -----
     ``catalog_url`` can point either to a JSON list or to the generated
     ``related-data.js`` file used by the Hypergraphx-data website.
     """
-    if not _network_opt_in_allowed(allow_network):
-        raise PermissionError(
-            "Network loading is disabled by default. "
-            "Pass allow_network=True to list remote datasets, "
-            "or set HYPERGRAPHX_ALLOW_NETWORK=1 to enable it for this process."
-        )
-
     url = catalog_url or os.environ.get("HYPERGRAPHX_DATA_CATALOG_URL") or _CATALOG_URL
     payload = _download(url, timeout=timeout, verify_ssl=verify_ssl)
     return _parse_remote_dataset_catalog(payload)
@@ -198,11 +225,13 @@ def iter_remote_hypergraphs(
     *,
     match_all: bool = True,
     fmt: str = "hgx",
-    allow_network: bool = False,
     timeout: int = 30,
-    verify_ssl: bool = True,
+    verify_ssl: bool = False,
     catalog_url: str | None = None,
     include_metadata: bool = False,
+    store: bool = True,
+    cache_dir=None,
+    overwrite: bool = False,
 ):
     """
     Yield remote hypergraphs whose catalog tags/categories match ``attributes``.
@@ -217,9 +246,20 @@ def iter_remote_hypergraphs(
         any requested attribute is enough.
     fmt : {"hgx", "binary", "json"}, default="hgx"
         Remote format to load for each matching dataset.
+    verify_ssl : bool, default=False
+        Whether to verify TLS certificates for remote requests.
+    catalog_url : str, optional
+        Catalog metadata URL used for filtering.
     include_metadata : bool, default=False
         If True, yield ``(hypergraph, dataset_info)`` pairs. Otherwise yield
         only the hypergraph object.
+    store : bool, default=True
+        Store downloaded datasets locally before loading them.
+    cache_dir : path-like, optional
+        Cache directory. Defaults to ``~/.cache/hypergraphx/datasets`` or the
+        ``HYPERGRAPHX_DATA_CACHE`` environment variable.
+    overwrite : bool, default=False
+        If True, re-download matching datasets even when cached files exist.
 
     Notes
     -----
@@ -234,7 +274,6 @@ def iter_remote_hypergraphs(
         raise ValueError("At least one attribute must be provided.")
 
     datasets = list_remote_datasets(
-        allow_network=allow_network,
         timeout=timeout,
         verify_ssl=verify_ssl,
         catalog_url=catalog_url,
@@ -249,14 +288,107 @@ def iter_remote_hypergraphs(
         hypergraph = load_hypergraph_from_server(
             dataset["name"],
             fmt=fmt,
-            allow_network=allow_network,
             timeout=timeout,
             verify_ssl=verify_ssl,
+            store=store,
+            cache_dir=cache_dir,
+            overwrite=overwrite,
         )
         if include_metadata:
             yield hypergraph, dataset
         else:
             yield hypergraph
+
+
+def _matches_range(value, minimum, maximum):
+    if value is None:
+        return minimum is None and maximum is None
+    if minimum is not None and value < minimum:
+        return False
+    if maximum is not None and value > maximum:
+        return False
+    return True
+
+
+def search_remote_datasets(
+    query: str | None = None,
+    *,
+    tags=None,
+    match_all_tags: bool = True,
+    min_nodes: int | None = None,
+    max_nodes: int | None = None,
+    min_edges: int | None = None,
+    max_edges: int | None = None,
+    timeout: int = 30,
+    verify_ssl: bool = False,
+    catalog_url: str | None = None,
+):
+    """
+    Search the remote Hypergraphx-data catalog.
+
+    Parameters
+    ----------
+    query : str, optional
+        Case-insensitive substring matched against dataset names and tags.
+    tags : str | Iterable[str], optional
+        Tags/categories to require. Matching is case-insensitive.
+    match_all_tags : bool, default=True
+        If True, all requested tags must be present. If False, any requested
+        tag is enough.
+    min_nodes, max_nodes, min_edges, max_edges : int, optional
+        Inclusive size filters using catalog ``vertices`` and ``edges``.
+
+    Returns
+    -------
+    list[dict]
+        Matching catalog entries in catalog order.
+
+    See Also
+    --------
+    list_remote_datasets : Return the full remote catalog.
+    iter_remote_hypergraphs : Lazily load matching remote hypergraphs.
+    """
+    datasets = list_remote_datasets(
+        timeout=timeout,
+        verify_ssl=verify_ssl,
+        catalog_url=catalog_url,
+    )
+
+    query_cf = query.casefold() if query else None
+    if isinstance(tags, str):
+        requested_tags = {tags.casefold()}
+    elif tags is None:
+        requested_tags = set()
+    else:
+        requested_tags = {str(tag).casefold() for tag in tags}
+
+    results = []
+    for dataset in datasets:
+        dataset_tags = {str(tag).casefold() for tag in dataset.get("tags", [])}
+
+        if query_cf:
+            haystack = " ".join(
+                [str(dataset.get("name", ""))]
+                + [str(tag) for tag in dataset.get("tags", [])]
+            ).casefold()
+            if query_cf not in haystack:
+                continue
+
+        if requested_tags:
+            if match_all_tags:
+                if not requested_tags.issubset(dataset_tags):
+                    continue
+            elif not (requested_tags & dataset_tags):
+                continue
+
+        if not _matches_range(dataset.get("vertices"), min_nodes, max_nodes):
+            continue
+        if not _matches_range(dataset.get("edges"), min_edges, max_edges):
+            continue
+
+        results.append(dataset)
+
+    return results
 
 
 def _load_hgr_file(file_name: str):
@@ -335,41 +467,87 @@ def load_hypergraph(file_name: str, *, fmt: str | None = None):
 def load_hypergraph_from_server(
     dataset_name: str,
     *,
-    fmt: str | None = None,
+    fmt: str | None = "hgx",
     as_dict: bool = False,
-    allow_network: bool = False,
     timeout: int = 30,
-    verify_ssl: bool = True,
+    verify_ssl: bool = False,
+    store: bool = True,
+    cache_dir=None,
+    overwrite: bool = False,
 ):
-    if not _network_opt_in_allowed(allow_network):
-        raise PermissionError(
-            "Network loading is disabled by default. "
-            "Pass allow_network=True to load datasets from the network, "
-            "or set HYPERGRAPHX_ALLOW_NETWORK=1 to enable it for this process."
-        )
+    """
+    Load a dataset by name from the remote Hypergraphx-data server.
 
+    Parameters
+    ----------
+    dataset_name : str
+        Dataset identifier, such as ``"zoo"`` or ``"contacts-hospital"``.
+    fmt : {"hgx", "binary", "json"} or None, default="hgx"
+        Remote format to load. ``"hgx"`` and ``"binary"`` load the compact
+        binary Hypergraphx format; ``"json"`` loads the JSON format. If
+        explicitly set to None, JSON URLs are tried first, then binary URLs.
+    as_dict : bool, default=False
+        If True, return the exposed internal data-structure dictionary instead
+        of a hypergraph object.
+    timeout : int, default=30
+        Download timeout in seconds.
+    verify_ssl : bool, default=False
+        Whether to verify TLS certificates. Defaults to False for compatibility
+        with the current dataset server certificate chain.
+    store : bool, default=True
+        Store the decompressed remote dataset locally before loading it. Cached
+        files are reused on later calls.
+    cache_dir : path-like, optional
+        Cache directory. Defaults to ``~/.cache/hypergraphx/datasets`` or the
+        ``HYPERGRAPHX_DATA_CACHE`` environment variable.
+    overwrite : bool, default=False
+        If True, re-download even when a matching cached file exists.
+
+    Returns
+    -------
+    Hypergraph | DirectedHypergraph | TemporalHypergraph | MultiplexHypergraph | dict
+        Loaded hypergraph object, or its exposed dictionary if ``as_dict=True``.
+
+    Notes
+    -----
+    The loader tries current per-dataset ``.json.gz`` / ``.hgx.gz`` URLs first
+    and keeps older flat URLs as fallbacks. When ``store=True``, compressed
+    downloads are decompressed before being written to the cache.
+    """
     last_error = None
     url_list = _server_urls(dataset_name, fmt)
 
     for url in url_list:
+        tmp = None
         try:
-            payload = _decompress_gzip_if_needed(
-                _download(url, timeout=timeout, verify_ssl=verify_ssl)
-            )
-            if _remote_payload_format(url) == "json":
-                obj = _parse_json_bytes_to_hypergraph(payload)
+            payload_format = _remote_payload_format(url)
+            cache_path = _remote_cache_path(dataset_name, url, cache_dir)
+
+            if store and cache_path.exists() and not overwrite:
+                obj = _load_remote_payload_from_path(cache_path, payload_format)
             else:
-                with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                    tmp.write(payload)
-                    tmp.flush()
-                    obj = load_pickle(tmp.name)
+                payload = _decompress_gzip_if_needed(
+                    _download(url, timeout=timeout, verify_ssl=verify_ssl)
+                )
+                if store:
+                    cache_path.parent.mkdir(parents=True, exist_ok=True)
+                    cache_path.write_bytes(payload)
+                    obj = _load_remote_payload_from_path(cache_path, payload_format)
+                elif payload_format == "json":
+                    obj = _parse_json_bytes_to_hypergraph(payload)
+                else:
+                    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+                        tmp.write(payload)
+                        tmp.flush()
+                        obj = load_pickle(tmp.name)
+
             _ensure_hypergraph_obj(obj)
             return obj if not as_dict else obj.expose_data_structures()
         except Exception as exc:
             last_error = exc
             continue
         finally:
-            if "tmp" in locals():
+            if tmp is not None:
                 try:
                     os.unlink(tmp.name)
                 except OSError:
