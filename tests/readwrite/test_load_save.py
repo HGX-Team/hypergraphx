@@ -80,6 +80,24 @@ def test_save_load_json_multiplex(tmp_path):
     assert loaded.get_weight((0, 1), "L1") == 1.5
 
 
+def test_save_load_json_multiplex_numeric_layers(tmp_path):
+    """Test JSON roundtrip for a MultiplexHypergraph with numeric layers."""
+    hg = MultiplexHypergraph(
+        edge_list=[(0, 1), (1, 2, 3)],
+        edge_layer=[0, 1],
+        weighted=True,
+        weights=[1.5, 2.5],
+        edge_metadata=[{"kind": "pair"}, {"kind": "triple"}],
+    )
+    loaded = _roundtrip_json(tmp_path, hg, name="mx_numeric_layers.json")
+
+    assert isinstance(loaded, MultiplexHypergraph)
+    assert loaded.is_weighted() is True
+    assert set(loaded.get_edges()) == set(hg.get_edges())
+    assert loaded.get_weight((0, 1), 0) == 1.5
+    assert loaded.get_edge_metadata((0, (0, 1)))["kind"] == "pair"
+
+
 def test_save_load_json_temporal(tmp_path):
     """Test JSON roundtrip for a TemporalHypergraph with times."""
     edges = [(0, (0, 1)), (1, (1, 2, 3))]

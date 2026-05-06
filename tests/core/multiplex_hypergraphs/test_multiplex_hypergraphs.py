@@ -401,6 +401,13 @@ def test_get_edges_metadata_returns_mapping():
     assert edges[("layer1", ("A", "B"))] == {"kind": "pair"}
 
 
+def test_get_edges_metadata_supports_numeric_layers():
+    mhg = MultiplexHypergraph()
+    mhg.add_edge(("A", "B"), layer=1, metadata={"kind": "pair"})
+    edges = mhg.get_edges(metadata=True)
+    assert edges[(1, ("A", "B"))] == {"kind": "pair"}
+
+
 def test_remove_edge_existing_edge():
     mhg = MultiplexHypergraph(weighted=False)
     mhg.add_edge(("A", "B", "C"), layer="layer1")

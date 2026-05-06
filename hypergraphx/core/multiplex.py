@@ -110,15 +110,21 @@ class MultiplexHypergraph(BaseHypergraph):
         - a packed edge key: `edge=(<str>, <tuple>)` and `layer=None`
 
         Note: to avoid ambiguity with 2-node hyperedges, a packed edge key is
-        only inferred when the first element looks like a layer (string).
+        only inferred when one element looks like an edge, i.e., a tuple/list of
+        nodes.
         """
         if layer is None:
-            if isinstance(edge, tuple) and len(edge) == 2 and isinstance(edge[0], str):
+            if (
+                isinstance(edge, tuple)
+                and len(edge) == 2
+                and isinstance(edge[1], (tuple, list))
+            ):
+                # Packed public edge key: (layer, edge).  Layers are commonly
+                # strings, but dataset converters may use numeric category IDs.
                 layer, edge = edge
             elif (
                 isinstance(edge, tuple)
                 and len(edge) == 2
-                and isinstance(edge[1], str)
                 and isinstance(edge[0], (tuple, list))
             ):
                 # Backward compatible: packed (edge, layer)
