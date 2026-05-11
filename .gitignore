@@ -1,15 +1,78 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions and compiled artifacts
+*.so
+cython_debug/
+
+# Distribution / packaging
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+*.egg
+*.egg-info/
+pip-wheel-metadata/
+share/python-wheels/
+MANIFEST
+
+# Virtual environments
+/.venv/
 /venv/
+/env/
+/ENV/
+/env.bak/
+/venv.bak/
+__pypackages__/
+
+# Test, coverage, and benchmark output
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+cover/
+*.cover
+*.py,cover
+.pytest_cache/
+.hypothesis/
+nosetests.xml
+
+# Type-checker and linter caches
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+
+# Docs
+docs/_build/
+docs/_build/*
+
+# Jupyter / IPython
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+profile_default/
+ipython_config.py
+
+# Local tool caches
+.cache/
+
+# Editors and IDEs
 /.idea/
 /.vscode/
-*.ipynb_checkpoints/
-*__pycache__/
-.pytest_cache/
-.eggs/
-MANIFEST
-.cache/pre-commit/
-.cache/
+.ropeproject/
+.spyderproject
+.spyproject
+
+# Operating system files
 .DS_Store
-*.egg-info/
-docs/_build/
-TODO.md
-viz_todo.md
+Thumbs.db
+
+# Local notes
+/todo.md
+/TODO.md
+/viz_todo.md
