@@ -147,6 +147,35 @@ def _load_remote_payload_from_path(path: Path, payload_format: str):
     return load_pickle(str(path))
 
 
+def _infer_local_payload_format(path: str):
+    lower = path.lower()
+    if lower.endswith(".gz"):
+        lower = lower[:-3]
+    if lower.endswith((".pkl", ".pickle", ".hgx")):
+        return "pickle"
+    if lower.endswith(".json"):
+        return "json"
+    if lower.endswith(".hgr"):
+        return "hgr"
+    raise InvalidFileTypeError("Invalid file type")
+
+
+def _load_hypergraph_from_decompressed_bytes(payload: bytes, payload_format: str):
+    if payload_format == "json":
+        return _parse_json_bytes_to_hypergraph(payload)
+    with tempfile.NamedTemporaryFile(suffix=f".{payload_format}") as tmp:
+        tmp.write(payload)
+        tmp.flush()
+        if payload_format == "hgr":
+            return _load_hgr_file(tmp.name)
+        return load_pickle(tmp.name)
+
+
+def _load_gzipped_hypergraph(file_name: str, payload_format: str):
+    with gzip.open(file_name, "rb") as infile:
+        return _load_hypergraph_from_decompressed_bytes(infile.read(), payload_format)
+
+
 def _parse_remote_dataset_catalog(payload: bytes):
     text = payload.decode("utf-8")
     text = text.strip()
@@ -442,10 +471,19 @@ def load_hypergraph(file_name: str, *, fmt: str | None = None):
         Input file path.
     fmt : {"json", "pickle", "hgr"} | None
         Optional override for the input format. If None (default), infer format
-        from the file extension.
+        from the file extension. Gzipped files with ``.gz`` suffix are
+        supported for each local format, such as ``.json.gz`` and ``.hgx.gz``.
     """
     if fmt is not None:
         fmt = fmt.lower()
+        if file_name.lower().endswith(".gz"):
+            if fmt in {"pickle", "pkl", "binary", "hgx"}:
+                return _load_gzipped_hypergraph(file_name, "pickle")
+            if fmt in {"json"}:
+                return _load_gzipped_hypergraph(file_name, "json")
+            if fmt in {"hgr"}:
+                return _load_gzipped_hypergraph(file_name, "hgr")
+            raise InvalidFormatError("fmt must be one of {'json', 'pickle', 'hgr'}")
         if fmt in {"pickle", "pkl", "binary", "hgx"}:
             return load_pickle(file_name)
         if fmt in {"json"}:
@@ -454,12 +492,14 @@ def load_hypergraph(file_name: str, *, fmt: str | None = None):
             return _load_hgr_file(file_name)
         raise InvalidFormatError("fmt must be one of {'json', 'pickle', 'hgr'}")
 
-    ext = os.path.splitext(file_name)[1].lower()
-    if ext in {".pkl", ".pickle", ".hgx"}:
+    payload_format = _infer_local_payload_format(file_name)
+    if file_name.lower().endswith(".gz"):
+        return _load_gzipped_hypergraph(file_name, payload_format)
+    if payload_format == "pickle":
         return load_pickle(file_name)
-    if ext == ".json":
+    if payload_format == "json":
         return load_json_file(file_name)
-    if ext == ".hgr":
+    if payload_format == "hgr":
         return _load_hgr_file(file_name)
     raise InvalidFileTypeError("Invalid file type")
 

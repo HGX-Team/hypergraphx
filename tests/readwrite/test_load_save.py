@@ -155,10 +155,64 @@ def test_save_load_binary_hypergraph(tmp_path):
     assert loaded.get_weight((0, 1)) == 2.0
 
 
+def test_load_gzipped_json_hypergraph(tmp_path):
+    hg = _make_weighted_hypergraph()
+    json_path = tmp_path / "hg.json"
+    gz_path = tmp_path / "hg.json.gz"
+    save_hypergraph(hg, str(json_path), fmt="json")
+    gz_path.write_bytes(gzip.compress(json_path.read_bytes()))
+
+    loaded = load_hypergraph(str(gz_path))
+
+    assert isinstance(loaded, Hypergraph)
+    assert set(loaded.get_edges()) == set(hg.get_edges())
+    assert loaded.get_weight((0, 1)) == 2.0
+
+
+def test_load_gzipped_binary_hypergraph(tmp_path):
+    hg = _make_weighted_hypergraph()
+    hgx_path = tmp_path / "hg.hgx"
+    gz_path = tmp_path / "hg.hgx.gz"
+    save_hypergraph(hg, str(hgx_path), fmt="pickle")
+    gz_path.write_bytes(gzip.compress(hgx_path.read_bytes()))
+
+    loaded = load_hypergraph(str(gz_path))
+
+    assert isinstance(loaded, Hypergraph)
+    assert set(loaded.get_edges()) == set(hg.get_edges())
+    assert loaded.get_weight((0, 1)) == 2.0
+
+
+def test_load_gzipped_hypergraph_fmt_override(tmp_path):
+    hg = _make_weighted_hypergraph()
+    json_path = tmp_path / "data.unknown"
+    gz_path = tmp_path / "data.unknown.gz"
+    save_hypergraph(hg, str(json_path), fmt="json")
+    gz_path.write_bytes(gzip.compress(json_path.read_bytes()))
+
+    loaded = load_hypergraph(str(gz_path), fmt="json")
+
+    assert isinstance(loaded, Hypergraph)
+    assert set(loaded.get_edges()) == set(hg.get_edges())
+
+
 def test_load_hgr_file(tmp_path):
     """Test loading a simple weighted .hgr file."""
     hgr = tmp_path / "toy.hgr"
     hgr.write_text("2 3 1\n2 1 2\n3 2 3\n")
+
+    loaded = load_hypergraph(str(hgr))
+
+    assert isinstance(loaded, Hypergraph)
+    assert loaded.is_weighted() is True
+    assert set(loaded.get_edges()) == {(1, 2), (2, 3)}
+    assert loaded.get_weight((1, 2)) == 2
+    assert loaded.get_weight((2, 3)) == 3
+
+
+def test_load_gzipped_hgr_file(tmp_path):
+    hgr = tmp_path / "toy.hgr.gz"
+    hgr.write_bytes(gzip.compress(b"2 3 1\n2 1 2\n3 2 3\n"))
 
     loaded = load_hypergraph(str(hgr))
 
