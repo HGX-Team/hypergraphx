@@ -11,6 +11,8 @@ from hypergraphx import (
     TemporalHypergraph,
 )
 from hypergraphx.readwrite.load import (
+    download_remote_dataset,
+    download_remote_datasets,
     get_remote_dataset_info,
     iter_remote_hypergraphs,
     list_remote_datasets,
@@ -36,7 +38,7 @@ def _make_weighted_hypergraph():
 def _roundtrip_json(tmp_path, hypergraph, name="hg.json"):
     path = tmp_path / name
     save_hypergraph(hypergraph, str(path), fmt="json")
-    return load_hypergraph(str(path))
+    return load_hypergraph(path)
 
 
 def test_save_load_json_hypergraph(tmp_path):
@@ -356,6 +358,230 @@ def test_load_hypergraph_from_server_uses_cache(monkeypatch, tmp_path):
     assert called is False
 
 
+def test_download_remote_dataset_uses_catalog_url(monkeypatch, tmp_path):
+    payload = gzip.compress(b"downloaded payload")
+    catalog_payload = json.dumps(
+        {
+            "schema_version": 1,
+            "datasets": [
+                {
+                    "name": "toy",
+                    "versions": [
+                        {
+                            "version": "1.0.0",
+                            "binary_download": "https://example.org/files/custom-name.hgx.gz",
+                            "json_download": "https://example.org/files/custom-name.json.gz",
+                        }
+                    ],
+                }
+            ],
+        }
+    ).encode()
+    requested = []
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        requested.append(url)
+        if url.endswith("catalog.json"):
+            return catalog_payload
+        if url == "https://example.org/files/custom-name.hgx.gz":
+            return payload
+        raise AssertionError(f"Unexpected URL: {url}")
+
+    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+
+    path = download_remote_dataset("toy", cache_dir=tmp_path / "cache")
+
+    assert path == tmp_path / "cache" / "toy" / "custom-name.hgx"
+    assert path.read_bytes() == b"downloaded payload"
+    assert requested == [
+        "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/main/catalog.json",
+        "https://example.org/files/custom-name.hgx.gz",
+    ]
+
+
+def test_download_remote_dataset_json_format(monkeypatch, tmp_path):
+    payload = gzip.compress(b"json payload")
+    catalog_payload = json.dumps(
+        {
+            "schema_version": 1,
+            "datasets": [
+                {
+                    "name": "toy",
+                    "versions": [
+                        {
+                            "version": "1.0.0",
+                            "binary_download": "https://example.org/files/custom-name.hgx.gz",
+                            "json_download": "https://example.org/files/custom-name.json.gz",
+                        }
+                    ],
+                }
+            ],
+        }
+    ).encode()
+    requested = []
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        requested.append(url)
+        if url.endswith("catalog.json"):
+            return catalog_payload
+        if url == "https://example.org/files/custom-name.json.gz":
+            return payload
+        raise AssertionError(f"Unexpected URL: {url}")
+
+    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+
+    path = download_remote_dataset("toy", fmt="json", cache_dir=tmp_path / "cache")
+
+    assert path == tmp_path / "cache" / "toy" / "custom-name.json"
+    assert path.read_bytes() == b"json payload"
+    assert requested == [
+        "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/main/catalog.json",
+        "https://example.org/files/custom-name.json.gz",
+    ]
+
+
+def test_download_remote_dataset_uses_cache(monkeypatch, tmp_path):
+    cache_path = tmp_path / "cache" / "toy" / "toy.hgx"
+    cache_path.parent.mkdir(parents=True)
+    cache_path.write_bytes(b"cached")
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        raise AssertionError("Should use cached file.")
+
+    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+
+    path = download_remote_dataset(
+        "toy",
+        cache_dir=tmp_path / "cache",
+        use_catalog=False,
+    )
+
+    assert path == cache_path
+    assert path.read_bytes() == b"cached"
+
+
+def test_download_remote_datasets_by_name_reuses_catalog(monkeypatch, tmp_path):
+    catalog_payload = json.dumps(
+        {
+            "schema_version": 1,
+            "datasets": [
+                {
+                    "name": "zoo",
+                    "tags": ["Undirected", "Biology"],
+                    "versions": [
+                        {
+                            "version": "1.0.0",
+                            "binary_download": "https://example.org/zoo/zoo.hgx.gz",
+                        }
+                    ],
+                },
+                {
+                    "name": "Marvel",
+                    "filename": "Marvel",
+                    "directory": "Marvel",
+                    "tags": ["Undirected"],
+                    "versions": [
+                        {
+                            "version": "1.0.0",
+                            "binary_download": "https://example.org/Marvel/Marvel.hgx.gz",
+                        }
+                    ],
+                },
+            ],
+        }
+    ).encode()
+    requested = []
+    progress = []
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        requested.append(url)
+        if url.endswith("catalog.json"):
+            return catalog_payload
+        if url == "https://example.org/zoo/zoo.hgx.gz":
+            return gzip.compress(b"zoo payload")
+        if url == "https://example.org/Marvel/Marvel.hgx.gz":
+            return gzip.compress(b"Marvel payload")
+        raise AssertionError(f"Unexpected URL: {url}")
+
+    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+
+    results = download_remote_datasets(
+        ["zoo", "Marvel"],
+        cache_dir=tmp_path / "cache",
+        progress_callback=progress.append,
+    )
+
+    assert list(results) == ["zoo", "Marvel"]
+    assert results["zoo"]["path"] == tmp_path / "cache" / "zoo" / "zoo.hgx"
+    assert results["Marvel"]["path"] == tmp_path / "cache" / "Marvel" / "Marvel.hgx"
+    assert results["zoo"]["path"].read_bytes() == b"zoo payload"
+    assert results["Marvel"]["path"].read_bytes() == b"Marvel payload"
+    assert [result["status"] for result in progress] == ["downloaded", "downloaded"]
+    assert requested == [
+        "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/main/catalog.json",
+        "https://example.org/zoo/zoo.hgx.gz",
+        "https://example.org/Marvel/Marvel.hgx.gz",
+    ]
+
+
+def test_download_remote_datasets_filters_and_continues_on_error(monkeypatch, tmp_path):
+    catalog_payload = json.dumps(
+        {
+            "datasets": [
+                {
+                    "name": "ok",
+                    "tags": ["Undirected"],
+                    "versions": [
+                        {
+                            "binary_download": "https://example.org/ok/ok.hgx.gz",
+                        }
+                    ],
+                },
+                {
+                    "name": "broken",
+                    "tags": ["Undirected"],
+                    "versions": [
+                        {
+                            "binary_download": "https://example.org/broken/broken.hgx.gz",
+                        }
+                    ],
+                },
+                {
+                    "name": "other",
+                    "tags": ["Directed"],
+                    "versions": [
+                        {
+                            "binary_download": "https://example.org/other/other.hgx.gz",
+                        }
+                    ],
+                },
+            ],
+        }
+    ).encode()
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        if url.endswith("catalog.json"):
+            return catalog_payload
+        if url == "https://example.org/ok/ok.hgx.gz":
+            return gzip.compress(b"ok payload")
+        raise FileNotFoundError(url)
+
+    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+
+    results = download_remote_datasets(
+        attributes="Undirected",
+        cache_dir=tmp_path / "cache",
+        continue_on_error=True,
+    )
+
+    assert list(results) == ["ok", "broken"]
+    assert results["ok"]["status"] == "downloaded"
+    assert results["ok"]["path"].read_bytes() == b"ok payload"
+    assert results["broken"]["status"] == "error"
+    assert isinstance(results["broken"]["error"], FileNotFoundError)
+    assert results["broken"]["path"] is None
+
+
 def test_list_remote_datasets(monkeypatch):
     payload = b"""window.RELATED_DATASETS = [
         {"name":"zoo","tags":["Undirected","Biology"],"vertices":100,"edges":41},
@@ -535,12 +761,14 @@ def test_iter_remote_hypergraphs_filters_and_loads_lazily(monkeypatch):
         },
     ]
     loaded_names = []
+    load_kwargs = []
 
     def fake_list_remote_datasets(**kwargs):
         return catalog
 
     def fake_load_hypergraph_from_server(name, **kwargs):
         loaded_names.append(name)
+        load_kwargs.append(kwargs)
         return Hypergraph(edge_list=[(0, 1)], weighted=False)
 
     monkeypatch.setattr(
@@ -558,8 +786,47 @@ def test_iter_remote_hypergraphs_filters_and_loads_lazily(monkeypatch):
     first = next(iterator)
     assert isinstance(first, Hypergraph)
     assert loaded_names == ["contacts-hospital"]
+    assert load_kwargs[0]["use_catalog"] is False
+    assert load_kwargs[0]["dataset_info"] is catalog[0]
     with pytest.raises(StopIteration):
         next(iterator)
+
+
+def test_iter_remote_hypergraphs_accepts_explicit_names(monkeypatch):
+    catalog = [
+        {
+            "name": "contacts-hospital",
+            "tags": ["Undirected", "Temporal", "Social"],
+        },
+        {
+            "name": "zoo",
+            "tags": ["Undirected", "Biology"],
+        },
+    ]
+    loaded_names = []
+    load_kwargs = []
+
+    monkeypatch.setattr(
+        "hypergraphx.readwrite.load.list_remote_datasets",
+        lambda **kwargs: catalog,
+    )
+
+    def fake_load_hypergraph_from_server(name, **kwargs):
+        loaded_names.append(name)
+        load_kwargs.append(kwargs)
+        return Hypergraph(edge_list=[(name,)], weighted=False)
+
+    monkeypatch.setattr(
+        "hypergraphx.readwrite.load.load_hypergraph_from_server",
+        fake_load_hypergraph_from_server,
+    )
+
+    results = list(iter_remote_hypergraphs(names=["zoo", "contacts-hospital"]))
+
+    assert len(results) == 2
+    assert loaded_names == ["zoo", "contacts-hospital"]
+    assert load_kwargs[0]["dataset_info"] is catalog[1]
+    assert load_kwargs[1]["dataset_info"] is catalog[0]
 
 
 def test_iter_remote_hypergraphs_match_any_and_include_metadata(monkeypatch):
@@ -608,7 +875,7 @@ def test_iter_remote_hypergraphs_match_any_and_include_metadata(monkeypatch):
 
 
 def test_iter_remote_hypergraphs_requires_attributes():
-    with pytest.raises(ValueError, match="At least one attribute"):
+    with pytest.raises(ValueError, match="dataset name or attribute"):
         list(iter_remote_hypergraphs([]))
 
 

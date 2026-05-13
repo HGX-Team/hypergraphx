@@ -34,6 +34,8 @@ _RELATED_DATA_URL = (
 )
 
 __all__ = [
+    "download_remote_dataset",
+    "download_remote_datasets",
     "iter_remote_hypergraphs",
     "get_remote_dataset_info",
     "list_remote_datasets",
@@ -142,6 +144,43 @@ def _version_urls_from_catalog(dataset_info: dict, fmt: str | None):
     raise InvalidFormatError("fmt must be one of {'json', 'binary', 'hgx'}")
 
 
+def _dataset_identifiers(dataset: dict):
+    return {
+        str(dataset.get("name", "")),
+        str(dataset.get("filename", "")),
+        str(dataset.get("directory", "")),
+    }
+
+
+def _find_remote_dataset_info(dataset_name: str, datasets: Iterable[dict]):
+    for dataset in datasets:
+        if dataset_name in _dataset_identifiers(dataset):
+            return dataset
+    raise FileNotFoundError(f"Dataset not found in remote catalog: {dataset_name}")
+
+
+def _attributes_match(dataset: dict, attributes, match_all: bool = True):
+    if isinstance(attributes, str):
+        requested = {attributes.casefold()}
+    elif attributes is None:
+        requested = set()
+    else:
+        requested = {str(attr).casefold() for attr in attributes}
+    if not requested:
+        return True
+
+    tags = {str(tag).casefold() for tag in dataset.get("tags", [])}
+    return requested.issubset(tags) if match_all else bool(requested & tags)
+
+
+def _has_selection_values(values):
+    if values is None:
+        return False
+    if isinstance(values, str):
+        return bool(values)
+    return bool(list(values))
+
+
 def _remote_payload_format(url: str):
     path = urlparse(url).path
     if path.endswith(".gz"):
@@ -179,6 +218,56 @@ def _load_remote_payload_from_path(path: Path, payload_format: str):
     if payload_format == "json":
         return load_json_file(str(path))
     return load_pickle(str(path))
+
+
+def _resolve_remote_dataset_urls(
+    dataset_name: str,
+    fmt: str | None,
+    *,
+    timeout: int = 30,
+    verify_ssl: bool = False,
+    catalog_url: str | None = None,
+    use_catalog: bool = True,
+    dataset_info: dict | None = None,
+):
+    last_error = None
+    urls = []
+    if dataset_info is not None:
+        urls.extend(_version_urls_from_catalog(dataset_info, fmt))
+    elif use_catalog:
+        try:
+            dataset_info = get_remote_dataset_info(
+                dataset_name,
+                timeout=timeout,
+                verify_ssl=verify_ssl,
+                catalog_url=catalog_url,
+            )
+            urls.extend(_version_urls_from_catalog(dataset_info, fmt))
+        except Exception as exc:
+            last_error = exc
+    urls = _deduplicate_urls(urls + list(_server_urls(dataset_name, fmt)))
+    return urls, last_error
+
+
+def _download_remote_dataset_file(
+    dataset_name: str,
+    url: str,
+    *,
+    timeout: int = 30,
+    verify_ssl: bool = False,
+    cache_dir=None,
+    overwrite: bool = False,
+):
+    cache_path = _remote_cache_path(dataset_name, url, cache_dir)
+    if cache_path.exists() and not overwrite:
+        return cache_path
+
+    payload = _decompress_gzip_if_needed(
+        _download(url, timeout=timeout, verify_ssl=verify_ssl)
+    )
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    cache_path.write_bytes(payload)
+    return cache_path
 
 
 def _infer_local_payload_format(path: str):
@@ -330,24 +419,18 @@ def get_remote_dataset_info(
     ``dataset_name`` is matched against the catalog ``name``, ``filename``, and
     ``directory`` fields.
     """
-    for dataset in list_remote_datasets(
+    datasets = list_remote_datasets(
         timeout=timeout,
         verify_ssl=verify_ssl,
         catalog_url=catalog_url,
-    ):
-        identifiers = {
-            str(dataset.get("name", "")),
-            str(dataset.get("filename", "")),
-            str(dataset.get("directory", "")),
-        }
-        if dataset_name in identifiers:
-            return dataset
-    raise FileNotFoundError(f"Dataset not found in remote catalog: {dataset_name}")
+    )
+    return _find_remote_dataset_info(dataset_name, datasets)
 
 
 def iter_remote_hypergraphs(
-    attributes,
+    attributes=None,
     *,
+    names=None,
     match_all: bool = True,
     fmt: str = "hgx",
     timeout: int = 30,
@@ -359,13 +442,16 @@ def iter_remote_hypergraphs(
     overwrite: bool = False,
 ):
     """
-    Yield remote hypergraphs whose catalog tags/categories match ``attributes``.
+    Yield remote hypergraphs selected by name or catalog tags/categories.
 
     Parameters
     ----------
-    attributes : str | Iterable[str]
+    attributes : str | Iterable[str], optional
         Tag/category names to match, such as ``"Undirected"`` or
         ``["Undirected", "Temporal"]``. Matching is case-insensitive.
+    names : str | Iterable[str], optional
+        Dataset names, filenames, or directories to load explicitly. If omitted,
+        datasets are selected from ``attributes``.
     match_all : bool, default=True
         If True, a dataset must contain all requested attributes. If False,
         any requested attribute is enough.
@@ -391,25 +477,46 @@ def iter_remote_hypergraphs(
     This is a generator: datasets are downloaded and loaded lazily as the
     iterator advances.
     """
-    if isinstance(attributes, str):
-        requested = {attributes.casefold()}
+    if names is None:
+        if isinstance(attributes, str):
+            selected_attributes = attributes
+        else:
+            selected_attributes = list(attributes or [])
+        if not _has_selection_values(selected_attributes):
+            raise ValueError("At least one dataset name or attribute must be provided.")
     else:
-        requested = {str(attr).casefold() for attr in attributes}
-    if not requested:
-        raise ValueError("At least one attribute must be provided.")
+        requested_names = [names] if isinstance(names, str) else list(names)
+        if not requested_names:
+            raise ValueError("At least one dataset name or attribute must be provided.")
+        if isinstance(attributes, str) or attributes is None:
+            selected_attributes = attributes
+        else:
+            selected_attributes = list(attributes)
 
     datasets = list_remote_datasets(
         timeout=timeout,
         verify_ssl=verify_ssl,
         catalog_url=catalog_url,
     )
+    if names is None:
+        selected = [
+            dataset
+            for dataset in datasets
+            if _attributes_match(dataset, selected_attributes, match_all)
+        ]
+    else:
+        selected = [
+            _find_remote_dataset_info(dataset_name, datasets)
+            for dataset_name in requested_names
+        ]
+        if selected_attributes is not None:
+            selected = [
+                dataset
+                for dataset in selected
+                if _attributes_match(dataset, selected_attributes, match_all)
+            ]
 
-    for dataset in datasets:
-        tags = {str(tag).casefold() for tag in dataset.get("tags", [])}
-        matched = requested.issubset(tags) if match_all else bool(requested & tags)
-        if not matched:
-            continue
-
+    for dataset in selected:
         hypergraph = load_hypergraph_from_server(
             dataset["name"],
             fmt=fmt,
@@ -419,6 +526,8 @@ def iter_remote_hypergraphs(
             store=store,
             cache_dir=cache_dir,
             overwrite=overwrite,
+            use_catalog=False,
+            dataset_info=dataset,
         )
         if include_metadata:
             yield hypergraph, dataset
@@ -577,19 +686,21 @@ def _load_hgr_file(file_name: str):
         return h
 
 
-def load_hypergraph(file_name: str, *, fmt: str | None = None):
+def load_hypergraph(file_name: str | Path, *, fmt: str | None = None):
     """
     Load a hypergraph from disk.
 
     Parameters
     ----------
-    file_name : str
+    file_name : str or path-like
         Input file path.
     fmt : {"json", "pickle", "hgr"} | None
         Optional override for the input format. If None (default), infer format
         from the file extension. Gzipped files with ``.gz`` suffix are
         supported for each local format, such as ``.json.gz`` and ``.hgx.gz``.
     """
+    file_name = str(file_name)
+
     if fmt is not None:
         fmt = fmt.lower()
         if file_name.lower().endswith(".gz"):
@@ -620,6 +731,221 @@ def load_hypergraph(file_name: str, *, fmt: str | None = None):
     raise InvalidFileTypeError("Invalid file type")
 
 
+def download_remote_dataset(
+    dataset_name: str,
+    *,
+    fmt: str | None = "hgx",
+    timeout: int = 30,
+    verify_ssl: bool = False,
+    cache_dir=None,
+    overwrite: bool = False,
+    catalog_url: str | None = None,
+    use_catalog: bool = True,
+    dataset_info: dict | None = None,
+):
+    """
+    Download and cache a remote dataset without loading it into memory.
+
+    Parameters
+    ----------
+    dataset_name : str
+        Dataset identifier, such as ``"zoo"`` or ``"contacts-hospital"``.
+    fmt : {"hgx", "binary", "json"} or None, default="hgx"
+        Remote format to download. If explicitly set to None, JSON URLs are
+        tried first, then binary URLs.
+    timeout : int, default=30
+        Download timeout in seconds.
+    verify_ssl : bool, default=False
+        Whether to verify TLS certificates.
+    cache_dir : path-like, optional
+        Cache directory. Defaults to ``~/.cache/hypergraphx/datasets`` or the
+        ``HYPERGRAPHX_DATA_CACHE`` environment variable.
+    overwrite : bool, default=False
+        If True, re-download even when a matching cached file exists.
+    catalog_url : str, optional
+        Catalog metadata URL used to resolve dataset download URLs.
+    use_catalog : bool, default=True
+        If True, resolve download URLs from the remote catalog before falling
+        back to legacy hard-coded URL patterns.
+    dataset_info : dict, optional
+        Already loaded catalog entry. Passing this avoids reloading the catalog
+        when downloading many datasets.
+
+    Returns
+    -------
+    pathlib.Path
+        Local decompressed cache path, suitable for ``load_hypergraph(...)``.
+    """
+    url_list, last_error = _resolve_remote_dataset_urls(
+        dataset_name,
+        fmt,
+        timeout=timeout,
+        verify_ssl=verify_ssl,
+        catalog_url=catalog_url,
+        use_catalog=use_catalog,
+        dataset_info=dataset_info,
+    )
+
+    for url in url_list:
+        try:
+            return _download_remote_dataset_file(
+                dataset_name,
+                url,
+                timeout=timeout,
+                verify_ssl=verify_ssl,
+                cache_dir=cache_dir,
+                overwrite=overwrite,
+            )
+        except Exception as exc:
+            last_error = exc
+            continue
+
+    urls = ", ".join(url_list)
+    if isinstance(last_error, (ConnectionError, URLError)):
+        raise ConnectionError(
+            f"Failed to download '{dataset_name}' from server (network error). "
+            f"Tried: {urls}. Last error: {last_error}."
+        ) from last_error
+    raise FileNotFoundError(
+        f"Failed to download '{dataset_name}' from server. Tried: {urls}. Last error: {last_error}"
+    ) from last_error
+
+
+def download_remote_datasets(
+    dataset_names=None,
+    *,
+    attributes=None,
+    match_all: bool = True,
+    fmt: str | None = "hgx",
+    timeout: int = 30,
+    verify_ssl: bool = False,
+    cache_dir=None,
+    overwrite: bool = False,
+    catalog_url: str | None = None,
+    continue_on_error: bool = False,
+    progress_callback=None,
+):
+    """
+    Download and cache multiple remote datasets.
+
+    Parameters
+    ----------
+    dataset_names : str | Iterable[str], optional
+        Dataset names, filenames, or directories to download explicitly.
+    attributes : str | Iterable[str], optional
+        Tag/category names used to select datasets from the catalog. If both
+        ``dataset_names`` and ``attributes`` are provided, named datasets are
+        filtered by the requested attributes.
+    match_all : bool, default=True
+        If True, selected datasets must contain all requested attributes.
+        If False, any requested attribute is enough.
+    fmt : {"hgx", "binary", "json"} or None, default="hgx"
+        Remote format to download.
+    timeout : int, default=30
+        Download timeout in seconds.
+    verify_ssl : bool, default=False
+        Whether to verify TLS certificates.
+    cache_dir : path-like, optional
+        Cache directory. Defaults to ``~/.cache/hypergraphx/datasets`` or the
+        ``HYPERGRAPHX_DATA_CACHE`` environment variable.
+    overwrite : bool, default=False
+        If True, re-download even when matching cached files exist.
+    catalog_url : str, optional
+        Catalog metadata URL used to resolve dataset download URLs.
+    continue_on_error : bool, default=False
+        If True, keep downloading after a dataset fails and store the exception
+        in that dataset's result record. If False, raise on the first failure.
+    progress_callback : callable, optional
+        Called after each dataset with its result record.
+
+    Returns
+    -------
+    dict
+        Mapping from canonical dataset name to records with ``path``,
+        ``metadata``, ``error``, and ``status`` fields.
+    """
+    if dataset_names is None:
+        if isinstance(attributes, str):
+            selected_attributes = attributes
+        else:
+            selected_attributes = list(attributes or [])
+        if not _has_selection_values(selected_attributes):
+            raise ValueError("At least one dataset name or attribute must be provided.")
+    else:
+        requested_names = (
+            [dataset_names] if isinstance(dataset_names, str) else list(dataset_names)
+        )
+        if not requested_names:
+            raise ValueError("At least one dataset name or attribute must be provided.")
+        if isinstance(attributes, str) or attributes is None:
+            selected_attributes = attributes
+        else:
+            selected_attributes = list(attributes)
+
+    datasets = list_remote_datasets(
+        timeout=timeout,
+        verify_ssl=verify_ssl,
+        catalog_url=catalog_url,
+    )
+
+    if dataset_names is None:
+        selected = [
+            dataset
+            for dataset in datasets
+            if _attributes_match(dataset, selected_attributes, match_all)
+        ]
+    else:
+        selected = [
+            _find_remote_dataset_info(dataset_name, datasets)
+            for dataset_name in requested_names
+        ]
+        if selected_attributes is not None:
+            selected = [
+                dataset
+                for dataset in selected
+                if _attributes_match(dataset, selected_attributes, match_all)
+            ]
+
+    results = {}
+    for dataset in selected:
+        name = dataset["name"]
+        try:
+            path = download_remote_dataset(
+                name,
+                fmt=fmt,
+                timeout=timeout,
+                verify_ssl=verify_ssl,
+                cache_dir=cache_dir,
+                overwrite=overwrite,
+                catalog_url=catalog_url,
+                use_catalog=False,
+                dataset_info=dataset,
+            )
+            result = {
+                "path": path,
+                "metadata": dataset,
+                "error": None,
+                "status": "downloaded",
+            }
+        except Exception as exc:
+            result = {
+                "path": None,
+                "metadata": dataset,
+                "error": exc,
+                "status": "error",
+            }
+            if not continue_on_error:
+                if progress_callback is not None:
+                    progress_callback(result)
+                raise
+
+        results[name] = result
+        if progress_callback is not None:
+            progress_callback(result)
+
+    return results
+
+
 def load_hypergraph_from_server(
     dataset_name: str,
     *,
@@ -632,6 +958,7 @@ def load_hypergraph_from_server(
     overwrite: bool = False,
     catalog_url: str | None = None,
     use_catalog: bool = True,
+    dataset_info: dict | None = None,
 ):
     """
     Load a dataset by name from the remote Hypergraphx-data server.
@@ -665,6 +992,9 @@ def load_hypergraph_from_server(
     use_catalog : bool, default=True
         If True, resolve download URLs from the remote catalog before falling
         back to legacy hard-coded URL patterns.
+    dataset_info : dict, optional
+        Already loaded catalog entry. Passing this avoids reloading the catalog
+        when loading many datasets.
 
     Returns
     -------
@@ -678,37 +1008,36 @@ def load_hypergraph_from_server(
     downloads are decompressed before being written to the cache.
     """
     last_error = None
-    url_list = []
-    if use_catalog:
-        try:
-            dataset_info = get_remote_dataset_info(
-                dataset_name,
-                timeout=timeout,
-                verify_ssl=verify_ssl,
-                catalog_url=catalog_url,
-            )
-            url_list.extend(_version_urls_from_catalog(dataset_info, fmt))
-        except Exception as exc:
-            last_error = exc
-    url_list = _deduplicate_urls(url_list + list(_server_urls(dataset_name, fmt)))
+    url_list, last_error = _resolve_remote_dataset_urls(
+        dataset_name,
+        fmt,
+        timeout=timeout,
+        verify_ssl=verify_ssl,
+        catalog_url=catalog_url,
+        use_catalog=use_catalog,
+        dataset_info=dataset_info,
+    )
 
     for url in url_list:
         tmp = None
         try:
             payload_format = _remote_payload_format(url)
-            cache_path = _remote_cache_path(dataset_name, url, cache_dir)
 
-            if store and cache_path.exists() and not overwrite:
+            if store:
+                cache_path = _download_remote_dataset_file(
+                    dataset_name,
+                    url,
+                    timeout=timeout,
+                    verify_ssl=verify_ssl,
+                    cache_dir=cache_dir,
+                    overwrite=overwrite,
+                )
                 obj = _load_remote_payload_from_path(cache_path, payload_format)
             else:
                 payload = _decompress_gzip_if_needed(
                     _download(url, timeout=timeout, verify_ssl=verify_ssl)
                 )
-                if store:
-                    cache_path.parent.mkdir(parents=True, exist_ok=True)
-                    cache_path.write_bytes(payload)
-                    obj = _load_remote_payload_from_path(cache_path, payload_format)
-                elif payload_format == "json":
+                if payload_format == "json":
                     obj = _parse_json_bytes_to_hypergraph(payload)
                 else:
                     with tempfile.NamedTemporaryFile(delete=False) as tmp:

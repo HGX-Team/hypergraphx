@@ -123,6 +123,22 @@ a local copy, or pass ``cache_dir=...`` to choose a different cache location.
        tags=["Undirected"],
    )
 
+   # Inspect the full catalog metadata for one dataset.
+   info = hgx.get_remote_dataset_info("zoo")
+   print(info["description"], info["license"])
+
+   # Download and cache a dataset file without loading it.
+   path = hgx.download_remote_dataset("zoo")
+   H = hgx.load_hypergraph(path)
+
+   # Download multiple datasets and inspect per-dataset results.
+   results = hgx.download_remote_datasets(
+       ["zoo", "contacts-hospital"],
+       continue_on_error=True,
+   )
+   for name, result in results.items():
+       print(name, result["status"], result["path"], result["error"])
+
    # Load a dataset by name. The compact ``"hgx"`` format is the default.
    H = hgx.load_hypergraph_from_server("zoo")
 
@@ -139,6 +155,10 @@ a local copy, or pass ``cache_dir=...`` to choose a different cache location.
        include_metadata=True,
    ):
        print(info["name"], H.num_nodes(), H.num_edges())
+
+   # Or iterate over an explicit list of dataset names.
+   for H in hgx.iter_remote_hypergraphs(names=["zoo", "Marvel"]):
+       print(H.num_nodes(), H.num_edges())
 
 .. note::
 

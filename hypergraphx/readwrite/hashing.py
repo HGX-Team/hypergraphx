@@ -19,8 +19,9 @@ def hash_hypergraph(hypergraph):
 
     def serialize(obj):
         """
-        Recursively serialize the hypergraph attributes into a JSON-compatible structure,
-        ensuring that dictionaries are sorted by key and lists are sorted if applicable.
+        Recursively serialize the hypergraph attributes into a JSON-compatible
+        structure. Dictionary keys are processed in sorted order, while list
+        order is preserved.
         """
         if isinstance(obj, dict):
             return {k: serialize(obj[k]) for k in sorted(obj)}
