@@ -26,12 +26,16 @@ from hypergraphx.readwrite.io_pickle import load_pickle
 
 _BASE = "https://cricca.disi.unitn.it/datasets/hypergraphx-data"
 _CATALOG_URL = (
+    "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/" "main/catalog.json"
+)
+_RELATED_DATA_URL = (
     "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/"
     "main/dist/static/js/related-data.js"
 )
 
 __all__ = [
     "iter_remote_hypergraphs",
+    "get_remote_dataset_info",
     "list_remote_datasets",
     "load",
     "load_hypergraph",
@@ -105,6 +109,36 @@ def _server_urls(dataset_name: str, fmt: str | None):
         return urls["json"]
     if fmt in {"binary", "pickle", "pkl", "hgx"}:
         return urls["binary"]
+    raise InvalidFormatError("fmt must be one of {'json', 'binary', 'hgx'}")
+
+
+def _deduplicate_urls(urls):
+    seen = set()
+    deduplicated = []
+    for url in urls:
+        if not url or url in seen:
+            continue
+        seen.add(url)
+        deduplicated.append(url)
+    return deduplicated
+
+
+def _version_urls_from_catalog(dataset_info: dict, fmt: str | None):
+    versions = dataset_info.get("versions") or []
+    json_urls = []
+    binary_urls = []
+    for version in versions:
+        if not isinstance(version, dict):
+            continue
+        json_urls.append(version.get("json_download"))
+        binary_urls.append(version.get("binary_download"))
+
+    if fmt is None:
+        return _deduplicate_urls(json_urls + binary_urls)
+    if fmt in {"json"}:
+        return _deduplicate_urls(json_urls)
+    if fmt in {"binary", "pickle", "pkl", "hgx"}:
+        return _deduplicate_urls(binary_urls)
     raise InvalidFormatError("fmt must be one of {'json', 'binary', 'hgx'}")
 
 
@@ -187,12 +221,19 @@ def _parse_remote_dataset_catalog(payload: bytes):
         text = match.group(1)
 
     try:
-        items = json.loads(text)
+        parsed = json.loads(text)
     except Exception as exc:
         raise InvalidFormatError("Remote dataset catalog is not valid JSON.") from exc
 
+    if isinstance(parsed, dict):
+        items = parsed.get("datasets")
+    else:
+        items = parsed
+
     if not isinstance(items, list):
-        raise InvalidFormatError("Remote dataset catalog must be a list.")
+        raise InvalidFormatError(
+            "Remote dataset catalog must be a list or contain a 'datasets' list."
+        )
 
     datasets = []
     for item in items:
@@ -200,17 +241,42 @@ def _parse_remote_dataset_catalog(payload: bytes):
             raise InvalidFormatError(
                 "Remote dataset catalog entries must contain names."
             )
+        dataset = dict(item)
         tags = list(item.get("tags") or item.get("categories") or [])
-        datasets.append(
-            {
-                "name": item["name"],
-                "tags": tags,
-                "categories": tags,
-                "vertices": item.get("vertices"),
-                "edges": item.get("edges"),
-            }
-        )
+        dataset["tags"] = tags
+        dataset["categories"] = tags
+        dataset.setdefault("filename", item.get("directory") or item["name"])
+        dataset.setdefault("directory", dataset["filename"])
+        dataset.setdefault("vertices", item.get("vertices"))
+        dataset.setdefault("edges", item.get("edges"))
+        datasets.append(dataset)
     return datasets
+
+
+def _catalog_url_candidates(catalog_url: str | None = None):
+    explicit = catalog_url or os.environ.get("HYPERGRAPHX_DATA_CATALOG_URL")
+    if explicit:
+        return [explicit]
+    return [_CATALOG_URL, _RELATED_DATA_URL]
+
+
+def _load_remote_dataset_catalog(
+    *,
+    timeout: int = 30,
+    verify_ssl: bool = False,
+    catalog_url: str | None = None,
+):
+    last_error = None
+    for url in _catalog_url_candidates(catalog_url):
+        try:
+            payload = _download(url, timeout=timeout, verify_ssl=verify_ssl)
+            return _parse_remote_dataset_catalog(payload)
+        except Exception as exc:
+            last_error = exc
+            continue
+    raise InvalidFormatError(
+        f"Could not load remote dataset catalog: {last_error}"
+    ) from last_error
 
 
 def list_remote_datasets(
@@ -241,12 +307,42 @@ def list_remote_datasets(
 
     Notes
     -----
-    ``catalog_url`` can point either to a JSON list or to the generated
-    ``related-data.js`` file used by the Hypergraphx-data website.
+    ``catalog_url`` can point to the generated ``catalog.json`` file, a JSON
+    list, or the legacy ``related-data.js`` file used by the website.
     """
-    url = catalog_url or os.environ.get("HYPERGRAPHX_DATA_CATALOG_URL") or _CATALOG_URL
-    payload = _download(url, timeout=timeout, verify_ssl=verify_ssl)
-    return _parse_remote_dataset_catalog(payload)
+    return _load_remote_dataset_catalog(
+        timeout=timeout,
+        verify_ssl=verify_ssl,
+        catalog_url=catalog_url,
+    )
+
+
+def get_remote_dataset_info(
+    dataset_name: str,
+    *,
+    timeout: int = 30,
+    verify_ssl: bool = False,
+    catalog_url: str | None = None,
+):
+    """
+    Return the full catalog entry for a remote dataset.
+
+    ``dataset_name`` is matched against the catalog ``name``, ``filename``, and
+    ``directory`` fields.
+    """
+    for dataset in list_remote_datasets(
+        timeout=timeout,
+        verify_ssl=verify_ssl,
+        catalog_url=catalog_url,
+    ):
+        identifiers = {
+            str(dataset.get("name", "")),
+            str(dataset.get("filename", "")),
+            str(dataset.get("directory", "")),
+        }
+        if dataset_name in identifiers:
+            return dataset
+    raise FileNotFoundError(f"Dataset not found in remote catalog: {dataset_name}")
 
 
 def iter_remote_hypergraphs(
@@ -319,6 +415,7 @@ def iter_remote_hypergraphs(
             fmt=fmt,
             timeout=timeout,
             verify_ssl=verify_ssl,
+            catalog_url=catalog_url,
             store=store,
             cache_dir=cache_dir,
             overwrite=overwrite,
@@ -344,6 +441,8 @@ def search_remote_datasets(
     *,
     tags=None,
     match_all_tags: bool = True,
+    source: str | None = None,
+    license: str | None = None,
     min_nodes: int | None = None,
     max_nodes: int | None = None,
     min_edges: int | None = None,
@@ -364,6 +463,10 @@ def search_remote_datasets(
     match_all_tags : bool, default=True
         If True, all requested tags must be present. If False, any requested
         tag is enough.
+    source : str, optional
+        Case-insensitive substring matched against the source URL/text.
+    license : str, optional
+        Case-insensitive substring matched against the license identifier/text.
     min_nodes, max_nodes, min_edges, max_edges : int, optional
         Inclusive size filters using catalog ``vertices`` and ``edges``.
 
@@ -384,6 +487,8 @@ def search_remote_datasets(
     )
 
     query_cf = query.casefold() if query else None
+    source_cf = source.casefold() if source else None
+    license_cf = license.casefold() if license else None
     if isinstance(tags, str):
         requested_tags = {tags.casefold()}
     elif tags is None:
@@ -399,9 +504,20 @@ def search_remote_datasets(
             haystack = " ".join(
                 [str(dataset.get("name", ""))]
                 + [str(tag) for tag in dataset.get("tags", [])]
+                + [
+                    str(dataset.get("description", "")),
+                    str(dataset.get("source", "")),
+                    str(dataset.get("license", "")),
+                ]
             ).casefold()
             if query_cf not in haystack:
                 continue
+
+        if source_cf and source_cf not in str(dataset.get("source", "")).casefold():
+            continue
+
+        if license_cf and license_cf not in str(dataset.get("license", "")).casefold():
+            continue
 
         if requested_tags:
             if match_all_tags:
@@ -514,6 +630,8 @@ def load_hypergraph_from_server(
     store: bool = True,
     cache_dir=None,
     overwrite: bool = False,
+    catalog_url: str | None = None,
+    use_catalog: bool = True,
 ):
     """
     Load a dataset by name from the remote Hypergraphx-data server.
@@ -542,6 +660,11 @@ def load_hypergraph_from_server(
         ``HYPERGRAPHX_DATA_CACHE`` environment variable.
     overwrite : bool, default=False
         If True, re-download even when a matching cached file exists.
+    catalog_url : str, optional
+        Catalog metadata URL used to resolve dataset download URLs.
+    use_catalog : bool, default=True
+        If True, resolve download URLs from the remote catalog before falling
+        back to legacy hard-coded URL patterns.
 
     Returns
     -------
@@ -555,7 +678,19 @@ def load_hypergraph_from_server(
     downloads are decompressed before being written to the cache.
     """
     last_error = None
-    url_list = _server_urls(dataset_name, fmt)
+    url_list = []
+    if use_catalog:
+        try:
+            dataset_info = get_remote_dataset_info(
+                dataset_name,
+                timeout=timeout,
+                verify_ssl=verify_ssl,
+                catalog_url=catalog_url,
+            )
+            url_list.extend(_version_urls_from_catalog(dataset_info, fmt))
+        except Exception as exc:
+            last_error = exc
+    url_list = _deduplicate_urls(url_list + list(_server_urls(dataset_name, fmt)))
 
     for url in url_list:
         tmp = None

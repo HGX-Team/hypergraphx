@@ -11,6 +11,7 @@ from hypergraphx import (
     TemporalHypergraph,
 )
 from hypergraphx.readwrite.load import (
+    get_remote_dataset_info,
     iter_remote_hypergraphs,
     list_remote_datasets,
     load,
@@ -258,7 +259,7 @@ def test_load_hypergraph_from_server_json(monkeypatch, tmp_path):
     monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
 
     loaded = load_hypergraph_from_server(
-        "toy", fmt="json", cache_dir=tmp_path / "cache"
+        "toy", fmt="json", cache_dir=tmp_path / "cache", use_catalog=False
     )
     assert isinstance(loaded, Hypergraph)
     assert set(loaded.get_edges()) == set(hg.get_edges())
@@ -287,7 +288,7 @@ def test_load_hypergraph_from_server_binary(monkeypatch, tmp_path):
     monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
 
     loaded = load_hypergraph_from_server(
-        "toy", fmt="binary", cache_dir=tmp_path / "cache"
+        "toy", fmt="binary", cache_dir=tmp_path / "cache", use_catalog=False
     )
     assert isinstance(loaded, Hypergraph)
     assert set(loaded.get_edges()) == set(hg.get_edges())
@@ -313,7 +314,9 @@ def test_load_hypergraph_from_server_hgx_alias(monkeypatch, tmp_path):
 
     monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
 
-    loaded = load_hypergraph_from_server("toy", cache_dir=tmp_path / "cache")
+    loaded = load_hypergraph_from_server(
+        "toy", cache_dir=tmp_path / "cache", use_catalog=False
+    )
 
     assert isinstance(loaded, Hypergraph)
     assert set(loaded.get_edges()) == set(hg.get_edges())
@@ -345,6 +348,7 @@ def test_load_hypergraph_from_server_uses_cache(monkeypatch, tmp_path):
         "toy",
         fmt="hgx",
         cache_dir=tmp_path / "cache",
+        use_catalog=False,
     )
 
     assert isinstance(loaded, Hypergraph)
@@ -371,24 +375,143 @@ def test_list_remote_datasets(monkeypatch):
         {
             "name": "zoo",
             "tags": ["Undirected", "Biology"],
-            "categories": ["Undirected", "Biology"],
             "vertices": 100,
             "edges": 41,
+            "categories": ["Undirected", "Biology"],
+            "filename": "zoo",
+            "directory": "zoo",
         },
         {
             "name": "email-Enron",
             "tags": ["Directed", "Temporal"],
-            "categories": ["Directed", "Temporal"],
             "vertices": 84172,
             "edges": 235395,
+            "categories": ["Directed", "Temporal"],
+            "filename": "email-Enron",
+            "directory": "email-Enron",
         },
     ]
     assert requested == [
         (
-            "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/main/dist/static/js/related-data.js",
+            "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/main/catalog.json",
             False,
         )
     ]
+
+
+def test_list_remote_datasets_catalog_json(monkeypatch):
+    payload = json.dumps(
+        {
+            "schema_version": 1,
+            "datasets": [
+                {
+                    "name": "zoo",
+                    "directory": "zoo",
+                    "tags": ["Undirected", "Biology"],
+                    "description": "Animal attribute hypergraph",
+                    "source": "https://example.org/zoo",
+                    "license": "CC0-1.0",
+                    "vertices": 100,
+                    "edges": 41,
+                    "versions": [
+                        {
+                            "version": "1.0.0",
+                            "json_download": "https://example.org/zoo.json.gz",
+                            "binary_download": "https://example.org/zoo.hgx.gz",
+                        }
+                    ],
+                }
+            ],
+        }
+    ).encode()
+    requested = []
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        requested.append((url, verify_ssl))
+        return payload
+
+    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+
+    datasets = list_remote_datasets(verify_ssl=False)
+
+    assert datasets[0]["name"] == "zoo"
+    assert datasets[0]["directory"] == "zoo"
+    assert datasets[0]["description"] == "Animal attribute hypergraph"
+    assert datasets[0]["source"] == "https://example.org/zoo"
+    assert datasets[0]["license"] == "CC0-1.0"
+    assert (
+        datasets[0]["versions"][0]["binary_download"]
+        == "https://example.org/zoo.hgx.gz"
+    )
+    assert requested == [
+        (
+            "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/main/catalog.json",
+            False,
+        )
+    ]
+
+
+def test_get_remote_dataset_info(monkeypatch):
+    catalog = [
+        {
+            "name": "zoo",
+            "directory": "zoo",
+            "tags": ["Undirected", "Biology"],
+            "source": "https://example.org/zoo",
+        }
+    ]
+    monkeypatch.setattr(
+        "hypergraphx.readwrite.load.list_remote_datasets",
+        lambda **kwargs: catalog,
+    )
+
+    info = get_remote_dataset_info("zoo")
+
+    assert info["source"] == "https://example.org/zoo"
+
+
+def test_load_hypergraph_from_server_uses_catalog_download_url(monkeypatch, tmp_path):
+    hg = _make_weighted_hypergraph()
+    hgx_path = tmp_path / "custom-name.hgx"
+    save_hypergraph(hg, str(hgx_path), fmt="pickle")
+    gz_payload = gzip.compress(hgx_path.read_bytes())
+    catalog_payload = json.dumps(
+        {
+            "schema_version": 1,
+            "datasets": [
+                {
+                    "name": "toy",
+                    "versions": [
+                        {
+                            "version": "1.0.0",
+                            "binary_download": "https://example.org/files/custom-name.hgx.gz",
+                        }
+                    ],
+                }
+            ],
+        }
+    ).encode()
+    requested = []
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        requested.append(url)
+        if url.endswith("catalog.json"):
+            return catalog_payload
+        if url == "https://example.org/files/custom-name.hgx.gz":
+            return gz_payload
+        raise AssertionError(f"Unexpected URL: {url}")
+
+    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+
+    loaded = load_hypergraph_from_server("toy", cache_dir=tmp_path / "cache")
+
+    assert isinstance(loaded, Hypergraph)
+    assert set(loaded.get_edges()) == set(hg.get_edges())
+    assert requested == [
+        "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/main/catalog.json",
+        "https://example.org/files/custom-name.hgx.gz",
+    ]
+    assert (tmp_path / "cache" / "toy" / "custom-name.hgx").exists()
 
 
 def test_iter_remote_hypergraphs_filters_and_loads_lazily(monkeypatch):
@@ -404,6 +527,9 @@ def test_iter_remote_hypergraphs_filters_and_loads_lazily(monkeypatch):
             "name": "zoo",
             "tags": ["Undirected", "Biology"],
             "categories": ["Undirected", "Biology"],
+            "description": "Animal attribute hypergraph",
+            "source": "https://example.org/biology/zoo",
+            "license": "CC0-1.0",
             "vertices": 100,
             "edges": 41,
         },
@@ -449,6 +575,9 @@ def test_iter_remote_hypergraphs_match_any_and_include_metadata(monkeypatch):
             "name": "zoo",
             "tags": ["Undirected", "Biology"],
             "categories": ["Undirected", "Biology"],
+            "description": "Animal attribute hypergraph",
+            "source": "https://example.org/biology/zoo",
+            "license": "CC0-1.0",
             "vertices": 100,
             "edges": 41,
         },
@@ -496,6 +625,9 @@ def test_search_remote_datasets(monkeypatch):
             "name": "zoo",
             "tags": ["Undirected", "Biology"],
             "categories": ["Undirected", "Biology"],
+            "description": "Animal attribute hypergraph",
+            "source": "https://example.org/biology/zoo",
+            "license": "CC0-1.0",
             "vertices": 100,
             "edges": 41,
         },
@@ -503,6 +635,9 @@ def test_search_remote_datasets(monkeypatch):
             "name": "email-Enron",
             "tags": ["Directed", "Temporal", "Social", "Technology"],
             "categories": ["Directed", "Temporal", "Social", "Technology"],
+            "description": "Email communication dataset",
+            "source": "https://example.org/email",
+            "license": "GPL-3.0",
             "vertices": 84172,
             "edges": 235395,
         },
@@ -534,6 +669,9 @@ def test_search_remote_datasets(monkeypatch):
             max_edges=1000,
         )
     ] == ["zoo"]
+    assert [d["name"] for d in search_remote_datasets("attribute")] == ["zoo"]
+    assert [d["name"] for d in search_remote_datasets(source="biology")] == ["zoo"]
+    assert [d["name"] for d in search_remote_datasets(license="cc0")] == ["zoo"]
 
 
 def test_load_hypergraph_from_server_offline_error_is_actionable(monkeypatch):

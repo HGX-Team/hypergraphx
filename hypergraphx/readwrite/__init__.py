@@ -1,5 +1,6 @@
 from . import load as load_module
 from .load import (
+    get_remote_dataset_info,
     iter_remote_hypergraphs,
     list_remote_datasets,
     load_hypergraph,
@@ -14,6 +15,7 @@ from .hif import write_hif
 __all__ = [
     "load_module",
     "load_any",
+    "get_remote_dataset_info",
     "iter_remote_hypergraphs",
     "list_remote_datasets",
     "load_hypergraph",

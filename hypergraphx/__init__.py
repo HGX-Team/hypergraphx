@@ -12,6 +12,7 @@ from hypergraphx.exceptions import (
     ReadwriteError,
 )
 from hypergraphx.readwrite import (
+    get_remote_dataset_info,
     load_hypergraph,
     load_hypergraph_from_server,
     save_hypergraph,
@@ -47,6 +48,7 @@ __all__ = [
     "MissingEdgeError",
     "MissingNodeError",
     "ReadwriteError",
+    "get_remote_dataset_info",
     "load_hypergraph",
     "load_hypergraph_from_server",
     "save_hypergraph",
