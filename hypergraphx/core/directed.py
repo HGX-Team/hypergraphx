@@ -745,13 +745,42 @@ class DirectedHypergraph(BaseHypergraph):
         keep_node_metadata: bool = True,
         keep_edge_metadata: bool = True,
         keep_hypergraph_metadata: bool = True,
+        mode: str = "union",
+        keep_direction_as=None,
     ):
-        """Convert to an undirected Hypergraph by merging sources and targets.
+        """Convert to an undirected Hypergraph.
 
         Duplicate hyperedges are merged by summing weights and merging metadata.
+
+        Parameters
+        ----------
+        mode : {"union", "source", "target", "role_nodes"}, optional
+            How each directed hyperedge is projected. ``"union"`` merges source
+            and target nodes, ``"source"`` keeps only source nodes,
+            ``"target"`` keeps only target nodes, and ``"role_nodes"`` keeps
+            source and target incidences as distinct role-tagged nodes.
+        keep_direction_as : tuple[str, str] | bool | None, optional
+            If provided and edge metadata is kept, store the original source and
+            target tuples under these metadata keys. ``True`` uses
+            ``("source", "target")``.
         """
         from hypergraphx.core.undirected import Hypergraph
         from hypergraphx.utils.metadata import merge_metadata
+
+        if mode not in {"union", "source", "target", "role_nodes"}:
+            raise ValueError(
+                "mode must be one of 'union', 'source', 'target', or 'role_nodes'."
+            )
+        if keep_direction_as is True:
+            direction_keys = ("source", "target")
+        elif keep_direction_as is None:
+            direction_keys = None
+        else:
+            if isinstance(keep_direction_as, str):
+                raise ValueError("keep_direction_as must contain two metadata keys.")
+            direction_keys = tuple(keep_direction_as)
+            if len(direction_keys) != 2:
+                raise ValueError("keep_direction_as must contain two metadata keys.")
 
         hg = Hypergraph(weighted=True)
         if keep_hypergraph_metadata:
@@ -760,22 +789,59 @@ class DirectedHypergraph(BaseHypergraph):
             )
             hg.set_hypergraph_metadata(meta)
 
-        if keep_node_metadata:
-            for node, metadata in self.get_all_nodes_metadata().items():
-                hg.add_node(node, metadata=metadata)
-
         edge_weights = {}
         edge_metadata = {}
+        converted_nodes = set()
         for edge in self.get_edges():
             source, target = edge
-            merged_edge = tuple(sorted(set(source).union(target)))
-            edge_weights[merged_edge] = edge_weights.get(
-                merged_edge, 0
+            if mode == "union":
+                projected_edge = tuple(sorted(set(source).union(target)))
+            elif mode == "source":
+                projected_edge = source
+            elif mode == "target":
+                projected_edge = target
+            else:
+                projected_edge = tuple(
+                    [("source", node) for node in source]
+                    + [("target", node) for node in target]
+                )
+                if keep_node_metadata:
+                    for node in source:
+                        hg.add_node(
+                            ("source", node),
+                            metadata=self.get_node_metadata(node),
+                        )
+                    for node in target:
+                        hg.add_node(
+                            ("target", node),
+                            metadata=self.get_node_metadata(node),
+                        )
+
+            converted_nodes.update(projected_edge)
+            edge_weights[projected_edge] = edge_weights.get(
+                projected_edge, 0
             ) + self.get_weight(edge)
             if keep_edge_metadata:
-                edge_metadata[merged_edge] = merge_metadata(
-                    edge_metadata.get(merged_edge), self.get_edge_metadata(edge)
+                metadata = self.get_edge_metadata(edge)
+                if direction_keys is not None:
+                    metadata = merge_metadata(
+                        {
+                            direction_keys[0]: source,
+                            direction_keys[1]: target,
+                        },
+                        metadata,
+                    )
+                edge_metadata[projected_edge] = merge_metadata(
+                    edge_metadata.get(projected_edge), metadata
                 )
+
+        if keep_node_metadata and mode != "role_nodes":
+            if mode == "union":
+                nodes_to_copy = self.get_all_nodes_metadata().keys()
+            else:
+                nodes_to_copy = converted_nodes
+            for node in nodes_to_copy:
+                hg.add_node(node, metadata=self.get_node_metadata(node))
 
         for edge, weight in edge_weights.items():
             hg.add_edge(edge, weight=weight, metadata=edge_metadata.get(edge))

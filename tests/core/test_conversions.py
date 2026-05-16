@@ -180,3 +180,89 @@ def test_conversion_keep_edge_metadata_false():
     thg.add_edge((0, 1), time=1, weight=1.0, metadata={"t": 1})
     hg = thg.to_hypergraph(keep_edge_metadata=False)
     assert hg.get_edge_metadata((0, 1)) == {}
+
+
+def test_temporal_to_hypergraph_filters_time_window_and_keeps_time_metadata():
+    thg = TemporalHypergraph(weighted=True)
+    thg.add_edge((0, 1), time=1, weight=1.0, metadata={"tag": "a"})
+    thg.add_edge((0, 1), time=3, weight=2.0, metadata={"tag": "b"})
+    thg.add_edge((1, 2), time=7, weight=4.0, metadata={"tag": "outside"})
+    thg.add_node(99, metadata={"outside": True})
+
+    hg = thg.to_hypergraph(time_window=(0, 5), keep_time_as="time")
+
+    assert hg.get_weight((0, 1)) == 3.0
+    assert hg.get_edge_metadata((0, 1)) == {
+        "time": [1, 3],
+        "tag": ["a", "b"],
+    }
+    assert (1, 2) not in hg.get_edges()
+    assert set(hg.get_nodes()) == {0, 1}
+
+
+def test_multiplex_to_hypergraph_filters_layers_and_keeps_layer_metadata():
+    mhg = MultiplexHypergraph(weighted=True)
+    mhg.add_edge((0, 1), layer="L1", weight=1.0, metadata={"tag": "a"})
+    mhg.add_edge((0, 1), layer="L2", weight=2.0, metadata={"tag": "b"})
+    mhg.add_edge((1, 2), layer="L3", weight=4.0, metadata={"tag": "outside"})
+    mhg.add_node(99, metadata={"outside": True})
+
+    hg = mhg.to_hypergraph(layers=["L1", "L2"], keep_layer_as="layer")
+
+    assert hg.get_weight((0, 1)) == 3.0
+    assert hg.get_edge_metadata((0, 1)) == {
+        "layer": ["L1", "L2"],
+        "tag": ["a", "b"],
+    }
+    assert (1, 2) not in hg.get_edges()
+    assert set(hg.get_nodes()) == {0, 1}
+
+
+def test_directed_to_hypergraph_source_mode_keeps_direction_metadata():
+    dhg = DirectedHypergraph(weighted=True)
+    dhg.add_edge(((0, 1), (2,)), weight=1.0, metadata={"tag": "a"})
+    dhg.add_edge(((0, 1), (3,)), weight=2.0, metadata={"tag": "b"})
+    dhg.add_node(99, metadata={"outside": True})
+
+    hg = dhg.to_hypergraph(mode="source", keep_direction_as=("src", "dst"))
+
+    assert hg.get_weight((0, 1)) == 3.0
+    assert hg.get_edge_metadata((0, 1)) == {
+        "src": (0, 1),
+        "dst": [(2,), (3,)],
+        "tag": ["a", "b"],
+    }
+    assert set(hg.get_nodes()) == {0, 1}
+
+
+def test_directed_to_hypergraph_target_mode():
+    dhg = DirectedHypergraph(weighted=True)
+    dhg.add_edge(((0,), (2, 3)), weight=1.0)
+    dhg.add_edge(((1,), (2, 3)), weight=2.0)
+    dhg.add_node(99, metadata={"outside": True})
+
+    hg = dhg.to_hypergraph(mode="target")
+
+    assert hg.get_weight((2, 3)) == 3.0
+    assert set(hg.get_nodes()) == {2, 3}
+
+
+def test_directed_to_hypergraph_role_nodes_mode():
+    dhg = DirectedHypergraph(weighted=True)
+    dhg.add_node(0, metadata={"name": "zero"})
+    dhg.add_node(1, metadata={"name": "one"})
+    dhg.add_edge(((0,), (1,)), weight=1.0)
+
+    hg = dhg.to_hypergraph(mode="role_nodes")
+
+    edge = (("source", 0), ("target", 1))
+    assert hg.get_weight(edge) == 1.0
+    assert hg.get_node_metadata(("source", 0)) == {"name": "zero"}
+    assert hg.get_node_metadata(("target", 1)) == {"name": "one"}
+
+
+def test_directed_to_hypergraph_invalid_mode():
+    dhg = DirectedHypergraph(weighted=True)
+
+    with pytest.raises(ValueError, match="mode must be one of"):
+        dhg.to_hypergraph(mode="bad")

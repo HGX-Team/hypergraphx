@@ -677,10 +677,22 @@ class TemporalHypergraph(BaseHypergraph):
         keep_node_metadata: bool = True,
         keep_edge_metadata: bool = True,
         keep_hypergraph_metadata: bool = True,
+        time_window=None,
+        keep_time_as=None,
     ):
         """Convert to an undirected Hypergraph by dropping time information.
 
         Duplicate hyperedges are merged by summing weights and merging metadata.
+
+        Parameters
+        ----------
+        time_window : tuple[int, int] | None, optional
+            Convert only hyperedges with time in the half-open interval
+            ``[time_window[0], time_window[1])``. If not specified, all times
+            are converted.
+        keep_time_as : str | None, optional
+            If provided and edge metadata is kept, store the original time under
+            this metadata key before duplicate hyperedges are merged.
         """
         from hypergraphx.core.undirected import Hypergraph
         from hypergraphx.utils.metadata import merge_metadata
@@ -692,18 +704,25 @@ class TemporalHypergraph(BaseHypergraph):
             )
             hg.set_hypergraph_metadata(meta)
 
-        if keep_node_metadata:
-            for node, metadata in self.get_all_nodes_metadata().items():
-                hg.add_node(node, metadata=metadata)
-
         edge_weights = {}
         edge_metadata = {}
-        for time, edge in self.get_edges():
+        converted_nodes = set()
+        for time, edge in self.get_edges(time_window=time_window):
+            converted_nodes.update(edge)
             edge_weights[edge] = edge_weights.get(edge, 0) + self.get_weight(edge, time)
             if keep_edge_metadata:
-                edge_metadata[edge] = merge_metadata(
-                    edge_metadata.get(edge), self.get_edge_metadata(edge, time)
-                )
+                metadata = self.get_edge_metadata(edge, time)
+                if keep_time_as is not None:
+                    metadata = merge_metadata({keep_time_as: time}, metadata)
+                edge_metadata[edge] = merge_metadata(edge_metadata.get(edge), metadata)
+
+        if keep_node_metadata:
+            if time_window is None:
+                nodes_to_copy = self.get_all_nodes_metadata().keys()
+            else:
+                nodes_to_copy = converted_nodes
+            for node in nodes_to_copy:
+                hg.add_node(node, metadata=self.get_node_metadata(node))
 
         for edge, weight in edge_weights.items():
             hg.add_edge(edge, weight=weight, metadata=edge_metadata.get(edge))

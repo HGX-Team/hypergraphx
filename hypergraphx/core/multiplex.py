@@ -515,12 +515,29 @@ class MultiplexHypergraph(BaseHypergraph):
         keep_node_metadata: bool = True,
         keep_edge_metadata: bool = True,
         keep_hypergraph_metadata: bool = True,
+        layers=None,
+        keep_layer_as=None,
     ):
         """Convert to an undirected Hypergraph by dropping layer information.
 
         Duplicate hyperedges are merged by summing weights and merging metadata.
+
+        Parameters
+        ----------
+        layers : iterable | None, optional
+            Layers to include. If not specified, all layers are converted.
+        keep_layer_as : str | None, optional
+            If provided and edge metadata is kept, store the original layer under
+            this metadata key before duplicate hyperedges are merged.
         """
         from hypergraphx.utils.metadata import merge_metadata
+
+        if layers is None:
+            layer_filter = None
+        elif isinstance(layers, str):
+            layer_filter = {layers}
+        else:
+            layer_filter = set(layers)
 
         hg = Hypergraph(weighted=True)
         if keep_hypergraph_metadata:
@@ -530,20 +547,29 @@ class MultiplexHypergraph(BaseHypergraph):
             )
             hg.set_hypergraph_metadata(meta)
 
-        if keep_node_metadata:
-            for node, metadata in self.get_all_nodes_metadata().items():
-                hg.add_node(node, metadata=metadata)
-
         edge_weights = {}
         edge_metadata = {}
+        converted_nodes = set()
         for layer, edge in self.get_edges():
+            if layer_filter is not None and layer not in layer_filter:
+                continue
+            converted_nodes.update(edge)
             edge_weights[edge] = edge_weights.get(edge, 0) + self.get_weight(
                 edge, layer
             )
             if keep_edge_metadata:
-                edge_metadata[edge] = merge_metadata(
-                    edge_metadata.get(edge), self.get_edge_metadata(edge, layer)
-                )
+                metadata = self.get_edge_metadata(edge, layer)
+                if keep_layer_as is not None:
+                    metadata = merge_metadata({keep_layer_as: layer}, metadata)
+                edge_metadata[edge] = merge_metadata(edge_metadata.get(edge), metadata)
+
+        if keep_node_metadata:
+            if layer_filter is None:
+                nodes_to_copy = self.get_all_nodes_metadata().keys()
+            else:
+                nodes_to_copy = converted_nodes
+            for node in nodes_to_copy:
+                hg.add_node(node, metadata=self.get_node_metadata(node))
 
         for edge, weight in edge_weights.items():
             hg.add_edge(edge, weight=weight, metadata=edge_metadata.get(edge))
