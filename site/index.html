@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hypergraphx | Hypergraph Library for Python</title>
+    <meta
+      name="description"
+      content="Hypergraphx is a research-friendly Python library for building, analyzing, and visualizing hypergraphs."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link rel="icon" href="assets/hgx-logo-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg">
+      <div class="orb orb-a"></div>
+      <div class="orb orb-b"></div>
+      <div class="grid"></div>
+    </div>
+
+    <header class="site-header">
+      <div class="site-header-inner">
+        <div class="logo">
+          <span class="logo-mark">
+            <img src="assets/hgx-logo-mark.svg" alt="Hypergraphx logo" />
+          </span>
+          <span class="logo-type">Hypergraphx</span>
+        </div>
+      <nav class="nav" aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#tutorial">Tutorials</a>
+        <a href="https://hypergraphx.readthedocs.io">API docs</a>
+        <a href="https://hgx-team.github.io">Ecosystem</a>
+        <a href="https://hgx-team.github.io">Team</a>
+        <a href="#get-started">Get started</a>
+        <a href="#citation">Citation</a>
+      </nav>
+        <div class="nav-actions">
+          <a class="btn btn-ghost" href="https://github.com/HGX-Team/hypergraphx">
+            <i class="fa-brands fa-github flat-icon" aria-hidden="true"></i>
+            GitHub
+          </a>
+          <a class="btn btn-primary" href="https://hypergraphx.readthedocs.io">
+            <i class="fa-solid fa-book-open flat-icon" aria-hidden="true"></i>
+            Get started
+          </a>
+          <button
+            class="nav-toggle"
+            type="button"
+            aria-controls="mobile-menu"
+            aria-expanded="false"
+          >
+            Menu
+          </button>
+        </div>
+      </div>
+
+      <div id="mobile-menu" class="mobile-menu" hidden>
+        <nav class="mobile-nav" aria-label="Mobile">
+          <a href="#features">Features</a>
+          <a href="#tutorial">Tutorials</a>
+          <a href="https://hypergraphx.readthedocs.io">API docs</a>
+          <a href="https://hgx-team.github.io">Ecosystem</a>
+          <a href="https://hgx-team.github.io">Team</a>
+          <a href="#get-started">Get started</a>
+          <a href="#citation">Citation</a>
+        </nav>
+        <div class="mobile-actions">
+          <a class="btn btn-ghost" href="https://github.com/HGX-Team/hypergraphx">
+            <i class="fa-brands fa-github flat-icon" aria-hidden="true"></i>
+            GitHub
+          </a>
+          <a class="btn btn-primary" href="https://hypergraphx.readthedocs.io">
+            <i class="fa-solid fa-book-open flat-icon" aria-hidden="true"></i>
+            Get started
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow reveal" style="animation-delay: 0.05s">
+            Hypergraph analysis in Python
+          </p>
+          <h1 class="reveal" style="animation-delay: 0.1s">
+            A Python
+            <i class="fa-brands fa-python headline-icon" aria-hidden="true"></i>
+            library for higher-order networks.
+          </h1>
+          <p class="lead reveal" style="animation-delay: 0.2s">
+            Hypergraphx is a research-friendly Python library for building,
+            analyzing, and visualizing hypergraphs.
+          </p>
+          <div class="status-row reveal" style="animation-delay: 0.26s">
+            <a href="https://pypi.org/project/hypergraphx/" aria-label="PyPI version">
+              <img
+                src="https://img.shields.io/pypi/v/hypergraphx?label=PyPI&color=24639d"
+                alt="PyPI version"
+              />
+            </a>
+            <a href="https://pypi.org/project/hypergraphx/" aria-label="Supported Python versions">
+              <img
+                src="https://img.shields.io/pypi/pyversions/hypergraphx?color=24639d"
+                alt="Supported Python versions"
+              />
+            </a>
+            <a href="https://github.com/HGX-Team/hypergraphx/blob/main/LICENSE.md" aria-label="BSD 3-Clause License">
+              <img
+                src="https://img.shields.io/badge/license-BSD--3--Clause-3d3d3d"
+                alt="BSD 3-Clause License"
+              />
+            </a>
+          </div>
+          <div class="install install-hero reveal" style="animation-delay: 0.28s">
+            <span>
+              <i class="fa-solid fa-download flat-icon" aria-hidden="true"></i>
+              Install
+            </span>
+            <code>pip install hypergraphx</code>
+          </div>
+          <a
+            class="paper-link reveal"
+            style="animation-delay: 0.5s"
+            href="https://academic.oup.com/comnet/article/11/3/cnad019/7180959?login=false"
+          >
+            <i class="fa-solid fa-file-lines flat-icon" aria-hidden="true"></i>
+            Read the paper
+          </a>
+        </div>
+        <div class="hero-card reveal" style="animation-delay: 0.25s">
+          <div class="hero-card-header">
+            <span>Example figure</span>
+            <span class="tag">Python</span>
+          </div>
+          <pre class="code-shell code-shell-hero"><code id="code-typed" class="code-block"><span id="code-typed-text"></span><span class="cursor" aria-hidden="true"></span></code></pre>
+          <div class="rendered-viz">
+            <img
+              src="assets/hero-simple-hypergraph.svg"
+              alt="Small hypergraph visualization"
+              loading="lazy"
+            />
+          </div>
+          <div class="hero-card-footer">
+            <span>Higher-order analytics</span>
+            <span class="dot"></span>
+            <span>Visualization tools</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="higher-order-note reveal" style="animation-delay: 0.1s">
+        <div class="higher-order-copy">
+          <p class="eyebrow">
+            <i class="fa-solid fa-share-nodes flat-icon" aria-hidden="true"></i>
+            Higher-order networks
+          </p>
+          <h2>Graphs connect pairs. Hypergraphs connect groups.</h2>
+          <p>
+            Standard networks record one-to-one relations. Hypergraphs keep the
+            full group: a collaboration, a coauthored paper, a reaction, or a
+            shared event can be represented as one object.
+          </p>
+        </div>
+        <div class="higher-order-visual" aria-label="Pairwise graph compared with hypergraph">
+          <div class="network-mini">
+            <span>Graph</span>
+            <div class="mini-canvas pairwise">
+              <svg viewBox="0 0 180 120" aria-hidden="true">
+                <line x1="34" y1="28" x2="78" y2="20"></line>
+                <line x1="78" y1="20" x2="132" y2="32"></line>
+                <line x1="132" y1="32" x2="148" y2="76"></line>
+                <line x1="148" y1="76" x2="104" y2="96"></line>
+                <line x1="104" y1="96" x2="48" y2="86"></line>
+                <line x1="48" y1="86" x2="34" y2="28"></line>
+                <line x1="78" y1="20" x2="104" y2="96"></line>
+                <line x1="34" y1="28" x2="104" y2="96"></line>
+                <line x1="48" y1="86" x2="132" y2="32"></line>
+                <circle cx="34" cy="28" r="7"></circle>
+                <circle cx="78" cy="20" r="7"></circle>
+                <circle cx="132" cy="32" r="7"></circle>
+                <circle cx="148" cy="76" r="7"></circle>
+                <circle cx="104" cy="96" r="7"></circle>
+                <circle cx="48" cy="86" r="7"></circle>
+              </svg>
+            </div>
+            <p>Pairwise links</p>
+          </div>
+          <div class="network-mini">
+            <span>Hypergraph</span>
+            <div class="mini-canvas grouped">
+              <svg viewBox="0 0 180 120" aria-hidden="true">
+                <g transform="translate(0 -15)">
+                  <ellipse
+                    class="hyperedge"
+                    cx="73"
+                    cy="51"
+                    rx="43"
+                    ry="24"
+                    transform="rotate(15 73 51)"
+                  ></ellipse>
+                  <ellipse
+                    class="hyperedge hyperedge-alt"
+                    cx="114"
+                    cy="62"
+                    rx="53"
+                    ry="36"
+                    transform="rotate(25 114 62)"
+                  ></ellipse>
+                  <ellipse
+                    class="hyperedge hyperedge-teal"
+                    cx="93"
+                    cy="87"
+                    rx="52"
+                    ry="32"
+                    transform="rotate(-8 93 87)"
+                  ></ellipse>
+                  <circle cx="45" cy="50" r="7"></circle>
+                  <circle cx="80" cy="38" r="7"></circle>
+                  <circle cx="94" cy="65" r="7"></circle>
+                  <circle cx="140" cy="54" r="7"></circle>
+                  <circle cx="124" cy="88" r="7"></circle>
+                  <circle cx="60" cy="96" r="7"></circle>
+                </g>
+              </svg>
+            </div>
+            <p>Overlapping group interactions</p>
+          </div>
+          <div class="higher-order-examples">
+            <span>Cellular systems</span>
+            <span>Drug recombination</span>
+            <span>Brain networks</span>
+            <span>Collaboration teams</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="workflow reveal" style="animation-delay: 0.1s">
+        <div class="workflow-copy">
+          <p class="eyebrow">Workflow</p>
+          <h2>Build, measure, and visualize hypergraphs.</h2>
+        </div>
+        <div class="workflow-rail" aria-label="Hypergraphx workflow">
+          <div class="workflow-item">
+            <span>
+              <i class="fa-solid fa-cubes flat-icon" aria-hidden="true"></i>
+              01
+            </span>
+            <strong>Model</strong>
+            <p>Create hypergraphs from node groups, files, or generators.</p>
+          </div>
+          <div class="workflow-arrow" aria-hidden="true"></div>
+          <div class="workflow-item">
+            <span>
+              <i class="fa-solid fa-chart-column flat-icon" aria-hidden="true"></i>
+              02
+            </span>
+            <strong>Analyze</strong>
+            <p>Run measures for degree, centrality, motifs, projections, and spectra.</p>
+          </div>
+          <div class="workflow-arrow" aria-hidden="true"></div>
+          <div class="workflow-item">
+            <span>
+              <i class="fa-solid fa-display flat-icon" aria-hidden="true"></i>
+              03
+            </span>
+            <strong>Visualize</strong>
+            <p>Draw hypergraphs and derived views with reproducible layouts.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="features">
+        <div class="section-title">
+          <p class="eyebrow">Features</p>
+          <h2>What you can do with Hypergraphx.</h2>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card reveal" style="animation-delay: 0.2s">
+            <i class="fa-solid fa-database card-icon" aria-hidden="true"></i>
+            <h3>Load and filter data</h3>
+            <p>
+              Search hypergraphx-data, load datasets into the library, and use
+              filtering tools to prepare them for analysis.
+            </p>
+          </article>
+          <article class="feature-card reveal" style="animation-delay: 0.3s">
+            <i class="fa-solid fa-chart-column card-icon" aria-hidden="true"></i>
+            <h3>Measure structure</h3>
+            <p>
+              Compute degrees, centralities, motifs, and communities on the
+              same hypergraph object.
+            </p>
+          </article>
+          <article class="feature-card reveal" style="animation-delay: 0.4s">
+            <i class="fa-solid fa-right-left card-icon" aria-hidden="true"></i>
+            <h3>Convert representations</h3>
+            <p>
+              Switch between hypergraphs, bipartite graphs, clique projections,
+              line graphs, and simplicial complexes.
+            </p>
+          </article>
+          <article class="feature-card reveal" style="animation-delay: 0.5s">
+            <i class="fa-solid fa-diagram-project card-icon" aria-hidden="true"></i>
+            <h3>Generate hypergraphs</h3>
+            <p>
+              Sample random hypergraphs with specified numbers of nodes,
+              hyperedges, and hyperedge sizes.
+            </p>
+          </article>
+          <article class="feature-card reveal" style="animation-delay: 0.6s">
+            <i class="fa-solid fa-rotate card-icon" aria-hidden="true"></i>
+            <h3>Study dynamics</h3>
+            <p>
+              Explore contagion, synchronization, random walks, diffusion,
+              and temporal activity on higher-order structures.
+            </p>
+          </article>
+          <article class="feature-card reveal" style="animation-delay: 0.7s">
+            <i class="fa-solid fa-display card-icon" aria-hidden="true"></i>
+            <h3>Draw hypergraphs</h3>
+            <p>
+              Visualize pairwise links and higher-order hyperedges from the
+              same Hypergraphx object.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="tutorial" class="tutorial">
+        <div class="section-title">
+          <p class="eyebrow">Tutorials</p>
+          <h2>A short example, from construction to plots.</h2>
+        </div>
+        <div class="tutorial-grid">
+          <article class="tutorial-card reveal" style="animation-delay: 0.1s">
+            <div class="tutorial-step">Step 01</div>
+            <h3>Create a random hypergraph</h3>
+            <div class="tutorial-body">
+              <pre class="code-shell"><code class="code-block">from hypergraphx.generation import random_hypergraph
+
+h = random_hypergraph(
+    num_nodes=8,
+    num_edges_by_size={2: 4, 3: 4, 4: 4},
+    seed=9,
+)</code></pre>
+              <div class="rendered-viz">
+                <img
+                  src="assets/hypergraph-step-1.svg"
+                  alt="Random hypergraph preview"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </article>
+
+          <article class="tutorial-card reveal" style="animation-delay: 0.2s">
+            <div class="tutorial-step">Step 02</div>
+            <h3>Degree centrality distribution</h3>
+            <div class="tutorial-body">
+              <pre class="code-shell"><code class="code-block">import matplotlib.pyplot as plt
+from hypergraphx.measures.degree import degree_sequence
+
+deg = degree_sequence(h)
+plt.hist(deg.values())</code></pre>
+              <div class="rendered-viz">
+                <img
+                  src="assets/hypergraph-step-2.svg"
+                  alt="Degree centrality histogram"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </article>
+
+          <article class="tutorial-card reveal" style="animation-delay: 0.3s">
+            <div class="tutorial-step">Step 03</div>
+            <h3>Draw the hypergraph</h3>
+            <div class="tutorial-body">
+              <pre class="code-shell"><code class="code-block">from hypergraphx.measures.degree import degree_sequence
+from hypergraphx.viz import draw_hypergraph
+
+deg = degree_sequence(h)
+top = set(sorted(deg, key=deg.get, reverse=True)[:2])
+draw_hypergraph(h)  # then recolor top nodes</code></pre>
+              <div class="rendered-viz">
+                <img
+                  src="assets/hypergraph-step-3.svg"
+                  alt="Hypergraph visualization with highlighted hubs"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="data-feature">
+        <div class="data-feature-copy">
+          <p class="eyebrow">
+            <i class="fa-solid fa-database flat-icon" aria-hidden="true"></i>
+            Dataset loading
+          </p>
+          <h2>Load datasets from hypergraphx-data.</h2>
+          <p>
+            Search the remote catalog, choose a dataset, and load it as a
+            Hypergraphx object for analysis.
+          </p>
+          <div class="resource-links">
+            <a href="https://hgx-team.github.io/hypergraphx-data/">
+              Browse hypergraphx-data
+            </a>
+            <a href="https://hypergraphx.readthedocs.io">Read the loader docs</a>
+          </div>
+        </div>
+        <pre class="code-shell data-code"><code class="code-block">from hypergraphx.readwrite import (
+    search_remote_datasets,
+    load_hypergraph_from_server,
+)
+from hypergraphx.measures.degree import degree_sequence
+
+matches = search_remote_datasets(tags="Food")
+dataset = matches[0]["name"]
+
+h = load_hypergraph_from_server(dataset, fmt="json")
+print(dataset, h.num_nodes(), h.num_edges())
+print(degree_sequence(h))</code></pre>
+      </section>
+
+      <section id="get-started" class="cta">
+        <div class="cta-card">
+          <div>
+            <p class="eyebrow">Get started</p>
+            <h2>Install Hypergraphx.</h2>
+            <p>
+              Start with the package, then use the documentation and tutorials
+              for the parts of the API you need.
+            </p>
+            <div class="install">
+              <span>Install</span>
+              <code>pip install hypergraphx</code>
+            </div>
+          </div>
+          <div class="cta-actions">
+            <a class="btn btn-primary" href="https://hypergraphx.readthedocs.io">
+              API docs
+            </a>
+            <a class="btn btn-ghost" href="https://github.com/HGX-Team/hypergraphx">
+              GitHub
+            </a>
+            <a class="btn btn-ghost" href="https://arxiv.org/pdf/2303.15356.pdf">
+              Paper
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section id="citation" class="citation">
+        <div class="citation-copy">
+          <p class="eyebrow">Citation</p>
+          <h2>How to cite Hypergraphx.</h2>
+          <p>
+            If you use Hypergraphx in a publication, cite the paper below.
+          </p>
+          <div class="resource-links">
+            <a href="https://arxiv.org/pdf/2303.15356.pdf">Read the paper</a>
+            <a href="https://github.com/HGX-Team/hypergraphx">Repository</a>
+          </div>
+        </div>
+        <div class="citation-box">
+          <div class="citation-label">BibTeX</div>
+          <pre class="code-shell"><code class="code-block">@article{lotito2023hypergraphx,
+    author = {Lotito, Quintino Francesco and Contisciani, Martina and De Bacco, Caterina and Di Gaetano, Leonardo and Gallo, Luca and Montresor, Alberto and Musciotto, Federico and Ruggeri, Nicolo and Battiston, Federico},
+    title = "{Hypergraphx: a library for higher-order network analysis}",
+    journal = {Journal of Complex Networks},
+    volume = {11},
+    number = {3},
+    year = {2023},
+    month = {05},
+    issn = {2051-1329},
+    doi = {10.1093/comnet/cnad019},
+    url = {https://doi.org/10.1093/comnet/cnad019},
+    note = {cnad019},
+    eprint = {https://academic.oup.com/comnet/article-pdf/11/3/cnad019/50461094/cnad019.pdf},
+}</code></pre>
+        </div>
+      </section>
+
+      <div class="back-to-top">
+        <a href="#" aria-label="Back to top">
+          <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
+          Back to top
+        </a>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Developed and maintained by
+        <a href="https://github.com/HGX-Team">HGX-Team</a>.
+        Contributions are welcome through
+        <a href="https://github.com/HGX-Team/hypergraphx/issues">issues</a>
+        and
+        <a href="https://github.com/HGX-Team/hypergraphx/blob/main/CONTRIBUTING.md">
+          pull requests
+        </a>.
+      </p>
+      <div class="footer-links">
+        <a href="https://github.com/HGX-Team/hypergraphx">GitHub</a>
+        <a href="https://hypergraphx.readthedocs.io">Docs</a>
+        <a href="https://github.com/HGX-Team/hypergraphx/tree/master/tutorials">
+          Tutorials
+        </a>
+        <a href="https://hgx-team.github.io/hypergraphx-data/">Data</a>
+        <a href="https://pypi.org/project/hypergraphx/">PyPI</a>
+        <a href="https://arxiv.org/pdf/2303.15356.pdf">Paper</a>
+        <a href="mailto:quintino.lotito@unitn.it">Contact</a>
+      </div>
+    </footer>
+
+    <script>
+      const navToggle = document.querySelector(".nav-toggle");
+      const mobileMenu = document.getElementById("mobile-menu");
+
+      const closeMenu = () => {
+        if (!navToggle || !mobileMenu) return;
+        navToggle.setAttribute("aria-expanded", "false");
+        mobileMenu.hidden = true;
+      };
+
+      const openMenu = () => {
+        if (!navToggle || !mobileMenu) return;
+        navToggle.setAttribute("aria-expanded", "true");
+        mobileMenu.hidden = false;
+      };
+
+      if (navToggle && mobileMenu) {
+        navToggle.addEventListener("click", () => {
+          const expanded = navToggle.getAttribute("aria-expanded") === "true";
+          if (expanded) closeMenu();
+          else openMenu();
+        });
+
+        mobileMenu.addEventListener("click", (e) => {
+          const target = e.target;
+          if (target && target.tagName === "A") closeMenu();
+        });
+
+        window.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") closeMenu();
+        });
+      }
+
+      const codeBlock = document.getElementById("code-typed-text");
+      const prefersReduced = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+      const escapeHtml = (value) =>
+        value
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      const highlightCode = (source) => {
+        const pattern =
+          /(#.*|"""[\s\S]*?"""|'''[\s\S]*?'''|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|@[A-Za-z_][\w-]*|\b(?:from|import|as|for|while|if|else|elif|return|with|print|in|not|and|or|True|False|None)\b|\b(?:author|title|journal|volume|number|year|month|issn|doi|url|note|eprint)\b(?=\s*=)|\b\d+(?:\.\d+)?\b)/g;
+        let html = "";
+        let cursor = 0;
+        source.replace(pattern, (match, _token, offset) => {
+          html += escapeHtml(source.slice(cursor, offset));
+          let tokenClass = "tok-name";
+          if (match.startsWith("#")) tokenClass = "tok-comment";
+          else if (match.startsWith("\"") || match.startsWith("'")) {
+            tokenClass = "tok-string";
+          } else if (/^\d/.test(match)) tokenClass = "tok-number";
+          else tokenClass = "tok-keyword";
+          html += `<span class="${tokenClass}">${escapeHtml(match)}</span>`;
+          cursor = offset + match.length;
+          return match;
+        });
+        return html + escapeHtml(source.slice(cursor));
+      };
+      document
+        .querySelectorAll("code.code-block:not(#code-typed)")
+        .forEach((block) => {
+          block.innerHTML = highlightCode(block.textContent);
+        });
+      const code =
+        "from hypergraphx import Hypergraph\n" +
+        "from hypergraphx.viz import draw_hypergraph\n\n" +
+        "edges = [\n" +
+        "    (0, 1, 2),\n" +
+        "    (2, 3),\n" +
+        "    (3, 4, 5),\n" +
+        "    (1, 4),\n" +
+        "    (0, 2, 4, 6),\n" +
+        "    (0, 5),\n" +
+        "    (1, 6),\n" +
+        "]\n" +
+        "h = Hypergraph(edges)\n" +
+        "draw_hypergraph(h, edge_color=\"#121417\", node_size=250)";
+      const copyText = async (value) => {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(value);
+          return;
+        }
+        const textArea = document.createElement("textarea");
+        textArea.value = value;
+        textArea.setAttribute("readonly", "");
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.select();
+        const copied = document.execCommand("copy");
+        textArea.remove();
+        if (!copied) throw new Error("Copy command failed");
+      };
+      document.querySelectorAll(".code-shell").forEach((shell) => {
+        const block = shell.querySelector("code.code-block");
+        if (!block) return;
+        const button = document.createElement("button");
+        button.className = "copy-code";
+        button.type = "button";
+        button.setAttribute("aria-label", "Copy code");
+        button.innerHTML =
+          '<i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span>';
+        button.addEventListener("click", async () => {
+          const text = block.id === "code-typed" ? code : block.textContent;
+          try {
+            await copyText(text);
+            button.innerHTML =
+              '<i class="fa-solid fa-check" aria-hidden="true"></i><span>Copied</span>';
+            window.setTimeout(() => {
+              button.innerHTML =
+                '<i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span>';
+            }, 1400);
+          } catch (_error) {
+            button.innerHTML =
+              '<i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Failed</span>';
+          }
+        });
+        shell.appendChild(button);
+      });
+      if (codeBlock && prefersReduced) {
+        codeBlock.innerHTML = highlightCode(code);
+      } else if (codeBlock) {
+        const heroShell = codeBlock.closest(".code-shell");
+        const scrollHeroCode = () => {
+          if (!heroShell) return;
+          heroShell.scrollTop = heroShell.scrollHeight;
+        };
+        let index = 0;
+        let forward = true;
+        const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+        codeBlock.textContent = "";
+        const tick = async () => {
+          if (forward) {
+            if (index <= code.length) {
+              codeBlock.innerHTML = highlightCode(code.slice(0, index));
+              scrollHeroCode();
+              index += 1;
+            }
+            if (index > code.length) {
+              forward = false;
+              await pause(1200);
+            }
+          } else {
+            if (index > 0) {
+              index -= 1;
+              codeBlock.innerHTML = highlightCode(code.slice(0, index));
+              scrollHeroCode();
+            } else {
+              forward = true;
+              await pause(600);
+            }
+          }
+          window.setTimeout(tick, forward ? 32 : 18);
+        };
+        tick();
+      }
+    </script>
+  </body>
+</html>
