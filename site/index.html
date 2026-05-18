@@ -573,7 +573,7 @@ print(degree_sequence(h))</code></pre>
           .replace(/>/g, "&gt;");
       const highlightCode = (source) => {
         const pattern =
-          /(#.*|"""[\s\S]*?"""|'''[\s\S]*?'''|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|@[A-Za-z_][\w-]*|\b(?:from|import|as|for|while|if|else|elif|return|with|print|in|not|and|or|True|False|None)\b|\b(?:author|title|journal|volume|number|year|month|issn|doi|url|note|eprint)\b(?=\s*=)|\b\d+(?:\.\d+)?\b)/g;
+          /(#.*|"""[\s\S]*?"""|'''[\s\S]*?'''|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|@[A-Za-z_][\w-]*|\b(?:from|import|as|for|while|if|else|elif|return|with|print|in|not|and|or|True|False|None)\b|\b(?:author|title|journal|volume|number|year|month|issn|doi|url|note|eprint|pages|publisher)\b(?=\s*=)|\b\d+(?:\.\d+)?\b)/g;
         let html = "";
         let cursor = 0;
         source.replace(pattern, (match, _token, offset) => {
