@@ -8,6 +8,9 @@
       name="description"
       content="Hypergraphx is a research-friendly Python library for building, analyzing, and visualizing hypergraphs."
     />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -18,8 +21,8 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
-    <link rel="icon" href="assets/hgx-logo-mark.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="assets/hgx-logo-mark.svg?v=20260518" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css?v=20260518" />
   </head>
   <body>
     <div class="bg">
@@ -32,7 +35,7 @@
       <div class="site-header-inner">
         <div class="logo">
           <span class="logo-mark">
-            <img src="assets/hgx-logo-mark.svg" alt="Hypergraphx logo" />
+            <img src="assets/hgx-logo-mark.svg?v=20260518" alt="Hypergraphx logo" />
           </span>
           <span class="logo-type">Hypergraphx</span>
         </div>
@@ -147,7 +150,7 @@
           <pre class="code-shell code-shell-hero"><code id="code-typed" class="code-block"><span id="code-typed-text"></span><span class="cursor" aria-hidden="true"></span></code></pre>
           <div class="rendered-viz">
             <img
-              src="assets/hero-simple-hypergraph.svg"
+              src="assets/hero-simple-hypergraph.svg?v=20260518"
               alt="Small hypergraph visualization"
               loading="lazy"
             />
@@ -357,7 +360,7 @@ h = random_hypergraph(
 )</code></pre>
               <div class="rendered-viz">
                 <img
-                  src="assets/hypergraph-step-1.png"
+                  src="assets/hypergraph-step-1.png?v=20260518"
                   alt="Random hypergraph preview"
                   loading="lazy"
                 />
@@ -376,7 +379,7 @@ deg = degree_sequence(h)
 plt.hist(deg.values())</code></pre>
               <div class="rendered-viz">
                 <img
-                  src="assets/hypergraph-step-2.png"
+                  src="assets/hypergraph-step-2.png?v=20260518"
                   alt="Degree centrality histogram"
                   loading="lazy"
                 />
@@ -396,7 +399,7 @@ top = set(sorted(deg, key=deg.get, reverse=True)[:2])
 draw_hypergraph(h)  # then recolor top nodes</code></pre>
               <div class="rendered-viz">
                 <img
-                  src="assets/hypergraph-step-3.png"
+                  src="assets/hypergraph-step-3.png?v=20260518"
                   alt="Hypergraph visualization with highlighted hubs"
                   loading="lazy"
                 />
