@@ -24,6 +24,11 @@ from hypergraphx.readwrite.load import (
 from hypergraphx.readwrite.save import save_hypergraph
 
 
+DEFAULT_CATALOG_URL = (
+    "https://hgx-team.github.io/hypergraphx-data/static/js/related-data.js"
+)
+
+
 def _make_weighted_hypergraph():
     return Hypergraph(
         edge_list=[(0, 1), (1, 2, 3)],
@@ -381,7 +386,7 @@ def test_download_remote_dataset_uses_catalog_url(monkeypatch, tmp_path):
 
     def fake_download(url, timeout=30, verify_ssl=True):
         requested.append(url)
-        if url.endswith("catalog.json"):
+        if url == DEFAULT_CATALOG_URL:
             return catalog_payload
         if url == "https://example.org/files/custom-name.hgx.gz":
             return payload
@@ -394,7 +399,7 @@ def test_download_remote_dataset_uses_catalog_url(monkeypatch, tmp_path):
     assert path == tmp_path / "cache" / "toy" / "custom-name.hgx"
     assert path.read_bytes() == b"downloaded payload"
     assert requested == [
-        "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/main/catalog.json",
+        DEFAULT_CATALOG_URL,
         "https://example.org/files/custom-name.hgx.gz",
     ]
 
@@ -422,7 +427,7 @@ def test_download_remote_dataset_json_format(monkeypatch, tmp_path):
 
     def fake_download(url, timeout=30, verify_ssl=True):
         requested.append(url)
-        if url.endswith("catalog.json"):
+        if url == DEFAULT_CATALOG_URL:
             return catalog_payload
         if url == "https://example.org/files/custom-name.json.gz":
             return payload
@@ -435,7 +440,7 @@ def test_download_remote_dataset_json_format(monkeypatch, tmp_path):
     assert path == tmp_path / "cache" / "toy" / "custom-name.json"
     assert path.read_bytes() == b"json payload"
     assert requested == [
-        "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/main/catalog.json",
+        DEFAULT_CATALOG_URL,
         "https://example.org/files/custom-name.json.gz",
     ]
 
@@ -495,7 +500,7 @@ def test_download_remote_datasets_by_name_reuses_catalog(monkeypatch, tmp_path):
 
     def fake_download(url, timeout=30, verify_ssl=True):
         requested.append(url)
-        if url.endswith("catalog.json"):
+        if url == DEFAULT_CATALOG_URL:
             return catalog_payload
         if url == "https://example.org/zoo/zoo.hgx.gz":
             return gzip.compress(b"zoo payload")
@@ -518,7 +523,7 @@ def test_download_remote_datasets_by_name_reuses_catalog(monkeypatch, tmp_path):
     assert results["Marvel"]["path"].read_bytes() == b"Marvel payload"
     assert [result["status"] for result in progress] == ["downloaded", "downloaded"]
     assert requested == [
-        "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/main/catalog.json",
+        DEFAULT_CATALOG_URL,
         "https://example.org/zoo/zoo.hgx.gz",
         "https://example.org/Marvel/Marvel.hgx.gz",
     ]
@@ -560,7 +565,7 @@ def test_download_remote_datasets_filters_and_continues_on_error(monkeypatch, tm
     ).encode()
 
     def fake_download(url, timeout=30, verify_ssl=True):
-        if url.endswith("catalog.json"):
+        if url == DEFAULT_CATALOG_URL:
             return catalog_payload
         if url == "https://example.org/ok/ok.hgx.gz":
             return gzip.compress(b"ok payload")
@@ -619,7 +624,7 @@ def test_list_remote_datasets(monkeypatch):
     ]
     assert requested == [
         (
-            "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/main/catalog.json",
+            DEFAULT_CATALOG_URL,
             False,
         )
     ]
@@ -671,7 +676,7 @@ def test_list_remote_datasets_catalog_json(monkeypatch):
     )
     assert requested == [
         (
-            "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/main/catalog.json",
+            DEFAULT_CATALOG_URL,
             False,
         )
     ]
@@ -721,7 +726,7 @@ def test_load_hypergraph_from_server_uses_catalog_download_url(monkeypatch, tmp_
 
     def fake_download(url, timeout=30, verify_ssl=True):
         requested.append(url)
-        if url.endswith("catalog.json"):
+        if url == DEFAULT_CATALOG_URL:
             return catalog_payload
         if url == "https://example.org/files/custom-name.hgx.gz":
             return gz_payload
@@ -734,7 +739,7 @@ def test_load_hypergraph_from_server_uses_catalog_download_url(monkeypatch, tmp_
     assert isinstance(loaded, Hypergraph)
     assert set(loaded.get_edges()) == set(hg.get_edges())
     assert requested == [
-        "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/main/catalog.json",
+        DEFAULT_CATALOG_URL,
         "https://example.org/files/custom-name.hgx.gz",
     ]
     assert (tmp_path / "cache" / "toy" / "custom-name.hgx").exists()

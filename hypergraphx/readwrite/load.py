@@ -25,13 +25,7 @@ from hypergraphx.readwrite.io_json import (
 from hypergraphx.readwrite.io_pickle import load_pickle
 
 _BASE = "https://cricca.disi.unitn.it/datasets/hypergraphx-data"
-_CATALOG_URL = (
-    "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/" "main/catalog.json"
-)
-_RELATED_DATA_URL = (
-    "https://raw.githubusercontent.com/HGX-Team/hypergraphx-data/"
-    "main/dist/static/js/related-data.js"
-)
+_CATALOG_URL = "https://hgx-team.github.io/hypergraphx-data/static/js/related-data.js"
 
 __all__ = [
     "download_remote_dataset",
@@ -346,7 +340,7 @@ def _catalog_url_candidates(catalog_url: str | None = None):
     explicit = catalog_url or os.environ.get("HYPERGRAPHX_DATA_CATALOG_URL")
     if explicit:
         return [explicit]
-    return [_CATALOG_URL, _RELATED_DATA_URL]
+    return [_CATALOG_URL]
 
 
 def _load_remote_dataset_catalog(
