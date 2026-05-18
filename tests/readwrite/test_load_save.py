@@ -23,7 +23,6 @@ from hypergraphx.readwrite.load import (
 )
 from hypergraphx.readwrite.save import save_hypergraph
 
-
 DEFAULT_CATALOG_URL = (
     "https://hgx-team.github.io/hypergraphx-data/static/js/related-data.js"
 )
