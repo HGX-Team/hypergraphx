@@ -357,7 +357,7 @@ h = random_hypergraph(
 )</code></pre>
               <div class="rendered-viz">
                 <img
-                  src="assets/hypergraph-step-1.svg"
+                  src="assets/hypergraph-step-1.png"
                   alt="Random hypergraph preview"
                   loading="lazy"
                 />
@@ -376,7 +376,7 @@ deg = degree_sequence(h)
 plt.hist(deg.values())</code></pre>
               <div class="rendered-viz">
                 <img
-                  src="assets/hypergraph-step-2.svg"
+                  src="assets/hypergraph-step-2.png"
                   alt="Degree centrality histogram"
                   loading="lazy"
                 />
@@ -396,7 +396,7 @@ top = set(sorted(deg, key=deg.get, reverse=True)[:2])
 draw_hypergraph(h)  # then recolor top nodes</code></pre>
               <div class="rendered-viz">
                 <img
-                  src="assets/hypergraph-step-3.svg"
+                  src="assets/hypergraph-step-3.png"
                   alt="Hypergraph visualization with highlighted hubs"
                   loading="lazy"
                 />

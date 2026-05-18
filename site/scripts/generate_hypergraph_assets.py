@@ -70,8 +70,14 @@ def save_svg(
             ax=ax,
         )
     ax.axis("off")
+    output_format = path.suffix.lstrip(".") or "svg"
     fig.savefig(
-        path, format="svg", transparent=True, bbox_inches="tight", pad_inches=0.2
+        path,
+        format=output_format,
+        transparent=True,
+        bbox_inches="tight",
+        pad_inches=0.2,
+        dpi=180,
     )
     plt.close(fig)
 
@@ -122,8 +128,14 @@ def save_degree_histogram_svg(path, degrees: dict, accent: str, ink: str):
     ax.set_axisbelow(True)
     ax.set_facecolor("none")
     fig.patch.set_alpha(0)
+    output_format = path.suffix.lstrip(".") or "svg"
     fig.savefig(
-        path, format="svg", transparent=True, bbox_inches="tight", pad_inches=0.25
+        path,
+        format=output_format,
+        transparent=True,
+        bbox_inches="tight",
+        pad_inches=0.25,
+        dpi=180,
     )
     plt.close(fig)
 
@@ -148,7 +160,7 @@ def main():
     values = [degrees.get(n, 0) for n in nodes]
     scaled = normalize(values)
 
-    step_dir = pathlib.Path("assets")
+    step_dir = pathlib.Path(__file__).resolve().parent.parent / "assets"
     step_dir.mkdir(parents=True, exist_ok=True)
 
     save_simple_hero_svg(step_dir / "hero-simple-hypergraph.svg", palette)
@@ -169,7 +181,7 @@ def main():
     )
 
     save_svg(
-        step_dir / "hypergraph-step-1.svg",
+        step_dir / "hypergraph-step-1.png",
         hypergraph,
         pos=None,
         node_color="#f2efe9",
@@ -181,7 +193,7 @@ def main():
     )
 
     save_degree_histogram_svg(
-        step_dir / "hypergraph-step-2.svg",
+        step_dir / "hypergraph-step-2.png",
         degrees=degrees,
         accent="#e27b4f",
         ink="#121417",
@@ -190,7 +202,7 @@ def main():
     top2 = set(sorted(degrees, key=degrees.get, reverse=True)[:2])
 
     save_svg(
-        step_dir / "hypergraph-step-3.svg",
+        step_dir / "hypergraph-step-3.png",
         hypergraph,
         pos,
         node_color="#f2efe9",
