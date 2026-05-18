@@ -178,8 +178,22 @@ Projections and matrices
    A = adjacency_matrix(hg)
    G = clique_projection(hg)
 
-Configuration model
--------------------
+Random generation
+-----------------
+
+Use ``random_hypergraph`` to sample a simple random hypergraph with exact
+unique-edge counts by size. Requests that exceed the number of possible
+combinations are rejected.
+
+.. code-block:: python
+
+   from hypergraphx.generation import random_hypergraph
+
+   hg_sample = random_hypergraph(10, {2: 20, 3: 10}, seed=0)
+
+For dense requests, ``random_hypergraph`` switches from rejection sampling to
+direct combination sampling to avoid slowdown near saturation. Tune this with
+``dense_threshold`` and ``max_tries_factor`` if needed.
 
 Use ``configuration_model`` to randomize a hypergraph with a
 configuration-model-style MCMC sampler.

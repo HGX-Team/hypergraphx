@@ -2,6 +2,8 @@
 Generate random hypergraphs
 """
 
+import math
+
 import numpy as np
 
 from hypergraphx import Hypergraph
@@ -9,10 +11,68 @@ from hypergraphx.exceptions import InvalidParameterError
 from hypergraphx.generation._rng import np_rng, py_rng, split_seed
 
 
-def random_hypergraph(num_nodes: int, num_edges_by_size: dict, seed: int | None = None):
+def _unrank_combination(nodes, size, rank):
+    """Return the lexicographic combination with the given zero-based rank."""
+    n = len(nodes)
+    combination = []
+    start = 0
+    for remaining in range(size, 0, -1):
+        for idx in range(start, n - remaining + 1):
+            count = math.comb(n - idx - 1, remaining - 1)
+            if rank < count:
+                combination.append(nodes[idx])
+                start = idx + 1
+                break
+            rank -= count
+    return tuple(combination)
+
+
+def _sample_unique_edges(
+    nodes,
+    size,
+    num_edges,
+    rng,
+    *,
+    dense_threshold,
+    max_tries_factor,
+):
+    max_edges = math.comb(len(nodes), size)
+    if num_edges > max_edges:
+        raise ValueError(
+            f"Requested {num_edges} unique hyperedges of size {size}, but only "
+            f"C({len(nodes)}, {size})={max_edges} exist."
+        )
+
+    use_direct_sampling = num_edges > dense_threshold * max_edges
+    if use_direct_sampling:
+        ranks = rng.sample(range(max_edges), num_edges)
+        return [_unrank_combination(nodes, size, rank) for rank in ranks]
+
+    edges = set()
+    tries = 0
+    max_tries = max(10, max_tries_factor * max(1, num_edges))
+    while len(edges) < num_edges:
+        if tries > max_tries:
+            ranks = rng.sample(range(max_edges), num_edges)
+            return [_unrank_combination(nodes, size, rank) for rank in ranks]
+        edges.add(tuple(sorted(rng.sample(nodes, size))))
+        tries += 1
+    return list(edges)
+
+
+def random_hypergraph(
+    num_nodes: int,
+    num_edges_by_size: dict,
+    seed: int | None = None,
+    dense_threshold: float = 0.25,
+    max_tries_factor: int = 50,
+):
     """
-    Generate a random hypergraph with a given number of nodes and hyperedges for each size.
-    If a hyperedge is sampled multiple times, it will be added to the hypergraph only once.
+    Generate a random hypergraph with unique hyperedges for each requested size.
+
+    The requested counts are interpreted as exact numbers of unique hyperedges.
+    Sparse requests use rejection sampling. Dense requests sample combinations
+    directly without replacement to avoid slowdown near saturation.
 
     Parameters
     ----------
@@ -21,38 +81,75 @@ def random_hypergraph(num_nodes: int, num_edges_by_size: dict, seed: int | None 
         A dictionary mapping the size of the hyperedges to the number of hyperedges of that size.
     seed : int, optional
         Seed for the random number generator.
+    dense_threshold : float, optional
+        Fraction of all possible hyperedges above which combinations are sampled
+        directly without replacement. Default is 0.25.
+    max_tries_factor : int, optional
+        Rejection-sampling attempt budget, as a multiple of the requested edge
+        count. If exceeded, direct combination sampling is used.
 
     Returns
     -------
     Hypergraph
         A random hypergraph with the given number of nodes and hyperedges for each size.
 
+    Raises
+    ------
+    ValueError
+        If a requested size/count is invalid or asks for more unique hyperedges
+        than exist.
+
     Examples
     --------
     >>> from hypergraphx.generation import random_hypergraph
-    >>> random_hypergraph(10, {2: 5, 3: 3})
-    Hypergraph with 10 nodes and 8 edges.
-    Edge list: [(3, 4), (4, 9), (7, 9), (8, 9), (3, 6), (0, 6, 9), (3, 6, 8), (1, 3, 4)]
+    >>> hg = random_hypergraph(10, {2: 5, 3: 3}, seed=0)
+    >>> hg.num_edges()
+    8
     """
+    if num_nodes < 0:
+        raise ValueError("num_nodes must be nonnegative")
+    if not (0 <= dense_threshold <= 1):
+        raise ValueError("dense_threshold must be between 0 and 1")
+    if max_tries_factor < 1:
+        raise ValueError("max_tries_factor must be at least 1")
+
     rng = py_rng(seed)
     h = Hypergraph()
     nodes = list(range(num_nodes))
     h.add_nodes(nodes)
-    for size in num_edges_by_size:
-        edges = list()
-        while len(edges) < num_edges_by_size[size]:
-            edges.append(tuple(sorted(rng.sample(nodes, size))))
-        edges = set(edges)
-        h.add_edges(list(edges))
+    for size, num_edges in num_edges_by_size.items():
+        if int(size) != size or size < 1:
+            raise ValueError(f"Hyperedge size must be a positive integer, got {size}")
+        if size > num_nodes:
+            raise ValueError(
+                f"Hyperedge size {size} cannot exceed num_nodes {num_nodes}"
+            )
+        if int(num_edges) != num_edges or num_edges < 0:
+            raise ValueError(
+                f"Number of hyperedges must be a nonnegative integer, got {num_edges}"
+            )
+        edges = _sample_unique_edges(
+            nodes,
+            int(size),
+            int(num_edges),
+            rng,
+            dense_threshold=dense_threshold,
+            max_tries_factor=max_tries_factor,
+        )
+        h.add_edges(edges)
     return h
 
 
 def random_uniform_hypergraph(
-    num_nodes: int, size: int, num_edges: int, seed: int | None = None
+    num_nodes: int,
+    size: int,
+    num_edges: int,
+    seed: int | None = None,
+    dense_threshold: float = 0.25,
+    max_tries_factor: int = 50,
 ):
     """
-    Generate a random hypergraph with a given number of nodes and hyperedges of a given size.
-    If a hyperedge is sampled multiple times, it will be added to the hypergraph only once.
+    Generate a random hypergraph with a given number of unique same-size hyperedges.
 
     Parameters
     ----------
@@ -64,13 +161,25 @@ def random_uniform_hypergraph(
         The number of hyperedges of the given size.
     seed : int, optional
         Seed for the random number generator.
+    dense_threshold : float, optional
+        Fraction of all possible hyperedges above which combinations are sampled
+        directly without replacement. Default is 0.25.
+    max_tries_factor : int, optional
+        Rejection-sampling attempt budget, as a multiple of the requested edge
+        count. If exceeded, direct combination sampling is used.
 
     Returns
     -------
     Hypergraph
         A random hypergraph with the given number of nodes and hyperedges of the given size.
     """
-    return random_hypergraph(num_nodes, {size: num_edges}, seed)
+    return random_hypergraph(
+        num_nodes,
+        {size: num_edges},
+        seed,
+        dense_threshold=dense_threshold,
+        max_tries_factor=max_tries_factor,
+    )
 
 
 def random_shuffle(

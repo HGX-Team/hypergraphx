@@ -1,6 +1,11 @@
 import pytest
 import random
-from hypergraphx.generation.random import random_shuffle, random_shuffle_all_orders
+from hypergraphx.generation.random import (
+    random_hypergraph,
+    random_shuffle,
+    random_shuffle_all_orders,
+    random_uniform_hypergraph,
+)
 from hypergraphx import Hypergraph
 
 
@@ -28,6 +33,45 @@ def test_no_shuffle(dummy_hypergraph):
     assert set(new_edges) == set(
         original_edges
     ), f"Expected edges unchanged for p=0, got {new_edges}"
+
+
+def test_random_hypergraph_returns_requested_unique_edges_dense():
+    hg = random_hypergraph(3, {2: 3}, seed=0)
+
+    assert hg.num_edges() == 3
+    assert set(hg.get_edges()) == {(0, 1), (0, 2), (1, 2)}
+
+
+def test_random_uniform_hypergraph_returns_requested_unique_edges():
+    hg = random_uniform_hypergraph(4, 2, 6, seed=0)
+
+    assert hg.num_edges() == 6
+    assert set(hg.get_edges()) == {
+        (0, 1),
+        (0, 2),
+        (0, 3),
+        (1, 2),
+        (1, 3),
+        (2, 3),
+    }
+
+
+def test_random_hypergraph_rejects_impossible_unique_edge_count():
+    with pytest.raises(ValueError, match=r"only C\(3, 2\)=3 exist"):
+        random_hypergraph(3, {2: 4}, seed=0)
+
+
+def test_random_hypergraph_falls_back_after_rejection_budget():
+    hg = random_hypergraph(
+        5,
+        {2: 5},
+        seed=0,
+        dense_threshold=1.0,
+        max_tries_factor=1,
+    )
+
+    assert hg.num_edges() == 5
+    assert len(set(hg.get_edges())) == 5
 
 
 def test_full_shuffle():
