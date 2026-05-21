@@ -290,10 +290,6 @@ class BaseHypergraph(SerializationMixin):
         val = os.getenv("HGX_DEBUG_INVARIANTS", "")
         return val.strip().lower() in {"1", "true", "yes", "on"}
 
-    def validate_invariants(self) -> None:
-        """Public hook to validate internal consistency (useful in debugging)."""
-        self._validate_invariants()
-
     def _validate_invariants(self) -> None:
         """
         Validate internal data-structure consistency.
