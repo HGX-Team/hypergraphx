@@ -717,6 +717,15 @@ def test_get_incident_edges_empty_adj_list():
     assert incident_edges == [], "Node 1 should have no incident edges."
 
 
+def test_set_attr_to_node_metadata_updates_single_field():
+    hg = Hypergraph()
+    hg.add_node(1, metadata={"class": "A"})
+
+    hg.set_attr_to_node_metadata(1, "role", "student")
+
+    assert hg.get_node_metadata(1) == {"class": "A", "role": "student"}
+
+
 def test_expose_and_populate_roundtrip():
     hg = Hypergraph(
         edge_list=[(1, 2, 3), (2, 4)],
