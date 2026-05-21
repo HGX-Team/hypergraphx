@@ -80,7 +80,7 @@ def draw_hypergraph(
     hyperedge_facecolor_by_order: Optional[dict] = None,
     edge_width: float = 1.2,
     hyperedge_alpha: Union[float, np.array] = 0.8,
-    node_size: Union[int, np.array] = 150,
+    node_size: Union[int, float, np.array, dict] = 150,
     node_color: Union[str, np.array] = "#E2E0DD",
     node_facecolor: Union[str, np.array] = "black",
     node_shape: str = "o",
@@ -97,6 +97,9 @@ def draw_hypergraph(
 
     Parameters
     ----------
+    node_size : int, float, numpy.ndarray, or dict
+        Node marker size. If a dict is provided, keys must be the hypergraph nodes and
+        values are the corresponding marker sizes.
     show : bool
         If True, call plt.show().
 
@@ -168,6 +171,10 @@ def draw_hypergraph(
         node_size = {n: node_size[i] for i, n in enumerate(nodes)}
     elif not isinstance(node_size, dict):
         node_size = {n: node_size for n in nodes}
+    if isinstance(node_size, dict):
+        missing_sizes = set(nodes) - set(node_size.keys())
+        if missing_sizes:
+            raise ValueError("node_size is missing entries for some nodes.")
     if isinstance(node_color, np.ndarray):
         if len(node_color) != len(nodes):
             raise ValueError("node_color length must match number of nodes.")

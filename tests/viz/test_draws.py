@@ -3,6 +3,7 @@ import matplotlib
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
+import pytest
 
 from hypergraphx import Hypergraph
 from hypergraphx.viz.draw_hypergraph import draw_hypergraph
@@ -22,6 +23,23 @@ def test_draw_hypergraph_smoke(monkeypatch):
     hg = _make_hypergraph()
 
     draw_hypergraph(hg)
+
+
+def test_draw_hypergraph_accepts_node_size_dict(monkeypatch):
+    monkeypatch.setattr(plt, "show", lambda: None)
+    hg = _make_hypergraph()
+
+    ax = draw_hypergraph(hg, node_size={0: 100, 1: 200, 2: 300, 3: 400})
+
+    assert ax is not None
+
+
+def test_draw_hypergraph_node_size_dict_requires_all_nodes(monkeypatch):
+    monkeypatch.setattr(plt, "show", lambda: None)
+    hg = _make_hypergraph()
+
+    with pytest.raises(ValueError, match="node_size is missing entries"):
+        draw_hypergraph(hg, node_size={0: 100, 1: 200})
 
 
 def test_draw_projections(monkeypatch):
