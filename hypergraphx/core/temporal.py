@@ -147,6 +147,10 @@ class TemporalHypergraph(BaseHypergraph):
     def _hash_edge_nodes(self, edge_key):
         return (edge_key[0], tuple(sorted(edge_key[1])))
 
+    def _relabel_edge_key(self, edge_key, mapping):
+        time, edge = edge_key
+        return (time, tuple(sorted(mapping[node] for node in edge)))
+
     # Node
     def add_node(self, node, metadata=None):
         super().add_node(node, metadata=metadata)
@@ -679,6 +683,8 @@ class TemporalHypergraph(BaseHypergraph):
         keep_hypergraph_metadata: bool = True,
         time_window=None,
         keep_time_as=None,
+        top_weight_percent=None,
+        drop_isolated_nodes_after_filter: bool = False,
     ):
         """Convert to an undirected Hypergraph by dropping time information.
 
@@ -693,6 +699,12 @@ class TemporalHypergraph(BaseHypergraph):
         keep_time_as : str | None, optional
             If provided and edge metadata is kept, store the original time under
             this metadata key before duplicate hyperedges are merged.
+        top_weight_percent : float | None, optional
+            If provided, keep only static hyperedges whose aggregated weight is
+            in the top ``top_weight_percent`` percent after conversion.
+        drop_isolated_nodes_after_filter : bool, default=False
+            If True and ``top_weight_percent`` is provided, remove nodes that
+            become isolated after weight filtering.
         """
         from hypergraphx.core.undirected import Hypergraph
         from hypergraphx.utils.metadata import merge_metadata
@@ -726,6 +738,13 @@ class TemporalHypergraph(BaseHypergraph):
 
         for edge, weight in edge_weights.items():
             hg.add_edge(edge, weight=weight, metadata=edge_metadata.get(edge))
+
+        if top_weight_percent is not None:
+            hg.filter_by_weight(
+                top_percent=top_weight_percent,
+                inplace=True,
+                drop_isolated_nodes_after_filter=drop_isolated_nodes_after_filter,
+            )
 
         return hg
 

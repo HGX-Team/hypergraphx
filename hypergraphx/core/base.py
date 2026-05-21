@@ -190,11 +190,69 @@ class BaseHypergraph(SerializationMixin):
     def _hash_edge_nodes(self, edge_key):
         return sorted(self._edge_nodes(edge_key))
 
+    def _relabel_edge_key(self, edge_key, mapping):
+        return tuple(sorted(mapping[node] for node in edge_key))
+
     def _validate_metadata_dict(self, metadata, label):
         if metadata is None:
             return
         if not isinstance(metadata, dict):
             raise InvalidParameterError(f"{label} metadata must be a dict.")
+
+    def normalize_ids(self):
+        """
+        Relabel nodes to dense integer ids from 0 to N-1.
+
+        The method mutates the hypergraph in place and stores each original
+        node label in node metadata under ``id_before_normalization``.
+
+        Returns
+        -------
+        dict
+            Mapping from old node labels to new integer ids.
+        """
+        from hypergraphx.utils.labeling import fit_node_encoder
+
+        try:
+            ordered_nodes = sorted(self.get_nodes())
+        except TypeError:
+            ordered_nodes = fit_node_encoder(self.get_nodes()).classes_
+        mapping = {node: i for i, node in enumerate(ordered_nodes)}
+
+        hypergraph_metadata = copy.deepcopy(self._hypergraph_metadata)
+        node_metadata = copy.deepcopy(self._node_metadata)
+        edges = [
+            (
+                edge_key,
+                self._weights.get(edge_id, 1),
+                copy.deepcopy(self._edge_metadata.get(edge_id, {})),
+            )
+            for edge_key, edge_id in self._edge_list.items()
+        ]
+        incidences_metadata = copy.deepcopy(self._incidences_metadata)
+
+        self.clear()
+        self._hypergraph_metadata = hypergraph_metadata
+
+        for old_node in ordered_nodes:
+            metadata = copy.deepcopy(node_metadata.get(old_node, {}))
+            metadata["id_before_normalization"] = old_node
+            self.add_node(mapping[old_node], metadata=metadata)
+
+        for edge_key, weight, metadata in edges:
+            self._add_edge(
+                self._relabel_edge_key(edge_key, mapping),
+                weight=weight,
+                metadata=metadata,
+            )
+
+        for (edge_key, node), metadata in incidences_metadata.items():
+            self._incidences_metadata[
+                (self._relabel_edge_key(edge_key, mapping), mapping[node])
+            ] = metadata
+
+        self._maybe_validate_invariants()
+        return mapping
 
     def set_duplicate_policy(self, policy: str) -> None:
         self._duplicate_policy = policy
@@ -749,6 +807,23 @@ class BaseHypergraph(SerializationMixin):
                 )
             }
         return w if asdict else list(w.values())
+
+    def filter_by_weight(
+        self,
+        *,
+        top_percent: float,
+        inplace: bool = True,
+        drop_isolated_nodes_after_filter: bool = False,
+    ):
+        """Keep only hyperedges whose weight is in the top ``top_percent`` percent."""
+        from hypergraphx.filters import filter_by_weight
+
+        return filter_by_weight(
+            self,
+            top_percent=top_percent,
+            inplace=inplace,
+            drop_isolated_nodes_after_filter=drop_isolated_nodes_after_filter,
+        )
 
     # Info
     def max_order(self):

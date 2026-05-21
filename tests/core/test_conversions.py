@@ -200,6 +200,35 @@ def test_temporal_to_hypergraph_filters_time_window_and_keeps_time_metadata():
     assert set(hg.get_nodes()) == {0, 1}
 
 
+def test_temporal_to_hypergraph_filters_top_aggregated_weights():
+    thg = TemporalHypergraph(weighted=True)
+    thg.add_edge((0, 1), time=1, weight=1.0)
+    thg.add_edge((0, 1), time=2, weight=3.0)
+    thg.add_edge((1, 2), time=3, weight=2.0)
+    thg.add_edge((2, 3), time=4, weight=8.0)
+
+    hg = thg.to_hypergraph(top_weight_percent=50)
+
+    assert set(hg.get_edges()) == {(0, 1), (2, 3)}
+    assert hg.get_weight((0, 1)) == 4.0
+    assert hg.get_weight((2, 3)) == 8.0
+
+
+def test_temporal_to_hypergraph_drops_isolated_nodes_after_weight_filter():
+    thg = TemporalHypergraph(weighted=True)
+    thg.add_node(99, metadata={"isolated": True})
+    thg.add_edge((0, 1), time=1, weight=1.0)
+    thg.add_edge((1, 2), time=2, weight=10.0)
+
+    hg = thg.to_hypergraph(
+        top_weight_percent=50,
+        drop_isolated_nodes_after_filter=True,
+    )
+
+    assert set(hg.get_edges()) == {(1, 2)}
+    assert set(hg.get_nodes()) == {1, 2}
+
+
 def test_multiplex_to_hypergraph_filters_layers_and_keeps_layer_metadata():
     mhg = MultiplexHypergraph(weighted=True)
     mhg.add_edge((0, 1), layer="L1", weight=1.0, metadata={"tag": "a"})

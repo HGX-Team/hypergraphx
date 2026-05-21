@@ -121,6 +121,13 @@ class DirectedHypergraph(BaseHypergraph):
     def _hash_edge_nodes(self, edge_key):
         return (tuple(sorted(edge_key[0])), tuple(sorted(edge_key[1])))
 
+    def _relabel_edge_key(self, edge_key, mapping):
+        source, target = edge_key
+        return (
+            tuple(sorted(mapping[node] for node in source)),
+            tuple(sorted(mapping[node] for node in target)),
+        )
+
     # Nodes
     def add_node(self, node, metadata=None):
         """

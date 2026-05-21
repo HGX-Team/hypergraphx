@@ -142,6 +142,10 @@ class MultiplexHypergraph(BaseHypergraph):
         layer, edge = edge_key
         return (layer, tuple(n for n in edge if n != node))
 
+    def _add_edge(self, edge_key, weight=None, metadata=None):
+        self._existing_layers.add(edge_key[0])
+        super()._add_edge(edge_key, weight=weight, metadata=metadata)
+
     def _allow_empty_edge(self):
         return False
 
@@ -151,6 +155,10 @@ class MultiplexHypergraph(BaseHypergraph):
     def _hash_edge_nodes(self, edge_key):
         layer, edge = edge_key
         return (tuple(sorted(edge)), layer)
+
+    def _relabel_edge_key(self, edge_key, mapping):
+        layer, edge = edge_key
+        return (layer, tuple(sorted(mapping[node] for node in edge)))
 
     def _extra_data_structures(self):
         return {"existing_layers": self._existing_layers}
