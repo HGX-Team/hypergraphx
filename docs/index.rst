@@ -51,7 +51,7 @@ Project links
 - |fa-github| `GitHub <https://github.com/HGX-Team/hypergraphx>`_
 - |fa-pypi| `PyPI <https://pypi.org/project/hypergraphx/>`_
 - |fa-docs| `Documentation <https://hypergraphx.readthedocs.io/>`_
-- |fa-data| Data: To appear soon
+- |fa-data| `Data <https://hgx-team.github.io/hypergraphx-data/>`_
 
 Get started
 -----------
@@ -71,7 +71,8 @@ Get started
 Higher-order data repository
 ----------------------------
 
-To appear soon
+Browse the curated higher-order datasets at
+`hypergraphx-data <https://hgx-team.github.io/hypergraphx-data/>`_.
 
 Reference
 ---------

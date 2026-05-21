@@ -2,7 +2,7 @@
 
 **Hypergraphx** (HGX) is a Python library for the analysis of real-world complex systems with **group interactions**. It provides a comprehensive suite of tools to construct, visualize, and analyze **hypergraphs** with weighted, directed, temporal, and multiplex interactions. HGX aims to provide, as a single source, a wide range of tools for higher‑order data: conversions across representations, measures of higher‑order organization, filtering and sparsification, generative models, and dynamical processes from contagion to synchronization. The framework is general and designed to be user‑friendly and accessible.
 
-[![Docs](https://img.shields.io/badge/Docs-Read%20the%20Docs-4b9ce2?logo=readthedocs&logoColor=white)](https://hypergraphx.readthedocs.io/) [![Paper](https://img.shields.io/badge/Paper-arXiv-b31b1b?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2303.15356) [![Tutorials](https://img.shields.io/badge/Tutorials-GitHub-24292f?logo=github&logoColor=white)](https://github.com/HGX-Team/hypergraphx/tree/main/tutorials) ![PyPI](https://img.shields.io/pypi/v/hypergraphx?label=PyPI&color=1f8b4c) [![Downloads](https://static.pepy.tech/badge/hypergraphx/month)](https://pepy.tech/project/hypergraphx) [![Issues](https://img.shields.io/badge/Issues-GitHub-24292f?logo=github&logoColor=white)](https://github.com/HGX-Team/hypergraphx/issues) [![Data](https://img.shields.io/badge/Data-GitHub-24292f?logo=github&logoColor=white)](https://github.com/HGX-Team/data) ![License](https://img.shields.io/badge/License-BSD%203--Clause-3d3d3d) ![Code style](https://img.shields.io/badge/code%20style-black-000000) [![Contact](https://img.shields.io/badge/Contact-Email-6c5ce7?logo=gmail&logoColor=white)](mailto:quintino.lotito@unitn.it)
+[![Docs](https://img.shields.io/badge/Docs-Read%20the%20Docs-4b9ce2?logo=readthedocs&logoColor=white)](https://hypergraphx.readthedocs.io/) [![Paper](https://img.shields.io/badge/Paper-arXiv-b31b1b?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2303.15356) [![Tutorials](https://img.shields.io/badge/Tutorials-GitHub-24292f?logo=github&logoColor=white)](https://github.com/HGX-Team/hypergraphx/tree/main/tutorials) ![PyPI](https://img.shields.io/pypi/v/hypergraphx?label=PyPI&color=1f8b4c) [![Downloads](https://static.pepy.tech/badge/hypergraphx/month)](https://pepy.tech/project/hypergraphx) [![Issues](https://img.shields.io/badge/Issues-GitHub-24292f?logo=github&logoColor=white)](https://github.com/HGX-Team/hypergraphx/issues) [![Data](https://img.shields.io/badge/Data-GitHub-24292f?logo=github&logoColor=white)](https://hgx-team.github.io/hypergraphx-data/) ![License](https://img.shields.io/badge/License-BSD%203--Clause-3d3d3d) ![Code style](https://img.shields.io/badge/code%20style-black-000000) [![Contact](https://img.shields.io/badge/Contact-Email-6c5ce7?logo=gmail&logoColor=white)](mailto:quintino.lotito@unitn.it)
 
 ## 🧭 Menu
 
@@ -123,7 +123,7 @@ If you are new to higher‑order networks, start with the introductory notebooks
 
 Tutorials: https://github.com/HGX-Team/hypergraphx/tree/main/tutorials
 
-Datasets: https://github.com/HGX-Team/data
+Datasets: https://hgx-team.github.io/hypergraphx-data/
 
 ## 👥 The HGX team
 
