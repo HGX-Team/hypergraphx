@@ -1,4 +1,4 @@
-<img src="assets/logo/logo.png" width="420" alt="HGX logo" />
+<img src="https://raw.githubusercontent.com/HGX-Team/hypergraphx/main/assets/logo/logo.png" width="420" alt="HGX logo" />
 
 **Hypergraphx** (HGX) is a Python library for the analysis of real-world complex systems with **group interactions**. It provides a comprehensive suite of tools to construct, visualize, and analyze **hypergraphs** with weighted, directed, temporal, and multiplex interactions. HGX aims to provide, as a single source, a wide range of tools for higher‑order data: conversions across representations, measures of higher‑order organization, filtering and sparsification, generative models, and dynamical processes from contagion to synchronization. The framework is general and designed to be user‑friendly and accessible.
 
@@ -21,7 +21,7 @@
 
 Networks capture pairwise (dyadic) interactions. But many real systems involve groups of three or more units acting together: cellular networks, drug recombination, brain networks, face‑to‑face interactions, collaboration teams. Hypergraphs model these **higher‑order interactions** directly, with hyperedges that connect any number of nodes.
 
-<img src="assets/images/hypergraph.png" width="350" alt="Hypergraph example" />
+<img src="https://raw.githubusercontent.com/HGX-Team/hypergraphx/main/assets/images/hypergraph.png" width="350" alt="Hypergraph example" />
 
 ## 🚀 Quick start
 
