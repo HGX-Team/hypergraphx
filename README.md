@@ -182,4 +182,4 @@ Released under the 3-Clause BSD license. See [LICENSE.md](LICENSE.md).
 
 This project is supported by the Air Force Office of Scientific Research under award number FA8655-22-1-7025.
 
-HGX contains copied or modified code from third sources. The licenses of such code sources can be found in [LICENSE.md](LICENSE.md).
+HGX contains copied or modified code from third-party sources. The licenses of such code sources can be found in [LICENSE.md](LICENSE.md).
