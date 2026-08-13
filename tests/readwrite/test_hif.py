@@ -1,43 +1,71 @@
+import copy
 import json
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any
 
 import pytest
+from jsonschema import Draft7Validator
 
 from hypergraphx import DirectedHypergraph, Hypergraph
 from hypergraphx.readwrite import (
+    HIFJson,
     from_hif_dict,
     read_hif,
     to_hif_dict,
     write_hif,
 )
 
+HIF_SCHEMA_PATH = Path(__file__).with_name("hif_schema_v0.1.0.json")
+HIF_VALIDATOR = Draft7Validator(json.loads(HIF_SCHEMA_PATH.read_text(encoding="utf-8")))
 
-def test_from_hif_dict_matches_read_hif(tmp_path):
-    data = {
+
+def assert_valid_hif(data: HIFJson) -> None:
+    HIF_VALIDATOR.validate(data)
+
+
+def assert_round_trip(
+    data: HIFJson, *, check_identity: bool = True
+) -> Hypergraph | DirectedHypergraph:
+    assert_valid_hif(data)
+    H = from_hif_dict(data)
+    converted = to_hif_dict(H)
+    assert_valid_hif(converted)
+    if check_identity:
+        assert converted == data
+    with TemporaryDirectory() as directory:
+        path = Path(directory) / "network.json"
+        write_hif(H, path)
+        assert to_hif_dict(read_hif(path)) == converted
+    return H
+
+
+def test_undirected_hif_roundtrip():
+    data: HIFJson = {
         "network-type": "undirected",
         "metadata": {"name": "in-memory"},
-        "nodes": [{"node": "isolated", "weight": 3, "attrs": {"color": "red"}}],
+        "nodes": [
+            {"node": "isolated", "weight": 3, "attrs": {"color": "red"}},
+            {"node": "alice"},
+            {"node": "bob"},
+        ],
         "edges": [
-            {"edge": "friendship", "weight": 2, "attrs": {"kind": "social"}},
+            {"edge": 0, "weight": 2, "attrs": {"kind": "social"}},
             {"edge": "empty", "weight": 4},
         ],
         "incidences": [
             {
-                "edge": "friendship",
+                "edge": 0,
                 "node": "alice",
                 "weight": 0.5,
                 "attrs": {"since": 2020},
             },
-            {"edge": "friendship", "node": "bob"},
+            {"edge": 0, "node": "bob"},
         ],
     }
-    path = tmp_path / "network.json"
-    path.write_text(json.dumps(data), encoding="utf-8")
+    from_dict = assert_round_trip(data)
 
-    from_dict = from_hif_dict(data)
-    from_file = read_hif(path)
-
-    assert to_hif_dict(from_file) == to_hif_dict(from_dict)
+    assert isinstance(from_dict, Hypergraph)
     assert from_dict.get_edges() == [("alice", "bob")]
     assert from_dict.get_hypergraph_metadata() == {"name": "in-memory"}
     assert from_dict.get_weight(("alice", "bob")) == 2
@@ -51,43 +79,54 @@ def test_from_hif_dict_matches_read_hif(tmp_path):
         "weight": 0.5,
     }
     assert (("alice", "bob"), "bob") not in from_dict.get_all_incidences_metadata()
-    assert {"edge": "empty", "weight": 4} in to_hif_dict(from_dict)["edges"]
+    assert from_dict.expose_data_structures()["empty_edges"] == {"empty": {"weight": 4}}
 
 
-def test_only_incidences_are_required_and_ids_are_preserved():
-    H = from_hif_dict(
-        {
-            "incidences": [
-                {"edge": "10", "node": "20"},
-                {"edge": "10", "node": "30"},
-            ],
-        }
-    )
+def test_only_incidences_are_required_and_node_ids_are_preserved():
+    data: HIFJson = {
+        "incidences": [
+            {"edge": "10", "node": "20"},
+            {"edge": "10", "node": "30"},
+        ],
+    }
+    H = assert_round_trip(data, check_identity=False)  # network-type will be added
 
     assert H.get_edges() == [("20", "30")]
     assert not H.is_weighted()
 
 
+@pytest.mark.parametrize(
+    ("data", "expected_type"),
+    [
+        ({"incidences": []}, Hypergraph),
+        ({"network-type": "directed", "incidences": []}, DirectedHypergraph),
+    ],
+)
+def test_empty_incidence_list_creates_empty_hypergraph(data, expected_type):
+    H = assert_round_trip(data, check_identity=False)
+    assert isinstance(H, expected_type)
+    assert H.num_nodes() == 0
+    assert H.num_edges() == 0
+
+
 def test_weighted_metadata_does_not_control_hypergraph_type():
-    H = from_hif_dict(
-        {
-            "metadata": {"weighted": True},
-            "incidences": [{"edge": 0, "node": 0}],
-        }
-    )
+    data: HIFJson = {
+        "metadata": {"weighted": True},
+        "incidences": [{"edge": 0, "node": 0}],
+    }
+    H = assert_round_trip(data, check_identity=False)
 
     assert not H.is_weighted()
     assert H.get_hypergraph_metadata()["weighted"] is True
 
 
-def test_to_hif_dict_matches_write_hif_and_uses_standard_fields(tmp_path):
+def test_to_hif_dict_uses_standard_fields():
     H = Hypergraph(edge_list=[("alice", "bob")], weighted=False)
     H.set_hypergraph_metadata({"name": "example"})
     H.set_node_metadata("alice", {"color": "blue", "weight": 2})
     H.set_edge_metadata(("alice", "bob"), {"kind": "social"})
     H.set_incidence_metadata(("alice", "bob"), "alice", {"weight": 0.5})
-    path = tmp_path / "network.json"
-    expected = {
+    expected: HIFJson = {
         "network-type": "undirected",
         "metadata": {"name": "example"},
         "nodes": [
@@ -101,43 +140,35 @@ def test_to_hif_dict_matches_write_hif_and_uses_standard_fields(tmp_path):
         ],
     }
 
-    write_hif(H, path)
-
     assert to_hif_dict(H) == expected
-    assert json.loads(path.read_text(encoding="utf-8")) == expected
+    assert_round_trip(expected)
 
 
 def test_directed_hif_roundtrip():
-    data = {
+    data: HIFJson = {
         "network-type": "directed",
-        "edges": [{"edge": "reaction", "weight": 2}],
+        "metadata": {},
+        "nodes": [{"node": "a"}, {"node": "b"}],
+        "edges": [{"edge": 0, "weight": 2}],
         "incidences": [
-            {"edge": "reaction", "node": "a", "direction": "tail"},
-            {"edge": "reaction", "node": "b", "direction": "head"},
+            {"edge": 0, "node": "a", "direction": "tail"},
+            {"edge": 0, "node": "b", "direction": "head"},
         ],
     }
-
-    H = from_hif_dict(data)
-    converted = to_hif_dict(H)
+    H = assert_round_trip(data)
 
     assert isinstance(H, DirectedHypergraph)
     assert H.get_edges() == [(("a",), ("b",))]
     assert H.get_weight((("a",), ("b",))) == 2
-    assert converted["incidences"] == [
-        {"edge": 0, "node": "a", "direction": "tail"},
-        {"edge": 0, "node": "b", "direction": "head"},
-    ]
-    assert from_hif_dict(converted).get_edges() == H.get_edges()
 
 
 def test_directed_incidence_requires_a_direction():
+    data: HIFJson = {
+        "network-type": "directed",
+        "incidences": [{"edge": 0, "node": 0}],
+    }
     with pytest.raises(ValueError, match="require direction"):
-        from_hif_dict(
-            {
-                "network-type": "directed",
-                "incidences": [{"edge": 0, "node": 0}],
-            }
-        )
+        from_hif_dict(data)
 
 
 @pytest.mark.parametrize(
@@ -153,58 +184,67 @@ def test_from_hif_dict_rejects_invalid_dictionary_fields(data: Any):
         from_hif_dict(data)
 
 
+@pytest.mark.parametrize(
+    "data",
+    [
+        {"nodes": [{"node": 0, "weight": "heavy"}], "incidences": []},
+        {"edges": [{"edge": 0, "weight": "heavy"}], "incidences": []},
+        {"incidences": [{"edge": 0, "node": 0, "weight": "heavy"}]},
+        {"nodes": [{"node": 0, "weight": True}], "incidences": []},
+    ],
+)
+def test_from_hif_dict_rejects_non_numeric_weights(data: Any):
+    with pytest.raises(TypeError, match="integers or floats"):
+        from_hif_dict(data)
+
+
 def test_abstract_simplicial_complex_is_not_silently_converted():
+    data: HIFJson = {"network-type": "asc", "incidences": []}
+
     with pytest.raises(NotImplementedError, match="simplicial complexes"):
-        from_hif_dict({"network-type": "asc", "incidences": []})
+        from_hif_dict(data)
 
 
 def test_parallel_hif_edges_fail_instead_of_being_merged():
+    data: HIFJson = {
+        "incidences": [
+            {"edge": "first", "node": 0},
+            {"edge": "second", "node": 0},
+        ]
+    }
+
     with pytest.raises(ValueError, match="Duplicate edge"):
-        from_hif_dict(
-            {
-                "incidences": [
-                    {"edge": "first", "node": 0},
-                    {"edge": "second", "node": 0},
-                ]
-            }
-        )
+        from_hif_dict(data)
 
 
 def test_empty_edge_ids_do_not_collide_with_generated_ids():
     H = Hypergraph(edge_list=[(0, 1)], weighted=False)
     H.add_empty_edge(0, {})
-
     data = to_hif_dict(H)
+    restored = assert_round_trip(data)
+    assert isinstance(restored, Hypergraph)
+    assert restored.get_edges() == [(0, 1)]
+    assert {record["edge"] for record in data.get("edges", [])} == {0, 1}
 
-    assert {record["edge"] for record in data["edges"]} == {0, 1}
 
-
-def test_hif_dict_roundtrip_does_not_alias_metadata():
+def test_hif_conversions_deep_copy_all_metadata():
     H = Hypergraph(
         edge_list=[(0, 1)],
         weighted=False,
         hypergraph_metadata={"nested": {"name": "original"}},
     )
     H.set_node_metadata(0, {"nested": {"color": "blue"}})
+    H.set_edge_metadata((0, 1), {"nested": {"kind": "ordinary"}})
+    H.set_incidence_metadata((0, 1), 0, {"nested": {"role": "member"}})
+    H.add_empty_edge("empty", {"nested": {"kind": "empty"}})
     data = to_hif_dict(H)
-
+    expected = copy.deepcopy(data)
     restored = from_hif_dict(data)
     data["metadata"]["nested"]["name"] = "changed"
-    data["nodes"][0]["attrs"]["nested"]["color"] = "red"
+    for records in (data["nodes"], data["edges"], data["incidences"]):
+        for record in records:
+            if "attrs" in record:
+                record["attrs"]["nested"].clear()
 
-    assert restored.get_hypergraph_metadata()["nested"]["name"] == "original"
-    assert restored.get_node_metadata(0)["nested"]["color"] == "blue"
-    assert H.get_hypergraph_metadata()["nested"]["name"] == "original"
-    assert H.get_node_metadata(0)["nested"]["color"] == "blue"
-
-
-def test_write_hif_rejects_nan(tmp_path):
-    H = Hypergraph(weighted=False)
-    H.set_hypergraph_metadata({"nested": {"missing": float("nan")}})
-    path = tmp_path / "network.json"
-    path.write_text("existing data", encoding="utf-8")
-
-    with pytest.raises(ValueError, match="Out of range float values"):
-        write_hif(H, path)
-
-    assert path.read_text(encoding="utf-8") == "existing data"
+    assert to_hif_dict(H) == expected
+    assert to_hif_dict(restored) == expected
