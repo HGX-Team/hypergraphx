@@ -26,6 +26,7 @@ dependencies = [
   "networkx",
   "pandas",
   "tqdm",
+  "typing-extensions>=4.1; python_version < '3.11'",
 ]
 dynamic = ["version"]
 
@@ -39,6 +40,7 @@ Changelog = "https://github.com/HGX-Team/hypergraphx/releases"
 [project.optional-dependencies]
 dev = [
   "pytest",
+  "jsonschema>=4",
   "black>=24.3.0",
   "ruff>=0.6.0",
   "build>=1.2.1",

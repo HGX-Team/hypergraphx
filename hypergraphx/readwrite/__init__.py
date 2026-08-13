@@ -11,8 +11,7 @@ from .load import (
 )
 from .load import load as load_any
 from .save import save_hypergraph
-from .hif import read_hif
-from .hif import write_hif
+from .hif import from_hif_dict, read_hif, to_hif_dict, write_hif
 
 __all__ = [
     "load_module",
@@ -26,6 +25,8 @@ __all__ = [
     "load_hypergraph_from_server",
     "search_remote_datasets",
     "save_hypergraph",
+    "from_hif_dict",
     "read_hif",
+    "to_hif_dict",
     "write_hif",
 ]
