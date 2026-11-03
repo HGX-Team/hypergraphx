@@ -123,9 +123,10 @@ a local copy, or pass ``cache_dir=...`` to choose a different cache location.
        tags=["Undirected"],
    )
 
-   # Inspect the full catalog metadata for one dataset.
+   # Inspect the full catalog metadata for one dataset. Not every dataset
+   # declares a license, so use .get() for optional fields.
    info = hgx.get_remote_dataset_info("zoo")
-   print(info["description"], info["license"])
+   print(info["description"], info.get("license"))
 
    # Download and cache a dataset file without loading it.
    path = hgx.download_remote_dataset("zoo")
@@ -162,10 +163,16 @@ a local copy, or pass ``cache_dir=...`` to choose a different cache location.
 
 .. note::
 
-   The current dataset server may require ``verify_ssl=False`` because of its
-   certificate chain. This is the default for the remote dataset helpers. If the
-   server certificate is fixed, pass ``verify_ssl=True`` to enforce normal TLS
-   verification.
+   Remote helpers verify TLS certificates by default (``verify_ssl=True``), and
+   binary ``"hgx"`` files fetched by ``load_hypergraph_from_server`` and
+   ``iter_remote_hypergraphs`` are unpickled with a restricted unpickler that
+   only accepts plain data. Only pass ``verify_ssl=False`` on a network you
+   trust.
+
+   Dataset names are matched case-insensitively. Datasets you have already
+   downloaded keep loading from the cache when you are offline, including
+   through ``iter_remote_hypergraphs(names=...)`` and
+   ``download_remote_datasets([...])``.
 
 Projections and matrices
 ------------------------
