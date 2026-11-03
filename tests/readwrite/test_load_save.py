@@ -1,8 +1,12 @@
 import gzip
+import io
 import json
+import pickle
+import ssl
 
+import numpy as np
 import pytest
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 
 from hypergraphx import (
     Hypergraph,
@@ -10,6 +14,9 @@ from hypergraphx import (
     MultiplexHypergraph,
     TemporalHypergraph,
 )
+from hypergraphx.exceptions import InvalidFormatError, ReadwriteError
+from hypergraphx.readwrite import load as load_module
+from hypergraphx.readwrite.io_pickle import load_pickle
 from hypergraphx.readwrite.load import (
     download_remote_dataset,
     download_remote_datasets,
@@ -23,9 +30,30 @@ from hypergraphx.readwrite.load import (
 )
 from hypergraphx.readwrite.save import save_hypergraph
 
-DEFAULT_CATALOG_URL = (
+DEFAULT_CATALOG_URL = "https://hgx-team.github.io/hypergraphx-data/catalog.json"
+LEGACY_CATALOG_URL = (
     "https://hgx-team.github.io/hypergraphx-data/static/js/related-data.js"
 )
+_REAL_OPEN_URL = load_module._open_url
+
+
+@pytest.fixture(autouse=True)
+def _no_network(monkeypatch):
+    """Fail loudly if a test reaches the real network."""
+
+    def fail(url, **kwargs):
+        raise AssertionError(f"Unexpected network access in tests: {url}")
+
+    monkeypatch.setattr("hypergraphx.readwrite.load._open_url", fail)
+
+
+def _serve(monkeypatch, fake_download):
+    """Answer every remote request with ``fake_download(url, timeout, verify_ssl)``."""
+
+    def fake_open_url(url, *, timeout=30, verify_ssl=True):
+        return io.BytesIO(fake_download(url, timeout=timeout, verify_ssl=verify_ssl))
+
+    monkeypatch.setattr("hypergraphx.readwrite.load._open_url", fake_open_url)
 
 
 def _make_weighted_hypergraph():
@@ -262,7 +290,7 @@ def test_load_hypergraph_from_server_json(monkeypatch, tmp_path):
         requested.append((url, verify_ssl))
         return gz_payload
 
-    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+    _serve(monkeypatch, fake_download)
 
     loaded = load_hypergraph_from_server(
         "toy", fmt="json", cache_dir=tmp_path / "cache", use_catalog=False
@@ -272,7 +300,7 @@ def test_load_hypergraph_from_server_json(monkeypatch, tmp_path):
     assert requested == [
         (
             "https://cricca.disi.unitn.it/datasets/hypergraphx-data/toy/toy.json.gz",
-            False,
+            True,
         )
     ]
     assert (tmp_path / "cache" / "toy" / "toy.json").exists()
@@ -291,7 +319,7 @@ def test_load_hypergraph_from_server_binary(monkeypatch, tmp_path):
         requested.append((url, verify_ssl))
         return gz_payload
 
-    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+    _serve(monkeypatch, fake_download)
 
     loaded = load_hypergraph_from_server(
         "toy", fmt="binary", cache_dir=tmp_path / "cache", use_catalog=False
@@ -301,7 +329,7 @@ def test_load_hypergraph_from_server_binary(monkeypatch, tmp_path):
     assert requested == [
         (
             "https://cricca.disi.unitn.it/datasets/hypergraphx-data/toy/toy.hgx.gz",
-            False,
+            True,
         )
     ]
     assert (tmp_path / "cache" / "toy" / "toy.hgx").exists()
@@ -318,7 +346,7 @@ def test_load_hypergraph_from_server_hgx_alias(monkeypatch, tmp_path):
         requested.append((url, timeout, verify_ssl))
         return gz_payload
 
-    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+    _serve(monkeypatch, fake_download)
 
     loaded = load_hypergraph_from_server(
         "toy", cache_dir=tmp_path / "cache", use_catalog=False
@@ -330,7 +358,7 @@ def test_load_hypergraph_from_server_hgx_alias(monkeypatch, tmp_path):
         (
             "https://cricca.disi.unitn.it/datasets/hypergraphx-data/toy/toy.hgx.gz",
             30,
-            False,
+            True,
         )
     ]
     assert (tmp_path / "cache" / "toy" / "toy.hgx").exists()
@@ -348,7 +376,7 @@ def test_load_hypergraph_from_server_uses_cache(monkeypatch, tmp_path):
         called = True
         raise AssertionError("Should use cached file.")
 
-    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+    _serve(monkeypatch, fake_download)
 
     loaded = load_hypergraph_from_server(
         "toy",
@@ -391,7 +419,7 @@ def test_download_remote_dataset_uses_catalog_url(monkeypatch, tmp_path):
             return payload
         raise AssertionError(f"Unexpected URL: {url}")
 
-    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+    _serve(monkeypatch, fake_download)
 
     path = download_remote_dataset("toy", cache_dir=tmp_path / "cache")
 
@@ -432,7 +460,7 @@ def test_download_remote_dataset_json_format(monkeypatch, tmp_path):
             return payload
         raise AssertionError(f"Unexpected URL: {url}")
 
-    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+    _serve(monkeypatch, fake_download)
 
     path = download_remote_dataset("toy", fmt="json", cache_dir=tmp_path / "cache")
 
@@ -452,7 +480,7 @@ def test_download_remote_dataset_uses_cache(monkeypatch, tmp_path):
     def fake_download(url, timeout=30, verify_ssl=True):
         raise AssertionError("Should use cached file.")
 
-    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+    _serve(monkeypatch, fake_download)
 
     path = download_remote_dataset(
         "toy",
@@ -507,7 +535,7 @@ def test_download_remote_datasets_by_name_reuses_catalog(monkeypatch, tmp_path):
             return gzip.compress(b"Marvel payload")
         raise AssertionError(f"Unexpected URL: {url}")
 
-    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+    _serve(monkeypatch, fake_download)
 
     results = download_remote_datasets(
         ["zoo", "Marvel"],
@@ -570,7 +598,7 @@ def test_download_remote_datasets_filters_and_continues_on_error(monkeypatch, tm
             return gzip.compress(b"ok payload")
         raise FileNotFoundError(url)
 
-    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+    _serve(monkeypatch, fake_download)
 
     results = download_remote_datasets(
         attributes="Undirected",
@@ -597,7 +625,7 @@ def test_list_remote_datasets(monkeypatch):
         requested.append((url, verify_ssl))
         return payload
 
-    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+    _serve(monkeypatch, fake_download)
 
     datasets = list_remote_datasets(verify_ssl=False)
 
@@ -660,7 +688,7 @@ def test_list_remote_datasets_catalog_json(monkeypatch):
         requested.append((url, verify_ssl))
         return payload
 
-    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+    _serve(monkeypatch, fake_download)
 
     datasets = list_remote_datasets(verify_ssl=False)
 
@@ -731,7 +759,7 @@ def test_load_hypergraph_from_server_uses_catalog_download_url(monkeypatch, tmp_
             return gz_payload
         raise AssertionError(f"Unexpected URL: {url}")
 
-    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+    _serve(monkeypatch, fake_download)
 
     loaded = load_hypergraph_from_server("toy", cache_dir=tmp_path / "cache")
 
@@ -945,14 +973,316 @@ def test_search_remote_datasets(monkeypatch):
     assert [d["name"] for d in search_remote_datasets(license="cc0")] == ["zoo"]
 
 
+def _use_real_open_url(monkeypatch, fake_urlopen):
+    """Exercise the real ``_open_url`` error handling with a fake ``urlopen``."""
+    monkeypatch.setattr("hypergraphx.readwrite.load._open_url", _REAL_OPEN_URL)
+    monkeypatch.setattr("hypergraphx.readwrite.load.urlopen", fake_urlopen)
+
+
+def _gzipped_hgx(tmp_path, hypergraph=None):
+    path = tmp_path / "payload.hgx"
+    save_hypergraph(hypergraph or _make_weighted_hypergraph(), str(path), fmt="pickle")
+    return gzip.compress(path.read_bytes())
+
+
+class _RunsCodeWhenUnpickled:
+    def __reduce__(self):
+        import os
+
+        return (os.getcwd, ())
+
+
 def test_load_hypergraph_from_server_offline_error_is_actionable(monkeypatch):
-    def fake_download(url, timeout=30, verify_ssl=True):
+    def offline(*args, **kwargs):
         raise URLError("offline")
 
-    monkeypatch.setattr("hypergraphx.readwrite.load._download", fake_download)
+    _use_real_open_url(monkeypatch, offline)
 
-    with pytest.raises(ConnectionError, match="Are you offline\\?"):
+    with pytest.raises(ConnectionError, match="Are you offline\\?") as excinfo:
         load_hypergraph_from_server("toy", fmt="json", store=False)
+    assert str(excinfo.value).count("Are you offline?") == 1
+
+
+def test_remote_requests_verify_tls_by_default(monkeypatch):
+    contexts = []
+
+    def capture(request, timeout, context):
+        contexts.append(context)
+        raise URLError("stop here")
+
+    _use_real_open_url(monkeypatch, capture)
+
+    with pytest.raises(InvalidFormatError):
+        list_remote_datasets()
+    with pytest.raises(ConnectionError):
+        load_hypergraph_from_server("toy", store=False, use_catalog=False)
+
+    assert contexts
+    assert all(
+        c.verify_mode == ssl.CERT_REQUIRED and c.check_hostname for c in contexts
+    )
+
+
+def test_tls_verification_failure_is_not_reported_as_offline(monkeypatch):
+    def bad_certificate(*args, **kwargs):
+        raise URLError(ssl.SSLCertVerificationError(1, "certificate verify failed"))
+
+    _use_real_open_url(monkeypatch, bad_certificate)
+
+    with pytest.raises(ConnectionError, match="verify the TLS certificate") as excinfo:
+        load_hypergraph_from_server("toy", store=False, use_catalog=False)
+    assert "offline" not in str(excinfo.value)
+    assert "verify_ssl=False" in str(excinfo.value)
+
+
+def test_http_errors_are_reported_as_not_found(monkeypatch, tmp_path):
+    def http_404(request, timeout, context):
+        raise HTTPError(request.full_url, 404, "Not Found", {}, None)
+
+    _use_real_open_url(monkeypatch, http_404)
+
+    with pytest.raises(FileNotFoundError, match=r"\(HTTP 404\)") as excinfo:
+        load_hypergraph_from_server("toy", cache_dir=tmp_path, use_catalog=False)
+    assert isinstance(excinfo.value.__cause__, FileNotFoundError)
+    assert isinstance(excinfo.value.__cause__.__cause__, HTTPError)
+
+    # The catalog download goes through the same conversion.
+    with pytest.raises(InvalidFormatError, match=r"HTTP 404"):
+        list_remote_datasets()
+
+
+def test_list_remote_datasets_falls_back_to_legacy_catalog(monkeypatch):
+    requested = []
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        requested.append(url)
+        if url == DEFAULT_CATALOG_URL:
+            raise FileNotFoundError(f"Not found at {url} (HTTP 404).")
+        return b'window.RELATED_DATASETS = [{"name": "zoo", "tags": ["Undirected"]}];'
+
+    _serve(monkeypatch, fake_download)
+
+    assert [d["name"] for d in list_remote_datasets()] == ["zoo"]
+    assert requested == [DEFAULT_CATALOG_URL, LEGACY_CATALOG_URL]
+
+
+def test_get_remote_dataset_info_ignores_case_and_suggests_names(monkeypatch):
+    catalog = [
+        {"name": "Marvel"},
+        {"name": "contacts-hospital"},
+        {"name": "dup"},
+        {"name": "DUP"},
+    ]
+    monkeypatch.setattr(
+        "hypergraphx.readwrite.load.list_remote_datasets",
+        lambda **kwargs: catalog,
+    )
+
+    assert get_remote_dataset_info("marvel")["name"] == "Marvel"
+    assert get_remote_dataset_info("DUP")["name"] == "DUP"
+    with pytest.raises(FileNotFoundError, match="Several datasets match"):
+        get_remote_dataset_info("Dup")
+    with pytest.raises(FileNotFoundError, match="Did you mean: contacts-hospital"):
+        get_remote_dataset_info("contacts-hospitl")
+
+
+def test_load_hypergraph_from_server_caches_under_canonical_name(monkeypatch, tmp_path):
+    payload = _gzipped_hgx(tmp_path)
+    catalog = json.dumps(
+        [
+            {
+                "name": "Toy",
+                "versions": [{"binary_download": "https://example.org/Toy.hgx.gz"}],
+            }
+        ]
+    ).encode()
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        if url == DEFAULT_CATALOG_URL:
+            return catalog
+        if url == "https://example.org/Toy.hgx.gz":
+            return payload
+        raise AssertionError(f"Unexpected URL: {url}")
+
+    _serve(monkeypatch, fake_download)
+
+    load_hypergraph_from_server("toy", cache_dir=tmp_path / "cache")
+
+    assert (tmp_path / "cache" / "Toy" / "Toy.hgx").exists()
+
+
+def test_load_unknown_dataset_reports_catalog_miss(monkeypatch, tmp_path):
+    catalog = json.dumps([{"name": "contacts-hospital"}]).encode()
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        if url == DEFAULT_CATALOG_URL:
+            return catalog
+        raise FileNotFoundError(f"Not found at {url} (HTTP 404).")
+
+    _serve(monkeypatch, fake_download)
+
+    with pytest.raises(FileNotFoundError) as excinfo:
+        load_hypergraph_from_server("contacts-hospitl", cache_dir=tmp_path / "cache")
+    # The cause comes first, before the list of URLs that were tried.
+    assert str(excinfo.value).startswith(
+        "Failed to load 'contacts-hospitl' from server: Dataset not found in "
+        "remote catalog: contacts-hospitl. Did you mean: contacts-hospital?"
+    )
+    # Failed downloads leave nothing behind in the cache.
+    assert not (tmp_path / "cache").exists()
+
+
+def test_load_hypergraph_from_server_replaces_corrupted_cache(monkeypatch, tmp_path):
+    hg = _make_weighted_hypergraph()
+    payload = _gzipped_hgx(tmp_path, hg)
+    cache_path = tmp_path / "cache" / "toy" / "toy.hgx"
+    cache_path.parent.mkdir(parents=True)
+    cache_path.write_bytes(b"<html>partial download</html>")
+    requested = []
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        requested.append(url)
+        return payload
+
+    _serve(monkeypatch, fake_download)
+
+    loaded = load_hypergraph_from_server(
+        "toy", cache_dir=tmp_path / "cache", use_catalog=False
+    )
+
+    assert set(loaded.get_edges()) == set(hg.get_edges())
+    assert requested == [
+        "https://cricca.disi.unitn.it/datasets/hypergraphx-data/toy/toy.hgx.gz"
+    ]
+    assert set(load_hypergraph(cache_path).get_edges()) == set(hg.get_edges())
+
+
+@pytest.mark.parametrize(
+    "body",
+    [b"<html>Server error</html>", gzip.compress(b"x" * 1000)[:-8]],
+    ids=["not-gzip", "truncated-gzip"],
+)
+def test_download_remote_dataset_rejects_bad_payload_without_caching(
+    monkeypatch, tmp_path, body
+):
+    def fake_download(url, timeout=30, verify_ssl=True):
+        if url.endswith(".gz"):
+            return body
+        raise FileNotFoundError(f"Not found at {url} (HTTP 404).")
+
+    _serve(monkeypatch, fake_download)
+
+    with pytest.raises(FileNotFoundError, match="gzip"):
+        download_remote_dataset("toy", cache_dir=tmp_path / "cache", use_catalog=False)
+    assert [p for p in (tmp_path / "cache").rglob("*") if p.is_file()] == []
+
+
+@pytest.mark.parametrize("store", [True, False])
+def test_remote_binary_payloads_cannot_run_code(monkeypatch, tmp_path, store):
+    payload = gzip.compress(
+        pickle.dumps(
+            {"type": "Hypergraph", "_weighted": False, "x": _RunsCodeWhenUnpickled()}
+        )
+    )
+    _serve(monkeypatch, lambda url, timeout=30, verify_ssl=True: payload)
+
+    with pytest.raises(FileNotFoundError, match="Refusing to load"):
+        load_hypergraph_from_server(
+            "toy", store=store, cache_dir=tmp_path / "cache", use_catalog=False
+        )
+    assert [p for p in tmp_path.rglob("*.hgx") if "cache" in p.parts] == []
+
+
+def test_load_pickle_restricted_accepts_plain_data_and_numpy(tmp_path):
+    hg = _make_weighted_hypergraph()
+    data = hg.expose_data_structures()
+    data["hypergraph_metadata"] = {
+        **data["hypergraph_metadata"],
+        "scale": np.float64(1.5),
+        "ids": np.arange(3),
+    }
+    path = tmp_path / "hg.hgx"
+    path.write_bytes(pickle.dumps(data, protocol=pickle.HIGHEST_PROTOCOL))
+
+    loaded = load_pickle(str(path), restricted=True)
+
+    assert set(loaded.get_edges()) == set(hg.get_edges())
+
+
+def test_load_pickle_restricted_rejects_arbitrary_globals(tmp_path):
+    path = tmp_path / "evil.hgx"
+    path.write_bytes(
+        pickle.dumps(
+            {"type": "Hypergraph", "_weighted": False, "x": _RunsCodeWhenUnpickled()}
+        )
+    )
+
+    with pytest.raises(ReadwriteError, match="Refusing to load"):
+        load_pickle(str(path), restricted=True)
+
+
+def test_download_remote_datasets_records_unknown_names(monkeypatch, tmp_path):
+    catalog = json.dumps(
+        [
+            {
+                "name": "ok",
+                "versions": [{"binary_download": "https://example.org/ok.hgx.gz"}],
+            }
+        ]
+    ).encode()
+
+    def fake_download(url, timeout=30, verify_ssl=True):
+        if url == DEFAULT_CATALOG_URL:
+            return catalog
+        if url == "https://example.org/ok.hgx.gz":
+            return gzip.compress(b"ok payload")
+        raise AssertionError(f"Unexpected URL: {url}")
+
+    _serve(monkeypatch, fake_download)
+    progress = []
+
+    results = download_remote_datasets(
+        ["ok", "nope"],
+        cache_dir=tmp_path / "cache",
+        continue_on_error=True,
+        progress_callback=progress.append,
+    )
+
+    assert list(results) == ["ok", "nope"]
+    assert results["ok"]["status"] == "downloaded"
+    assert results["nope"]["status"] == "error"
+    assert results["nope"]["metadata"] is None
+    assert isinstance(results["nope"]["error"], FileNotFoundError)
+    assert [r["status"] for r in progress] == ["downloaded", "error"]
+
+    with pytest.raises(FileNotFoundError, match="nope"):
+        download_remote_datasets(["ok", "nope"], cache_dir=tmp_path / "other")
+    assert not (tmp_path / "other").exists()
+
+
+def test_bulk_apis_use_cache_when_catalog_is_unreachable(monkeypatch, tmp_path):
+    hg = _make_weighted_hypergraph()
+    cache = tmp_path / "cache"
+    (cache / "toy").mkdir(parents=True)
+    save_hypergraph(hg, str(cache / "toy" / "toy.hgx"), fmt="pickle")
+
+    def offline(url, timeout=30, verify_ssl=True):
+        raise ConnectionError(f"Network error reaching {url}: offline.")
+
+    _serve(monkeypatch, offline)
+
+    [(loaded, info)] = list(
+        iter_remote_hypergraphs(names=["toy"], include_metadata=True, cache_dir=cache)
+    )
+    assert set(loaded.get_edges()) == set(hg.get_edges())
+    assert info == {"name": "toy"}
+
+    results = download_remote_datasets(["toy"], cache_dir=cache)
+    assert results["toy"]["path"] == cache / "toy" / "toy.hgx"
+
+    # Selecting by attributes needs the catalog.
+    with pytest.raises(InvalidFormatError):
+        list(iter_remote_hypergraphs("Undirected", cache_dir=cache))
 
 
 def test_load_accepts_hypergraph_instances():
