@@ -128,9 +128,10 @@ a local copy, or pass ``cache_dir=...`` to choose a different cache location.
    info = hgx.get_remote_dataset_info("zoo")
    print(info["description"], info.get("license"))
 
-   # Download and cache a dataset file without loading it.
+   # Download and cache a dataset file without loading it. Downloaded files
+   # are untrusted, so load them with the restricted unpickler.
    path = hgx.download_remote_dataset("zoo")
-   H = hgx.load_hypergraph(path)
+   H = hgx.load_hypergraph(path, restricted=True)
 
    # Download multiple datasets and inspect per-dataset results.
    results = hgx.download_remote_datasets(
@@ -166,8 +167,9 @@ a local copy, or pass ``cache_dir=...`` to choose a different cache location.
    Remote helpers verify TLS certificates by default (``verify_ssl=True``), and
    binary ``"hgx"`` files fetched by ``load_hypergraph_from_server`` and
    ``iter_remote_hypergraphs`` are unpickled with a restricted unpickler that
-   only accepts plain data. Only pass ``verify_ssl=False`` on a network you
-   trust.
+   only accepts plain data. Pass ``restricted=True`` to ``load_hypergraph`` to
+   get the same protection for files you downloaded yourself. Only pass
+   ``verify_ssl=False`` on a network you trust.
 
    Dataset names are matched case-insensitively. Datasets you have already
    downloaded keep loading from the cache when you are offline, including

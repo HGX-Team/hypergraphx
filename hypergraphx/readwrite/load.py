@@ -427,7 +427,9 @@ def _infer_local_payload_format(path: str):
     raise InvalidFileTypeError("Invalid file type")
 
 
-def _load_hypergraph_from_decompressed_bytes(payload: bytes, payload_format: str):
+def _load_hypergraph_from_decompressed_bytes(
+    payload: bytes, payload_format: str, *, restricted: bool = False
+):
     if payload_format == "json":
         return _parse_json_bytes_to_hypergraph(payload)
     with tempfile.NamedTemporaryFile(suffix=f".{payload_format}") as tmp:
@@ -435,12 +437,16 @@ def _load_hypergraph_from_decompressed_bytes(payload: bytes, payload_format: str
         tmp.flush()
         if payload_format == "hgr":
             return _load_hgr_file(tmp.name)
-        return load_pickle(tmp.name)
+        return load_pickle(tmp.name, restricted=restricted)
 
 
-def _load_gzipped_hypergraph(file_name: str, payload_format: str):
+def _load_gzipped_hypergraph(
+    file_name: str, payload_format: str, *, restricted: bool = False
+):
     with gzip.open(file_name, "rb") as infile:
-        return _load_hypergraph_from_decompressed_bytes(infile.read(), payload_format)
+        return _load_hypergraph_from_decompressed_bytes(
+            infile.read(), payload_format, restricted=restricted
+        )
 
 
 def _parse_remote_dataset_catalog(payload: bytes):
@@ -887,7 +893,9 @@ def _load_hgr_file(file_name: str):
         return h
 
 
-def load_hypergraph(file_name: str | Path, *, fmt: str | None = None):
+def load_hypergraph(
+    file_name: str | Path, *, fmt: str | None = None, restricted: bool = False
+):
     """
     Load a hypergraph from disk.
 
@@ -899,6 +907,11 @@ def load_hypergraph(file_name: str | Path, *, fmt: str | None = None):
         Optional override for the input format. If None (default), infer format
         from the file extension. Gzipped files with ``.gz`` suffix are
         supported for each local format, such as ``.json.gz`` and ``.hgx.gz``.
+    restricted : bool, default=False
+        Only affects pickle files (``.hgx``, ``.pkl``, ``.pickle``). If True,
+        only plain data types may be unpickled, so a malicious file cannot
+        execute code. Use this for files from untrusted sources, including
+        files fetched with :func:`download_remote_dataset`.
     """
     file_name = str(file_name)
 
@@ -906,14 +919,16 @@ def load_hypergraph(file_name: str | Path, *, fmt: str | None = None):
         fmt = fmt.lower()
         if file_name.lower().endswith(".gz"):
             if fmt in {"pickle", "pkl", "binary", "hgx"}:
-                return _load_gzipped_hypergraph(file_name, "pickle")
+                return _load_gzipped_hypergraph(
+                    file_name, "pickle", restricted=restricted
+                )
             if fmt in {"json"}:
                 return _load_gzipped_hypergraph(file_name, "json")
             if fmt in {"hgr"}:
                 return _load_gzipped_hypergraph(file_name, "hgr")
             raise InvalidFormatError("fmt must be one of {'json', 'pickle', 'hgr'}")
         if fmt in {"pickle", "pkl", "binary", "hgx"}:
-            return load_pickle(file_name)
+            return load_pickle(file_name, restricted=restricted)
         if fmt in {"json"}:
             return load_json_file(file_name)
         if fmt in {"hgr"}:
@@ -922,9 +937,11 @@ def load_hypergraph(file_name: str | Path, *, fmt: str | None = None):
 
     payload_format = _infer_local_payload_format(file_name)
     if file_name.lower().endswith(".gz"):
-        return _load_gzipped_hypergraph(file_name, payload_format)
+        return _load_gzipped_hypergraph(
+            file_name, payload_format, restricted=restricted
+        )
     if payload_format == "pickle":
-        return load_pickle(file_name)
+        return load_pickle(file_name, restricted=restricted)
     if payload_format == "json":
         return load_json_file(file_name)
     if payload_format == "hgr":
@@ -975,7 +992,8 @@ def download_remote_dataset(
     Returns
     -------
     pathlib.Path
-        Local decompressed cache path, suitable for ``load_hypergraph(...)``.
+        Local decompressed cache path, suitable for
+        ``load_hypergraph(path, restricted=True)``.
 
     Notes
     -----

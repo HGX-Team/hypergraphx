@@ -1221,6 +1221,35 @@ def test_load_pickle_restricted_rejects_arbitrary_globals(tmp_path):
         load_pickle(str(path), restricted=True)
 
 
+@pytest.mark.parametrize(
+    "suffix, fmt",
+    [(".hgx", None), (".hgx.gz", None), (".bin", "pickle"), (".bin.gz", "pickle")],
+)
+def test_load_hypergraph_restricted_rejects_arbitrary_globals(tmp_path, suffix, fmt):
+    payload = pickle.dumps(
+        {"type": "Hypergraph", "_weighted": False, "x": _RunsCodeWhenUnpickled()}
+    )
+    path = tmp_path / f"evil{suffix}"
+    path.write_bytes(gzip.compress(payload) if suffix.endswith(".gz") else payload)
+
+    with pytest.raises(ReadwriteError, match="Refusing to load"):
+        load_hypergraph(path, fmt=fmt, restricted=True)
+
+
+def test_load_hypergraph_restricted_loads_downloaded_dataset(monkeypatch, tmp_path):
+    hg = _make_weighted_hypergraph()
+    payload = _gzipped_hgx(tmp_path, hg)
+    _serve(monkeypatch, lambda url, timeout=30, verify_ssl=True: payload)
+
+    path = download_remote_dataset(
+        "toy", fmt="hgx", cache_dir=tmp_path / "cache", use_catalog=False
+    )
+    loaded = load_hypergraph(path, restricted=True)
+
+    assert set(loaded.get_edges()) == set(hg.get_edges())
+    assert loaded.get_weights(asdict=True) == hg.get_weights(asdict=True)
+
+
 def test_download_remote_datasets_records_unknown_names(monkeypatch, tmp_path):
     catalog = json.dumps(
         [
