@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/pszufe/HIF_validators/main/schemas/hif_schema_v0.1.0.json",
+  "title": "Hypergraph Interchange Format",
+  "version": "0.1.0",
+  "type": "object",
+  "properties": {
+    "network-type": {
+      "enum": ["undirected", "directed", "asc"]
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "incidences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "edge": {
+            "type": ["string", "integer"]
+          },
+          "node": {
+            "type": ["string", "integer"]
+          },
+          "weight": {
+            "type": "number"
+          },
+          "direction": {
+            "enum": ["head", "tail"]
+          },
+          "attrs": {
+            "type": "object"
+          }
+        },
+        "unevaluatedProperties": false,
+        "additionalProperties": false,
+        "required": ["edge", "node"]
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "node": {
+            "type": ["string", "integer"]
+          },
+          "weight": {
+            "type": "number"
+          },
+          "attrs": {
+            "type": "object"
+          }
+        },
+        "unevaluatedProperties": false,
+        "additionalProperties": false,
+        "required": ["node"]
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "edge": {
+            "type": ["string", "integer"]
+          },
+          "weight": {
+            "type": "number"
+          },
+          "attrs": {
+            "type": "object"
+          }
+        },
+        "unevaluatedProperties": false,
+        "additionalProperties": false,
+        "required": ["edge"]
+      }
+    }
+  },
+  "unevaluatedProperties": false,
+  "additionalProperties": false,
+  "required": ["incidences"]
+}
