@@ -689,38 +689,29 @@ def annealed_adjacency_matrix(
     return_mapping: bool,optional
         Return the dictionary mapping the new node indices to the Temporal Hypergraph
     """
+    # The mean of the snapshots' adjacency matrices: the hyperedges two nodes share
+    # over all times (one product of the incidence of all interactions), over the
+    # number of times. (Summing the snapshots one by one assumed consecutive integer
+    # times, failing on any gap, and counted each pair twice in one triangle.)
     encoder = temporal_hypergraph.get_mapping()
-    temporal_adjacency_matrix, mapping = temporal_hypergraph.temporal_adjacency_matrix(
-        return_mapping=True
-    )
-    T = len(temporal_adjacency_matrix.keys())
-    temporal_adjacency_matrix_lst = temporal_adjacency_matrix.values()
-    res = dict()
-    t = min(mapping.keys())
-    for matrix in temporal_adjacency_matrix_lst:
-        for j in range(matrix.shape[1]):
-            for i in range(matrix.indptr[j], matrix.indptr[j + 1]):
-                row = mapping[t][matrix.indices[i]]
-                column = mapping[t][j]
-                if row != column:
-                    cell = (row, column)
-                    cell = tuple(sorted(cell))
-                    if cell not in res.keys():
-                        res[cell] = 0
-                    res[cell] += matrix.data[i]
-        t += 1
-    res = {k: v / T for k, v in res.items()}
-    matrix_row = []
-    matrix_col = []
-    matrix_val = []
-    for k, v in res.items():
-        matrix_row.append(encoder.transform([k[0]])[0])
-        matrix_col.append(encoder.transform([k[1]])[0])
-        matrix_val.append(v)
-    matrix = csc_array((matrix_val, (matrix_row, matrix_col)))
+    inverse = get_inverse_mapping(encoder)
+    index = {node: i for i, node in inverse.items()}
+    rows, cols, times = [], [], set()
+    edges = temporal_hypergraph.get_edges()
+    for j, (time, edge) in enumerate(edges):
+        times.add(time)
+        for node in set(edge):
+            rows.append(index[node])
+            cols.append(j)
+    n = len(index)
+    incidence = csc_array((np.ones(len(rows)), (rows, cols)), shape=(n, len(edges)))
+    matrix = sparse.csr_array(incidence @ incidence.transpose())
+    matrix.setdiag(0)
+    matrix.eliminate_zeros()
+    matrix = matrix / max(len(times), 1)
     matrix = _as_sparse_format(matrix, format)
     if return_mapping:
-        return matrix, get_inverse_mapping(encoder)
+        return matrix, inverse
     else:
         return matrix
 

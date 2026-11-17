@@ -10,6 +10,32 @@ from hypergraphx.exceptions import (
 from hypergraphx.utils.metadata import merge_metadata
 
 
+_ATOMIC = frozenset({str, int, float, bool, complex, bytes, type(None)})
+
+
+def _copied(value):
+    """A copy of ``value`` as deep as ``copy.deepcopy``, made faster for the containers
+    of a hypergraph: dicts, lists and sets are copied, and their immutable contents
+    (numbers, strings, the tuples of hyperedges, dict keys and set members, which are
+    hashable) are shared. Other values are deep-copied."""
+    kind = type(value)
+    if kind in _ATOMIC:
+        return value
+    if kind is dict:
+        return {k: v if type(v) in _ATOMIC else _copied(v) for k, v in value.items()}
+    if kind is list:
+        return [v if type(v) in _ATOMIC else _copied(v) for v in value]
+    if kind is set:
+        return set(value)
+    if kind is tuple or kind is frozenset:
+        try:
+            hash(value)
+        except TypeError:  # holds a mutable value
+            return copy.deepcopy(value)
+        return value
+    return copy.deepcopy(value)
+
+
 class SerializationMixin:
     """
     Serialization and hashing helpers for hypergraph-like classes.
@@ -427,8 +453,22 @@ class BaseHypergraph(SerializationMixin):
 
     def remove_nodes(self, node_list, keep_edges=False):
         """Remove multiple nodes from the hypergraph."""
-        for node in node_list:
-            self.remove_node(node, keep_edges=keep_edges)
+        if keep_edges or not self._removes_in_batch():
+            for node in node_list:
+                self.remove_node(node, keep_edges=keep_edges)
+            return
+        primary_adj = self._primary_adj_map()
+        nodes = list(dict.fromkeys(node_list))
+        for node in nodes:  # all are checked before any is removed
+            if node not in primary_adj:
+                self._raise_missing_node(node)
+        edge_ids = set()
+        for node in nodes:
+            edge_ids.update(primary_adj[node])
+        self._remove_edge_ids(edge_ids)
+        for node in nodes:
+            del primary_adj[node]
+            self._node_metadata.pop(node, None)
 
     def get_nodes(self, metadata=False):
         """Return nodes, optionally with their metadata."""
@@ -704,6 +744,48 @@ class BaseHypergraph(SerializationMixin):
             self.add_node(node)
             self._add_incidence(node, edge_id, edge_key)
 
+    def _removes_in_batch(self):
+        """Whether edges can be removed many at once (see ``_remove_edge_ids``): classes
+        that keep the bookkeeping of this class when removing an edge."""
+        cls = type(self)
+        return (
+            cls._remove_edge_key is BaseHypergraph._remove_edge_key
+            and cls._remove_incidence is BaseHypergraph._remove_incidence
+        )
+
+    def _remove_edge_keys(self, edge_keys):
+        """Remove edges given by their keys, all checked before any is removed."""
+        edge_keys = list(edge_keys)
+        seen = set()
+        for edge_key in edge_keys:
+            if edge_key not in self._edge_list or edge_key in seen:
+                raise MissingEdgeError(f"Edge {edge_key} not in hypergraph.")
+            seen.add(edge_key)
+        self._remove_edge_ids(self._edge_list[key] for key in edge_keys)
+
+    def _remove_edge_ids(self, edge_ids):
+        """Remove the edges of ``edge_ids`` at once, as ``_remove_edge_key`` removes
+        one: each member's list of incident edges is filtered once (removed one at a
+        time, an edge scanned the list of each member, quadratic for nodes in many
+        edges)."""
+        edge_ids = set(edge_ids)
+        if not edge_ids:
+            return
+        keys = {self._reverse_edge_list[edge_id] for edge_id in edge_ids}
+        touched = {node for key in keys for node in self._edge_nodes(key)}
+        for adj in self._adjacency_maps().values():
+            for node in touched:
+                incident = adj.get(node)
+                if incident:
+                    incident[:] = [i for i in incident if i not in edge_ids]
+        if self._incidences_metadata:
+            for key in [k for k in self._incidences_metadata if k[0] in keys]:
+                del self._incidences_metadata[key]
+        for edge_id in edge_ids:
+            del self._edge_list[self._reverse_edge_list.pop(edge_id)]
+            self._weights.pop(edge_id, None)
+            self._edge_metadata.pop(edge_id, None)
+
     def _remove_edge_key(self, edge_key):
         if edge_key not in self._edge_list:
             raise MissingEdgeError(f"Edge {edge_key} not in hypergraph.")
@@ -969,7 +1051,11 @@ class BaseHypergraph(SerializationMixin):
         self._reverse_edge_list.clear()
 
     def copy(self):
-        return copy.deepcopy(self)
+        """An independent copy: its nodes, hyperedges, weights and metadata can change
+        without changing this hypergraph."""
+        new = type(self).__new__(type(self))
+        new.__dict__.update(_copied(self.__dict__))
+        return new
 
     def __str__(self):
         title = "Hypergraph with {} nodes and {} edges.\n".format(

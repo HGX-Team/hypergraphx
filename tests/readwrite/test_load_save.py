@@ -145,6 +145,26 @@ def test_save_load_json_temporal(tmp_path):
     assert loaded.get_weight((1, 2, 3), 1) == 2.0
 
 
+def test_save_load_json_tuple_nodes(tmp_path):
+    """Tuple nodes (written as JSON lists) come back as tuples, in every kind."""
+    grid = [((0, 0), (0, 1)), ((0, 1), (1, 1), (1, 0))]
+    hg = Hypergraph(edge_list=grid, weighted=True, weights=[1.0, 2.0])
+    hg.set_node_metadata((0, 1), {"row": 0})
+    loaded = _roundtrip_json(tmp_path, hg)
+    assert set(loaded.get_nodes()) == set(hg.get_nodes())
+    assert set(loaded.get_edges()) == set(hg.get_edges())
+    assert loaded.get_weight(((0, 1), (1, 0), (1, 1))) == 2.0
+    assert loaded.get_node_metadata((0, 1)) == {"row": 0}
+
+    directed = DirectedHypergraph(edge_list=[(((0, 0),), ((0, 1), (1, 1)))])
+    loaded = _roundtrip_json(tmp_path, directed, name="dg.json")
+    assert loaded.get_edges() == directed.get_edges()
+
+    temporal = TemporalHypergraph(edge_list=[(3, grid[0]), (5, grid[1])])
+    loaded = _roundtrip_json(tmp_path, temporal, name="tg.json")
+    assert set(loaded.get_edges()) == set(temporal.get_edges())
+
+
 def test_load_json_temporal_directed_edge_lists(tmp_path):
     """JSON directed edge parts are lists after serialization."""
     path = tmp_path / "temporal_directed.json"

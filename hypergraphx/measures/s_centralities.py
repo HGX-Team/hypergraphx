@@ -164,7 +164,8 @@ def s_betweenness_nodes_averaged(H: TemporalHypergraph):
                 if k not in res.keys():
                     res[k] = 0
                 res[k] += v
-    return {k: v / T for k, v in res.items() if "E" not in k}
+    # res holds nodes only: the hyperedges ("E" ids) were skipped above
+    return {k: v / T for k, v in res.items()}
 
 
 def s_closenness_nodes_averaged(H: TemporalHypergraph):
@@ -194,4 +195,5 @@ def s_closenness_nodes_averaged(H: TemporalHypergraph):
                 if k not in res.keys():
                     res[k] = 0
                 res[k] += v
-    return {k: v / T for k, v in res.items() if "E" not in k}
+    # res holds nodes only: the hyperedges ("E" ids) were skipped above
+    return {k: v / T for k, v in res.items()}
