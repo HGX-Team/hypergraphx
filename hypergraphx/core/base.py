@@ -9,7 +9,6 @@ from hypergraphx.exceptions import (
 )
 from hypergraphx.utils.metadata import merge_metadata
 
-
 _ATOMIC = frozenset({str, int, float, bool, complex, bytes, type(None)})
 
 
