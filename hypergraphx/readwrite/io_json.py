@@ -126,6 +126,13 @@ def _assign_json_structures(
     return h
 
 
+def _json_node(value):
+    """A node read from JSON, which writes tuples as lists (lists cannot be nodes)."""
+    if isinstance(value, list):
+        return tuple(_json_node(v) for v in value)
+    return value
+
+
 def _build_hypergraph_from_json_objects(data_list):
     htype, meta = _get_json_header(data_list)
     weighted = bool(meta.get("weighted", False))
@@ -184,7 +191,27 @@ def _build_hypergraph_from_json_objects(data_list):
                 ensure_node(node)
                 adj[node].append(edge_id)
 
+    def member(value):
+        # JSON writes a tuple node as a list (as it writes the parts of a directed edge):
+        # it is that node when the file lists it among the nodes
+        if isinstance(value, list):
+            node = _json_node(value)
+            if node in node_metadata:
+                return node
+        return value
+
+    def members(interaction):
+        if not isinstance(interaction, list):
+            return interaction
+        if htype == "DirectedHypergraph":
+            return [
+                [member(v) for v in part] if isinstance(part, list) else part
+                for part in interaction
+            ]
+        return [member(v) for v in interaction]
+
     def normalize_edge(interaction, metadata):
+        interaction = members(interaction)
         if htype in {"Hypergraph", "DirectedHypergraph"}:
             return h._normalize_edge(interaction)
         if htype == "MultiplexHypergraph":
@@ -223,7 +250,7 @@ def _build_hypergraph_from_json_objects(data_list):
     for obj in data_list:
         record_type = obj.get("type")
         if record_type == "node":
-            ensure_node(obj["idx"], obj.get("metadata") or {})
+            ensure_node(_json_node(obj["idx"]), obj.get("metadata") or {})
         elif record_type == "edge":
             metadata = obj.get("metadata") or {}
             edge_key = normalize_edge(obj["interaction"], metadata)
@@ -269,7 +296,8 @@ def save_json_hypergraph(hypergraph, file_name):
             nonlocal first
             if not first:
                 outfile.write(",\n")
-            json.dump(item, outfile, separators=(",", ":"))
+            # dumps: json.dump writes through the pure-Python encoder, ten times slower
+            outfile.write(json.dumps(item, separators=(",", ":")))
             first = False
 
         hypergraph_type = str(type(hypergraph)).split(".")[-1][:-2]

@@ -223,6 +223,9 @@ class Hypergraph(BaseHypergraph):
         ------
         KeyError
         """
+        if self._removes_in_batch():
+            self._remove_edge_keys(self._normalize_edge(edge) for edge in edge_list)
+            return
         for edge in edge_list:
             self.remove_edge(edge)
 

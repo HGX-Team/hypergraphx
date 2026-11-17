@@ -58,10 +58,20 @@ def test_temporal_edge_averaged_centralities():
 
 
 def test_temporal_node_averaged_centralities():
-    """Test averaged temporal node s-centralities error on node id checks."""
+    """Averaged temporal node s-centralities give a value to every node, whatever its
+    name (numbers, or names that contain an "E" like the ids of hyperedges)."""
     thg = _make_temporal_hypergraph()
+    named = TemporalHypergraph(
+        edge_list=[(0, ("Eve", "Bob")), (1, ("Bob", "Ed", "Al"))]
+    )
 
-    with pytest.raises(TypeError):
-        s_betweenness_nodes_averaged(thg)
-    with pytest.raises(TypeError):
-        s_closenness_nodes_averaged(thg)
+    for h in (thg, named):
+        bet = s_betweenness_nodes_averaged(h)
+        clo = s_closenness_nodes_averaged(h)
+        assert set(bet) == set(clo) == set(h.get_nodes())
+        assert all(0 <= v <= 1 for v in bet.values()) and all(
+            0 <= v <= 1 for v in clo.values()
+        )
+    # node 1 is the only node present at both times
+    closeness = s_closenness_nodes_averaged(thg)
+    assert max(closeness, key=closeness.get) == 1

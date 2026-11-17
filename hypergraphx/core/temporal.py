@@ -393,14 +393,23 @@ class TemporalHypergraph(BaseHypergraph):
         except TypeError as exc:
             raise TypeError("Edge list and time list must be iterable") from exc
 
+        if time_list is not None and len(edge_list) != len(time_list):
+            raise ValueError("Edge list and time list must have the same length")
+        if self._removes_in_batch():
+            if time_list is None:
+                keys = [self._normalize_edge(edge) for edge in edge_list]
+            else:
+                keys = [
+                    self._normalize_edge(edge, time=t)
+                    for edge, t in zip(edge_list, time_list)
+                ]
+            self._remove_edge_keys(keys)
+            return
+
         if time_list is None:
             for edge in edge_list:
                 self.remove_edge(edge)
             return
-
-        if len(edge_list) != len(time_list):
-            raise ValueError("Edge list and time list must have the same length")
-
         for i, edge in enumerate(edge_list):
             self.remove_edge(edge, time=time_list[i])
 
